@@ -1,4 +1,5 @@
 PdrServer::Application.routes.draw do
+  mount PdrClient::Engine, at: "/", as: :pdr_client
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 

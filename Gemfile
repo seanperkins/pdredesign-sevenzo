@@ -8,9 +8,12 @@ gem 'uglifier', '>= 1.3.0'
 gem 'jquery-rails'
 gem 'jbuilder', '~> 1.2'
 
+gem 'pdr_client', git: 'https://cf91ac52033be9b3a1d81b413955d22ab80c45e8:x-oauth-basic@github.com/MobilityLabs/pdr-client.git'
+#gem 'pdr_client', path: '../pdr-client'
+
 group :development, :test do
-    gem 'rspec-rails', '~> 3.0.0.beta'
-    gem 'pry'
+  gem 'rspec-rails', '~> 3.0.0.beta'
+  gem 'pry'
 end
 
 # Use ActiveModel has_secure_password
