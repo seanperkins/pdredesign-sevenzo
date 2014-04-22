@@ -1,6 +1,10 @@
 PdrServer::Application.routes.draw do
   mount PdrClient::Engine, at: "/", as: :pdr_client
 
+  namespace :v1, defaults: { format: :json} do
+    resources :toolkits, only: :index
+  end
+
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
