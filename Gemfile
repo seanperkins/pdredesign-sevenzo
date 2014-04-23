@@ -3,6 +3,7 @@ source 'https://rails-assets.org'
 ruby '2.1.1'
 
 gem 'rails', '4.0.4'
+
 gem 'unicorn'
 gem 'pg'
 gem 'sass-rails', '~> 4.0.2'
@@ -17,6 +18,10 @@ gem 'pdr_client', git: 'https://cf91ac52033be9b3a1d81b413955d22ab80c45e8:x-oauth
 group :development, :test do
   gem 'rspec-rails', '~> 3.0.0.beta'
   gem 'pry'
+end
+
+group :production do
+  gem 'rails_12factor'
 end
 
 # Use ActiveModel has_secure_password
