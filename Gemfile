@@ -1,5 +1,6 @@
 source 'https://rubygems.org'
 source 'https://rails-assets.org'
+ruby '2.1.1'
 
 gem 'rails', '4.0.4'
 gem 'unicorn'
