@@ -3,6 +3,7 @@ PdrServer::Application.routes.draw do
 
   namespace :v1, defaults: { format: :json} do
     resources :toolkits, only: :index
+    resources :prospective_users, only: :create
   end
 
   # The priority is based upon order of creation: first created -> highest priority.
