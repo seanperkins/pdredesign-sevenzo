@@ -2,15 +2,10 @@
 ENV["RAILS_ENV"] ||= 'test'
 require File.expand_path("../../config/environment", __FILE__)
 require 'rspec/rails'
-require "#{::Rails.root}/spec/support/request_helpers"
+require 'shoulda/matchers'
 
-# Requires supporting ruby files with custom matchers and macros, etc, in
-# spec/support/ and its subdirectories. Files matching `spec/**/*_spec.rb` are
-# run as spec files by default. This means that files in spec/support that end
-# in _spec.rb will both be required and run as specs, causing the specs to be
-# run twice. It is recommended that you do not name files matching this glob to
-# end with _spec.rb. You can configure this pattern with with the --pattern
-# option on the command line or in ~/.rspec, .rspec or `.rspec-local`.
+# Requires supporting ruby files with custom matchers and macros, etc,
+# in spec/support/ and its subdirectories.
 Dir[Rails.root.join("spec/support/**/*.rb")].each { |f| require f }
 
 # Checks for pending migrations before tests are run.
@@ -34,10 +29,83 @@ RSpec.configure do |config|
   # instead of true.
   config.use_transactional_fixtures = true
 
+  # If true, the base class of anonymous controllers will be inferred
+  # automatically. This will be the default behavior in future versions of
+  # rspec-rails.
+  config.infer_base_class_for_anonymous_controllers = false
+
   # Run specs in random order to surface order dependencies. If you find an
   # order dependency and want to debug it, you can fix the order by providing
   # the seed, which is printed after each run.
   #     --seed 1234
   config.order = "random"
   config.include Requests::JsonHelpers, type: :controller
+  config.include Devise::TestHelpers, :type => :controller
+end
+
+
+def active_record_error(record, field, error)
+  expect(record.errors_on(field)).to include(error)
+end
+
+def no_active_record_error(record, field, error)
+  expect(record.errors_on(field)).not_to include(error)
+end
+
+def create_magic_assessments
+  @district     = District.create!
+  @facilitator  = Application::create_sample_user(districts: [@district])
+  @facilitator2 = Application::create_sample_user(districts: [@district])
+  @user         = Application::create_sample_user(districts: [@district])
+  @user2        = Application::create_sample_user(districts: [@district])
+  @participant  = Participant.create!(user: @user)
+  @participant2 = Participant.create!(user: @user2)
+  @rubric       = Rubric.create!
+
+  3.times do |i|
+    @assessment = Assessment.create!(
+      name: "Assessment #{i}",
+      rubric: @rubric,
+      participants: [],
+      district: @district,
+      user: @facilitator,
+    )
+  end
+
+  @district2 = District.create!
+  @user.update(district_ids: @user.district_ids + [@district2.id])
+
+  @assessment_with_participants = Assessment.create!(
+    name: "Assessment other",
+    rubric: @rubric,
+    participants: [@participant, @participant2],
+    district: @district2,
+    user: @facilitator2,
+  )
+end
+
+module Application
+  class << self
+    def create_user(opts = {})
+      attributes = {
+        email: Faker::Internet.email, 
+        password: 'sup3r_s3cr3t',
+        role:  :member,
+        admin: false,
+        first_name: 'Example',
+        last_name: 'User'
+      }.merge(opts)
+
+      User.create! attributes
+    end
+
+    def create_district(opts = {})
+      District.create! opts
+    end
+
+    def create_sample_user(opts = {})
+      district = Application.create_district
+      Application.create_user({ role: :facilitator, districts: [district]}.merge(opts))
+    end
+  end
 end
