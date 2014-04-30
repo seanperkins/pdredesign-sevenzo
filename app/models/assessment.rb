@@ -77,6 +77,7 @@ class Assessment < ActiveRecord::Base
 	end
 
 	## methods for participants
+  #TODO: extract
 	def participant_responses
       all_participant_responses
       .where.not(submitted_at: nil)
@@ -93,7 +94,6 @@ class Assessment < ActiveRecord::Base
       .where.not(report_viewed_at: nil)
 	end
 
-  #TODO: extract
 	def all_participant_responses
 		Response.where(responder_type: 'Participant', 
 		               responder: participants)

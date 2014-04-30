@@ -10,5 +10,7 @@ PdrServer::Application.routes.draw do
     resources  :toolkits, only: :index
     resources  :prospective_users, only: :create
     resources  :assessments
+    
+    get 'districts/search', to: 'districts#search'
   end
 end
