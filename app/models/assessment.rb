@@ -210,7 +210,7 @@ class Assessment < ActiveRecord::Base
 	end
 
   def self.assessments_for_user(user)
-    if user.role == :member  
+    if user.role.to_sym == :member  
       assessments_for_member(user)
     else
       assessments_for_facilitator(user)

@@ -10,7 +10,6 @@ describe V1::AssessmentsController do
   context '#index' do
     before do
       create_magic_assessments
-      sign_in @facilitator #created by #create_magic_assessments
     end
 
     it 'requires a user logged in user' do
@@ -21,6 +20,8 @@ describe V1::AssessmentsController do
     end
 
     it 'gets a facilitators assessments' do
+      sign_in @facilitator
+
       get :index
       assessments = assigns(:assessments)
 
@@ -28,6 +29,7 @@ describe V1::AssessmentsController do
     end
 
     it 'gets a members assessments' do
+      @user.update(role: :member)
       sign_in @user
 
       get :index

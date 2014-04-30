@@ -162,15 +162,10 @@ describe Assessment do
         end
       end
 
+      context '#percent_completed' do
 
+      end
     end
-
-    context '#percent_completed' do
-
-    end
-
-
-
   end
 
 end
