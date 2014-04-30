@@ -57,10 +57,7 @@ class Assessment < ActiveRecord::Base
 	end
 
 	def percent_completed
-		(self
-		  .participant_responses
-		  .where("submitted_at IS NOT NULL")
-		  .count.to_d/self.participants.count.to_d)*100
+    participant_responses.count.to_d/participants.count.to_d*100
 	end
 
 	def score_count(question_id, value)

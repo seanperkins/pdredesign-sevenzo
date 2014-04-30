@@ -24,6 +24,8 @@ group :development, :test do
   gem 'rspec-rails', '~> 3.0.0.beta'
   gem 'spring-commands-rspec'
   gem 'pry'
+  gem 'better_errors'
+  gem 'binding_of_caller'
 end
 
 group :test do

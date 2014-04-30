@@ -120,50 +120,52 @@ describe Assessment do
         responder: @participant)
       end
 
+      def response_count(method)
+        @assessment_with_participants.send(method).count
+      end
+
       context '#participant_response' do
         it 'returns the participants submitted responses' do
-          expect(@assessment_with_participants
-            .participant_responses
-            .count).to eq(0)
-
-          @response.update(submitted_at: Time.now)
-
-          expect(@assessment_with_participants
-            .participant_responses
-            .count).to eq(1)
-        end
+          expect do
+            @response.update(submitted_at: Time.now)
+          end.to change{ response_count(:participant_responses) }.by(1)
+       end
       end
 
       context '#participants_not_responded' do
         it 'returns the participants that have not responded' do
-          expect(@assessment_with_participants
-            .participants_not_responded
-            .count).to eq(2)
-
-          @response.update(submitted_at: Time.now)
-
-          expect(@assessment_with_participants
-            .participants_not_responded
-            .count).to eq(1)
-        end
+          expect do
+            @response.update(submitted_at: Time.now)
+          end.to change{ response_count(:participants_not_responded) }.by(-1)
+       end
       end
 
       context '#participants_viewed_report' do
         it 'gets users who have viewed the report' do
-          expect(@assessment_with_participants
-            .participants_viewed_report
-            .count).to eq(0)
-
-          @participant.update(report_viewed_at: Time.now)
-
-          expect(@assessment_with_participants
-            .participants_viewed_report
-            .count).to eq(1)
+          expect do
+            @participant.update(report_viewed_at: Time.now)
+          end.to change{ response_count(:participants_viewed_report) }.by(1)
         end
       end
 
       context '#percent_completed' do
+        it 'gets 0% complete' do
+          expect(@assessment_with_participants.percent_completed).to eq(0.0)
+        end
 
+        it 'gets 50% complete' do
+          @response.update(submitted_at: Time.now)
+          expect(@assessment_with_participants.percent_completed).to eq(50.0)
+        end
+
+        it 'gets 100% complete' do
+          Response.create(responder_type: 'Participant', 
+                          responder: @participant2,
+                          submitted_at: Time.now)
+
+          @response.update(submitted_at: Time.now)
+          expect(@assessment_with_participants.percent_completed).to eq(100.0)
+        end
       end
     end
   end

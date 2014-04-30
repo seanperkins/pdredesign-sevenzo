@@ -62,10 +62,16 @@ GEM
       sprockets
     arel (5.0.1.20140414130214)
     bcrypt (3.1.7)
+    better_errors (1.1.0)
+      coderay (>= 1.0.0)
+      erubis (>= 2.6.6)
+    binding_of_caller (0.7.2)
+      debug_inspector (>= 0.0.1)
     bootstrap-sass (3.1.1.1)
       sass (~> 3.2)
     builder (3.2.2)
     coderay (1.1.0)
+    debug_inspector (0.0.2)
     delayed_job (4.0.1)
       activesupport (>= 3.0, < 4.2)
     delayed_job_active_record (4.0.1)
@@ -239,6 +245,8 @@ PLATFORMS
 DEPENDENCIES
   activerecord-session_store
   bcrypt (~> 3.1.7)
+  better_errors
+  binding_of_caller
   delayed_job_active_record
   devise (~> 3.2)
   devise_invitable

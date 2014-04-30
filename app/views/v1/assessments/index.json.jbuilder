@@ -21,4 +21,3 @@ json.array! @assessments do |assessment|
   end
 
 end
-
