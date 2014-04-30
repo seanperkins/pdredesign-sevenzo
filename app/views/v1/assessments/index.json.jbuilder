@@ -13,19 +13,11 @@ json.array! @assessments do |assessment|
   json.completed_responses assessment.participant_responses.count
 
   json.facilitator do
-    json.role       assessment.user.role
-    json.team_role  assessment.user.team_role
-    json.first_name assessment.user.first_name
-    json.last_name  assessment.user.last_name
-    json.avatar     image_url(assessment.user.avatar)
+    json.partial! 'v1/shared/user', user: assessment.user
   end
 
   json.participants assessment.participants do |participant|
-    json.role       participant.user.role
-    json.team_role  participant.user.team_role
-    json.first_name participant.user.first_name
-    json.last_name  participant.user.last_name
-    json.avatar     image_url(participant.user.avatar)
+    json.partial! 'v1/shared/user', user: participant.user
   end
 
 end
