@@ -3,6 +3,7 @@ class V1::AssessmentsController < ApplicationController
 
   def index
     @assessments = user_assessments
+    @role        = current_user.role.to_sym
   end
 
   private

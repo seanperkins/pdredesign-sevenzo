@@ -37,5 +37,6 @@ describe V1::AssessmentsController do
 
       expect(assessments.count).to eq(1)
     end
+
   end
 end
