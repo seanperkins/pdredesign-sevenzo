@@ -4,7 +4,8 @@ PdrServer::Application.routes.draw do
   devise_for :users, path: 'v1/users', controllers: { 
     sessions: 'v1/sessions', 
     registrations: 'devise/registrations', 
-    invitations: 'devise/invitations' }
+    invitations: 'devise/invitations' },
+    defaults: { format: :json} 
 
   namespace :v1, defaults: { format: :json} do
     resources  :toolkits, only: :index
