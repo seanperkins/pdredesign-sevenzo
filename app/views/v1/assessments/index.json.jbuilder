@@ -23,7 +23,9 @@ json.array! @assessments do |assessment|
     subheading = Assessments::Subheading.new(assessment, @role)
     text, participants = subheading.text_and_participants
     json.text text
-    json.participants participants
+    json.participants participants do |participant|
+      json.partial! 'v1/shared/user', user: participant.user
+    end
   end
 
   json.facilitator do
