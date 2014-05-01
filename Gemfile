@@ -17,10 +17,16 @@ gem 'bcrypt', '~> 3.1.7'
 gem 'activerecord-session_store'
 gem 'delayed_job_active_record'
 
+gem 'fog'
+gem 'mini_magick'
+gem 'carrierwave'
+gem 'twitter'
+
 #gem 'pdr_client', git: 'https://cf91ac52033be9b3a1d81b413955d22ab80c45e8:x-oauth-basic@github.com/MobilityLabs/pdr-client.git'
 gem 'pdr_client', path: '../pdr-client'
 
 group :development, :test do
+  gem 'dotenv-rails'
   gem 'rspec-rails', '~> 3.0.0.beta'
   gem 'spring-commands-rspec'
   gem 'pry'
@@ -37,12 +43,3 @@ group :production do
   gem 'rails_12factor'
 end
 
-# Use ActiveModel has_secure_password
-
-# Use unicorn as the app server
-
-# Use Capistrano for deployment
-# gem 'capistrano', group: :development
-
-# Use debugger
-# gem 'debugger', group: [:development, :test]
