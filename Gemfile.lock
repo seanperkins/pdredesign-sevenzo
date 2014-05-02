@@ -1,6 +1,5 @@
-GIT
-  remote: https://cf91ac52033be9b3a1d81b413955d22ab80c45e8:x-oauth-basic@github.com/MobilityLabs/pdr-client.git
-  revision: 5fd61264d941b7e968926684ff0b9c92bf3763aa
+PATH
+  remote: ../pdr-client
   specs:
     pdr_client (1.0.0)
       angular-rails-templates
@@ -18,6 +17,7 @@ GIT
       rails-assets-angular-ui-select2
       rails-assets-bootstrap3-datetimepicker
       rails-assets-moment
+      rails-assets-momentjs
       rails-assets-select2
       rails-assets-select2-bootstrap3-css
       rails-assets-underscore
@@ -221,6 +221,7 @@ GEM
       rails-assets-moment (>= 2.4.0)
     rails-assets-jquery (2.1.1)
     rails-assets-moment (2.6.0)
+    rails-assets-momentjs (2.6.0)
     rails-assets-select2 (3.4.8)
       rails-assets-jquery (>= 1.7.1)
     rails-assets-select2-bootstrap3-css (1.2.0)
