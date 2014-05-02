@@ -7,6 +7,7 @@ json.array! @assessments do |assessment|
   json.updated_at        assessment.updated_at
   json.created_at        assessment.created_at
   json.status            assessment.status
+  json.response_id       (assessment.response && assessment.response.id)
 
   json.participant_count   assessment.participants.count
   json.percent_completed   assessment.percent_completed
