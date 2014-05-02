@@ -152,6 +152,13 @@ GEM
     mail (2.5.4)
       mime-types (~> 1.16)
       treetop (~> 1.4.8)
+    mandrill-api (1.0.51)
+      excon (>= 0.16.0, < 1.0)
+      json (>= 1.7.7, < 2.0)
+    mandrill_mailer (0.4.4)
+      actionpack
+      activesupport
+      mandrill-api (~> 1.0.9)
     memoizable (0.4.2)
       thread_safe (~> 0.3, >= 0.3.1)
     method_source (0.8.2)
@@ -320,6 +327,8 @@ DEPENDENCIES
   fog
   jbuilder (~> 1.2)
   jquery-rails
+  mandrill-api
+  mandrill_mailer
   mini_magick
   pdr_client!
   pg
