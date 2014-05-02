@@ -7,11 +7,12 @@ PdrServer::Application.routes.draw do
     invitations: 'devise/invitations' },
     defaults: { format: :json} 
 
-  namespace :v1, defaults: { format: :json} do
+  namespace :v1, defaults: { format: :json } do
     resources  :toolkits, only: :index
     resources  :prospective_users, only: :create
     resources  :assessments
-    
+
+    resource :users, only: [:show, :update]
     get 'districts/search', to: 'districts#search'
   end
 end
