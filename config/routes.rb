@@ -12,7 +12,9 @@ PdrServer::Application.routes.draw do
     resources  :prospective_users, only: :create
     resources  :assessments
 
-    resource :users, only: [:show, :update]
+    get  'user', to: 'user#show'
+    post 'user', to: 'user#update'
+
     get 'districts/search', to: 'districts#search'
   end
 end

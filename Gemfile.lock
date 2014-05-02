@@ -17,7 +17,6 @@ PATH
       rails-assets-angular-ui-select2
       rails-assets-bootstrap3-datetimepicker
       rails-assets-moment
-      rails-assets-momentjs
       rails-assets-select2
       rails-assets-select2-bootstrap3-css
       rails-assets-underscore
@@ -221,7 +220,6 @@ GEM
       rails-assets-moment (>= 2.4.0)
     rails-assets-jquery (2.1.1)
     rails-assets-moment (2.6.0)
-    rails-assets-momentjs (2.6.0)
     rails-assets-select2 (3.4.8)
       rails-assets-jquery (>= 1.7.1)
     rails-assets-select2-bootstrap3-css (1.2.0)
