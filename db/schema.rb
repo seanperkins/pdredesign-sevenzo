@@ -151,8 +151,11 @@ ActiveRecord::Schema.define(version: 20140428155957) do
   add_index "participants", ["user_id", "assessment_id"], name: "index_participants_on_user_id_and_assessment_id", unique: true, using: :btree
 
   create_table "prospective_users", force: true do |t|
+    t.string   "email",      default: "", null: false
+    t.string   "district"
+    t.string   "team_role"
+    t.string   "name"
     t.string   "ip_address"
-    t.string   "email"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
