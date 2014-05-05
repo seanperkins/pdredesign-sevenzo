@@ -13,9 +13,7 @@ json.array! @assessments do |assessment|
   json.percent_completed   assessment.percent_completed
   json.completed_responses assessment.participant_responses.count
 
-  links = Assessments::Link.new(assessment, @role).links
-
-  json.links links
+  json.links Assessments::Link.new(assessment, @role).links
 
   json.subheading do
     json.text @subheading
