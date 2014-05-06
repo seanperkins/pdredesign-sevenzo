@@ -38,7 +38,7 @@ describe V1::UserController do
       expect(json["errors"]).to_not be_nil
     end
 
-    it 'requires a password and password confirm' do
+    xit 'requires a password and password confirm' do
       post :update, { password: 'testtest', password_confirm: 'zzxx' }
 
       expect(response.status).to eq(422)

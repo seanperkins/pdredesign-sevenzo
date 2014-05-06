@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 source 'https://rails-assets.org'
 ruby '2.1.1'
 
-gem 'rails', '4.1.0'
+gem 'rails', '~> 4.1.0'
 
 gem 'unicorn'
 gem 'pg'
@@ -17,6 +17,8 @@ gem 'bcrypt', '~> 3.1.7'
 gem 'activerecord-session_store'
 gem 'delayed_job_active_record'
 
+gem 'authority'
+
 gem 'fog'
 gem 'mini_magick'
 gem 'carrierwave'
@@ -24,8 +26,8 @@ gem 'twitter'
 gem 'mandrill-api'
 gem 'mandrill_mailer'
 
-gem 'pdr_client', git: 'https://cf91ac52033be9b3a1d81b413955d22ab80c45e8:x-oauth-basic@github.com/MobilityLabs/pdr-client.git'
-#gem 'pdr_client', path: '../pdr-client'
+#gem 'pdr_client', git: 'https://cf91ac52033be9b3a1d81b413955d22ab80c45e8:x-oauth-basic@github.com/MobilityLabs/pdr-client.git'
+gem 'pdr_client', path: '../pdr-client'
 
 group :development, :test do
   gem 'dotenv-rails'

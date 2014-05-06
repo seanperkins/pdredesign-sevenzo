@@ -1,3 +1,14 @@
+# == Schema Information
+#
+# Table name: dismissed_popovers
+#
+#  id         :integer          not null, primary key
+#  user_id    :integer
+#  popover_id :string(255)
+#  created_at :datetime
+#  updated_at :datetime
+#
+
 class DismissedPopover < ActiveRecord::Base
   belongs_to :user
 

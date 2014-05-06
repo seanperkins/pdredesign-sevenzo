@@ -10,7 +10,10 @@ PdrServer::Application.routes.draw do
   namespace :v1, defaults: { format: :json } do
     resources  :toolkits, only: :index
     resources  :prospective_users, only: :create
-    resources  :assessments
+    resources  :assessments, only: [:index, :show] do
+      resources :participants, except: [:update, :show]
+      get 'participants/all', to: 'participants#all', as: :all_participants
+    end
 
     get  'user', to: 'user#show'
     post 'user', to: 'user#update'

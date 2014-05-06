@@ -1,3 +1,16 @@
+# == Schema Information
+#
+# Table name: rubrics
+#
+#  id         :integer          not null, primary key
+#  name       :string(255)
+#  version    :decimal(, )
+#  user_id    :integer
+#  created_at :datetime
+#  updated_at :datetime
+#  enabled    :boolean
+#
+
 require 'spec_helper'
 
 describe Rubric do

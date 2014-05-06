@@ -1,3 +1,17 @@
+# == Schema Information
+#
+# Table name: prospective_users
+#
+#  id         :integer          not null, primary key
+#  email      :string(255)      default(""), not null
+#  district   :string(255)
+#  team_role  :string(255)
+#  name       :string(255)
+#  ip_address :string(255)
+#  created_at :datetime
+#  updated_at :datetime
+#
+
 require 'spec_helper'
 
 describe ProspectiveUser do
