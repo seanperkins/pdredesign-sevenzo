@@ -43,6 +43,9 @@ RSpec.configure do |config|
   config.include Devise::TestHelpers, :type => :controller
 end
 
+Authority.configure do |config|
+  config.logger = Logger.new('/dev/null')
+end
 
 def active_record_error(record, field, error)
   expect(record.errors_on(field)).to include(error)
@@ -56,14 +59,14 @@ def create_magic_assessments
   @district     = District.create!
   @facilitator  = Application::create_sample_user(districts: [@district])
   @facilitator2 = Application::create_sample_user(districts: [@district])
-  @user         = Application::create_sample_user(districts: [@district])
-  @user2        = Application::create_sample_user(districts: [@district])
+  @user         = Application::create_sample_user(districts: [@district], role: :member)
+  @user2        = Application::create_sample_user(districts: [@district], role: :member)
   @participant  = Participant.create!(user: @user)
   @participant2 = Participant.create!(user: @user2)
   @rubric       = Rubric.create!
 
   3.times do |i|
-    @assessment = Assessment.create!(
+    Assessment.create!(
       name: "Assessment #{i}",
       rubric: @rubric,
       participants: [],
@@ -72,7 +75,8 @@ def create_magic_assessments
     )
   end
 
-  @district2 = District.create!
+  @district2    = District.create!
+  @facilitator3 = Application::create_sample_user(districts: [@district2])
   @user.update(district_ids: @user.district_ids + [@district2.id])
 
   @assessment_with_participants = Assessment.create!(

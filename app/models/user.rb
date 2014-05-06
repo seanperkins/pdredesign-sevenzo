@@ -35,6 +35,8 @@ class User < ActiveRecord::Base
   devise :invitable, :database_authenticatable, :registerable,
          :recoverable, :rememberable, :trackable, :validatable
 
+  include Authority::UserAbilities
+
   has_many :assessments
   has_many :participants
   has_many :rubrics

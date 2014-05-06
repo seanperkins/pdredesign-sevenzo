@@ -1,3 +1,23 @@
+# == Schema Information
+#
+# Table name: assessments
+#
+#  id              :integer          not null, primary key
+#  name            :string(255)
+#  due_date        :datetime
+#  meeting_date    :datetime
+#  user_id         :integer
+#  rubric_id       :integer
+#  created_at      :datetime
+#  updated_at      :datetime
+#  district_id     :integer
+#  message         :text
+#  assigned_at     :datetime
+#  mandrill_id     :string(255)
+#  mandrill_html   :text
+#  report_takeaway :text
+#
+
 require 'spec_helper'
 
 describe Assessment do
@@ -100,8 +120,8 @@ describe Assessment do
 
     context '#assessments_for_user' do
       it 'returns a facilitator users assessments' do
-        records = Assessment.assessments_for_user(@user)
-        expect(records.count).to eq(4)
+        records = Assessment.assessments_for_user(@facilitator)
+        expect(records.count).to eq(3)
       end
 
       it 'returns only assigned assessments for member' do

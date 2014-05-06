@@ -7,10 +7,55 @@ describe V1::AssessmentsController do
     request.env["HTTP_ACCEPT"] = 'application/json'
   end
 
-  context '#index' do
-    before do
-      create_magic_assessments
+  context '#show' do
+    before { create_magic_assessments }
+    before { sign_in @facilitator2 }
+    let(:assessment) { @assessment_with_participants }
+
+    it 'can retreive the assessment' do
+      get :show, id: assessment.id
+      assigned = assigns(:assessment)
+
+      expect(assigned.id).to eq(assessment.id)
+      assert_response :success
     end
+
+    context 'Authority' do
+      it 'requires a logged in user' do
+        sign_out :user
+
+        get :show, id: 1
+        assert_response :unauthorized
+      end
+
+      it 'forbids a non-participant access' do
+        sign_in @user
+        unauthorized = Assessment.find_by_name("Assessment 1")
+        get :show, id: unauthorized.id
+
+        assert_response :forbidden
+      end
+
+      it 'forbids facilitator in another district' do
+        sign_in @facilitator3
+
+        unauthorized = Assessment.find_by_name("Assessment 1")
+        get :show, id: unauthorized.id
+        assert_response :forbidden
+      end
+
+      it 'allows a facilitator from the same district' do
+        user = Application::create_sample_user(districts: [@district2])
+        sign_in user
+
+        get :show, id: assessment.id
+        assert_response :success
+      end
+    end
+  end
+
+  context '#index' do
+    before { create_magic_assessments }
 
     it 'requires a user logged in user' do
       sign_out :user
