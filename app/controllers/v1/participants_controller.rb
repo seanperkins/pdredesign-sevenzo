@@ -24,16 +24,19 @@ class V1::ParticipantsController < ApplicationController
   end
 
   def all
-    @participants = participants_from_district(assessment.district_id) 
-    render :index
+    @users = users_from_district(assessment) 
   end
   authority_actions all: 'create'
 
   protected
-  def participants_from_district(district_id)
-    Participant
-      .includes(:assessment)
-      .where(assessments: { district_id: district_id })
+  def users_from_district(assessment)
+    district_id = assessment.district_id
+    user_ids    = assessment.participants.pluck(:user_id)
+    
+    User
+      .includes(:districts)
+      .where(districts: { id: district_id})
+      .where.not(id: user_ids)
   end
 
   def participant_params
