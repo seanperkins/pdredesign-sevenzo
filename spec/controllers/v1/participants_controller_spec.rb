@@ -87,9 +87,21 @@ describe V1::ParticipantsController do
     it 'gives a list of all participants in assessment district' do
       get :all, assessment_id: assessment.id  
 
+      Application::create_sample_user(
+        districts: [@district2],
+        role: :member)
+
       assert_response :success
-      participants = assigns(:participants)
+      participants = assigns(:users)
+
       expect(participants.count).to eq(2)
+    end
+
+    it 'does not return participants already in assessment' do
+      get :all, assessment_id: assessment.id  
+
+      participants = assigns(:users)
+      expect(participants.count).to eq(1)
     end
 
     it 'forbids non-facilitators users' do

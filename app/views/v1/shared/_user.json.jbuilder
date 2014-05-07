@@ -1,3 +1,4 @@
+json.id         user.id
 json.role       user.role
 json.team_role  user.team_role
 json.first_name user.first_name
