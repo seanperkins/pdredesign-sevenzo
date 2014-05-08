@@ -59,6 +59,14 @@ class Assessment < ActiveRecord::Base
 		percent_completed == 100
 	end
 
+	def assigned?
+    assigned_at.present?
+  end
+
+  def has_response?
+    response.present?
+  end
+
 	def percent_completed
     participant_responses.count.to_d/participants.count.to_d*100
 	end

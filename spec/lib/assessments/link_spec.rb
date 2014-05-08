@@ -9,7 +9,7 @@ describe Assessments::Link do
 
   context '#links' do 
     it 'returns a dashboard link' do 
-      allow(@double).to receive_message_chain(:assigned_at, :present?)
+      allow(@double).to receive(:assigned?)
         .and_return(true)
 
       links = subject.new(@double, :facilitator).links
@@ -18,7 +18,7 @@ describe Assessments::Link do
 
 
     it 'returns a finish and assign link' do
-      allow(@double).to receive_message_chain(:assigned_at, :present?)
+      allow(@double).to receive(:assigned?)
         .and_return(false)
 
       links = subject.new(@double, :facilitator).links
@@ -26,7 +26,7 @@ describe Assessments::Link do
     end
 
     it 'returns a message link' do 
-      allow(@double).to receive_message_chain(:assigned_at, :present?)
+      allow(@double).to receive(:assigned?)
         .and_return(true)
 
       links = subject.new(@double, :member).links
@@ -34,7 +34,7 @@ describe Assessments::Link do
     end
 
     it 'returns a disabled message link' do 
-      allow(@double).to receive_message_chain(:assigned_at, :present?)
+      allow(@double).to receive(:assigned?)
         .and_return(false)
 
       links = subject.new(@double, :member).links
@@ -42,10 +42,10 @@ describe Assessments::Link do
     end
 
     it 'returns a report link' do
-      allow(@double).to receive_message_chain(:response, :present?)
+      allow(@double).to receive_message_chain(:response)
         .and_return(true)
 
-      allow(@double).to receive_message_chain(:response, :submitted_at, :present?)
+      allow(@double).to receive_message_chain(:response, :completed?)
         .and_return(true)
 
       links = subject.new(@double, :facilitator).links
@@ -53,10 +53,10 @@ describe Assessments::Link do
     end
 
     it 'returns a disabled report link' do
-      allow(@double).to receive_message_chain(:response, :present?)
+      allow(@double).to receive(:has_response?)
         .and_return(false)
 
-      allow(@double).to receive_message_chain(:response, :submitted_at, :present?)
+      allow(@double).to receive_message_chain(:response, :completed?)
         .and_return(true)
 
       links = subject.new(@double, :facilitator).links
@@ -64,7 +64,7 @@ describe Assessments::Link do
     end
 
     it 'returns a consensus link' do
-      allow(@double).to receive_message_chain(:assigned_at, :present?)
+      allow(@double).to receive(:assigned?)
         .and_return(false)
 
       links = subject.new(@double, :facilitator).links
@@ -72,10 +72,10 @@ describe Assessments::Link do
     end
 
     it 'returns a new consensus link' do
-      allow(@double).to receive_message_chain(:assigned_at, :present?)
+      allow(@double).to receive(:assigned?)
         .and_return(true)
 
-      allow(@double).to receive_message_chain(:response, :present?)
+      allow(@double).to receive(:has_response?)
         .and_return(false)
 
       links = subject.new(@double, :facilitator).links
@@ -83,10 +83,7 @@ describe Assessments::Link do
     end
 
     it 'returns a show consensus link' do
-      allow(@double).to receive_message_chain(:response, :present?)
-        .and_return(true)
-
-      allow(@double).to receive_message_chain(:response, :submitted_at, :present?)
+      allow(@double).to receive_message_chain(:response, :completed?)
         .and_return(true)
 
       links = subject.new(@double, :member).links
@@ -94,10 +91,7 @@ describe Assessments::Link do
     end
 
     it 'returns a disabled consensus link' do
-      allow(@double).to receive_message_chain(:response, :present?)
-        .and_return(true)
-
-      allow(@double).to receive_message_chain(:response, :submitted_at, :present?)
+      allow(@double).to receive_message_chain(:response, :completed?)
         .and_return(false)
 
       links = subject.new(@double, :member).links
@@ -105,13 +99,13 @@ describe Assessments::Link do
     end
 
     it 'returns a edit consensus link' do
-      allow(@double).to receive_message_chain(:assigned_at, :present?)
+      allow(@double).to receive(:assigned?)
         .and_return(true)
 
-      allow(@double).to receive_message_chain(:response, :present?)
+      allow(@double).to receive(:has_response?)
         .and_return(true)
 
-      allow(@double).to receive_message_chain(:response, :submitted_at, :present?)
+      allow(@double).to receive_message_chain(:response, :completed?)
         .and_return(false)
 
       links = subject.new(@double, :facilitator).links
@@ -119,13 +113,13 @@ describe Assessments::Link do
     end
 
     it 'returns a show report link' do
-      allow(@double).to receive_message_chain(:assigned_at, :present?)
+      allow(@double).to receive(:assigned?)
         .and_return(true)
 
-      allow(@double).to receive_message_chain(:response, :present?)
+      allow(@double).to receive(:has_response?)
         .and_return(true)
 
-      allow(@double).to receive_message_chain(:response, :submitted_at, :present?)
+      allow(@double).to receive_message_chain(:response, :completed?)
         .and_return(true)
 
       links = subject.new(@double, :facilitator).links
