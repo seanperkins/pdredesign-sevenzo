@@ -6,6 +6,7 @@ json.district_id       assessment.district_id
 json.updated_at        assessment.updated_at
 json.created_at        assessment.created_at
 json.status            assessment.status
+json.rubric_id         assessment.rubric_id
 json.response_id       (assessment.response && assessment.response.id)
 
 json.participant_count   assessment.participants.count
