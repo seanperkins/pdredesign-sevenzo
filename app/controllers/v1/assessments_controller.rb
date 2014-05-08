@@ -11,7 +11,19 @@ class V1::AssessmentsController < ApplicationController
     authorize_action_for @assessment
   end
 
+  def update
+    @assessment  = assessment
+    authorize_action_for @assessment
+
+    @assessment.update(assessment_params)
+    render nothing: true
+  end
+
   private
+  def assessment_params
+    params.permit(:rubric_id, :name, :meeting_date)
+  end
+
   def assessment
     Assessment.find(params[:id])
   end
