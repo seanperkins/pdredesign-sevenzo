@@ -10,6 +10,7 @@ PATH
       rails
       rails-assets
       rails-assets-angular
+      rails-assets-angular-bootstrap
       rails-assets-angular-redactor
       rails-assets-angular-resource
       rails-assets-angular-route
@@ -206,6 +207,8 @@ GEM
       sass-rails
       sprockets
     rails-assets-angular (1.2.16)
+    rails-assets-angular-bootstrap (0.11.0)
+      rails-assets-angular (>= 1)
     rails-assets-angular-redactor (1.0.0)
       rails-assets-angular (>= 1.2.0)
       rails-assets-jquery (>= 2.0.0)

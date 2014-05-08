@@ -23,11 +23,13 @@ describe V1::AssessmentsController do
                     rubric_id: 42,
                     name: 'some assessment',
                     due_date: time,
+                    message: 'My message',
                     another_value: 'something'}
 
       assessment.reload
       expect(assessment.rubric_id).to eq(42)
       expect(assessment.name).to eq('some assessment')
+      expect(assessment.message).to eq('My message')
       expect(assessment.due_date).to eq(time.to_s)
     end
 
