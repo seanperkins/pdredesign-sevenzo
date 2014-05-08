@@ -9,6 +9,7 @@ PdrServer::Application.routes.draw do
 
   namespace :v1, defaults: { format: :json } do
     resources  :toolkits, only: :index
+    resources  :rubrics, only: :index
     resources  :prospective_users, only: :create
     resources  :assessments, only: [:index, :show] do
       resources :participants, except: [:update, :show]
