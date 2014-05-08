@@ -93,7 +93,7 @@ class Assessment < ActiveRecord::Base
   end
 
 	def participants_viewed_report
-    participants
+    participants.includes(:user)
       .where.not(report_viewed_at: nil)
 	end
 
@@ -219,11 +219,11 @@ class Assessment < ActiveRecord::Base
 
   def self.assessments_for_facilitator(user)
     districts = user.district_ids
-    where(district_id: districts)
+    includes(participants: :user).where(district_id: districts)
   end
 
   def self.assessments_for_member(user)
     assessments = user.participants.select(:assessment_id)
-    where(id: assessments)
+    includes(participants: :user).where(id: assessments)
   end
 end
