@@ -21,7 +21,7 @@ class V1::AssessmentsController < ApplicationController
 
   private
   def assessment_params
-    params.permit(:rubric_id, :name, :meeting_date)
+    params.permit(:rubric_id, :name, :due_date)
   end
 
   def assessment
