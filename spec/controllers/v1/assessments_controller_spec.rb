@@ -22,13 +22,13 @@ describe V1::AssessmentsController do
       put :update, {id: assessment.id, 
                     rubric_id: 42,
                     name: 'some assessment',
-                    meeting_date: time,
+                    due_date: time,
                     another_value: 'something'}
 
       assessment.reload
       expect(assessment.rubric_id).to eq(42)
       expect(assessment.name).to eq('some assessment')
-      expect(assessment.meeting_date).to eq(time.to_s)
+      expect(assessment.due_date).to eq(time.to_s)
     end
 
     it 'only allows the owner to update' do
