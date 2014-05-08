@@ -17,14 +17,16 @@ module Assessments
     private
     def facilitator_links
       { dashboard: dashboard_link,
+        consensus: consensus_link,
         report:    report_link,
-        consensus: consensus_link }
+      }
     end
 
     def member_links
       { messages:  message_link,
+        consensus: consensus_link,
         report:    report_link,
-        consensus: consensus_link }
+      }
     end
 
     def member_consensus_link 
