@@ -7,6 +7,37 @@ describe V1::AssessmentsController do
     request.env["HTTP_ACCEPT"] = 'application/json'
   end
 
+  context '#update' do
+    before { create_magic_assessments }
+    before { sign_in @facilitator2 }
+    let(:assessment) { @assessment_with_participants }
+
+    it 'can update an assessment' do
+      put :update, {id: assessment.id, rubric_id: 42}
+      assert_response :success
+    end
+
+    it 'updates the record' do
+      time = Time.now
+      put :update, {id: assessment.id, 
+                    rubric_id: 42,
+                    name: 'some assessment',
+                    meeting_date: time,
+                    another_value: 'something'}
+
+      assessment.reload
+      expect(assessment.rubric_id).to eq(42)
+      expect(assessment.name).to eq('some assessment')
+      expect(assessment.meeting_date).to eq(time.to_s)
+    end
+
+    it 'only allows the owner to update' do
+      sign_in @facilitator
+      put :update, {id: assessment.id, rubric_id: 42}
+      assert_response :forbidden
+    end
+  end
+
   context '#show' do
     before { create_magic_assessments }
     before { sign_in @facilitator2 }
