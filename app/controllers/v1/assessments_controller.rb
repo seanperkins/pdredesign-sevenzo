@@ -7,11 +7,15 @@ class V1::AssessmentsController < ApplicationController
   end
 
   def show
-    @assessment = Assessment.find(params[:id])
+    @assessment = assessment
     authorize_action_for @assessment
   end
 
   private
+  def assessment
+    Assessment.find(params[:id])
+  end
+
   def user_assessments(user = current_user)
     Assessment.assessments_for_user(user)
   end

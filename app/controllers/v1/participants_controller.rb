@@ -1,5 +1,4 @@
 class V1::ParticipantsController < ApplicationController
-
   before_action :authenticate_user!
   authorize_actions_for :assessment
 
