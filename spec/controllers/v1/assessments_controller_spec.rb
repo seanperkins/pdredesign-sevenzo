@@ -20,7 +20,7 @@ describe V1::AssessmentsController do
       assert_response :success
     end
 
-    context 'Authority' do
+   context 'permissions' do
       it 'requires a logged in user' do
         sign_out :user
 
