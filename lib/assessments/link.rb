@@ -28,7 +28,7 @@ module Assessments
     end
 
     def member_consensus_link 
-      if assessment.response.present? && assessment.response.submitted_at.present? 
+      if assessment.has_response? && assessment.response.completed? 
         { title: "Consensus", active: true, type: :show_response }
       else
         { title: "Consensus", active: false, type: :none }
@@ -37,9 +37,9 @@ module Assessments
 
     def consensus_link
       return member_consensus_link if role == :member
-      if assessment.assigned_at.present?
-        if assessment.response.present?
-          if assessment.response.submitted_at.present?
+      if assessment.assigned?
+        if assessment.has_response?
+          if assessment.response.completed?
             { title: "Consensus", active: true, type: :show_report }
           else
             { title: "Consensus", active: true, type: :edit_report }
@@ -53,7 +53,7 @@ module Assessments
     end
 
     def report_link
-      if assessment.response.present? && assessment.response.submitted_at.present? 
+      if assessment.has_response? && assessment.response.completed? 
         { title: 'Report', active: true, type: :report}
       else
         { title: 'Report', active: false , type: :report}
@@ -61,7 +61,7 @@ module Assessments
     end
 
     def message_link
-      if assessment.assigned_at.present?
+      if assessment.assigned?
         { title: 'Messages', active: true, type: :messages }
       else
         { title: 'Messages', active: false , type: :messages }
@@ -69,7 +69,7 @@ module Assessments
     end
 
     def dashboard_link
-      if assessment.assigned_at.present?
+      if assessment.assigned?
         { title: 'Dashboard', active: true, type: :dashboard }
       else
         { title: 'Finish & Assign', active: true, type: :finish }
