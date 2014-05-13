@@ -117,4 +117,22 @@ describe V1::AssessmentsController do
     end
 
   end
+
+  context '#show' do
+    before { create_magic_assessments }
+    before { sign_in @facilitator2 }
+    let(:assessment) { @assessment_with_participants }
+
+    it 'always returns the welcome message' do
+      assessment.update(message: 'welcome content')
+
+      get :show, id: assessment.id
+      messages = assigns(:messages)
+
+      expect(messages.count).to eq(1)
+      expect(messages.first.category).to    eq("welcome")
+      expect(messages.first.content).to     eq("welcome content")
+      expect(messages.first.sent_at).not_to be_nil
+    end
+  end
 end

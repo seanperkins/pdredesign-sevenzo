@@ -21,32 +21,6 @@ class Response < ActiveRecord::Base
 	accepts_nested_attributes_for :feedbacks
   
   before_save { |response| response.responder.update_column(:meeting_date, Time.now) if response.responder_type == 'Assessment' }
-	
-  after_save do |response|
-		if response.responder_type == 'Participant' && response.submitted_at.present?
-      response.responder.assessment.cache_consensus_object
-		end
-	end
-
-	def form_object
-		object = {}
-
-    self.rubric.questions.group_by{ |q| q.category }.each do |category, questions|
-      object[category] = {}
-      object[category][:ids] = questions.collect(&:id)
-      object[category][:questions] = []
-
-      questions.each do |question|
-        qobj = {}
-        qobj[question] = {}
-        qobj[question][:answers] = question.answers
-        qobj[question][:score] = self.scores.where(question_id: question.id).first
-        object[category][:questions].push(qobj)
-      end
-    end
-
-		return object
-	end
 
   def report_object
     object = {}

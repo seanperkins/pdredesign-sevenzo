@@ -30,6 +30,7 @@ class Assessment < ActiveRecord::Base
 	has_one :response, as: :responder, dependent: :destroy
 	has_many :participants, dependent: :destroy
 	has_many :messages, dependent: :destroy
+	has_many :categories, through: :questions
 	accepts_nested_attributes_for :participants, allow_destroy: true
 
 	attr_accessor :add_participants
@@ -65,6 +66,10 @@ class Assessment < ActiveRecord::Base
 
   def has_response?
     response.present?
+  end
+
+  def response_submitted?
+    response.submitted_at.present?
   end
 
 	def percent_completed
