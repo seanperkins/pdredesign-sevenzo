@@ -14,8 +14,17 @@ json.participant_count   assessment.participants.count
 json.percent_completed   assessment.percent_completed
 json.completed_responses assessment.participant_responses.count
 
+json.partial! 'overview', overview: @overview if @overview
+
+json.messages assessment.messages, :id, :category, :teaser, :sent_at do |message|
+  json.id       message.id 
+  json.category message.category
+  json.teaser   sanitize(message.teaser, tags: [])
+  json.sent_at  message.sent_at
+end
+
 json.participants assessment.participants do |participant|
-  json.partial! 'v1/shared/user', user: participant.user
+  json.partial! 'v1/shared/participant', participant: participant
 end
 
 json.facilitator do

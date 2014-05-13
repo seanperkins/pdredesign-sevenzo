@@ -15,6 +15,13 @@
 
 class Message < ActiveRecord::Base
 	belongs_to :assessment
+	MAX_LENGTH_TEASER = 220
+
+	def teaser
+	  return content unless content
+    return content if content.length <= MAX_LENGTH_TEASER
+    return "#{content[0..MAX_LENGTH_TEASER-1]}..."
+  end
   
   ## Store Message HTML
   ## This grabs the message content from Mandrill using the API

@@ -9,6 +9,8 @@ class V1::AssessmentsController < ApplicationController
   def show
     @assessment = assessment
     authorize_action_for @assessment
+    @messages   = messages
+    @overview   = Assessments::Report::Overview.new(@assessment)
   end
 
   def update
@@ -20,6 +22,18 @@ class V1::AssessmentsController < ApplicationController
   end
 
   private
+  def messages
+    messages = []
+    messages.concat assessment.messages
+    messages.push welcome_message
+  end
+
+  def welcome_message
+    OpenStruct.new(category: "welcome", 
+                sent_at:  assessment.updated_at,
+                content:  assessment.message)
+  end
+
   def assessment_params
     params.permit(:rubric_id, :name, :due_date, :message)
   end
