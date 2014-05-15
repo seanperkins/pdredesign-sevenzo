@@ -21,6 +21,21 @@ class V1::AssessmentsController < ApplicationController
     render nothing: true
   end
 
+  def create
+    @assessment = Assessment.new(assessment_create_params)
+    authorize_action_for @assessment
+
+    @assessment.user = current_user
+    @assessment.district_id = current_user.district_ids.first
+
+    if @assessment.save
+      render :show
+    else
+      @errors = @assessment.errors
+      render 'v1/shared/errors', status: 422
+    end
+  end
+
   private
   def messages
     messages = []
@@ -32,6 +47,10 @@ class V1::AssessmentsController < ApplicationController
     OpenStruct.new(category: "welcome", 
                 sent_at:  assessment.updated_at,
                 content:  assessment.message)
+  end
+
+  def assessment_create_params
+    params.permit(:rubric_id, :name, :due_date)
   end
 
   def assessment_params

@@ -135,4 +135,45 @@ describe V1::AssessmentsController do
       expect(messages.first.sent_at).not_to be_nil
     end
   end
+
+  context '#create' do
+    before { create_magic_assessments }
+    before { sign_in @facilitator }
+
+    it 'does not allow non-facilitators to create an assessment' do
+      sign_in @user  
+      post :create, name: 'some assessment'
+      assert_response :forbidden
+    end
+
+    it 'allows a facilitator to create an assessment' do
+      post :create, 
+        name: 'some assessment', 
+        rubric_id: @rubric.id,
+        due_date: Time.now
+
+      assert_response :success
+    end
+
+    it 'sets the facilitator correctly' do
+      post :create, 
+        name: 'some assessment', 
+        rubric_id: @rubric.id,
+        due_date: Time.now
+
+      expect(json["facilitator"]["id"]).to eq(@facilitator.id)
+    end
+
+    it 'creates a record' do
+      post :create, 
+        name: 'some assessment', 
+        rubric_id: @rubric.id,
+        due_date: Time.now
+
+      expect(json["id"]).not_to be_nil
+
+    end
+
+ 
+  end
 end
