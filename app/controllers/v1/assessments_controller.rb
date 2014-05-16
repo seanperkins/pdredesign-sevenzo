@@ -17,7 +17,14 @@ class V1::AssessmentsController < ApplicationController
     @assessment  = assessment
     authorize_action_for @assessment
 
-    @assessment.update(assessment_params)
+    update_params = assessment_params
+    if update_params[:assign]
+      update_params.delete :assign
+      update_params[:assigned_at] = Time.now
+    end
+
+
+    @assessment.update(update_params)
     render nothing: true
   end
 
@@ -54,7 +61,7 @@ class V1::AssessmentsController < ApplicationController
   end
 
   def assessment_params
-    params.permit(:rubric_id, :name, :due_date, :message)
+    params.permit(:rubric_id, :name, :due_date, :message, :assign)
   end
 
   def assessment

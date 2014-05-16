@@ -38,6 +38,22 @@ describe V1::AssessmentsController do
       put :update, {id: assessment.id, rubric_id: 42}
       assert_response :forbidden
     end
+
+    it 'does not set :assigned_at' do
+      put :update, id: assessment.id, rubric_id: 42
+      assert_response :success
+
+      updated_assessment = Assessment.find(assessment.id)
+      expect(updated_assessment.assigned_at).to be_nil
+    end
+
+    it 'sets :assigned_at when :assign present' do
+      put :update, assign: true, id: assessment.id, rubric_id: 42
+      assert_response :success
+
+      updated_assessment = Assessment.find(assessment.id)
+      expect(updated_assessment.assigned_at).not_to be_nil
+    end
   end
 
   context '#show' do
