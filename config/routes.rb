@@ -13,6 +13,9 @@ PdrServer::Application.routes.draw do
     resources  :prospective_users, only: :create
     resources  :assessments, only: [:index, :show, :update, :create] do
       resources :participants, except: [:update, :show]
+      resources :responses, except: [:delete] do
+        resources :scores, only: [:update, :create]
+      end
       get 'participants/all', to: 'participants#all', as: :all_participants
     end
 

@@ -55,12 +55,38 @@ def no_active_record_error(record, field, error)
   expect(record.errors_on(field)).not_to include(error)
 end
 
+def create_struct
+  responder = Participant.create!(user: @user)
+  rubric    = Rubric.create!
+  response  = Response.create!(
+    responder_type: 'Assessment', 
+    responder: responder,
+    rubric: rubric,
+    id: 99)
+
+  category1 = Category.create!(name: "first")
+  category2 = Category.create!(name: "second")
+  category3 = Category.create!(name: "third")
+
+  3.times do |i|
+    question = rubric
+      .questions
+      .create!(category: category1, headline: "headline #{i}")
+    Score.create!(question: question, response: response, evidence: "expected")
+  end
+
+  3.times { rubric.questions.create!(category: category2) }
+  3.times { rubric.questions.create!(category: category3) }
+end
+
+
 def create_magic_assessments
   @district     = District.create!
   @facilitator  = Application::create_sample_user(districts: [@district])
   @facilitator2 = Application::create_sample_user(districts: [@district])
   @user         = Application::create_sample_user(districts: [@district], role: :member)
   @user2        = Application::create_sample_user(districts: [@district], role: :member)
+  @user3        = Application::create_sample_user(districts: [@district], role: :member)
   @participant  = Participant.create!(user: @user)
   @participant2 = Participant.create!(user: @user2)
   @rubric       = Rubric.create!
