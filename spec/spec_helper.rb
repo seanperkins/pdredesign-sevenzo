@@ -72,6 +72,9 @@ def create_struct
     question = rubric
       .questions
       .create!(category: category1, headline: "headline #{i}")
+    4.times do |value|
+      Answer.create!(question: question, value: value+1, content: 'some content')
+    end
     Score.create!(question: question, response: response, evidence: "expected")
   end
 
