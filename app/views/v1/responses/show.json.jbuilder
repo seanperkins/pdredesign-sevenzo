@@ -12,5 +12,6 @@ json.categories @categories do |category|
     json.headline    question.headline
     json.category_id question.category_id
     json.score controller.score_for(@response, question)
+    json.answers question.answers
   end
 end
