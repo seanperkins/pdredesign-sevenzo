@@ -144,6 +144,14 @@ describe Assessment do
         @assessment_with_participants.send(method).count
       end
 
+      context '#responses' do
+        it 'returns the users response' do
+          responses = @assessment_with_participants.responses(@user)
+          expect(responses.count).to eq(1)
+          expect(responses.first.id).to eq(@response.id)
+        end
+      end
+
       context '#participant_response' do
         it 'returns the participants submitted responses' do
           expect do

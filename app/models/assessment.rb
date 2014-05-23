@@ -31,6 +31,8 @@ class Assessment < ActiveRecord::Base
 	has_many :participants, dependent: :destroy
 	has_many :messages, dependent: :destroy
 	has_many :categories, through: :questions
+
+	has_many :users, through: :participants
 	accepts_nested_attributes_for :participants, allow_destroy: true
 
 	attr_accessor :add_participants
@@ -91,6 +93,12 @@ class Assessment < ActiveRecord::Base
 	def consensus_score(question_id)
 		self.response.present? ? Score.where(question_id: question_id, response_id: self.response.id).first.value : nil
 	end
+
+  def responses(user)
+    participant = participants.find_by(user: user) 
+    return [] unless participant
+    [participant.response].compact
+  end
 
 	## methods for participants
   #TODO: extract

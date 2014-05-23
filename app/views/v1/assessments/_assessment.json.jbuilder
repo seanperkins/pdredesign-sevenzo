@@ -23,6 +23,10 @@ json.messages assessment.messages, :id, :category, :teaser, :sent_at do |message
   json.sent_at  message.sent_at
 end
 
+json.responses assessment.responses(current_user) do |response|
+  json.id response.id
+end
+
 json.participants assessment.participants do |participant|
   json.partial! 'v1/shared/participant', participant: participant
 end
