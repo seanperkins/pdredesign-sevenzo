@@ -132,6 +132,16 @@ describe V1::AssessmentsController do
       expect(assessments.count).to eq(1)
     end
 
+    it 'returns the current users responses' do
+      response = Response.create(responder_id:   @participant.id,
+                                 responder_type: 'Participant',
+                                 rubric: @rubric) 
+      sign_in @user
+      get :index
+      json_response = json.first["responses"].first
+      expect(json_response["id"]).to eq(response.id)
+    end
+
   end
 
   context '#show' do
