@@ -18,6 +18,11 @@ describe V1::ResponsesController do
       create_struct
     end
 
+    it 'assigns rubric' do
+      get :show, assessment_id: assessment.id, id: 42
+      expect(assigns(:rubric)[:id]).to eq(@rubric.id)
+    end
+
     it 'shows a users response' do
       get :show, assessment_id: assessment.id, id: 42
       expect(json["id"]).to eq(42)

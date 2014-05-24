@@ -20,7 +20,7 @@ class Response < ActiveRecord::Base
 	belongs_to :rubric
 
 	has_many :questions, through: :rubric
-	has_many :categories, -> { uniq }, through: :questions
+  has_many :categories, -> { uniq.order('id ASC') }, through: :questions
 
 	has_many :scores, dependent: :destroy
 	has_many :feedbacks, dependent: :destroy
