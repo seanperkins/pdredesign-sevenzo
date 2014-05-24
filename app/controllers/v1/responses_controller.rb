@@ -10,6 +10,7 @@ class V1::ResponsesController < ApplicationController
 
   def show
     @response   = Response.find(params[:id])
+    @rubric     = assessment.rubric
     @categories = @response.categories
     authorize_action_for @response
   end

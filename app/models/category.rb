@@ -12,4 +12,10 @@
 class Category < ActiveRecord::Base
   belongs_to :axis
 	has_many :questions
+
+	def rubric_questions(rubric)
+    Question
+      .includes(:rubrics)
+      .where(category: self, rubrics: { id: rubric.id })
+  end
 end
