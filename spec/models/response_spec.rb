@@ -30,7 +30,7 @@ describe Response do
       3.times { rubric.questions.create!(category: category2) }
       3.times { rubric.questions.create!(category: category3) }
 
-      names = response.categories.pluck(:name)
+      names = response.categories.pluck(:id, :name).map(&:last)
       %w(first second third).each do |name|
         expect(names).to include(name)
       end
