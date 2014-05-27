@@ -59,4 +59,25 @@ describe V1::ScoresController do
     end
   end
 
+  context '#index' do
+    it 'gives a list of scores for each question' do
+      get :index, assessment_id: assessment.id,
+                  response_id: 99
+
+      expect(json.count).to eq(9)
+    end
+
+    it 'gives a score for each question' do
+      question = Question.first
+      score = Score.create(response_id: 99, 
+        question_id: question.id, 
+        value: 2, 
+        evidence: 'test')
+
+      get :index, assessment_id: assessment.id,
+                  response_id: 99
+      first = json.detect { |q| q["id"] == question.id } 
+      expect(first["score"]["id"]).to eq(score.id)
+    end
+  end
 end

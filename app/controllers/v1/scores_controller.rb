@@ -12,6 +12,18 @@ class V1::ScoresController < ApplicationController
     render nothing: true
   end
 
+  def index
+    @rubric        = assessment.rubric
+    @user_response = user_response
+    @questions = []
+    
+    user_response.categories.each do |category|
+      category.rubric_questions(@rubric).each do |question| 
+        @questions << question
+      end
+    end
+  end
+
   private
   def find_or_initialize
     Score.find_or_initialize_by(
