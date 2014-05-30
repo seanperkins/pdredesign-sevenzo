@@ -83,12 +83,26 @@ class Assessment < ActiveRecord::Base
 	end
 
 	def modal_score(question_id)
-		begin;DescriptiveStatistics::Stats.new(Score.where(question_id: question_id, response_id: self.participant_responses.pluck(:id)).pluck(:value)).mode;rescue;end
+	  descriptive_stats(scores(question_id)).mode
+  rescue
 	end
 
 	def variance(question_id)
-		begin;DescriptiveStatistics::Stats.new(Score.where(question_id: question_id, response_id: self.participant_responses.pluck(:id)).pluck(:value)).variance;rescue;end
+	  descriptive_stats(scores(question_id)).variance
+  rescue
 	end
+
+  def descriptive_stats(scores)
+		DescriptiveStatistics::Stats
+		  .new(scores)
+  end
+
+	def scores(question_id)
+    Score
+      .where(question_id: question_id, 
+             response_id: participant_responses.pluck(:id))
+      .pluck(:value)
+  end
 
 	def consensus_score(question_id)
 		self.response.present? ? Score.where(question_id: question_id, response_id: self.response.id).first.value : nil
@@ -123,105 +137,13 @@ class Assessment < ActiveRecord::Base
 		               responder: participants)
   end
 
-	## This object is used for the consensus response as well as the individual show page
-	## It is stored in memcache so that it can be served up quicker than now
-	## It is also updated/created every time that a participant submits (or updates a submitted) response
-
-	def consensus_object
-		Rails.cache.fetch("assessment_#{self.id}_consensus_object") do
-			self.create_consensus_object
-		end
-	end
-
-	def create_consensus_object
-		object = {}
-		
-		self.rubric.questions.each do |question|
-      object[question.id] = {}
-      object[question.id][:mode] = self.modal_score(question.id)
-      object[question.id][:variance] = self.variance(question.id)
-      
-      object[question.id][:scores] = []
-      Score.where(question_id: question.id, response_id: self.participant_responses.pluck(:id)).where("evidence IS NOT NULL").each do |score|
-        tscore = {}
-        tscore[:score] = score
-        tscore[:user] = score.response.responder.user
-
-        object[question.id][:scores].push(tscore)
-      end
-
-      object[question.id][:counts] = {}
-      question.answers.each do |answer|
-        object[question.id][:counts][answer.value] = self.score_count(question.id, answer.value)
-      end
-    end
-
-    return object		
-	end
-
-	def cache_consensus_object
-		cob = self.create_consensus_object
-		Rails.cache.write("assessment_#{self.id}_consensus_object", cob)
-	end
-	handle_asynchronously :cache_consensus_object
-
 	
-	## These methods calculate (in real time) the strengths & limitations of the district per the assessments results
-	## TODO: Store these in the cache so that the page doesn't take so long to load
-
-	def scores_by_category
-		unless self.participant_responses.empty?
-			ranked_by_category = {}
-			category_ids = self.rubric.questions.pluck(:category_id).uniq
-			response_ids = self.participant_responses.pluck(:id)
-
-			category_ids.each do |category_id|
-				scores = DescriptiveStatistics::Stats.new(Score.includes(:question).where(response_id: response_ids, questions: {category_id: category_id}).where("value > ?", 0).pluck(:value))
-				ranked_by_category[Category.find(category_id)] = scores.mean unless scores.empty?
-			end
-
-			return ranked_by_category.sort_by{ |k, v| v }.reverse
-		end
-	end
-
-	def consensus_by_category
-		if self.response.present? && self.response.submitted_at.present?
-			ranked_by_category = {}
-			category_ids = self.rubric.questions.pluck(:category_id).uniq
-
-			category_ids.each do |category_id|
-				scores = DescriptiveStatistics::Stats.new(Score.includes(:question).where(response_id: self.response.id, questions: {category_id: category_id}).where("value > ?", 0).pluck(:value))
-				ranked_by_category[Category.find(category_id)] = scores.mean unless scores.empty?
-			end
-
-			return ranked_by_category.sort_by{ |k, v| v }.reverse
-		end
-	end
-	
-	## Store Message HTML
-	## This grabs the message content from Mandrill using the API
-	## and stores it in the DB if the content exists, otherwise it runs again in ten minutes
-	## this will continue until we are able to grab the data from Mandrill every ten minutes
-	def store_message_html
-		if self.mandrill_html.nil?
-    	mandrill = Mandrill::API.new(ENV['MANDRILL_APIKEY'])
-    	mandrill_response = mandrill.messages.content(self.mandrill_id)
-    	self.update_column(:mandrill_html, mandrill_response['html']) if mandrill_response.present?
-    end
-  rescue
-  	self.store_message_html
-	end
-	handle_asynchronously :store_message_html, run_at: Proc.new { 10.minutes.from_now }
-	
-	## METHOD TO GET ALL CONSENSUS RESPONSES FOR PARTICULAR USER
 	def consensus_responses
 		self
 		  .includes(:response)
 		  .where("responses.responder_type = 'Assessment' AND responses.submitted_at IS NOT NULL")
 		  .references(:responses)
 	end
-
-	## CLASS METHODS!
 
 	def self.consensus_responses
 		Assessment
