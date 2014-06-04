@@ -1,8 +1,20 @@
 class V1::UserController < ApplicationController
-  before_action :authenticate_user!
+  before_action :authenticate_user!, except: :create
 
   def show
     render partial: 'v1/shared/user', locals: { user: current_user }
+  end
+
+  def create
+    @user = User.new(user_params)
+    @user.role = params[:role] || :member
+
+    if @user.save
+      render status: 200, nothing: true
+    else
+      @errors = @user.errors
+      render 'v1/shared/errors', status: 422
+    end
   end
 
   def update
