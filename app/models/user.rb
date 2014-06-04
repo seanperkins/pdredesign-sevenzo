@@ -44,6 +44,7 @@ class User < ActiveRecord::Base
   has_and_belongs_to_many :districts
   
   mount_uploader :avatar, AvatarUploader
+
   attr_accessor :invited_assessment
   has_many :invitations, class_name: self.to_s, as: :invited_by
 
@@ -56,9 +57,8 @@ class User < ActiveRecord::Base
   end
 
   def has_districts?
-    unless self.admin?
-      errors.add :district_ids, "You must select at least one school district." if self.districts.empty?
-    end
+    return if self.admin?
+    errors.add :district_ids, "You must select at least one school district." if self.districts.empty?
   end
 
   def name
