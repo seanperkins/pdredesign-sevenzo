@@ -51,9 +51,10 @@ class V1::AssessmentsController < ApplicationController
   end
 
   def welcome_message
-    OpenStruct.new(category: "welcome", 
-                sent_at:  assessment.updated_at,
-                content:  assessment.message)
+    OpenStruct.new(id: nil,
+      category: "welcome", 
+      sent_at:  assessment.updated_at,
+      teaser:  assessment.message)
   end
 
   def assessment_create_params
