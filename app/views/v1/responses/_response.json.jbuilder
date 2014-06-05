@@ -1,2 +1,2 @@
-json.id @response.id
-json.scores @response.scores
+json.id           @response.id
+json.scores       @response.scores

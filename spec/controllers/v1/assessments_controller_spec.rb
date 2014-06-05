@@ -142,6 +142,18 @@ describe V1::AssessmentsController do
       expect(json_response["id"]).to eq(response.id)
     end
 
+    it 'returns a consensus_id if present' do
+      consensus = Response.create(responder_id:   @assessment_with_participants.id,
+                                  responder_type: 'Assessment',
+                                  rubric: @rubric) 
+      sign_in @user
+      get :index
+
+      json_response = json.first
+      expect(json_response["consensus_id"]).to eq(consensus.id)
+
+    end
+
   end
 
   context '#show' do
@@ -199,7 +211,5 @@ describe V1::AssessmentsController do
       expect(json["id"]).not_to be_nil
 
     end
-
- 
   end
 end

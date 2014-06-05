@@ -114,6 +114,36 @@ describe Assessment do
       expect(@assessment.status).to eq(:assessment)
     end
   end
+  
+  context '#all_scores' do
+    before { create_magic_assessments }
+    before do
+      create_struct
+      Response
+        .find(99)
+        .update(responder: @participant, submitted_at: Time.now)
+    end
+
+    it 'returns all the scores for an assessment' do
+      expect(@assessment_with_participants.all_scores.count).to eq(3)
+    end
+
+    it 'does not count Assessment scores' do
+      Response.create(responder_id:   @assessment_with_participants.id,
+                      responder_type: 'Assessment',
+                      submitted_at: Time.now,
+                      id: 42)
+
+      expect(@assessment_with_participants.all_scores.count).to eq(3)
+    end
+
+    context '#scores' do
+      it 'returns scores for a particular question id' do
+        question = Question.find_by(headline: "headline 1")
+        expect(@assessment_with_participants.scores(question.id).count).to eq(1)
+      end
+    end
+  end
 
   context 'with data' do
     before { create_magic_assessments }
@@ -130,6 +160,28 @@ describe Assessment do
 
         expect(records.count).to eq(1)
         expect(records.first.name).to eq('Assessment other')
+      end
+    end
+
+    context 'with consensus' do
+      before do 
+        @consensus = Response
+          .create(responder_type: 'Assessment', 
+                  responder: @assessment_with_participants)
+
+      end
+
+      context '#consensus' do
+        it 'returns the consensus' do
+          consensus = @assessment_with_participants.consensus
+          expect(consensus.id).to eq(@consensus.id)
+        end
+
+        it 'returns nil whne consensus is not present' do
+          @consensus.destroy
+          consensus = @assessment_with_participants.consensus
+          expect(consensus).to eq(nil)
+        end
       end
     end
 

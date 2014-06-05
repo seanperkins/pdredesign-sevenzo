@@ -6,6 +6,7 @@ class ResponseAuthorizer < ApplicationAuthorizer
 
   def readable_by?(user)
     return false unless resource.responder
+    return true  if resource.responder_type == 'Assessment'
     resource.responder.user_id == user.id
   end
 end

@@ -84,24 +84,40 @@ class Assessment < ActiveRecord::Base
 
 	def modal_score(question_id)
 	  descriptive_stats(scores(question_id)).mode
-  rescue
 	end
 
 	def variance(question_id)
-	  descriptive_stats(scores(question_id)).variance
-  rescue
+    descriptive_stats(scores(question_id)).variance.tap do |v|
+      return 0.0 if v.nil? || v.nan?
+    end
 	end
+
+	def consensus
+    Response
+      .find_by(responder_id: id, responder_type: 'Assessment')
+  end
 
   def descriptive_stats(scores)
 		DescriptiveStatistics::Stats
 		  .new(scores)
   end
 
-	def scores(question_id)
+  def all_scores
     Score
-      .where(question_id: question_id, 
-             response_id: participant_responses.pluck(:id))
+      .where(response_id: participant_responses.pluck(:id))
+      .where.not(value: nil)
+  end
+
+  def response_scores
+    Score
+      .where(response_id: all_participant_responses.pluck(:id))
+  end
+
+	def scores(question_id)
+    response_scores
+      .where(question_id: question_id)
       .pluck(:value)
+      .compact
   end
 
 	def consensus_score(question_id)
