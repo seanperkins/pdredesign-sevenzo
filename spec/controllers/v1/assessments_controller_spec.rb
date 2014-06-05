@@ -142,18 +142,20 @@ describe V1::AssessmentsController do
       expect(json_response["id"]).to eq(response.id)
     end
 
-    it 'returns a consensus_id if present' do
+    it 'returns a consensus_id and submitted_at if present' do
+      time = Time.now
       consensus = Response.create(responder_id:   @assessment_with_participants.id,
                                   responder_type: 'Assessment',
-                                  rubric: @rubric) 
+                                  rubric: @rubric,
+                                  submitted_at: time) 
       sign_in @user
       get :index
 
       json_response = json.first
-      expect(json_response["consensus_id"]).to eq(consensus.id)
+      expect(json_response["consensus"]["id"]).to eq(consensus.id)
+      expect(json_response["consensus"]["submitted_at"]).not_to be_nil
 
     end
-
   end
 
   context '#show' do
@@ -169,7 +171,7 @@ describe V1::AssessmentsController do
 
       expect(messages.count).to eq(1)
       expect(messages.first.category).to    eq("welcome")
-      expect(messages.first.content).to     eq("welcome content")
+      expect(messages.first.teaser).to     eq("welcome content")
       expect(messages.first.sent_at).not_to be_nil
     end
   end

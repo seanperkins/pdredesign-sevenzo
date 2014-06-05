@@ -8,7 +8,12 @@ json.created_at        assessment.created_at
 json.status            assessment.status
 json.rubric_id         assessment.rubric_id
 json.message           assessment.message
-json.consensus_id      (assessment.consensus && assessment.consensus.id)
+
+json.consensus do
+  json.id           assessment.consensus.id
+  json.submitted_at assessment.consensus.submitted_at
+end if assessment.consensus
+
 
 json.participant_count   assessment.participants.count
 json.percent_completed   assessment.percent_completed
@@ -16,7 +21,7 @@ json.completed_responses assessment.participant_responses.count
 
 json.partial! 'overview', overview: @overview if @overview
 
-json.messages assessment.messages, :id, :category, :teaser, :sent_at do |message|
+json.messages @messages, :id, :category, :teaser, :sent_at do |message|
   json.id       message.id 
   json.category message.category
   json.teaser   sanitize(message.teaser, tags: [])
