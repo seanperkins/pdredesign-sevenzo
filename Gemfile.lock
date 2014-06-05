@@ -1,6 +1,5 @@
-GIT
-  remote: https://cf91ac52033be9b3a1d81b413955d22ab80c45e8:x-oauth-basic@github.com/MobilityLabs/pdr-client.git
-  revision: 3f1d108fcb365b6d2a866dd2e4cb260bec8fb404
+PATH
+  remote: ../pdr-client
   specs:
     pdr_client (1.0.0)
       angular-rails-templates
@@ -96,6 +95,7 @@ GEM
     delayed_job_active_record (4.0.1)
       activerecord (>= 3.0, < 4.2)
       delayed_job (>= 3.0, < 4.1)
+    descriptive-statistics (2.1.2)
     devise (3.2.4)
       bcrypt (~> 3.0)
       orm_adapter (~> 0.1)
@@ -340,6 +340,7 @@ DEPENDENCIES
   binding_of_caller
   carrierwave
   delayed_job_active_record
+  descriptive-statistics
   devise (~> 3.2)
   devise_invitable
   dotenv-rails

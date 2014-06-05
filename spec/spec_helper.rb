@@ -75,7 +75,7 @@ def create_struct
     4.times do |value|
       Answer.create!(question: question, value: value+1, content: 'some content')
     end
-    Score.create!(question: question, response: response, evidence: "expected")
+    Score.create!(question: question, response: response, evidence: "expected", value: 1)
   end
 
   3.times { rubric.questions.create!(category: category2) }

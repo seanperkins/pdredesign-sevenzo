@@ -38,6 +38,18 @@ describe Response do
 
   end
 
+  context '#is_consensus' do
+    it 'returns true when consensus' do
+      response = Response.new(responder_type: 'Assessment')
+      expect(response.is_consensus?).to eq(true)
+    end 
+
+    it 'returns false when consensus' do
+      response = Response.new(responder_type: 'Participant')
+      expect(response.is_consensus?).to eq(false)
+    end 
+  end
+
   context 'filters' do
     it 'updates the meeting date to now when response type is Assessment' do
       responder = Participant.create!(user_id: 1)

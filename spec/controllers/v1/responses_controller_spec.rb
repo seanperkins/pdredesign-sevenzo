@@ -34,6 +34,7 @@ describe V1::ResponsesController do
       assert_response :forbidden
     end
 
+
     it 'returns the category => question => score struct' do
       get :show, assessment_id: assessment.id, id: 99
 

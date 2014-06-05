@@ -35,6 +35,10 @@ class Response < ActiveRecord::Base
     end
   end
 
+  def is_consensus?
+    responder_type == 'Assessment'
+  end
+
 	def completed?
     submitted_at.present?
 	end
