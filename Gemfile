@@ -33,7 +33,8 @@ gem 'pdr_client', git: 'https://cf91ac52033be9b3a1d81b413955d22ab80c45e8:x-oauth
 
 group :development, :test do
   gem 'dotenv-rails'
-  gem 'rspec-rails', '~> 3.0.0.beta'
+  gem 'rspec-rails', '~> 3.0.1'
+  gem 'rspec-collection_matchers'
   gem 'spring-commands-rspec'
   gem 'pry'
   gem 'better_errors'
