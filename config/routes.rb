@@ -12,6 +12,8 @@ PdrServer::Application.routes.draw do
     resources  :rubrics, only: :index
     resources  :prospective_users, only: :create
     resources  :assessments, only: [:index, :show, :update, :create] do
+      get 'report', to: 'report#show'
+      resources :priorities, only: [:create, :index]
       resources :participants, except: [:update, :show]
       resources :consensus, except: [:delete, :index]
       resources :responses, except: [:delete] do

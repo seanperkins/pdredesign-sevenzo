@@ -64,8 +64,9 @@ def create_struct
     rubric: rubric,
     id: 99)
 
-  category1 = Category.create!(name: "first")
-  category2 = Category.create!(name: "second")
+  axis      = Axis.create!(name: 'something')
+  category1 = Category.create!(name: "first", axis: axis)
+  category2 = Category.create!(name: "second", axis: axis)
   category3 = Category.create!(name: "third")
 
   3.times do |i|
@@ -82,6 +83,37 @@ def create_struct
   3.times { rubric.questions.create!(category: category3) }
 end
 
+
+def create_responses
+  response1    = Response.create(
+    responder_type: 'Participant',
+    responder_id:   @participant.id,
+    submitted_at: Time.now)
+
+  response2    = Response.create(
+    responder_type: 'Participant',
+    responder_id:   @participant2.id,
+    submitted_at: Time.now)
+
+  category1  = Category.create(name: "Some cat1")
+  category2  = Category.create(name: "Some cat2")
+  category3  = Category.create(name: "Some cat3")
+  question1  = Question.create(category: category1)
+  question2  = Question.create(category: category2)
+  question3  = Question.create(category: category3)
+
+  Score.create(value: 1, 
+               response_id: response1.id, 
+               question: question1)
+
+  Score.create(value: 3, 
+               response_id: response2.id, 
+               question: question2)
+
+  Score.create(value: nil, 
+               response_id: response2.id, 
+               question: question3)
+end
 
 def create_magic_assessments
   @district     = District.create!

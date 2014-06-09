@@ -14,23 +14,7 @@ class V1::ResponsesController < ApplicationController
     @categories = @response.categories
     authorize_action_for @response
   end
-
-  def score_for(response, question)
-    scores(response)
-      .find_by(question: question)
-  end
-
-  private
-  def scores(response)
-    @scores ||= Score.where(response: response)
-  end
-
-  def create_empty_scores(response)
-    response.questions.each do |question|
-      response.scores.create!(question: question)
-    end
-  end
-
+ 
   def response_by(options)
     options = { responder_type: 'Participant' }.merge(options) 
     Response.find_or_initialize_by(options)
