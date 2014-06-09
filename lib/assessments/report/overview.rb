@@ -8,25 +8,33 @@ module Assessments
         @assessment = assessment
       end
 
-      def strengths
-        average_scores.keys
-      end
-
-      def limitations 
-        average_scores.keys.reverse
-      end
-
       def average_scores
-        Score
-          .joins(question: :category)
-          .where(response_id: response_ids)
-          .where.not(value: nil)
-          .group("categories.name")
-          .order("average_value DESC")
+        categories
           .average(:value)
+      end
+    
+      def categories_by_average
+        categories
+          .group("categories.id")
+          .average(:value)
+          .map do |category|
+            new_category = {}
+            new_category[:name]    = category[0][0]
+            new_category[:id]      = category[0][1]
+            new_category[:average] = category[1] || 0
+            new_category
+        end
       end
 
       private
+      def categories
+        Score
+          .joins(question: :category)
+          .where(response_id: response_ids)
+          .group("categories.name")
+          .order("average_value DESC")
+      end
+
       def response_ids
         return assessment.response.id if assessment.has_response? && assessment.response_submitted?
         assessment.participant_responses.pluck(:id)

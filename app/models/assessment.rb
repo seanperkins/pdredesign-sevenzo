@@ -79,7 +79,9 @@ class Assessment < ActiveRecord::Base
 	end
 
 	def score_count(question_id, value)
-		Score.where(value: value, question_id: question_id, response_id: self.participant_responses.pluck(:id)).count
+		Score.where(value: value,
+      question_id: question_id,
+      response_id: self.participant_responses.pluck(:id)).count
 	end
 
 	def modal_score(question_id)
@@ -121,7 +123,10 @@ class Assessment < ActiveRecord::Base
   end
 
 	def consensus_score(question_id)
-		self.response.present? ? Score.where(question_id: question_id, response_id: self.response.id).first.value : nil
+    return unless response
+    Score
+      .find_by(question_id: question_id,
+               response_id: self.response.id).value
 	end
 
   def responses(user)

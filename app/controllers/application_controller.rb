@@ -1,4 +1,6 @@
 class ApplicationController < ActionController::Base
+  include ScoreQuery
+
   protect_from_forgery with: :exception
 
   layout nil
