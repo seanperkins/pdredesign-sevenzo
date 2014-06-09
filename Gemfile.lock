@@ -259,6 +259,8 @@ GEM
       devise
       mime-types
       orm_adapter
+    rspec-collection_matchers (0.0.4)
+      rspec-expectations (>= 2.99.0.beta1)
     rspec-core (3.0.0)
       rspec-support (~> 3.0.0)
     rspec-expectations (3.0.0)
@@ -355,7 +357,8 @@ DEPENDENCIES
   pry
   rails (~> 4.1.0)
   rails_12factor
-  rspec-rails (~> 3.0.0.beta)
+  rspec-collection_matchers
+  rspec-rails (~> 3.0.1)
   sass-rails (~> 4.0.2)
   shoulda-matchers
   spring-commands-rspec
