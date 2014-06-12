@@ -16,6 +16,7 @@ class Question < ActiveRecord::Base
 	has_one :axis, through: :category
 
 	has_many :answers
+	has_many :scores
 	has_many :feedbacks
 
 	has_and_belongs_to_many :rubrics

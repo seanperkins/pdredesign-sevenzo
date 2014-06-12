@@ -10,7 +10,6 @@ class V1::AssessmentsController < ApplicationController
     @assessment = assessment
     authorize_action_for @assessment
     @messages   = messages
-    @overview   = Assessments::Report::Overview.new(@assessment)
   end
 
   def update
