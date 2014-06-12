@@ -50,16 +50,18 @@ describe V1::PrioritiesController do
 
   context '#index' do
     before do
-      create_struct
-      create_responses
+      expect(controller).to receive(:categories)
+        .and_return(fake_categories)
+    end
 
-      @cat1 = Category.find_by(name: 'Some cat1')
-      @cat2 = Category.find_by(name: 'Some cat2')
-      @cat3 = Category.find_by(name: 'Some cat3')
-
-      @priority = Priority
-        .create!(order: [@cat2.id, @cat1.id],
-                 assessment: assessment)   
+    def fake_categories
+      [{ id:   1, 
+         name: 'Some cat2',
+         average: 3.0 },
+       { id:   2, 
+        name: 'Some cat1',
+        average: 3.0 }
+      ]
     end
 
     it 'gets the order of the priority' do
@@ -73,19 +75,11 @@ describe V1::PrioritiesController do
       assert_response :success
       expect(json[0]["name"]).to eq('Some cat2')
       expect(json[0]["order"]).to eq(1)
-      expect(json[0]["average"]).to eq("3.0")
+      expect(json[0]["average"]).to eq(3.0)
       expect(json[0]["diagnostic_min"]).to eq(2)
 
       expect(json[1]["name"]).to eq('Some cat1')
     end
-
-    it 'returns order by average score when no priority' do
-      @priority.delete 
-      get :index, assessment_id: assessment.id
-
-      expect(json[0]["name"]).to eq('Some cat3')
-    end
-
   end
 end
 

@@ -99,9 +99,10 @@ def create_responses
   category1  = Category.create(name: "Some cat1")
   category2  = Category.create(name: "Some cat2")
   category3  = Category.create(name: "Some cat3")
-  question1  = Question.create(category: category1)
-  question2  = Question.create(category: category2)
-  question3  = Question.create(category: category3)
+
+  question1  = @rubric.questions.create(category: category1)
+  question2  = @rubric.questions.create(category: category2)
+  question3  = @rubric.questions.create(category: category3)
 
   Score.create(value: 1, 
                response_id: response1.id, 

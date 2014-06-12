@@ -4,7 +4,7 @@ class V1::PrioritiesController < ApplicationController
 
   def index
     @diagnostic_min = 2
-    @categories = categories(assessment)
+    @categories     = categories
   end
   authority_actions create: :show
 
@@ -21,24 +21,10 @@ class V1::PrioritiesController < ApplicationController
 
 
   private
-  def categories(assessment)
-
-    categories = Assessments::Report::Overview
+  def categories 
+    @categories ||= Assessments::Priority
       .new(assessment)
-      .categories_by_average
-
-    priority = Priority.find_by(assessment: assessment)
-    if(priority)
-      categories = sort_by_priority(priority, categories)
-    end
-
-    categories
-  end
-
-  def sort_by_priority(priority, categories)
-    priority.order.collect do |id|
-      categories.detect { |category| category[:id] == id}
-    end.compact
+      .categories
   end
 
   def find_or_initialize(assessment)

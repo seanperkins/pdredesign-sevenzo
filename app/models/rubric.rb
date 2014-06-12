@@ -16,8 +16,10 @@ class Rubric < ActiveRecord::Base
 	has_many :assessments
 	has_many :responses, dependent: :destroy
 	has_many :feedbacks
+
 	has_and_belongs_to_many :questions
-	
+  has_many :categories, -> { uniq }, through: :questions
+
 	accepts_nested_attributes_for :questions
 
 	scope :enabled, -> { where(enabled: true) }

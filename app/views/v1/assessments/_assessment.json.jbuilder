@@ -20,8 +20,6 @@ json.participant_count   assessment.participants.count
 json.percent_completed   assessment.percent_completed
 json.completed_responses assessment.participant_responses.count
 
-json.partial! 'overview', overview: @overview if @overview
-
 json.messages @messages, :id, :category, :teaser, :sent_at do |message|
   json.id       message.id 
   json.category message.category
