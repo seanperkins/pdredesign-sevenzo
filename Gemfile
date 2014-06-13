@@ -43,6 +43,7 @@ end
 
 group :test do
   gem "codeclimate-test-reporter", require: nil
+  gem 'simplecov', '~> 0.7.1'
   gem 'shoulda-matchers', require: false
   gem 'faker'
 end
