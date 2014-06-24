@@ -1,42 +1,18 @@
 class V1::ReportController < ApplicationController
   before_action :authenticate_user!
 
+  delegate :axis_questions, to: :report
+  delegate :average, to: :report
+
   def show
     @assessment = assessment
     authorize_action_for @assessment
-    @response   = assessment_response
-    @axes       = axes
-  end
-
-  def axis_questions(response, axis)
-    response
-      .questions
-      .joins(:category)
-      .where(categories: {axis_id: axis.id})
-  end
-
-  def average(assessment, axis)
-    ids = assessment.participant_responses.pluck(:id)
-    Score
-      .joins(question: { category:  :axis })
-      .where(response_id: ids)
-      .where.not(value: nil)
-      .where("categories.axis_id = ? ", axis.id)
-      .average(:value)
+    @axes       = report.axes
   end
 
   private
-  def axes
-    axes = assessment_response
-      .questions
-      .joins(:axis)
-      .pluck(:axis_id)
-      .uniq
-    Axis.where(id: axes)
-  end
-
-  def assessment_response
-    assessment.response || Response.new
+  def report 
+    @report ||= Assessments::Report.new(assessment)
   end
 
   def assessment

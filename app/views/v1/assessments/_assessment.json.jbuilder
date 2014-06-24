@@ -1,7 +1,7 @@
 json.id                assessment.id
 json.name              assessment.name
-json.due_date          assessment.due_date
-json.meeting_date      assessment.meeting_date
+json.due_date          timestamp(assessment.due_date)
+json.meeting_date      timestamp(assessment.meeting_date)
 json.district_id       assessment.district_id
 json.updated_at        assessment.updated_at
 json.created_at        assessment.created_at
