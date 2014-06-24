@@ -32,6 +32,7 @@ module Assessments
     def member_consensus_link 
       if fully_complete?(assessment)
         return { title: "Consensus", active: true, type: :show_response }
+      end
 
       return { title: "Consensus", active: false, type: :none }
     end
@@ -57,6 +58,7 @@ module Assessments
     def report_link
       if fully_complete?(assessment)
         return { title: 'Report', active: true, type: :report}
+      end
 
       { title: 'Report', active: false , type: :report}
     end
@@ -81,6 +83,7 @@ module Assessments
     def fully_complete?(asssessment)
       assessment.has_response? && assessment.response.completed? 
     end
+
   end
 end
  
