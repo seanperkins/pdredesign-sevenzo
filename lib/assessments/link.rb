@@ -30,15 +30,15 @@ module Assessments
     end
 
     def member_consensus_link 
-      if assessment.has_response? && assessment.response.completed? 
-        { title: "Consensus", active: true, type: :show_response }
-      else
-        { title: "Consensus", active: false, type: :none }
-      end
+      if fully_complete?(assessment)
+        return { title: "Consensus", active: true, type: :show_response }
+
+      return { title: "Consensus", active: false, type: :none }
     end
 
     def consensus_link
       return member_consensus_link if role == :member
+
       if assessment.assigned?
         if assessment.has_response?
           if assessment.response.completed?
@@ -55,11 +55,10 @@ module Assessments
     end
 
     def report_link
-      if assessment.has_response? && assessment.response.completed? 
-        { title: 'Report', active: true, type: :report}
-      else
-        { title: 'Report', active: false , type: :report}
-      end
+      if fully_complete?(assessment)
+        return { title: 'Report', active: true, type: :report}
+
+      { title: 'Report', active: false , type: :report}
     end
 
     def message_link
@@ -76,6 +75,11 @@ module Assessments
       else
         { title: 'Finish & Assign', active: true, type: :finish }
       end
+    end
+
+    private 
+    def fully_complete?(asssessment)
+      assessment.has_response? && assessment.response.completed? 
     end
   end
 end
