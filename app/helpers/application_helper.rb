@@ -5,7 +5,7 @@ module ApplicationHelper
 
   def timestamp(date_time)
     return unless date_time
-    date_time.to_datetime.strftime("%Q")
+    date_time.to_datetime.strftime("%s")
   rescue
     nil
   end
