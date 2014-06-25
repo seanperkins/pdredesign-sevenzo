@@ -108,16 +108,16 @@ def create_responses
   question3  = @rubric.questions.create(category: category3)
 
   Score.create(value: 1, 
-               response_id: response1.id, 
-               question: question1)
+    response_id: response1.id, 
+    question: question1)
 
   Score.create(value: 3, 
-               response_id: response2.id, 
-               question: question2)
+    response_id: response2.id, 
+    question: question2)
 
   Score.create(value: nil, 
-               response_id: response2.id, 
-               question: question3)
+    response_id: response2.id, 
+    question: question3)
 end
 
 def create_magic_assessments

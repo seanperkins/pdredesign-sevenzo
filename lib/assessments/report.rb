@@ -7,12 +7,7 @@ module Assessments
     end
 
     def axes
-      axes = response
-        .questions
-        .joins(:axis)
-        .pluck(:axis_id)
-        .uniq
-      Axis.where(id: axes)
+      Axis.where(id: axes_ids)
     end
 
     def response
@@ -27,14 +22,27 @@ module Assessments
     end
 
     def average(axis)
-      ids = assessment.participant_responses.pluck(:id)
       Score
         .joins(question: { category:  :axis })
-        .where(response_id: ids)
+        .where(response_id: response_ids)
         .where.not(value: nil)
         .where("categories.axis_id = ? ", axis.id)
         .average(:value)
     end
 
+    private
+    def response_ids
+      assessment
+        .participant_responses
+        .pluck(:id)
+    end
+
+    def axes_ids
+      response
+        .questions
+        .joins(:axis)
+        .pluck(:axis_id)
+        .uniq
+    end
   end
 end

@@ -155,7 +155,7 @@ class Assessment < ActiveRecord::Base
 
 	def all_participant_responses
 		Response.where(responder_type: 'Participant', 
-		               responder: participants)
+		 responder: participants)
   end
 
 	
