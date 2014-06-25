@@ -15,7 +15,7 @@ gem 'devise', '~> 3.2'
 gem 'devise_invitable'
 gem 'bcrypt', '~> 3.1.7'
 gem 'activerecord-session_store'
-gem 'delayed_job_active_record'
+gem 'sidekiq'
 
 gem 'authority'
 
@@ -46,6 +46,7 @@ group :test do
   gem 'simplecov', '~> 0.7.1'
   gem 'shoulda-matchers', require: false
   gem 'faker'
+  gem 'rspec-sidekiq'
 end
 
 group :production do

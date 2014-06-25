@@ -87,7 +87,6 @@ describe V1::UserController do
 
       expect(response.status).to eq(422)
       expect(json["errors"]).to_not be_nil
-
     end
   end
 
