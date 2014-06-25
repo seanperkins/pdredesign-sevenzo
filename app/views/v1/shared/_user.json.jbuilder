@@ -8,5 +8,5 @@ json.created_at   user.created_at
 json.updated_at   user.updated_at
 json.role         user.role
 json.team_role    user.team_role
-json.avatar       image_url(user.avatar.url)
+json.avatar       image_url(user.avatar)
 json.district_ids user.district_ids

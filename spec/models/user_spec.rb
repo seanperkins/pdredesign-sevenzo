@@ -55,6 +55,27 @@ describe User do
       expect(user[:email]).to eq('someemail@stuff.com')
     end
   end
+  
+  context '#twitter' do
+    it 'queues twitter avatar update job when twitter changed' do
+      user = Application::create_sample_user(email: 'SomeEmail@stuff.com',
+        twitter: 'old_name')
+
+      TwitterAvatarWorker.jobs.clear
+      user.update(twitter: 'new_name')
+      expect(TwitterAvatarWorker.jobs.count).to eq(1)
+    end
+    
+    it 'does not queue job when twitter is not changed' do
+      user = Application::create_sample_user(email: 'SomeEmail@stuff.com',
+        twitter: 'old_name')
+
+      TwitterAvatarWorker.jobs.clear
+
+      expect(user.save).to eq(true)
+      expect(TwitterAvatarWorker.jobs.count).to eq(0)
+    end
+  end
 
   context '#name' do
     it 'returns the users fullname' do

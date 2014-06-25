@@ -42,8 +42,6 @@ class User < ActiveRecord::Base
   has_many :rubrics
   has_many :feedbacks
   has_and_belongs_to_many :districts
-  
-  mount_uploader :avatar, AvatarUploader
 
   attr_accessor :invited_assessment
   has_many :invitations, class_name: self.to_s, as: :invited_by
@@ -51,6 +49,12 @@ class User < ActiveRecord::Base
   validates :first_name, presence: true
   validates :last_name, presence: true
   validate :has_districts?
+
+  before_save :queue_avatar_updater, if: :twitter_changed?
+
+  def queue_avatar_updater
+    TwitterAvatarWorker.perform_async(id)
+  end
 
   def email=(value)
     self[:email] = value.downcase
