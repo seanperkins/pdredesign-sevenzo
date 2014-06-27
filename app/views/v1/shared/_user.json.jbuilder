@@ -10,3 +10,8 @@ json.role         user.role
 json.team_role    user.team_role
 json.avatar       image_url(user.avatar)
 json.district_ids user.district_ids
+
+json.districts do
+  json.partial! 'v1/shared/districts',
+    districts: fetch_districts(user.district_ids)
+end
