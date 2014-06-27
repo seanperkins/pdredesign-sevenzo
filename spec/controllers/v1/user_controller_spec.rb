@@ -53,6 +53,11 @@ describe V1::UserController do
       kim = User.find_by(email: 'kim@gov.nk')
       expect(kim[:role]).to eq('facilitator')
     end
+
+    it 'sends the signup notification to the user' do
+      post_create_user
+      expect(SignupNotificationWorker.jobs.count).to eq(1)
+    end
   end
 
   context '#show' do
