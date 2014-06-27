@@ -10,6 +10,7 @@ class V1::UserController < ApplicationController
     @user.role = params[:role] || :member
 
     if @user.save
+      send_notification_email
       render status: 200, nothing: true
     else
       @errors = @user.errors
@@ -28,6 +29,10 @@ class V1::UserController < ApplicationController
   end
 
   private
+  def send_notification_email
+    SignupNotificationWorker.perform_async(@user.id)
+  end
+  
   def user_params
     params
       .permit(:first_name,
