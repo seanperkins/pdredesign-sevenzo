@@ -9,4 +9,8 @@ module ApplicationHelper
   rescue
     nil
   end
+
+  def fetch_districts(district_ids)
+    District.where(id: district_ids)
+  end
 end
