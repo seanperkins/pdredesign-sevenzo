@@ -7,6 +7,7 @@ class V1::ReportController < ApplicationController
   def show
     @assessment = assessment
     authorize_action_for @assessment
+    @response   = @assessment.response
     @axes       = report.axes
   end
 

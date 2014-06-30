@@ -8,6 +8,7 @@ describe V1::ReportController do
 
   context '#show' do
     before { create_magic_assessments }
+    before { create_struct }
     before { sign_in @user2 }
     let(:assessment) { @assessment_with_participants }
 
@@ -32,11 +33,18 @@ describe V1::ReportController do
       expect(assigns(:axes)).not_to be_nil
     end 
 
+    it 'assigns response' do
+      assessment.update(response: Response.find(99))
+      get :show, assessment_id: assessment.id
+      expect(assigns(:response)).not_to be_nil
+    end
+
     it 'does not allow non-participants' do
       sign_in @user3
       get :show, assessment_id: assessment.id
       assert_response :forbidden
     end
+
   end
 
 
