@@ -7,7 +7,7 @@ json.updated_at        assessment.updated_at
 json.created_at        assessment.created_at
 json.status            assessment.status
 json.rubric_id         assessment.rubric_id
-json.message           assessment.message
+json.message           assessment.message || default_assessment_message
 json.owner             (assessment.user == current_user)
 
 json.consensus do

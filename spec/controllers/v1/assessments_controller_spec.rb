@@ -174,6 +174,13 @@ describe V1::AssessmentsController do
       expect(messages.first.teaser).to     eq("welcome content")
       expect(messages.first.sent_at).not_to be_nil
     end
+
+    it 'returns a default message when one is not assigned' do
+      assessment.update(message: nil)
+      get :show, id: assessment.id
+
+      expect(json["message"].empty?).to eq(false)
+    end
   end
 
   context '#create' do
