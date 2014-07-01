@@ -1,6 +1,6 @@
 GIT
   remote: https://cf91ac52033be9b3a1d81b413955d22ab80c45e8:x-oauth-basic@github.com/MobilityLabs/pdr-client.git
-  revision: 67598a2464ea85a6d51057ef233a70ebedcff370
+  revision: 9c3e3324e4f0e0dc8940d8796c76de40fef147a4
   specs:
     pdr_client (1.0.0)
       angular-rails-templates
@@ -19,7 +19,7 @@ GIT
       rails-assets-angular-route
       rails-assets-angular-sanitize
       rails-assets-angular-ui-router
-      rails-assets-highcharts (~> 3.0.7)
+      rails-assets-highcharts (= 3.0.7)
       rails-assets-moment
       rails-assets-momentjs
       rails-assets-underscore
@@ -233,7 +233,7 @@ GEM
       rails-assets-angular (= 1.2.18)
     rails-assets-angular-ui-router (0.2.10)
       rails-assets-angular (>= 1.0.8)
-    rails-assets-highcharts (3.0.9)
+    rails-assets-highcharts (3.0.7)
     rails-assets-jquery (2.1.1)
     rails-assets-moment (2.6.0)
     rails-assets-momentjs (2.7.0)
