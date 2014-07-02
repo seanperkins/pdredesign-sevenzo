@@ -58,6 +58,12 @@ class Assessment < ActiveRecord::Base
     :assessment
   end
 
+  def participant?(user)
+    participants
+      .where(user_id: user.id)
+      .present?
+  end
+
 	def completed?
 		percent_completed == 100
 	end

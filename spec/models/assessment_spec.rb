@@ -147,6 +147,7 @@ describe Assessment do
 
   context 'with data' do
     before { create_magic_assessments }
+    let(:assessment) { @assessment_with_participants }
 
     context '#assessments_for_user' do
       it 'returns a facilitator users assessments' do
@@ -160,6 +161,17 @@ describe Assessment do
 
         expect(records.count).to eq(1)
         expect(records.first.name).to eq('Assessment other')
+      end
+    end
+
+    context '#participant?' do
+      it 'returns true when a user is a participant of an assessment' do
+        expect(assessment.participant?(@user)).to eq(true)
+      end
+
+      it 'returns true when a user is a participant of an assessment' do
+        assessment.participants.find_by(user_id: @user.id).destroy
+        expect(assessment.participant?(@user)).to eq(false)
       end
     end
 
