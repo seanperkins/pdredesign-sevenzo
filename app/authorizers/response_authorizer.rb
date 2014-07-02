@@ -4,6 +4,10 @@ class ResponseAuthorizer < ApplicationAuthorizer
     resource.responder.user_id == user.id
   end
 
+  def updatable_by?(user)
+    resource.responder.user_id == user.id
+  end
+
   def readable_by?(user)
     return false unless resource.responder
     return true  if resource.responder_type == 'Assessment'
