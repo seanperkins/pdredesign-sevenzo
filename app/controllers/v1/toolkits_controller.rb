@@ -16,7 +16,7 @@ class V1::ToolkitsController < ApplicationController
             {
               title: 'Key Information Gathering' ,
               categories: [
-                {title: 'Readiness Assesment', url: 'test', description: 'The PD Readiness Assessment consists of 28 questions that support team engagement in a candid cross-functional discussion about PD using a common language, and the development of a shared team view to identify the elements to be strengthened or leveraged to support a PD system redesign effort.'},
+                {title: 'Readiness Assessment', url: 'test', description: 'The PD Readiness Assessment consists of 28 questions that support team engagement in a candid cross-functional discussion about PD using a common language, and the development of a shared team view to identify the elements to be strengthened or leveraged to support a PD system redesign effort.'},
                 {title: 'Initiative Inventory', url: nil}
               ]
             },
@@ -38,7 +38,7 @@ class V1::ToolkitsController < ApplicationController
             {
               title: 'Strategic Vision Articulation' ,
               categories: [
-                {title: 'Roadmap for first 100 days of PD redesign', url: nil},
+                {title: 'Roadmap for first 100 days of PDRedesign', url: nil},
               ]
             },
           ]
