@@ -14,6 +14,14 @@ class V1::ResponsesController < ApplicationController
     @categories = @response.categories
     authorize_action_for @response
   end
+
+  def update
+    @response   = Response.find(params[:id])
+    authorize_action_for @response
+
+    submit_response(@response) if response_params[:submit]
+    render nothing: true
+  end
  
   def response_by(options)
     options = { responder_type: 'Participant' }.merge(options) 
@@ -25,8 +33,18 @@ class V1::ResponsesController < ApplicationController
       assessment_id: assessment.id) || Participant.new
   end
 
+  private
+  def response_params
+    params.permit(:submit)
+  end
+
+  def submit_response(record)
+    record.update(submitted_at: Time.now)
+  end
+
   def assessment
     Assessment.find(params[:assessment_id])
   end
+
 
 end

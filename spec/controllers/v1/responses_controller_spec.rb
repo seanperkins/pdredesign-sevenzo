@@ -74,6 +74,33 @@ describe V1::ResponsesController do
 
   end
 
+  context '#update' do
+    before do
+      Response.create(responder_id:   @participant.id,
+                      responder_type: 'Participant',
+                      id: 42)
+      create_struct
+    end
+
+    it 'doesnt allow user to update' do
+      sign_in @user2
+
+      put :update, assessment_id: assessment.id, id: 42, submit: true
+      assert_response :forbidden
+    end
+
+    it 'submits consensus with the right owner' do
+      sign_in @user
+
+      put :update, assessment_id: assessment.id, id: 42, submit: true
+      response = Response.find(42)
+
+      assert_response :success
+      expect(response.submitted_at).not_to be_nil
+    end
+  end
+
+
   context '#create' do 
     it 'creates a response if non exist for a user' do
       post :create, assessment_id: assessment.id
