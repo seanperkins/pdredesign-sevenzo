@@ -27,6 +27,8 @@ json.messages @messages, :id, :category, :teaser, :sent_at do |message|
   json.sent_at  message.sent_at
 end
 
+json.is_participant assessment.participant?(current_user)
+
 json.responses assessment.responses(current_user) do |response|
   json.id response.id
 end

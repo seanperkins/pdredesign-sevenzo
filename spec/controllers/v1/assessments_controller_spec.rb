@@ -142,6 +142,14 @@ describe V1::AssessmentsController do
       expect(json_response["id"]).to eq(response.id)
     end
 
+    it 'returns is_participant if current_user is a participant' do
+      sign_in @user
+      get :index
+
+      expect(json.first["is_participant"]).to eq(true)
+    end
+
+
     it 'returns a consensus_id and submitted_at if present' do
       time = Time.now
       consensus = Response.create(responder_id:   @assessment_with_participants.id,
