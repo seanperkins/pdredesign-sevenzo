@@ -6,6 +6,8 @@ class V1::InvitationsController < ApplicationController
     sign_in(:user, invited_user)
 
     invited_user.update(permitted_params)
+    invitation.destroy
+
     status 200
   end
 

@@ -35,21 +35,21 @@ describe V1::InvitationsController do
 
     describe '#redeem' do
       it 'authorizes a user if they already have an account' do
-        get :redeem, token: 'expected_token'
+        post :redeem, token: 'expected_token'
         expect(warden.authenticated?(:user)).to eq(true)
       end
 
       it 'gives a 401 when a user does exist' do
         @user.delete
 
-        get :redeem, token: 'expected_token'
+        post :redeem, token: 'expected_token'
         expect(warden.authenticated?(:user)).to eq(false)
 
         assert_response :unauthorized
       end
 
       it 'allows an update for the users information' do
-        get :redeem,
+        post :redeem,
           token:      'expected_token',
           first_name: 'new',
           last_name:  'user',
@@ -65,7 +65,7 @@ describe V1::InvitationsController do
       end
 
       it 'allows an update to set the users password' do
-        get :redeem,
+        post :redeem,
           token:      'expected_token',
           password:   'some_password'
 
@@ -74,6 +74,15 @@ describe V1::InvitationsController do
         user = User.find_for_database_authentication(email: @user.email)
         expect(user.valid_password?('some_password')).to eq(true)
       end
+
+      it 'deletes the invitation once it has been redeemed' do
+        post :redeem,
+          token:      'expected_token',
+          password:   'some_password'
+
+        expect(UserInvitation.find_by(token: 'expected_token')).to be_nil
+      end
+
     end
   end
 
