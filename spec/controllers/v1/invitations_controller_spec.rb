@@ -23,45 +23,57 @@ describe V1::InvitationsController do
                  token: 'expected_token')
     end
 
-    it 'authorizes a user if they already have an account' do
-      get :redeem, token: 'expected_token'
-      expect(warden.authenticated?(:user)).to eq(true)
+    describe '#show' do
+      it 'shows the invitation by the token' do
+        get :show, token: 'expected_token'
+        assert_response :success
+
+        expect(json["token"]).to be_nil
+        expect(json["email"]).to eq(@user.email)
+      end
     end
 
-    it 'gives a 401 when a user does exist' do
-      @user.delete
+    describe '#redeem' do
+      it 'authorizes a user if they already have an account' do
+        get :redeem, token: 'expected_token'
+        expect(warden.authenticated?(:user)).to eq(true)
+      end
 
-      get :redeem, token: 'expected_token'
-      expect(warden.authenticated?(:user)).to eq(false)
+      it 'gives a 401 when a user does exist' do
+        @user.delete
 
-      assert_response :unauthorized
-    end
+        get :redeem, token: 'expected_token'
+        expect(warden.authenticated?(:user)).to eq(false)
 
-    it 'allows an update for the users information' do
-      get :redeem,
-        token:      'expected_token',
-        first_name: 'new',
-        last_name:  'user',
-        email:      'some_other@email.com'
+        assert_response :unauthorized
+      end
 
-      assert_response :success
+      it 'allows an update for the users information' do
+        get :redeem,
+          token:      'expected_token',
+          first_name: 'new',
+          last_name:  'user',
+          email:      'some_other@email.com'
 
-      @user.reload
+        assert_response :success
 
-      expect(@user.first_name).to eq('new')
-      expect(@user.last_name).to eq('user')
-      expect(@user.email).to eq('some_other@email.com')
-    end
+        @user.reload
 
-    it 'allows an update to set the users password' do
-      get :redeem,
-        token:      'expected_token',
-        password:   'some_password'
+        expect(@user.first_name).to eq('new')
+        expect(@user.last_name).to eq('user')
+        expect(@user.email).to eq('some_other@email.com')
+      end
 
-      assert_response :success
+      it 'allows an update to set the users password' do
+        get :redeem,
+          token:      'expected_token',
+          password:   'some_password'
 
-      user = User.find_for_database_authentication(email: @user.email)
-      expect(user.valid_password?('some_password')).to eq(true)
+        assert_response :success
+
+        user = User.find_for_database_authentication(email: @user.email)
+        expect(user.valid_password?('some_password')).to eq(true)
+      end
     end
   end
 

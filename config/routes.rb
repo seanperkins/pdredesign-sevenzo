@@ -28,6 +28,8 @@ PdrServer::Application.routes.draw do
     post 'user', to: 'user#create'
 
     get  'districts/search',  to: 'districts#search'
+    
     post 'invitation/:token', to: 'invitations#redeem'
+    get  'invitation/:token', to: 'invitations#show'
   end
 end
