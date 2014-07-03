@@ -29,7 +29,7 @@ PdrServer::Application.routes.draw do
 
     get  'districts/search',  to: 'districts#search'
     
-    post 'invitation/:token', to: 'invitations#redeem'
-    get  'invitation/:token', to: 'invitations#show'
+    post 'invitations/:token', to: 'invitations#redeem'
+    get  'invitations/:token', to: 'invitations#show'
   end
 end
