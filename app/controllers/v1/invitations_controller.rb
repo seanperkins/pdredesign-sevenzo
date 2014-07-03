@@ -9,6 +9,13 @@ class V1::InvitationsController < ApplicationController
     status 200
   end
 
+  def show
+    not_found    and return unless invitation
+    unauthorized and return unless invited_user
+
+    render partial: 'v1/shared/user', locals: { user: invited_user }
+  end
+
   private
   def permitted_params
     params.permit :first_name, 
