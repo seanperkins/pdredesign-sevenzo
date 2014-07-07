@@ -1,3 +1,17 @@
+# == Schema Information
+#
+# Table name: responses
+#
+#  id                   :integer          not null, primary key
+#  responder_id         :integer
+#  responder_type       :string(255)
+#  rubric_id            :integer
+#  submitted_at         :datetime
+#  created_at           :datetime
+#  updated_at           :datetime
+#  notification_sent_at :datetime
+#
+
 require 'spec_helper'
 
 describe Response do
