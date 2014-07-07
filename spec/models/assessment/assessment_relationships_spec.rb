@@ -29,6 +29,30 @@ describe Assessment do
     end
   end
 
+  describe 'network partner' do 
+
+    it 'can assign network partners to an assessment' do
+      first  = Application::create_sample_user
+      second = Application::create_sample_user
+  
+      assessment.update(network_partners: [first, second])
+
+      expect(assessment.network_partner_ids).to include(first.id)
+      expect(assessment.network_partner_ids).to include(second.id)
+    end
+
+    context '#network_partner?' do
+      it 'returns if a user is a facilitator for an assessment' do
+        partner = Application::create_sample_user
+
+        expect(assessment.network_partner?(partner)).to eq(false)
+
+        assessment.update(network_partners: [partner])
+        expect(assessment.network_partner?(partner)).to eq(true)
+      end
+    end
+  end
+
   describe 'viewers' do
 
     it 'can assign facilitators to an assessment' do
