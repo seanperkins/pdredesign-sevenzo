@@ -41,7 +41,9 @@ class User < ActiveRecord::Base
   has_many :participants
   has_many :rubrics
   has_many :feedbacks
+
   has_and_belongs_to_many :districts
+  has_and_belongs_to_many :assessments
 
   attr_accessor :invited_assessment
   has_many :invitations, class_name: self.to_s, as: :invited_by
