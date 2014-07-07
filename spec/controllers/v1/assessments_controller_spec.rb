@@ -93,9 +93,11 @@ describe V1::AssessmentsController do
         assert_response :forbidden
       end
 
-      it 'allows a facilitator from the same district' do
-        user = Application::create_sample_user(districts: [@district2])
-        sign_in user
+      it 'allows a facilitator on the assessment' do
+        facilitator = Application::create_sample_user(districts: [@district2])
+        sign_in facilitator 
+        
+        assessment.update(facilitators: [facilitator])
 
         get :show, id: assessment.id
         assert_response :success
@@ -194,11 +196,10 @@ describe V1::AssessmentsController do
   context '#create' do
     before { create_magic_assessments }
     before { sign_in @facilitator }
+    let(:assessment) { @assessment_with_participants }
 
-    it 'does not allow non-facilitators to create an assessment' do
-      sign_in @user  
-      post :create, name: 'some assessment'
-      assert_response :forbidden
+    before do 
+      assessment.update(facilitators: [@facilitator])
     end
 
     it 'allows a facilitator to create an assessment' do

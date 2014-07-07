@@ -8,7 +8,7 @@ class AssessmentAuthorizer < ApplicationAuthorizer
   end
 
   def creatable_by?(user)
-    facilitator?(user)
+    true
   end
 
   def updatable_by?(user)
@@ -16,7 +16,7 @@ class AssessmentAuthorizer < ApplicationAuthorizer
   end
 
   def deletable_by?(user)
-    owner?(user)
+    facilitator?(user) || owner?(user)
   end
 
   def participants_listable_by?(user)
