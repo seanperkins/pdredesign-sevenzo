@@ -1,3 +1,14 @@
+# == Schema Information
+#
+# Table name: priorities
+#
+#  id            :integer          not null, primary key
+#  assessment_id :integer
+#  order         :integer          is an Array
+#  created_at    :datetime
+#  updated_at    :datetime
+#
+
 require 'spec_helper'
 
 describe Priority do

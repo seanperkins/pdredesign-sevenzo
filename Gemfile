@@ -12,7 +12,6 @@ gem 'jquery-rails'
 gem 'jbuilder', '~> 1.2'
 gem 'yajl-ruby'
 gem 'devise', '~> 3.2'
-gem 'devise_invitable'
 gem 'bcrypt', '~> 3.1.7'
 gem 'activerecord-session_store'
 gem 'sidekiq'
@@ -39,6 +38,7 @@ group :development, :test do
   gem 'pry'
   gem 'better_errors'
   gem 'binding_of_caller'
+  gem 'annotate'
 end
 
 group :test do
