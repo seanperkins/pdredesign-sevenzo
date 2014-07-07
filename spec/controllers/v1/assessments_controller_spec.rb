@@ -78,9 +78,8 @@ describe V1::AssessmentsController do
       end
 
       it 'forbids a non-participant access' do
-        sign_in @user
-        unauthorized = Assessment.find_by_name("Assessment 1")
-        get :show, id: unauthorized.id
+        sign_in @user3
+        get :show, id: assessment.id
 
         assert_response :forbidden
       end
