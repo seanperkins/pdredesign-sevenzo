@@ -98,6 +98,7 @@ def create_magic_assessments
     participants: [@participant, @participant2],
     district: @district2,
     user: @facilitator2,
+    facilitators: [@facilitator2],
     due_date: Time.now,
     message: 'some message',
   )

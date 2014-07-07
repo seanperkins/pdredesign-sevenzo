@@ -15,14 +15,11 @@ class ApplicationAuthorizer < Authority::Authorizer
 
   protected
   def facilitator?(user)
-    user.role.to_sym == :facilitator
+    resource.facilitator?(user)
   end
 
   def participant?(user)
-    user_participant_ids = user.participants.pluck(:id)       
-    resource.participant_ids.any? do |pid|
-      user_participant_ids.include? pid
-    end
+    resource.participant?(user)
   end
 
   def share_districts?(user)
