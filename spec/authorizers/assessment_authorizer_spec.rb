@@ -16,6 +16,15 @@ describe AssessmentAuthorizer do
     @other  = Application::create_sample_user
   end
 
+  context 'create' do
+    it 'anyone can create an assessment' do
+      expect(assessment).to be_creatable_by(@facilitator)
+      expect(assessment).to be_creatable_by(@viewers)
+      expect(assessment).to be_creatable_by(@user)
+      expect(assessment).to be_creatable_by(@other)
+    end
+  end
+
   context 'read' do
     it 'is readable by own facilitator' do
       expect(assessment).to be_readable_by(@facilitator)
