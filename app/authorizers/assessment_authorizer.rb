@@ -1,10 +1,6 @@
 class AssessmentAuthorizer < ApplicationAuthorizer
   def readable_by?(user)
-    return true if participant?(user) || 
-                   facilitator?(user) ||
-                   owner?(user)       ||
-                   share_districts?(user) 
-    false
+    can_read_assessment?(user)
   end
 
   def creatable_by?(user)
@@ -12,7 +8,7 @@ class AssessmentAuthorizer < ApplicationAuthorizer
   end
 
   def updatable_by?(user)
-    owner?(user)
+    owner?(user) || facilitator?(user)
   end
 
   def deletable_by?(user)
@@ -21,6 +17,13 @@ class AssessmentAuthorizer < ApplicationAuthorizer
 
   def participants_listable_by?(user)
     share_districts?(user)
+  end
+
+  private
+  def can_read_assessment?(user)
+    participant?(user) || facilitator?(user)     ||
+    owner?(user)       || share_districts?(user) ||
+    viewer?(user) 
   end
 
 end
