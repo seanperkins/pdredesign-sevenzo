@@ -6,9 +6,17 @@ describe AssessmentAuthorizer do
   let(:subject)    { AssessmentAuthorizer }
   let(:assessment) { @assessment_with_participants }
 
-  context 'read' do
-    it 'is readable by a facilitator' do
+  before do
+    @facilitator = Application::create_sample_user
+    assessment.update(facilitators: [@facilitator])
 
+    @viewer = Application::create_sample_user
+    assessment.update(viewers: [@viewer])
+  end
+
+  context 'read' do
+    it 'is readable by own facilitator' do
+      expect(assessment).to be_readable_by(@facilitator)
     end
   end
 
@@ -20,17 +28,11 @@ describe AssessmentAuthorizer do
 
   context 'delete' do
     it 'can be deleted by a facilitator' do
-      facilitator = Application::create_sample_user
-
-      assessment.update(facilitators: [facilitator])
-      expect(assessment).to be_deletable_by(facilitator)
+      expect(assessment).to be_deletable_by(@facilitator)
     end
 
     it 'can not be updated by a viewer' do
-      viewer = Application::create_sample_user
-
-      assessment.update(viewers: [viewer])
-      expect(assessment).not_to be_deletable_by(viewer)
+      expect(assessment).not_to be_deletable_by(@viewer)
     end
 
     it 'cant be deleted by a participant' do

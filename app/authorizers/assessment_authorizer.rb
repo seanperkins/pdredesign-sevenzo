@@ -1,9 +1,9 @@
 class AssessmentAuthorizer < ApplicationAuthorizer
   def readable_by?(user)
-    return true  if     participant?(user) 
-    return false unless facilitator?(user)
-    return true  if     share_districts?(user) 
-    return true  if     owner?(user)
+    return true if participant?(user) || 
+                   facilitator?(user) ||
+                   owner?(user)       ||
+                   share_districts?(user) 
     false
   end
 
