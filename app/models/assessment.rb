@@ -39,6 +39,9 @@ class Assessment < ActiveRecord::Base
     class_name: 'User',
     join_table: :assessments_facilitators
 
+  has_and_belongs_to_many :viewers,
+    class_name: 'User',
+    join_table: :assessments_viewers
 
 	accepts_nested_attributes_for :participants, allow_destroy: true
 
@@ -70,6 +73,13 @@ class Assessment < ActiveRecord::Base
       .where(id: [user.id])
       .present?
   end
+
+  def viewer?(user)
+    viewers 
+      .where(id: [user.id])
+      .present?
+  end
+
 
   def participant?(user)
     participants

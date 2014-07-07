@@ -29,4 +29,29 @@ describe Assessment do
     end
   end
 
+  describe 'viewers' do
+
+    it 'can assign facilitators to an assessment' do
+      first_viewer  = Application::create_sample_user
+      second_viewer = Application::create_sample_user
+  
+      assessment.update(viewers: [first_viewer, second_viewer])
+
+      expect(assessment.viewer_ids).to include(first_viewer.id)
+      expect(assessment.viewer_ids).to include(second_viewer.id)
+    end
+
+    context '#viewer?' do
+      it 'returns if a user is a facilitator for an assessment' do
+        viewer = Application::create_sample_user
+
+        expect(assessment.viewer?(viewer)).to eq(false)
+
+        assessment.update(viewers: [viewer])
+        expect(assessment.viewer?(viewer)).to eq(true)
+      end
+    end
+
+  end
+
 end
