@@ -43,6 +43,11 @@ class Assessment < ActiveRecord::Base
     class_name: 'User',
     join_table: :assessments_viewers
 
+  has_and_belongs_to_many :network_partners,
+    class_name: 'User',
+    join_table: :assessments_network_partners
+	
+
 	accepts_nested_attributes_for :participants, allow_destroy: true
 
 	attr_accessor :add_participants
@@ -70,6 +75,12 @@ class Assessment < ActiveRecord::Base
 
   def facilitator?(user)
     facilitators
+      .where(id: [user.id])
+      .present?
+  end
+
+  def network_partner?(user)
+    network_partners 
       .where(id: [user.id])
       .present?
   end
