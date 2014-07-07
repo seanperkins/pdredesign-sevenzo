@@ -27,12 +27,19 @@ class Assessment < ActiveRecord::Base
 	belongs_to :user
 	belongs_to :rubric
 	belongs_to :district
+
 	has_one :response, as: :responder, dependent: :destroy
 	has_many :participants, dependent: :destroy
 	has_many :messages, dependent: :destroy
 	has_many :categories, through: :questions
 
 	has_many :users, through: :participants
+
+  has_and_belongs_to_many :facilitators,
+    class_name: 'User',
+    join_table: :assessments_facilitators
+
+
 	accepts_nested_attributes_for :participants, allow_destroy: true
 
 	attr_accessor :add_participants
@@ -56,6 +63,12 @@ class Assessment < ActiveRecord::Base
     return :draft if assigned_at.nil?  
     return :consensus if response.present?
     :assessment
+  end
+
+  def facilitator?(user)
+    facilitators
+      .where(id: [user.id])
+      .present?
   end
 
   def participant?(user)
