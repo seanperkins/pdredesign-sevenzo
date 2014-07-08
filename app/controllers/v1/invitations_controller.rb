@@ -5,10 +5,13 @@ class V1::InvitationsController < ApplicationController
 
     sign_in(:user, invited_user)
 
-    invited_user.update(permitted_params)
-    invitation.destroy
-
-    status 200
+    if invited_user.update(permitted_params)
+      invitation.destroy
+      status 200
+    else
+      @errors = invited_user.errors
+      render 'v1/shared/errors', status: 422
+    end
   end
 
   def show
