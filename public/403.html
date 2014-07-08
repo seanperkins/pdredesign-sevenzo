@@ -1,10 +1,172 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Forbidden</title>
-  </head>
-  <body>
-    <h1>Access Denied</h1>
+<head>
+  <title>Forbidden (403)</title>
+  <style>
+    @import url(http://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+    @import url(http://fonts.googleapis.com/css?family=Open+Sans);
+    li:nth-of-type(1) {
+      width: 60px;
+      height: 60px;
+      transform-origin: 20% center;
+      position: absolute;
+      animation: rotate 10s linear infinite;
+    }
+
+    li:nth-of-type(1):before {
+      content: '';
+      position: absolute;
+      border-radius: 100px;
+      height: 60px;
+      width: 60px;
+      background: RGBA(218, 93, 158, 1);
+      animation: rotate 10s linear reverse infinite;
+    }
+
+    li:nth-of-type(2) {
+      width: 50px;
+      height: 50px;
+      transform-origin: 20% center;
+      position: absolute;
+      animation: rotate 7s linear infinite;
+    }
+
+    li:nth-of-type(2):before {
+      content: '';
+      position: absolute;
+      border-radius: 100px;
+      height: 50px;
+      width: 50px;
+      background: RGBA(91, 147, 228, 0.6);
+      animation: rotate 7s linear reverse infinite;
+    }
+
+    li:nth-of-type(3) {
+      width: 70px;
+      height: 70px;
+      transform-origin: 20% center;
+      position: absolute;
+      animation: rotate 5s linear infinite;
+    }
+
+    li:nth-of-type(3):before {
+      content: '';
+      position: absolute;
+      border-radius: 100px;
+      height: 70px;
+      width: 70px;
+      background: RGBA(224, 116, 94, 0.75);
+      animation: rotate 5s linear reverse infinite;
+    }
+
+    li:nth-of-type(4) {
+      width: 90px;
+      height: 90px;
+      transform-origin: 20% center;
+      position: absolute;
+      animation: rotate 8s linear infinite;
+    }
+
+    li:nth-of-type(4):before {
+      content: '';
+      position: absolute;
+      border-radius: 100px;
+      height: 90px;
+      width: 90px;
+      background: RGBA(244, 229, 117, 0.5);
+      animation: rotate 8s linear reverse infinite;
+    }
+
+    li:nth-of-type(5) {
+      width: 30px;
+      height: 30px;
+      transform-origin: 20% center;
+      position: absolute;
+      animation: rotate 4s linear infinite;
+    }
+
+    li:nth-of-type(5):before {
+      content: '';
+      position: absolute;
+      border-radius: 100px;
+      height: 30px;
+      width: 30px;
+      background: RGBA(190, 209, 123, 0.5);
+      animation: rotate 4s linear reverse infinite;
+    }
+
+    .notfound {
+      max-width: 90%;
+      margin: 50px auto 0;
+      position: relative;
+    }
+
+    .notfound h1 {
+      font-size: 5em;
+      margin: 0;
+    }
+
+    .notfound h2 {
+      margin: 5px;
+    }
+
+    .notfound h1, .notfound h2 {
+      text-align: center;
+      color: RGBA(45, 58, 64, 1);
+      text-shadow: RGBA(255, 255, 255, 0.75) 0 0 10px;
+      font-family: 'Yanone Kaffeesatz', sans-serif;
+    }
+
+    ul {
+      margin: -55px 0px 0px -35px;
+      z-index: -1;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      -webkit-transform: translate(-50%, -50%);
+    }
+
+    li {
+      list-style: none;
+    }
+
+    p {
+      margin-top: 1em;
+      text-align: center;
+      font-family: 'Open Sans', sans-serif;
+    }
+
+    p a {
+      color: #9f1c2c;
+      text-decoration: none;
+    }
+
+    @keyframes rotate {
+      100% {
+        transform: rotate(-360deg);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- This file lives in public/403.html -->
+  
+  <div class="notfound">
+    <h1>403</h1>
+    <h2>Access Denied.</h2>
     <p>You do not have permission to access this resource.</p>
-  </body>
+    <p>You can go to our <a href="/">homepage</a> and try again or contact us at <a href="mailto:support@mail.pdredesign.org">PDRedesign Support</a>.</p>
+    <ul>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+    </ul>
+  </div>
+
+
+</body>
 </html>

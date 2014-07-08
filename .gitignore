@@ -15,3 +15,4 @@
 /log/*.log
 /tmp
 stdout
+pdr_dev.sql
