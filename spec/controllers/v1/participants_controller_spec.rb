@@ -30,10 +30,10 @@ describe V1::ParticipantsController do
     end
 
     it 'gets a list of participants' do
-      other = Assessment.find_by_name("Assessment 1")
-      get :index, assessment_id: other.id
+      get :index, assessment_id: assessment.id
+
       participants = assigns(:participants)
-      expect(participants.count).to eq(0) 
+      expect(participants.count).to eq(2) 
     end
 
   end

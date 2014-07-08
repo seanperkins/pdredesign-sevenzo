@@ -9,6 +9,7 @@
 #  category_id :integer
 #  created_at  :datetime
 #  updated_at  :datetime
+#  help_text   :text
 #
 
 class Question < ActiveRecord::Base

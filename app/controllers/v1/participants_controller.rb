@@ -25,7 +25,7 @@ class V1::ParticipantsController < ApplicationController
   def all
     @users = users_from_district(assessment) 
   end
-  authority_actions all: 'create'
+  authority_actions all: 'update'
 
   protected
   def users_from_district(assessment)

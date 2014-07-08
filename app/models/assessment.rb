@@ -27,12 +27,27 @@ class Assessment < ActiveRecord::Base
 	belongs_to :user
 	belongs_to :rubric
 	belongs_to :district
+
 	has_one :response, as: :responder, dependent: :destroy
 	has_many :participants, dependent: :destroy
 	has_many :messages, dependent: :destroy
 	has_many :categories, through: :questions
 
 	has_many :users, through: :participants
+
+  has_and_belongs_to_many :facilitators,
+    class_name: 'User',
+    join_table: :assessments_facilitators
+
+  has_and_belongs_to_many :viewers,
+    class_name: 'User',
+    join_table: :assessments_viewers
+
+  has_and_belongs_to_many :network_partners,
+    class_name: 'User',
+    join_table: :assessments_network_partners
+	
+
 	accepts_nested_attributes_for :participants, allow_destroy: true
 
 	attr_accessor :add_participants
@@ -57,6 +72,25 @@ class Assessment < ActiveRecord::Base
     return :consensus if response.present?
     :assessment
   end
+
+  def facilitator?(user)
+    facilitators
+      .where(id: [user.id])
+      .present?
+  end
+
+  def network_partner?(user)
+    network_partners 
+      .where(id: [user.id])
+      .present?
+  end
+
+  def viewer?(user)
+    viewers 
+      .where(id: [user.id])
+      .present?
+  end
+
 
   def participant?(user)
     participants

@@ -95,7 +95,7 @@ describe V1::ConsensusController do
 
 
     it 'can create a new consensus' do
-      sign_in @facilitator
+      sign_in @facilitator2
 
       post :create, assessment_id: assessment.id
       assert_response :success
