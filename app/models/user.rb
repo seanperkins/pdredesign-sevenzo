@@ -18,21 +18,15 @@
 #  role                   :string(255)
 #  team_role              :string(255)
 #  admin                  :boolean          default(FALSE)
-#  invitation_token       :string(255)
-#  invitation_created_at  :datetime
-#  invitation_sent_at     :datetime
-#  invitation_accepted_at :datetime
-#  invitation_limit       :integer
-#  invited_by_id          :integer
-#  invited_by_type        :string(255)
 #  first_name             :string(255)
 #  last_name              :string(255)
 #  twitter                :string(255)
 #  avatar                 :string(255)
+#  ga_dimension           :string(255)
 #
 
 class User < ActiveRecord::Base
-  devise :invitable, :database_authenticatable, :registerable,
+  devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :trackable, :validatable
 
   include Authority::UserAbilities
@@ -41,7 +35,9 @@ class User < ActiveRecord::Base
   has_many :participants
   has_many :rubrics
   has_many :feedbacks
+
   has_and_belongs_to_many :districts
+  has_and_belongs_to_many :assessments
 
   attr_accessor :invited_assessment
   has_many :invitations, class_name: self.to_s, as: :invited_by

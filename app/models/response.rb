@@ -14,6 +14,7 @@
 
 class Response < ActiveRecord::Base
   include Authority::Abilities
+
   self.authorizer_name = 'ResponseAuthorizer'
 
 	belongs_to :responder, polymorphic: true
