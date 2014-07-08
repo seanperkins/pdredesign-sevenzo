@@ -73,7 +73,12 @@ class Assessment < ActiveRecord::Base
     :assessment
   end
 
+  def owner?(comp_user)
+    user.id == comp_user.id
+  end
+
   def facilitator?(user)
+    return true if owner?(user)
     facilitators
       .where(id: [user.id])
       .present?
@@ -97,6 +102,7 @@ class Assessment < ActiveRecord::Base
       .where(user_id: user.id)
       .present?
   end
+
 
 	def completed?
 		percent_completed == 100
