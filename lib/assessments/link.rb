@@ -1,18 +1,24 @@
 module Assessments
   class Link
 
-    attr_reader :assessment, :role
+    attr_reader :assessment, :user
 
-    def initialize(assessment, role)
+    def initialize(assessment, user)
       @assessment = assessment
-      @role       = role.to_sym
+      @user       = user
     end       
 
     def links
-      return member_links if role == :member
-      facilitator_links
+      return facilitator_links if facilitator?
+      member_links 
     end
 
+    def assessment_link
+      return :none      unless assessment.assigned?
+      return :consensus if fully_complete? 
+      return :response  if user_has_responses? 
+      :new_response
+    end
 
     private
     def facilitator_links
@@ -30,7 +36,7 @@ module Assessments
     end
 
     def member_consensus_link 
-      if fully_complete?(assessment)
+      if fully_complete?
         return { title: "Consensus", active: true, type: :show_response }
       end
 
@@ -38,7 +44,7 @@ module Assessments
     end
 
     def consensus_link
-      return member_consensus_link if role == :member
+      return member_consensus_link unless facilitator?
 
       if assessment.assigned?
         if assessment.has_response?
@@ -56,7 +62,7 @@ module Assessments
     end
 
     def report_link
-      if fully_complete?(assessment)
+      if fully_complete?
         return { title: 'Report', active: true, type: :report}
       end
 
@@ -80,7 +86,28 @@ module Assessments
     end
 
     private 
-    def fully_complete?(asssessment)
+    def user_has_responses?
+      @has_responses ||= user_responses.present?
+    end
+
+    def user_responses
+      (user.participants
+        .find_by(assessment: assessment)) &&
+
+      (user.participants
+        .find_by(assessment: assessment)
+        .response)
+    end
+
+    def participant?
+      @is_participant ||= assessment.participant?(user)
+    end
+
+    def facilitator?
+      @is_facilitator ||= assessment.facilitator?(user)
+    end
+
+    def fully_complete?
       assessment.has_response? && assessment.response.completed? 
     end
 
