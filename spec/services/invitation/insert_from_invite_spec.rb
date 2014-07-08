@@ -41,6 +41,16 @@ describe Invitation::InsertFromInvite do
     expect(user.district_ids).to include(@district2.id)
   end
 
+  it 'does not create multiple district entries for existing user' do
+    @user.update(district_ids: [@district2.id])
+
+    subject.new(existing_user_invite).execute
+
+    user = User.find_by(email: @user.email)
+    expect(user.district_ids.count).to eq(1)
+
+  end
+
   it 'updates the user_id after a user has been created' do
     subject.new(existing_user_invite).execute
 
