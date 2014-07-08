@@ -3,55 +3,169 @@
 <head>
   <title>We're sorry, but something went wrong (500)</title>
   <style>
-  body {
-    background-color: #EFEFEF;
-    color: #2E2F30;
-    text-align: center;
-    font-family: arial, sans-serif;
-  }
+    @import url(http://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+    @import url(http://fonts.googleapis.com/css?family=Open+Sans);
+    li:nth-of-type(1) {
+      width: 60px;
+      height: 60px;
+      transform-origin: 20% center;
+      position: absolute;
+      animation: rotate 10s linear infinite;
+    }
 
-  div.dialog {
-    width: 25em;
-    margin: 4em auto 0 auto;
-    border: 1px solid #CCC;
-    border-right-color: #999;
-    border-left-color: #999;
-    border-bottom-color: #BBB;
-    border-top: #B00100 solid 4px;
-    border-top-left-radius: 9px;
-    border-top-right-radius: 9px;
-    background-color: white;
-    padding: 7px 4em 0 4em;
-  }
+    li:nth-of-type(1):before {
+      content: '';
+      position: absolute;
+      border-radius: 100px;
+      height: 60px;
+      width: 60px;
+      background: RGBA(218, 93, 158, 1);
+      animation: rotate 10s linear reverse infinite;
+    }
 
-  h1 {
-    font-size: 100%;
-    color: #730E15;
-    line-height: 1.5em;
-  }
+    li:nth-of-type(2) {
+      width: 50px;
+      height: 50px;
+      transform-origin: 20% center;
+      position: absolute;
+      animation: rotate 7s linear infinite;
+    }
 
-  body > p {
-    width: 33em;
-    margin: 0 auto 1em;
-    padding: 1em 0;
-    background-color: #F7F7F7;
-    border: 1px solid #CCC;
-    border-right-color: #999;
-    border-bottom-color: #999;
-    border-bottom-left-radius: 4px;
-    border-bottom-right-radius: 4px;
-    border-top-color: #DADADA;
-    color: #666;
-    box-shadow:0 3px 8px rgba(50, 50, 50, 0.17);
-  }
+    li:nth-of-type(2):before {
+      content: '';
+      position: absolute;
+      border-radius: 100px;
+      height: 50px;
+      width: 50px;
+      background: RGBA(91, 147, 228, 0.6);
+      animation: rotate 7s linear reverse infinite;
+    }
+
+    li:nth-of-type(3) {
+      width: 70px;
+      height: 70px;
+      transform-origin: 20% center;
+      position: absolute;
+      animation: rotate 5s linear infinite;
+    }
+
+    li:nth-of-type(3):before {
+      content: '';
+      position: absolute;
+      border-radius: 100px;
+      height: 70px;
+      width: 70px;
+      background: RGBA(224, 116, 94, 0.75);
+      animation: rotate 5s linear reverse infinite;
+    }
+
+    li:nth-of-type(4) {
+      width: 90px;
+      height: 90px;
+      transform-origin: 20% center;
+      position: absolute;
+      animation: rotate 8s linear infinite;
+    }
+
+    li:nth-of-type(4):before {
+      content: '';
+      position: absolute;
+      border-radius: 100px;
+      height: 90px;
+      width: 90px;
+      background: RGBA(244, 229, 117, 0.5);
+      animation: rotate 8s linear reverse infinite;
+    }
+
+    li:nth-of-type(5) {
+      width: 30px;
+      height: 30px;
+      transform-origin: 20% center;
+      position: absolute;
+      animation: rotate 4s linear infinite;
+    }
+
+    li:nth-of-type(5):before {
+      content: '';
+      position: absolute;
+      border-radius: 100px;
+      height: 30px;
+      width: 30px;
+      background: RGBA(190, 209, 123, 0.5);
+      animation: rotate 4s linear reverse infinite;
+    }
+
+    .notfound {
+      max-width: 90%;
+      margin: 50px auto 0;
+      position: relative;
+    }
+
+    .notfound h1 {
+      font-size: 5em;
+      margin: 0;
+    }
+
+    .notfound h2 {
+      margin: 5px;
+    }
+
+    .notfound h1, .notfound h2 {
+      text-align: center;
+      color: RGBA(45, 58, 64, 1);
+      text-shadow: RGBA(255, 255, 255, 0.75) 0 0 10px;
+      font-family: 'Yanone Kaffeesatz', sans-serif;
+    }
+
+    ul {
+      margin: -55px 0px 0px -35px;
+      z-index: -1;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      -webkit-transform: translate(-50%, -50%);
+    }
+
+    li {
+      list-style: none;
+    }
+
+    p {
+      margin-top: 1em;
+      text-align: center;
+      font-family: 'Open Sans', sans-serif;
+    }
+
+    p a {
+      color: #9f1c2c;
+      text-decoration: none;
+    }
+
+    @keyframes rotate {
+      100% {
+        transform: rotate(-360deg);
+      }
+    }
   </style>
 </head>
 
 <body>
   <!-- This file lives in public/500.html -->
-  <div class="dialog">
-    <h1>We're sorry, but something went wrong.</h1>
+  
+  <div class="notfound">
+    <h1>500</h1>
+    <h2>We're sorry, but something went wrong.</h2>
+    <p>You can go to our <a href="/">homepage</a> and try again or contact us at <a href="mailto:support@mail.pdredesign.org">PDRedesign Support</a>.</p>
+    <ul>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+    </ul>
   </div>
-  <p>If you are the application owner check the logs for more information.</p>
+
+
 </body>
 </html>
