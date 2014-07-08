@@ -64,6 +64,15 @@ describe V1::InvitationsController do
         expect(@user.email).to eq('some_other@email.com')
       end
 
+      it 'returns errors if a users  fields cant be updated' do
+        post :redeem,
+          token:      'expected_token',
+          password:   '123'
+
+        assert_response 422
+        expect(json["errors"]["password"]).not_to be_empty
+      end
+
       it 'allows an update to set the users password' do
         post :redeem,
           token:      'expected_token',
