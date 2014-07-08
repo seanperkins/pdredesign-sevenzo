@@ -34,9 +34,14 @@ module Invitation
 
     def update_user(user)
       user.tap do
-        user.districts << invite.assessment.district
+        return user if district_member?(user)
+        user.districts << invite.assessment.district 
         user.save
       end
+    end
+
+    def district_member?(user)
+      user.district_ids.include?(invite.assessment.district_id)
     end
 
     def create_user
