@@ -71,6 +71,21 @@ describe V1::ParticipantsController do
       expect(Participant.where(id: @participant.id).count).to eq(0)
     end
     
+    it 'deletes any invitations that are pending for the user' do
+      user_id = @participant.user.id
+
+      UserInvitation
+        .create!(id: 42,
+                 first_name: 'some',
+                 last_name: 'user',
+                 assessment_id: assessment.id,
+                 user_id: user_id,
+                 email: @participant.user.email) 
+
+      delete :destroy, assessment_id: assessment.id, id: @participant.id 
+      expect(UserInvitation.where(user_id: user_id)).to be_empty
+    end
+
     it 'returns 404 when missing participant' do
       delete :destroy, assessment_id: assessment.id, id: 000000
       assert_response :missing
