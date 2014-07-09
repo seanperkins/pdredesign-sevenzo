@@ -13,6 +13,7 @@ PdrServer::Application.routes.draw do
     resources  :prospective_users, only: :create
     resources  :assessments, only: [:index, :show, :update, :create] do
       get 'report', to: 'report#show'
+      resources :reminders, only: [:create]
       resources :priorities, only: [:create, :index]
       resources :participants, except: [:update, :show]
       resources :user_invitations, only: [:create]
