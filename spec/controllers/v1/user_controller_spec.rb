@@ -11,6 +11,80 @@ describe V1::UserController do
 
   render_views
 
+  context '#request_reset' do
+    before { sign_out :user }
+    before { @user.update(email: 'some_user@gmail.com') }
+
+    it 'sends the reset to a user' do
+      post :request_reset, email: 'some_user@gmail.com'
+      assert_response :success
+    end
+
+    it 'sets the reset_password_token' do
+      allow(controller).to receive(:hash).and_return('xyz')
+
+      post :request_reset, email: 'some_user@gmail.com'
+      expect(User.find(@user.id).reset_password_token).to eq('xyz')
+    end
+
+    it 'sets the reset_password_token' do
+      @user.update(reset_password_sent_at: nil)
+
+      post :request_reset, email: 'some_user@gmail.com'
+      expect(User.find(@user.id).reset_password_sent_at).not_to be_nil
+    end
+
+    it 'queues up an email to be sent to user' do
+      expect(PasswordResetNotificationWorker).to receive(:perform_async)
+        .with(@user.id)
+
+      post :request_reset, email: 'some_user@gmail.com'
+    end
+
+  end
+
+  context '#reset' do
+    before { sign_out :user }
+
+    it 'returns unauthorized if the token is not found' do
+      @user.update(reset_password_token: 'expected_token')
+      post :reset, token: 'other_token', password: 'xyz'
+
+      assert_response :unauthorized
+    end
+
+    it 'requires the right token to reset password' do
+      @user.update(reset_password_token: 'expected_token')
+
+      post :reset, token: 'expected_token', password: 'xyz1235'
+      assert_response :success
+
+      expect(User.find(@user.id).valid_password?('xyz1235')).to eq(true)
+    end
+
+    it 'resets the password token and sent_at' do
+      @user.update(reset_password_token: 'expected_token',
+                   reset_password_sent_at: Time.now)
+
+      post :reset, token: 'expected_token', password: 'xyz1235'
+      assert_response :success
+
+      expect(User.find(@user.id).reset_password_token).to eq(nil)
+      expect(User.find(@user.id).reset_password_sent_at).to eq(nil)
+    end
+
+    it 'returns errors when user cant be updated' do
+      @user.update(reset_password_token: 'expected_token')
+
+      post :reset, token: 'expected_token', password: 'xyz'
+      assert_response 422
+
+      expect(json["errors"]["password"]).not_to eq(nil)
+    end
+
+
+  end
+
   context '#create' do
     before { @district = District.create! }
     before { sign_out :user }

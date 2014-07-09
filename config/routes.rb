@@ -27,6 +27,8 @@ PdrServer::Application.routes.draw do
     get  'user', to: 'user#show'
     put  'user', to: 'user#update'
     post 'user', to: 'user#create'
+    post 'user/reset', to: 'user#reset'
+    post 'user/request_reset', to: 'user#request_reset'
 
     get  'districts/search',  to: 'districts#search'
     
