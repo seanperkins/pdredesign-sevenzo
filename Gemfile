@@ -31,6 +31,7 @@ gem 'pdr_client', git: 'https://cf91ac52033be9b3a1d81b413955d22ab80c45e8:x-oauth
 #gem 'pdr_client', path: '../pdr-client'
 
 group :development, :test do
+  gem 'foreman'
   gem 'dotenv-rails'
   gem 'rspec-rails', '~> 3.0.1'
   gem 'rspec-collection_matchers'
