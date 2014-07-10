@@ -3,7 +3,7 @@ class V1::AssessmentsController < ApplicationController
 
   def index
     @assessments = user_assessments
-    @role        = current_user.role.to_sym
+    @role        = user_role
   end
 
   def show
@@ -43,6 +43,14 @@ class V1::AssessmentsController < ApplicationController
   end
 
   private
+  def user_role
+    if current_user.role.present?
+      current_user.role.to_sym
+    else
+      :member
+    end
+  end
+
   def messages
     messages = []
     messages.concat assessment.messages
