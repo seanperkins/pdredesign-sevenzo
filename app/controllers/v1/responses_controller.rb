@@ -40,6 +40,8 @@ class V1::ResponsesController < ApplicationController
 
   def submit_response(record)
     record.update(submitted_at: Time.now)
+    ResponseCompletedNotificationWorker
+      .perform_async(record.id)
   end
 
   def assessment

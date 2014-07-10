@@ -17,7 +17,8 @@ module Assessments
       return :none      unless assessment.assigned?
       return :consensus if fully_complete? 
       return :response  if user_has_responses? 
-      :new_response
+      return :new_response if assessment.participant?(user)
+      :none
     end
 
     private

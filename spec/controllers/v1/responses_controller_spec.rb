@@ -82,14 +82,14 @@ describe V1::ResponsesController do
       create_struct
     end
 
-    it 'doesnt allow user to update' do
+    it 'does not update response with the wrong owner' do
       sign_in @user2
 
       put :update, assessment_id: assessment.id, id: 42, submit: true
       assert_response :forbidden
     end
 
-    it 'submits consensus with the right owner' do
+    it 'submits an response with the right owner' do
       sign_in @user
 
       put :update, assessment_id: assessment.id, id: 42, submit: true
@@ -98,6 +98,16 @@ describe V1::ResponsesController do
       assert_response :success
       expect(response.submitted_at).not_to be_nil
     end
+
+    it 'queues up email for a completed response' do
+      sign_in @user
+
+      expect(ResponseCompletedNotificationWorker).to receive(:perform_async)
+        .with(42)
+      put :update, assessment_id: assessment.id, id: 42, submit: true
+      assert_response :success
+    end
+
   end
 
 

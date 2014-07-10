@@ -11,7 +11,7 @@ json.array! @assessments do |assessment|
     text, participants = subheading.text_and_participants
     json.text text
     json.participants participants do |participant|
-      json.partial! 'v1/shared/user', user: participant.user
+      json.partial! 'v1/shared/user', user: participant.user 
     end
   end
 end
