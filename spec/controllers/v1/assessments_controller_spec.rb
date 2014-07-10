@@ -115,6 +115,14 @@ describe V1::AssessmentsController do
       assert_response :unauthorized
     end
 
+    it 'does not die on an empty user role' do
+      @facilitator.update(role: nil)
+      sign_in @facilitator
+  
+      get :index
+      assert_response :success
+    end
+
     it 'gets a facilitators assessments' do
       sign_in @facilitator
 
