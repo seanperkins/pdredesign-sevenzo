@@ -14,6 +14,8 @@ suite.
 
 ##Getting Started
   - Run `bundle install` to install dependencies
+  - Run `rake db:create` to create database.
+  - Import an existing database run `psql "pdr_dev" < db/database/pdr_dev.sql`
   - Run `rake db:migrate` to migrate the database
   - Start `rails` with `rails server`
   - Start `redis` with `redis-server /usr/local/etc/redis.conf` (OS X, `brew install redis`)
