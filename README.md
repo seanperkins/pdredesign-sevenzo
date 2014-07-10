@@ -11,3 +11,15 @@ consumes the `pdc_client` gem.  Which is an Angular client.
 Specs are implemented with RSpec(3.x) and the `expect` syntax.
 Specs can be run via `spring rspec` to run the test 
 suite.
+
+##Getting Started
+  - Run `bundle install` to install dependencies
+  - Run `rake db:migrate` to migrate the database
+  - Start `rails` with `rails server`
+  - Start `redis` with `redis-server /usr/local/etc/redis.conf` (OS X, `brew install redis`)
+  - Start `sidekiq` with the `sidekiq` command
+
+
+###Foreman
+Alternatively, foreman can be used to start everything by running `foreman start`.  Note that 
+redis server needs to start independently since its more a platform dependency
