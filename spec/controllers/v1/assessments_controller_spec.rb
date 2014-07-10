@@ -106,6 +106,7 @@ describe V1::AssessmentsController do
 
   context '#index' do
     before { create_magic_assessments }
+    let(:assessment) { @assessment_with_participants }
 
     it 'requires a user logged in user' do
       sign_out :user
@@ -164,6 +165,15 @@ describe V1::AssessmentsController do
       expect(json_response["consensus"]["id"]).to eq(consensus.id)
       expect(json_response["consensus"]["submitted_at"]).not_to be_nil
 
+    end
+
+    it 'doesnt error on deleted participants user' do
+      assessment.participants.first.user.delete
+
+      sign_in @facilitator
+      get :index
+
+      assert_response :success
     end
   end
 

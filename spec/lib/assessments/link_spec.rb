@@ -23,14 +23,25 @@ describe Assessments::Link do
       expect(link).to eq(:consensus)
     end
 
-    it 'returns new_response when there is no response for the user' do
+    it 'returns new_response when there is no response for the participant' do
+      @participant.response.delete
+
+      link = subject
+        .new(assessment, @participant.user)
+        .assessment_link
+
+      expect(link).to eq(:new_response)
+    end
+
+    it 'returns :none when a user is not a participant' do
       new_user = Application::create_sample_user
 
       link = subject
         .new(assessment, new_user)
         .assessment_link
 
-      expect(link).to eq(:new_response)
+      expect(link).to eq(:none)
+
     end
 
     it 'returns new_response when there is no response for the user' do
