@@ -33,8 +33,8 @@ module Invitation
     end
 
     def update_user(user)
+      return user if district_member?(user)
       user.tap do
-        return user if district_member?(user)
         user.districts << invite.assessment.district 
         user.save
       end

@@ -4,12 +4,12 @@ class V1::ScoresController < ApplicationController
   def create
     authorize_action_for user_response
 
-    find_or_initialize.tap do |score|
-      score.update_attributes(score_params)
-      score.save
-    end
+    score = find_or_initialize
+    score.update_attributes(score_params)
+    status(200) and return if score.save
 
-    render nothing: true
+    @errors = score.errors
+    render 'v1/shared/errors', status: 422
   end
 
   def index

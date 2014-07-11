@@ -14,13 +14,5 @@
 class Score < ActiveRecord::Base
 	belongs_to :response
 	belongs_to :question
-
-	## Make sure the user can't leave blank evidence after submitting response
-	before_update do |score|
-		if score.evidence.blank? && score.value.present?
-	 		score.value = nil
-	 		score.evidence = nil
-	 	end
-	end
-
+  validates_presence_of :evidence, unless: :new_record?
 end
