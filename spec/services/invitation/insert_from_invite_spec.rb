@@ -34,7 +34,6 @@ describe Invitation::InsertFromInvite do
   it 'appends the district_id to an already existing user' do
     @user.update(district_ids: [])
     expect(@user.district_ids).not_to include([@district2.id])
-
     subject.new(existing_user_invite).execute
 
     user = User.find_by(email: @user.email)

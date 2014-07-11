@@ -75,6 +75,13 @@ describe Assessments::ParticipantStatus do
     expect(status).to eq(:completed)
   end
 
+  it 'returns the response submitted at date when completed' do
+    allow(@participant).to receive_message_chain(:response, :submitted_at)
+      .and_return(:expected)
+
+    expect(date).to eq(:expected)
+  end
+
   it 'returns :in_progress date' do
     allow(@participant).to receive_message_chain(:response, :submitted_at)
       .and_return(:expected)

@@ -14,25 +14,29 @@
 require 'spec_helper'
 
 describe Score do
-  context 'blank evidence' do
-    it 'resets when evidence is blank and value is present' do
+  describe 'Skipped answer' do
+    it 'allows a skipped answer' do
       Score.create.tap do |score|
-        score.value = 1
-        score.save
-        expect(score.value).to eq(nil)
-        expect(score.evidence).to eq(nil)
+        score.value    = nil
+        score.evidence = 'Some evidence'
+
+        expect(score.save).to eq(true)
+        expect(score.errors_on(:value)).to be_empty
       end
     end
 
-    it 'does not reset when evidence is present' do
-      Score.create.tap do |score|
-        score.value = 1
-        score.evidence = "evidence"
-        score.save
+    it 'allows for an initial state score' do
+      Score.create(value: nil, evidence: nil)
+    end
 
-        expect(score.value).to eq(1)
-        expect(score.evidence).to eq('evidence')
-      end
+    it 'does not allow for empty evidence after create' do
+      score = Score.create!(value: nil, evidence: nil)
+
+      score.value = 1
+      expect(score.save).to eq(false)
+      expect(score.errors_on(:evidence)).not_to be_empty
+      
     end
   end
+
 end

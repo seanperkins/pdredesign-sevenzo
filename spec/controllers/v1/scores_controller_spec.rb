@@ -40,6 +40,17 @@ describe V1::ScoresController do
       assert_response :forbidden
     end
 
+    it 'allows for a skipped answer' do
+      question = Question.first
+      post :create, assessment_id: assessment.id, 
+        response_id: 99,
+        question_id: question.id,
+        value: nil,
+        evidence: 'new score' 
+
+      assert_response :success
+    end
+
     it 'updates an existing score' do
       question = Question.first
       score = Score.create(response_id: 99, 

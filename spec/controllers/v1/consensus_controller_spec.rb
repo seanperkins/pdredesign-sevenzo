@@ -51,14 +51,6 @@ describe V1::ConsensusController do
       assert_template partial: 'v1/consensus/_consensus'
     end
 
-    xit 'renders the question_consensus partial' do
-      #can't check the second partial being renderd
-      sign_in @facilitator2
-      get :show, assessment_id: assessment.id, id: 42
-      assert_template 'v1/consensus/_question'
-    end
-
-
     context '#update' do
       it 'doesnt allow user to update' do
         sign_in @user
