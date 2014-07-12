@@ -24,17 +24,15 @@ module Assessments
     def average(axis)
       Score
         .joins(question: { category:  :axis })
-        .where(response_id: response_ids)
+        .where(response_id: response_id)
         .where.not(value: nil)
         .where("categories.axis_id = ? ", axis.id)
         .average(:value)
     end
 
     private
-    def response_ids
-      assessment
-        .participant_responses
-        .pluck(:id)
+    def response_id
+      assessment.response.id
     end
 
     def axes_ids
