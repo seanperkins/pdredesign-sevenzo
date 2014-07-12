@@ -14,5 +14,4 @@
 class Score < ActiveRecord::Base
 	belongs_to :response
 	belongs_to :question
-  validates_presence_of :evidence, unless: :new_record?
 end

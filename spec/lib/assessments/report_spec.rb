@@ -48,7 +48,7 @@ describe Assessments::Report do
 
     it 'returns the average for an axis' do
       axis = Axis.find_by_name('something')
-      allow(instance).to receive(:response_ids).and_return([99])
+      allow(instance).to receive(:response_id).and_return(99)
       expect(instance.average(axis)).to eq(1.0)
     end
 
