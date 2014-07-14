@@ -139,7 +139,7 @@ describe V1::AssessmentsController do
       get :index
       assessments = assigns(:assessments)
 
-      expect(assessments.count).to eq(1)
+      expect(assessments.count).to eq(4)
     end
 
     it 'returns the current users responses' do
