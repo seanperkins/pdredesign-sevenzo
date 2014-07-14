@@ -52,12 +52,17 @@ class User < ActiveRecord::Base
     TwitterAvatarWorker.perform_async(id)
   end
 
+  def role
+    return :network_partner if network_partner?
+    :district_member
+  end
+
   def district_member?
     !network_partner?
   end
 
   def network_partner?
-    role.to_s == 'network_partner'
+    (self[:role] && self[:role].to_s) == 'network_partner'
   end
 
   def email=(value)
