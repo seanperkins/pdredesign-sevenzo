@@ -71,9 +71,9 @@ def create_magic_assessments
   @district     = District.create!
   @facilitator  = Application::create_sample_user(districts: [@district])
   @facilitator2 = Application::create_sample_user(districts: [@district])
-  @user         = Application::create_sample_user(districts: [@district], role: :member)
-  @user2        = Application::create_sample_user(districts: [@district], role: :member)
-  @user3        = Application::create_sample_user(districts: [@district], role: :member)
+  @user         = Application::create_sample_user(districts: [@district], role: :district_member)
+  @user2        = Application::create_sample_user(districts: [@district], role: :district_member)
+  @user3        = Application::create_sample_user(districts: [@district], role: :district_member)
   @participant  = Participant.create!(user: @user)
   @participant2 = Participant.create!(user: @user2)
   @rubric       = Rubric.create!
@@ -110,7 +110,7 @@ module Application
       attributes = {
         email: Faker::Internet.email, 
         password: 'sup3r_s3cr3t',
-        role:  :member,
+        role:  :district_member,
         admin: false,
         first_name: 'Example',
         last_name: 'User'
@@ -125,7 +125,7 @@ module Application
 
     def create_sample_user(opts = {})
       district = Application.create_district
-      Application.create_user({ role: :facilitator, districts: [district]}.merge(opts))
+      Application.create_user({ role: :district_member, districts: [district]}.merge(opts))
     end
   end
 end

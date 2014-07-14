@@ -68,7 +68,7 @@ class Assessment < ActiveRecord::Base
 	
 	## ASSESSMENT METHODS FOR RESPONSES
   def status
-    return :draft if assigned_at.nil?  
+    return :draft     if assigned_at.nil?  
     return :consensus if response.present?
     :assessment
   end
@@ -96,13 +96,11 @@ class Assessment < ActiveRecord::Base
       .present?
   end
 
-
   def participant?(user)
     participants
       .where(user_id: user.id)
       .present?
   end
-
 
 	def completed?
 		percent_completed == 100
@@ -123,6 +121,10 @@ class Assessment < ActiveRecord::Base
 	def percent_completed
     participant_responses.count.to_d/participants.count.to_d*100
 	end
+
+  def fully_complete?
+    has_response? && response.completed? 
+  end
 
 	def score_count(question_id, value)
     response_ids = participant_responses.pluck(:id)
@@ -162,7 +164,7 @@ class Assessment < ActiveRecord::Base
       .where(response_id: all_participant_responses.pluck(:id))
   end
 
-	def scores(question_id)
+  def scores(question_id)
     response_scores
       .where(question_id: question_id)
       .pluck(:value)
@@ -189,7 +191,7 @@ class Assessment < ActiveRecord::Base
       .where.not(submitted_at: nil)
 	end
 
-	def participants_not_responded
+  def participants_not_responded
     participants
       .joins('LEFT JOIN responses ON responses.responder_id = participants.id')
       .where('responses.submitted_at IS NULL')
@@ -204,7 +206,6 @@ class Assessment < ActiveRecord::Base
 		Response.where(responder_type: 'Participant', 
 		 responder: participants)
   end
-
 	
 	def consensus_responses
 		self

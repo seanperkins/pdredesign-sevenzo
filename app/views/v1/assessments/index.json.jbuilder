@@ -2,16 +2,14 @@ json.array! @assessments do |assessment|
   json.partial! 'v1/assessments/assessment', 
                 assessment: assessment
 
-  linker = Assessments::Link.new(assessment, current_user)
-  json.links           linker.links
-  json.assessment_link linker.assessment_link
+  json.links           Link::Assessment.new(assessment, current_user).execute
+  json.response_link   Link::Response.new(assessment, current_user).execute
 
   json.subheading do
-    subheading = Assessments::Subheading.new(assessment, @role)
-    text, participants = subheading.text_and_participants
-    json.text text
-    json.participants participants do |participant|
-      json.partial! 'v1/shared/user', user: participant.user 
+    subheading = Assessments::Subheading.new(assessment, current_user)
+    json.text         subheading.message
+    json.participants subheading.users do |member|
+      json.partial! 'v1/shared/user', user: member
     end
   end
 end
