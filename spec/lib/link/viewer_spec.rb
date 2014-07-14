@@ -7,7 +7,7 @@ describe Link::Viewer do
   let(:subject)    { Link::Viewer }
 
   def links
-    subject.new(assessment).execute
+    subject.new(assessment, @user).execute
   end
 
   describe 'report' do
@@ -23,6 +23,21 @@ describe Link::Viewer do
       allow(assessment).to receive(:status).and_return(:consensus)
 
       expect(links[:report][:active]).to eq(true)
+    end
+  end
+
+  context 'access' do
+    it 'returns a request access link' do
+      expect(links[:access][:title]).to  eq("Request Access")
+      expect(links[:access][:active]).to eq(true)
+      expect(links[:access][:type]).to   eq(:request_access)
+    end
+
+    it 'returns pending request link' do
+      assessment.viewers << @user
+      expect(links[:access][:title]).to  eq("Access Pending")
+      expect(links[:access][:active]).to eq(false)
+      expect(links[:access][:type]).to   eq(:pending)
     end
   end
 
