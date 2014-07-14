@@ -32,6 +32,33 @@ describe User do
     User.new(opts)
   end
 
+  context '#network_partner?' do
+    it 'returns true when a user is a network partner' do
+      user = new_user(role: :network_partner)
+      expect(user.network_partner?).to eq(true)
+
+      user.update(role: "network_partner")
+      expect(user.network_partner?).to eq(true)
+
+      user.update(role: :district_member)
+      expect(user.network_partner?).to eq(false)
+    end
+  end
+
+  context '#district_member?' do
+    it 'returns true when a user is a district member' do
+      user = new_user(role: :district_member)
+      expect(user.district_member?).to eq(true)
+
+      user.update(role: "district_member")
+      expect(user.district_member?).to eq(true)
+
+      user.update(role: :network_partner)
+      expect(user.district_member?).to eq(false)
+    end
+
+  end
+
   context 'simple validations' do
     it 'requires :first_name' do
       active_record_error(new_user, :first_name, "can't be blank")

@@ -1,64 +1,68 @@
 module Assessments
   class Subheading
     
-    attr_reader :assessment, :role
+    attr_reader :assessment, :user
 
-    def initialize(assessment, role)
+    delegate :participant?,     to: :assessment
+    delegate :facilitator?,     to: :assessment
+    delegate :network_partner?, to: :user
+
+    def initialize(assessment, user)
       @assessment = assessment
-      @role       = role
+      @user       = user
     end
 
-    def subheading
-      text, _ = text_and_participants
-      text
+    def execute
+      return invited           if participant?(user)
+      return viewed_report     if facilitator?(user) && consensus?
+      return not_yet_submitted if facilitator?(user) && !consensus?
+      facilitated
     end
 
-    def participants
-      _, participants = text_and_participants
-      participants
+    def message
+      execute[:message]
     end
 
-    def text_and_participants
-      if assessment.response.present? 
-        submitted_response_subheading
-      else
-        unsubmitted_response_subheading
-      end
+    def users
+      execute[:members]
     end
 
     private
-    def unsubmitted_response_subheading
-      if assessment.participant_responses.count < assessment.participants.count
-        return messages[role][:not_yet_submitted], assessment.participants_not_responded
-      else
-        return messages[role][:completed], []
-      end
+    def consensus?
+      assessment.status == :consensus
     end
 
-    def submitted_response_subheading
-      if assessment.response.submitted_at.present?
-        return messages[role][:viewed_report], assessment.participants_viewed_report
-      else
-        return messages[role][:please_complete], []
-      end
+    def facilitated
+      {message: 'Facilitated by:',
+       members: facilitators}
     end
 
-    def messages
-      {
-        facilitator: {
-          not_yet_submitted: 'Not yet submitted:',
-          completed: "All participants have completed their responses to this assessment. Please proceed to consensus.",
-          viewed_report: "Viewed Report:", 
-          please_complete: "Please complete and submit the consensus response to view the report."
-        },
-        member: {
-          not_yet_submitted: 'Not yet submitted:',
-          completed: "The consensus response is currently being completed by the assessment's facilitator.",
-          viewed_report: "Viewed Report:", 
-          please_complete: "All participants have completed their responses to this assessment."
-        }
-      }
+    def invited
+      {message: 'Invited by:',
+       members: facilitators}
     end
 
+    def viewed_report
+      {message: 'Viewed report:',
+       members: members(:participants_viewed_report)}
+    end
+
+    def not_yet_submitted
+      {message: 'Not yet submitted:',
+       members: members(:participants_not_responded)}
+    end
+
+    def facilitators
+      [assessment.user] + assessment.facilitators
+    end
+
+    def members(method)
+      users_from_participants(assessment.send(method))
+    end
+
+    def users_from_participants(participants)
+      participants.map(&:user)
+    end
+    
   end
 end

@@ -3,56 +3,51 @@ require 'spec_helper'
 describe Assessments::Subheading do
   let(:subject) { Assessments::Subheading }
 
-  before do
-    @double = double("assessment")
-  end
+  describe '#execute' do
+    before { create_magic_assessments }
 
-  context '#subheading' do
-    it 'returns not yet submitted' do
-      allow(@double).to receive_message_chain(:response, :present?)
-        .and_return(false)
+    let(:assessment) { @assessment_with_participants }
 
-      allow(@double).to receive(:participant_responses).and_return([1])
-      allow(@double).to receive(:participants).and_return([1,2])
-      expect(@double).to receive(:participants_not_responded)
+    it 'returns facilitators for a network partners assessment' do 
+      user = Application::create_sample_user
+      user.update(role: :network_partner)
 
-      subheading = subject.new(@double, :facilitator).subheading
-      expect(subheading).to eq('Not yet submitted:')
+      subheading = subject.new(assessment, user).execute
+      expect(subheading[:message]).to eq('Facilitated by:')
+      expect(subheading[:members].count).to eq(2)
     end
 
-    it 'returns all participants...' do
-      allow(@double).to receive_message_chain(:response, :present?)
-        .and_return(false)
-
-      allow(@double).to receive(:participant_responses).and_return([1,2])
-      allow(@double).to receive(:participants).and_return([1,2])
-
-      subheading = subject.new(@double, :facilitator).subheading
-      expect(subheading).to match('All participants have completed')     
-
+    it 'returns invited by when user is participant' do
+      subheading = subject.new(assessment, @user).execute
+      expect(subheading[:message]).to eq('Invited by:')
+      expect(subheading[:members].first).to eq(@facilitator2)
     end
 
-    it 'returns Please complet....' do
-      allow(@double).to receive_message_chain(:response, :present?)
-        .and_return(true)
+    describe 'For Facilitators' do
+      before { create_struct }
 
-      allow(@double).to receive_message_chain(:response, :submitted_at, :present?)
-        .and_return(false)
+      it 'returns not yet submitted if assessment is not a consensus' do
+        instance  = subject.new(assessment, @facilitator2)
+        allow(instance).to receive(:consensus?).and_return(false)
 
-      subheading = subject.new(@double, :facilitator).subheading
-      expect(subheading).to match('Please complete and submit')
-    end
+        subheading = instance.execute
 
-    it 'returns Viewed Report' do
-      allow(@double).to receive_message_chain(:response, :present?)
-        .and_return(true)
+        expect(subheading[:message]).to eq('Not yet submitted:')
+        expect(subheading[:members].count).to eq(2)
+        expect(subheading[:members].first.is_a?(User)).to eq(true)
+      end
 
-      allow(@double).to receive_message_chain(:response, :submitted_at, :present?)
-        .and_return(true)
+      it 'returns viewed report if assessment is a consensus' do
+        instance  = subject.new(assessment, @facilitator2)
+        allow(instance).to receive(:consensus?).and_return(true)
 
-      expect(@double).to receive(:participants_viewed_report)
-      subheading = subject.new(@double, :facilitator).subheading
-      expect(subheading).to match('Viewed Report:')
+        @participant.update(report_viewed_at: Time.now)
+        subheading = instance.execute
+
+        expect(subheading[:message]).to eq('Viewed report:')
+        expect(subheading[:members].count).to eq(1)
+        expect(subheading[:members].first.is_a?(User)).to eq(true)
+      end
     end
   end
 
