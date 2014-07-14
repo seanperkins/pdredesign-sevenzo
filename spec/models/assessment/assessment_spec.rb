@@ -165,17 +165,25 @@ describe Assessment do
     let(:assessment) { @assessment_with_participants }
 
     context '#assessments_for_user' do
-      it 'returns a facilitator users assessments' do
+      it 'returns all assessments for district_members' do
+        records = Assessment.assessments_for_user(@facilitator)
+        expect(records.count).to eq(3)
+
+        @facilitator.update(role: :member)
         records = Assessment.assessments_for_user(@facilitator)
         expect(records.count).to eq(3)
       end
 
-      it 'returns only assigned assessments for member' do
-        @user.update(role: :member)
-        records = Assessment.assessments_for_user(@user)
+      it 'returns all assessments in every district for network_partners' do
+        @user.update(role: :network_partner)
+        @user.update(district_ids: [@district.id])
 
-        expect(records.count).to eq(1)
-        expect(records.first.name).to eq('Assessment other')
+        records = Assessment.assessments_for_user(@user)
+        expect(records.count).to eq(3)
+
+        @user.update(district_ids: [@district.id, @district2.id])
+        records = Assessment.assessments_for_user(@user)
+        expect(records.count).to eq(4)
       end
     end
 

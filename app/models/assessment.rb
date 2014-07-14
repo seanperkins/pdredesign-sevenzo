@@ -222,21 +222,8 @@ class Assessment < ActiveRecord::Base
 	end
 
   def self.assessments_for_user(user)
-    role = (user.role && user.role.to_sym) || :member
-    if role == :member
-      assessments_for_member(user)
-    else
-      assessments_for_facilitator(user)
-    end
-  end
-
-  def self.assessments_for_facilitator(user)
     districts = user.district_ids
     includes(participants: :user).where(district_id: districts)
   end
 
-  def self.assessments_for_member(user)
-    assessments = user.participants.select(:assessment_id)
-    includes(participants: :user).where(id: assessments)
-  end
 end
