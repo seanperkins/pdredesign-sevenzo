@@ -6,5 +6,6 @@ json.array! @questions do |question|
   json.score do 
     json.id    score.id
     json.value score.value
+    json.evidence score.evidence
   end if score
 end
