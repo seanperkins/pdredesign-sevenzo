@@ -45,6 +45,18 @@ describe User do
     end
   end
 
+  context '#role' do
+    it 'returns network_partner when the user is a network_partner' do
+      user = new_user(role: :network_partner)
+      expect(user.role).to eq(:network_partner)
+    end
+
+    it 'returns district_member when the user is not a network_partner' do
+      user = new_user(role: :other)
+      expect(user.role).to eq(:district_member)
+    end
+  end
+
   context '#district_member?' do
     it 'returns true when a user is a district member' do
       user = new_user(role: :district_member)
