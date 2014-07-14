@@ -246,6 +246,17 @@ describe V1::AssessmentsController do
       expect(json["id"]).not_to be_nil
     end
 
+    it 'sets the newest rubric if one is not provided' do
+      @rubric = Rubric.create!(version: 99.0)
+      create_struct
+
+      post :create, 
+        name: 'some assessment', 
+        due_date: Time.now
+
+      expect(json["rubric_id"]).to eq(@rubric.id)
+    end
+
     it 'returns json errors when an assessment cant be created' do
       post :create, 
         rubric_id: @rubric.id,

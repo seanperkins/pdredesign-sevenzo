@@ -31,8 +31,9 @@ class V1::AssessmentsController < ApplicationController
     @assessment = Assessment.new(assessment_create_params)
     authorize_action_for @assessment
 
-    @assessment.user = current_user
+    @assessment.user        = current_user
     @assessment.district_id = current_user.district_ids.first
+    @assessment.rubric_id   = pick_rubric unless @assessment.rubric_id
 
     if @assessment.save
       render :show
@@ -43,6 +44,10 @@ class V1::AssessmentsController < ApplicationController
   end
 
   private
+  def pick_rubric
+    Rubric.order("version ASC").first.id
+  end
+
   def user_role
     if current_user.role.present?
       current_user.role.to_sym
