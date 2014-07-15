@@ -15,3 +15,7 @@
 /log/*.log
 /tmp
 stdout
+
+# Ignore RVM files
+.ruby-gemset
+.ruby-version
