@@ -14,6 +14,7 @@ PdrServer::Application.routes.draw do
     resources  :assessments, only: [:index, :show, :update, :create] do
       get 'report', to: 'report#show'
       resources :reminders, only: [:create]
+      resources :access_request, only: [:create]
       resources :priorities, only: [:create, :index]
       resources :participants, except: [:update, :show]
       resources :user_invitations, only: [:create]
@@ -34,5 +35,7 @@ PdrServer::Application.routes.draw do
     
     post 'invitations/:token', to: 'invitations#redeem'
     get  'invitations/:token', to: 'invitations#show'
+
+    post 'access/:token/grant', to: 'access#grant'
   end
 end

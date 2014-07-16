@@ -7,6 +7,7 @@ class ResponsesMailer < ActionMailer::Base
     facilitator_email = assessment.user.email
 
     @participant_name    = response.responder.user.name
+    @assessment_url      = assessment_url(assessment.id)
     @assessment_name     = assessment.name
     @assessment_district = assessment.district.name
     @assessment_completed_percent = assessment.percent_completed
@@ -17,5 +18,11 @@ class ResponsesMailer < ActionMailer::Base
 
     mail(to: facilitator_email)
   end
+
+  private
+  def assessment_url(id)
+    "#{ENV['BASE_URL']}/#/assessments/#{id}/dashboard"
+  end
+
 
 end

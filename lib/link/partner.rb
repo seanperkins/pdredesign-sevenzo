@@ -2,7 +2,7 @@ module Link
   class Partner 
 
     attr_reader :assessment, :user
-    delegate :network_partner?, to: :assessment
+    delegate :pending_requests?, :network_partner?, to: :assessment
 
     def initialize(assessment, user)
       @assessment = assessment
@@ -15,8 +15,8 @@ module Link
 
     private
     def access
+      return pending if     pending_requests?(user)
       return request unless network_partner?(user)
-      pending
     end
 
     def request

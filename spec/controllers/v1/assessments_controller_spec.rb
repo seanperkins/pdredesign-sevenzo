@@ -54,6 +54,14 @@ describe V1::AssessmentsController do
       updated_assessment = Assessment.find(assessment.id)
       expect(updated_assessment.assigned_at).not_to be_nil
     end
+
+    it 'update the participants invited_at attr if submitted' do
+      put :update, assign: true, id: assessment.id, rubric_id: 42
+      assert_response :success
+
+      expect(@participant.invited_at).not_to be_nil
+      expect(@participant2.invited_at).not_to be_nil
+    end
   end
 
   context '#show' do
@@ -255,6 +263,18 @@ describe V1::AssessmentsController do
         due_date: Time.now
 
       expect(json["rubric_id"]).to eq(@rubric.id)
+    end
+
+    it 'allows to set the district_id' do
+      district = District.create!
+      create_struct
+
+      post :create, 
+        name: 'some assessment', 
+        due_date: Time.now,
+        district_id: district.id
+
+      expect(json["district_id"]).to eq(district.id)
     end
 
     it 'returns json errors when an assessment cant be created' do

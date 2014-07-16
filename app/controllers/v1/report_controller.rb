@@ -9,11 +9,21 @@ class V1::ReportController < ApplicationController
     authorize_action_for @assessment
     @response   = @assessment.response
     @axes       = report.axes
+    update_participant
   end
 
   private
   def report 
     @report ||= Assessments::Report.new(assessment)
+  end
+
+  def update_participant
+    return unless participant
+    participant.update(report_viewed_at: Time.now)
+  end
+
+  def participant
+    Participant.find_by(assessment: assessment, user: current_user)
   end
 
   def assessment

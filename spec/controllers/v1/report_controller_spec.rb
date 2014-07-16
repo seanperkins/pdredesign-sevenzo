@@ -23,6 +23,15 @@ describe V1::ReportController do
       assert_response :success
     end
 
+    it 'updates the participants viewed report time' do
+      get :show, assessment_id: assessment.id
+
+      participant = Participant
+        .find_by(assessment: assessment, user: @user)
+
+      expect(participant[:report_viewed_at]).not_to be_nil
+    end
+
     it 'assigns the assessment' do
       get :show, assessment_id: assessment.id
       expect(assigns(:assessment).id).to eq(assessment.id)

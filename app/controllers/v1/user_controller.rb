@@ -6,8 +6,9 @@ class V1::UserController < ApplicationController
   end
 
   def create
-    @user = User.new(user_params)
+    @user      = User.new(user_params)
     @user.role = params[:role] || :member
+    @user.district_ids = district_ids
 
     if @user.save
       send_notification_email
@@ -19,7 +20,11 @@ class V1::UserController < ApplicationController
 
   def update
     @user = current_user
-    if current_user.update(user_params)
+
+    update_params = user_params
+    update_params[:district_ids] = district_ids
+
+    if current_user.update(update_params)
       render partial: 'v1/shared/user', locals: { user: current_user }
     else
       render_errors(@user.errors)
@@ -48,6 +53,11 @@ class V1::UserController < ApplicationController
   end
 
   private
+  def district_ids 
+    return '' unless params[:district_ids]
+    params[:district_ids].split(",")
+  end
+
   def hash
     SecureRandom.hex[0..9]
   end
@@ -80,6 +90,7 @@ class V1::UserController < ApplicationController
               :district_ids,
               :twitter,
               :team_role,
+              :role,
               :password,
               :password_confirmation)
   end
