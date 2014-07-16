@@ -19,3 +19,4 @@ stdout
 # Ignore RVM files
 .ruby-gemset
 .ruby-version
+
