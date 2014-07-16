@@ -7,9 +7,29 @@ describe V1::ToolsController do
     request.env["HTTP_ACCEPT"] = 'application/json'
   end
 
-  before { sign_in Application::create_sample_user }
+  before do
+    @partner = Application::create_sample_user
+    @partner.update(role: :network_partner)
+    sign_in  @partner
+  end
+
 
   describe '#create' do
+
+    it 'requires a user' do
+      sign_out :user
+
+      post :create
+      assert_response :unauthorized
+    end
+
+    it 'requires a network partner to create' do
+      @partner.update(role: :other)
+
+      post :create
+      assert_response :forbidden
+    end
+
     it 'can create a tool' do
       phase    = ToolPhase.create(title: 'test', description: 'description') 
       category = ToolCategory.create(title: 'category', tool_phase: phase)
