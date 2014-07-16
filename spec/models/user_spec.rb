@@ -118,14 +118,4 @@ describe User do
     end
   end
 
-  context '#has_districts?' do  
-    it 'errors when not admin' do  
-      active_record_error(new_user, :district_ids, "You must select at least one school district.")
-    end
-
-    it 'does not error when admin' do
-      no_active_record_error(new_user(admin: true), :district_ids, "You must select at least one school district.")
-    end
-  end
-
 end

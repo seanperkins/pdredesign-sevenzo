@@ -71,6 +71,19 @@ describe Assessment do
     end
   end
 
+  context '#pending_requests?' do
+    before { create_magic_assessments }
+    let(:assessment) { @assessment_with_participants }
+
+    it 'returns true when there are pending requests for a user' do
+      expect(assessment.pending_requests?(@user3)).to eq(false)
+
+      AccessRequest.create!(user_id: @user3.id, assessment_id: assessment.id,
+                            roles: [:viewer])
+      expect(assessment.pending_requests?(@user3)).to eq(true)
+    end
+  end
+
   context '#completed?' do
     before { @assessment = Assessment.new }
     it 'is completed' do

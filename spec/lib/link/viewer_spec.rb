@@ -33,10 +33,10 @@ describe Link::Viewer do
       expect(links[:access][:type]).to   eq(:request_access)
     end
 
-    it 'returns pending request link' do
-      assessment.viewers << @user
-      expect(links[:access][:title]).to  eq("Access Pending")
-      expect(links[:access][:active]).to eq(false)
+    it 'returns pending when there is a pending request' do
+      AccessRequest.create!(user_id: @user.id, assessment_id: assessment.id, 
+                            roles: [:viewer])
+
       expect(links[:access][:type]).to   eq(:pending)
     end
   end

@@ -46,8 +46,6 @@ class User < ActiveRecord::Base
   validates :first_name, presence: true
   validates :last_name, presence: true
 
-  validate  :has_districts?
-
   before_save :queue_avatar_updater, if: :twitter_changed?
   def queue_avatar_updater
     TwitterAvatarWorker.perform_async(id)
@@ -68,11 +66,6 @@ class User < ActiveRecord::Base
 
   def email=(value)
     self[:email] = value.downcase
-  end
-
-  def has_districts?
-    return if self.admin?
-    errors.add :district_ids, "You must select at least one school district." if self.districts.empty?
   end
 
   def name

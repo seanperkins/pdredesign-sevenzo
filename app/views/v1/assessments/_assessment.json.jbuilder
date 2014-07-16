@@ -3,12 +3,13 @@ json.name              assessment.name
 json.due_date          assessment.due_date
 json.meeting_date      assessment.meeting_date
 json.district_id       assessment.district_id
+json.district_name     assessment.district.name
 json.updated_at        assessment.updated_at
 json.created_at        assessment.created_at
 json.status            assessment.status
 json.rubric_id         assessment.rubric_id
 json.message           assessment.message || default_assessment_message
-json.owner             (assessment.user == current_user)
+json.owner             (assessment.user.id == current_user.id)
 
 json.consensus do
   json.id           assessment.consensus.id

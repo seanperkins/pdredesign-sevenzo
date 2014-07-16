@@ -23,15 +23,12 @@ describe Link::Partner do
       expect(links[:access][:active]).to  eq(true)
     end
 
-    it 'returns pending request when network partner' do
-      allow(assessment).to receive(:network_partner?)
-        .with(@user)
-        .and_return(true)
+    it 'returns pending when there is a pending request' do
+      AccessRequest.create!(user_id: @user.id,
+                            assessment_id: assessment.id, 
+                            roles: [:viewer])
 
-      expect(links[:access][:title]).to   eq('Access Pending')
-      expect(links[:access][:type]).to    eq(:pending)
-      expect(links[:access][:active]).to  eq(false)
-
+      expect(links[:access][:type]).to   eq(:pending)
     end
 
   end

@@ -86,7 +86,8 @@ describe V1::UserController do
   end
 
   context '#create' do
-    before { @district = District.create! }
+    before { @district  = District.create! }
+    before { @district2 = District.create! }
     before { sign_out :user }
 
     def post_create_user(options = {})
@@ -122,15 +123,30 @@ describe V1::UserController do
     end
 
     it 'sets the user to the role provided' do
-      post_create_user(role: :facilitator)
+      post_create_user(role: :other)
 
       kim = User.find_by(email: 'kim@gov.nk')
-      expect(kim[:role]).to eq('facilitator')
+      expect(kim[:role]).to eq('other')
     end
 
     it 'sends the signup notification to the user' do
       post_create_user
       expect(SignupNotificationWorker.jobs.count).to eq(1)
+    end
+
+    it 'it can take multiple districts_ids' do
+      post_create_user(district_ids: "#{@district.id}, #{@district2.id}")
+
+      kim = User.find_by(email: 'kim@gov.nk')
+      expect(kim.districts.count).to eq(2)
+    end
+
+    it 'can signup with empty districts' do
+      post_create_user(district_ids: nil)
+      assert_response :success
+
+      kim = User.find_by(email: 'kim@gov.nk')
+      expect(kim.districts.count).to eq(0)
     end
   end
 
@@ -152,6 +168,14 @@ describe V1::UserController do
       put :update, { first_name: 'updated', last_name: 'user' }
 
       expect(json["first_name"]).to eq('updated')
+    end
+
+    it 'can take multiple districts' do
+      district  = District.create!
+      district2 = District.create!
+
+      put :update, { district_ids: "#{district.id}, #{district2.id}"}
+      expect(json["district_ids"].count).to eq(2)
     end
 
     it 'returns errors on ActiveRecord failure' do

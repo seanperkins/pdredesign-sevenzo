@@ -32,6 +32,7 @@ class Assessment < ActiveRecord::Base
 	has_many :participants, dependent: :destroy
 	has_many :messages, dependent: :destroy
 	has_many :categories, through: :questions
+	has_many :access_requests
 
 	has_many :users, through: :participants
 
@@ -125,6 +126,11 @@ class Assessment < ActiveRecord::Base
   def fully_complete?
     has_response? && response.completed? 
   end
+
+  def pending_requests?(user)
+    access_requests.where(user_id: user.id).present?
+  end
+
 
 	def score_count(question_id, value)
     response_ids = participant_responses.pluck(:id)

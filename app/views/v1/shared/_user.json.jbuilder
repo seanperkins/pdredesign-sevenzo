@@ -7,6 +7,7 @@ json.twitter      user.twitter
 json.created_at   user.created_at
 json.updated_at   user.updated_at
 json.role         user.role
+json.role_human   (user.role && user.role.to_s.humanize)
 json.team_role    user.team_role
 json.avatar       image_url(user.avatar || 'fallback/default.png')
 json.district_ids user.district_ids

@@ -2,7 +2,7 @@ module Link
   class Viewer
 
     attr_reader :assessment, :user
-    delegate :fully_complete?, :viewer?,  to: :assessment
+    delegate :pending_requests?, :fully_complete?, :viewer?,  to: :assessment
 
     def initialize(assessment, user)
       @assessment = assessment
@@ -19,8 +19,8 @@ module Link
     end
 
     def access
+      return pending if pending_requests?(user)
       return request unless viewer?(user)
-      pending
     end
 
     def request

@@ -20,6 +20,9 @@ class V1::AssessmentsController < ApplicationController
     if update_params[:assign]
       update_params.delete :assign
       update_params[:assigned_at] = Time.now
+      @assessment.participants.each do |p|
+        p.update(invited_at: Time.now)
+      end
     end
 
 
@@ -34,6 +37,10 @@ class V1::AssessmentsController < ApplicationController
     @assessment.user        = current_user
     @assessment.district_id = current_user.district_ids.first
     @assessment.rubric_id   = pick_rubric unless @assessment.rubric_id
+
+    if(assessment_create_params[:district_id])
+      @assessment.district_id = assessment_create_params[:district_id]
+    end
 
     if @assessment.save
       render :show
@@ -70,7 +77,7 @@ class V1::AssessmentsController < ApplicationController
   end
 
   def assessment_create_params
-    params.permit(:rubric_id, :name, :due_date)
+    params.permit(:rubric_id, :name, :due_date, :district_id)
   end
 
   def assessment_params
