@@ -8,7 +8,6 @@
 #  url                 :string(255)
 #  is_default          :boolean
 #  display_order       :integer
-#  tool_category_id    :integer
 #  tool_subcategory_id :integer
 #  user_id             :integer
 #

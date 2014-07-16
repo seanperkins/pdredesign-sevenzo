@@ -139,7 +139,7 @@ namespace :db do
                 sub[:tools].each_with_index do |tool, tindex|
                   t = s.tools.create(title: tool[:title],
                                          description: tool[:description],
-                                         tool_category_id: c.id,
+                                         tool_subcategory_id: s.id,
                                          url: tool[:url],
                                          display_order: tindex,
                                          is_default: true)
