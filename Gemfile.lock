@@ -1,6 +1,6 @@
 GIT
   remote: https://cf91ac52033be9b3a1d81b413955d22ab80c45e8:x-oauth-basic@github.com/MobilityLabs/pdr-client.git
-  revision: 7c2ff480d4ab0c8baaeed89aed2bd3fede2b408a
+  revision: d3d0d40033cb28b0a5d136eff7e2ccc069201afa
   specs:
     pdr_client (1.0.0)
       angular-rails-templates (>= 0.1.3)
