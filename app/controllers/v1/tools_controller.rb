@@ -25,6 +25,7 @@ class V1::ToolsController < ApplicationController
       .tools
       .joins(:districts)
       .where(districts: {id: current_user.district_ids})
+      .uniq
   end
 
   private
