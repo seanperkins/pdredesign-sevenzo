@@ -31,6 +31,7 @@ class Assessment < ActiveRecord::Base
 	has_one :response, as: :responder, dependent: :destroy
 	has_many :participants, dependent: :destroy
 	has_many :messages, dependent: :destroy
+  has_many :questions, through: :rubric
 	has_many :categories, through: :questions
 	has_many :access_requests
 
