@@ -15,7 +15,7 @@ gem 'devise', '~> 3.2'
 gem 'bcrypt', '~> 3.1.7'
 gem 'activerecord-session_store'
 gem 'sidekiq'
-
+gem 'rails_admin'
 gem 'authority'
 
 gem 'fog'
