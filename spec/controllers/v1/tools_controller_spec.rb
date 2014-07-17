@@ -141,6 +141,19 @@ describe V1::ToolsController do
         expect(tools.count).to eq(1)
       end
 
+      it 'does not return duplicates if part of multiple districts' do
+        create_data
+        district2 = District.create!
+        @creating_user.districts << district2
+        @login_user.districts << district2
+
+        sign_in @login_user
+        get :index
+        tools = json.first["categories"].first["subcategories"].first["tools"]
+        expect(tools.count).to eq(1)
+
+      end
+
       it 'returns user created tools for current district' do
         create_data
         sign_in @other_user
