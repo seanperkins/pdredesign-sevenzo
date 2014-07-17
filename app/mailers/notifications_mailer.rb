@@ -14,8 +14,8 @@ class NotificationsMailer < ActionMailer::Base
     @assessment_name     = invite.assessment.name 
     @assessment_district = invite.assessment.district.name
     @owner_name          = invite.assessment.user.first_name
-    @message             = invite.assessment.message
-    @due_date            = invite.assessment.due_date
+    @message             = invite.assessment.message.html_safe
+    @due_date            = invite.assessment.due_date.strftime("%B %d, %Y")    
     @avatar              = user.avatar || default_avatar
     @invite_link         = invite_url(invite.token)
     mail(to: invite.email)
