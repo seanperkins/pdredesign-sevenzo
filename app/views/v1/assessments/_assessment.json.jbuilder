@@ -11,11 +11,13 @@ json.rubric_id         assessment.rubric_id
 json.message           assessment.message || default_assessment_message
 json.owner             (assessment.user.id == current_user.id)
 
-json.consensus do
-  json.id           assessment.consensus.id
-  json.submitted_at assessment.consensus.submitted_at
-end if assessment.consensus
-
+if assessment.consensus
+  json.consensus do
+    json.id           assessment.consensus.id
+    json.submitted_at assessment.consensus.submitted_at
+    json.is_completed assessment.fully_complete?
+  end 
+end
 
 json.participant_count   assessment.participants.count
 json.percent_completed   assessment.percent_completed
