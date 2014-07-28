@@ -20,11 +20,8 @@ class V1::AssessmentsController < ApplicationController
     if update_params[:assign]
       update_params.delete :assign
       update_params[:assigned_at] = Time.now
-      @assessment.participants.each do |p|
-        p.update(invited_at: Time.now)
-      end
+      invite_all_users(@assessment)
     end
-
 
     @assessment.update(update_params)
     render nothing: true
@@ -51,6 +48,10 @@ class V1::AssessmentsController < ApplicationController
   end
 
   private
+  def invite_all_users(assessment)
+    assessment.participants.update_all(invited_at: Time.now)
+  end
+
   def pick_rubric
     Rubric.order("version ASC").first.id
   end
