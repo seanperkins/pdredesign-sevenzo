@@ -59,6 +59,9 @@ describe V1::AssessmentsController do
       put :update, assign: true, id: assessment.id, rubric_id: 42
       assert_response :success
 
+      @participant.reload
+      @participant2.reload
+
       expect(@participant.invited_at).not_to be_nil
       expect(@participant2.invited_at).not_to be_nil
     end

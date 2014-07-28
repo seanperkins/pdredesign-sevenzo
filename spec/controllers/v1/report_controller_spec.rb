@@ -27,7 +27,7 @@ describe V1::ReportController do
       get :show, assessment_id: assessment.id
 
       participant = Participant
-        .find_by(assessment: assessment, user: @user)
+        .find_by(assessment: assessment, user: @user2)
 
       expect(participant[:report_viewed_at]).not_to be_nil
     end
