@@ -108,7 +108,7 @@ class Assessment < ActiveRecord::Base
 		percent_completed == 100
 	end
 
-	def assigned?
+  def assigned?
     assigned_at.present?
   end
 
