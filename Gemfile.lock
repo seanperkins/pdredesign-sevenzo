@@ -1,11 +1,11 @@
 GIT
   remote: https://cf91ac52033be9b3a1d81b413955d22ab80c45e8:x-oauth-basic@github.com/MobilityLabs/pdr-client.git
-  revision: 4618276a7c75473d9a31ca35a79ac936ea03f26a
+  revision: 014b204ebd54d90cad4ade200c59486a0c88e664
   specs:
     pdr_client (1.0.0)
       angular-rails-templates (>= 0.1.3)
       bootstrap-sass
-      bootstrap3-datetimepicker-rails
+      bootstrap3-datetimepicker-rails (= 3.0.0.2)
       font-awesome-rails
       haml
       jquery-rails
@@ -83,8 +83,8 @@ GEM
       debug_inspector (>= 0.0.1)
     bootstrap-sass (3.2.0.1)
       sass (~> 3.2)
-    bootstrap3-datetimepicker-rails (3.0.2.1)
-      momentjs-rails (>= 2.8.1)
+    bootstrap3-datetimepicker-rails (3.0.0.2)
+      momentjs-rails (~> 2.5.0)
     buftok (0.2.0)
     builder (3.2.2)
     carrierwave (0.10.0)
@@ -197,7 +197,7 @@ GEM
       subexec (~> 0.2.1)
     mini_portile (0.6.0)
     minitest (5.4.0)
-    momentjs-rails (2.8.1)
+    momentjs-rails (2.5.1)
       railties (>= 3.1)
     multi_json (1.10.1)
     multipart-post (2.0.0)
