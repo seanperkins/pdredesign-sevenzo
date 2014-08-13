@@ -11,11 +11,11 @@ describe AllParticipantsNotificationWorker do
     double = double("mailer")
 
     expect(AssessmentsMailer).to receive(:assigned)
-      .with(anything, @user.email)
+      .with(anything, @participant)
       .and_return(double)
 
     expect(AssessmentsMailer).to receive(:assigned)
-      .with(anything, @user2.email)
+      .with(anything, @participant2)
       .and_return(double)
 
     expect(double).to receive(:deliver).twice
