@@ -14,7 +14,7 @@ class AssessmentsMailer < ActionMailer::Base
     @participant_name     = participant.user.first_name
     @message              = assessment.message && assessment.message.html_safe
 
-    mail(subject: 'You have been invited', to: participant.user.email)
+    mail(subject: 'Invitation to participate in the Readiness Assessment', to: participant.user.email)
  end
 
   def reminder(assessment, message, participant)
