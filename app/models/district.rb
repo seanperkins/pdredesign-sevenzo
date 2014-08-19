@@ -40,10 +40,5 @@ class District < ActiveRecord::Base
 	has_and_belongs_to_many :users
 	has_many :assessments
 
-	def self.search(search = '')
-    return limit(10) if search.empty?
-
-	  limit(10).where('LOWER(name) LIKE ?', "%#{search.downcase}%")
-	end
-
+  include SimpleSearch
 end
