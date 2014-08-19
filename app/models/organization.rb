@@ -17,10 +17,5 @@ class Organization < ActiveRecord::Base
 
   mount_uploader :logo, LogoUploader
 
-  def self.search(search = '')
-    return limit(10) if search.empty?
-
-    limit(10).where('LOWER(name) LIKE ?', "%#{search.downcase}%")
-  end
-
+  include SimpleSearch
 end
