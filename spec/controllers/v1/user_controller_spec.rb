@@ -184,6 +184,47 @@ describe V1::UserController do
       expect(response.status).to eq(422)
       expect(json["errors"]).to_not be_nil
     end
-  end
 
+    context 'extract_ids' do
+      it 'should not reset the district_ids' do
+        district = District.create!
+        @user.update(districts: [district])
+
+        put :update, {email: 'some@user.com'} 
+
+        @user.reload
+        expect(@user.district_ids).to eq([district.id])
+      end
+
+      it 'should not reset the organization_ids' do
+        org = Organization.create!(name: 'test')
+        @user.update(organizations: [org])
+
+        put :update, {email: 'some@user.com'} 
+
+        @user.reload
+        expect(@user.organization_ids).to eq([org.id])
+      end
+
+      it 'resets :district_ids when a key is explicitly set to nil' do
+        district = District.create!
+        @user.update(districts: [district])
+
+        put :update, {email: 'some@user.com', district_ids: nil} 
+
+        @user.reload
+        expect(@user.district_ids).to be_empty
+      end
+
+      it 'resets :organization_ids when a key is explicitly set to nil' do
+        org = Organization.create!(name: 'test')
+        @user.update(organizations: [org])
+
+        put :update, {email: 'some@user.com', organization_ids: nil} 
+
+        @user.reload
+        expect(@user.organization_ids).to be_empty
+      end
+    end
+  end
 end

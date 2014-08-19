@@ -22,8 +22,10 @@ class V1::UserController < ApplicationController
     @user = current_user
 
     update_params = user_params
-    update_params[:district_ids]     = extract_ids_from_params(:district_ids)
-    update_params[:organization_ids] = extract_ids_from_params(:organization_ids)
+    %w(district_ids organization_ids).each do |key|
+      next unless update_params.keys.include?(key)
+      update_params[key] = extract_ids_from_params(key)
+    end
 
     if current_user.update(update_params)
       render partial: 'v1/shared/user', locals: { user: current_user }
