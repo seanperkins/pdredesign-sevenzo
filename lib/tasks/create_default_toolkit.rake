@@ -7,7 +7,7 @@ namespace :db do
     toolkit = [
       {
         title: 'I. Strategic Planning',
-        description: 'To understand and analyze the current and future state of Professional Development within our district',
+        description: 'To understand and analyze the current and future state of professional development within our district',
         categories: [
           {
             title: 'Current State Analysis',
@@ -97,7 +97,7 @@ namespace :db do
       },
       {
         title: 'III. Implementation Execution',
-        description: 'To execute the system change while collection and analyzing feedback',
+        description: 'To execute the system change while collecting and analyzing feedback',
         categories: [
           {
             title: 'Implementation Pilot',
@@ -129,12 +129,12 @@ namespace :db do
         phase[:categories].each_with_index do |cat, cindex|
           c = p.tool_categories.create(title: cat[:title],
                                       display_order: cindex)
-          
+
           if cat[:subcategories].present?
             cat[:subcategories].each_with_index do |sub, sindex|
               s = c.tool_subcategories.create(title: sub[:title],
                                              display_order: sindex)
-              
+
               if sub[:tools].present?
                 sub[:tools].each_with_index do |tool, tindex|
                   t = s.tools.create(title: tool[:title],
