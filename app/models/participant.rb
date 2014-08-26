@@ -24,6 +24,7 @@ class Participant < ActiveRecord::Base
     UserInvitation
       .where(email: user.email, assessment: assessment)
       .destroy_all
+  rescue
+    nil
   end
-
 end

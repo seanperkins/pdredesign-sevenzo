@@ -15,5 +15,27 @@
 require 'spec_helper'
 
 describe Participant do
+  before           { create_magic_assessments }
+  before           { create_responses }
+  let(:assessment) { @assessment_with_participants }
   let(:subject) { Participant }
+
+  describe '#remote_invitation' do
+    it 'deletes other user invitations' do
+      double = double('invitations')
+      expect(double).to receive(:destroy_all)
+
+      expect(UserInvitation).to receive(:where)
+        .with(email: @user.email, assessment: anything)
+        .and_return(double)
+
+      @participant.destroy
+    end
+
+    it 'doesnt fail and cause a chain fail for destory' do
+      @participant.update(user: nil)
+      @participant.destroy
+    end
+  end
+
 end
