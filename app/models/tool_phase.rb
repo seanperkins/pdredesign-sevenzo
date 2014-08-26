@@ -9,5 +9,6 @@
 #
 
 class ToolPhase < ActiveRecord::Base
+  default_scope { order("display_order ASC") }
   has_many :tool_categories
 end
