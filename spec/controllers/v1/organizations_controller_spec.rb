@@ -79,6 +79,13 @@ describe V1::OrganizationsController do
     end
 
     describe '#search' do
+      it 'doesnt require a login user to do a search' do
+        sign_out :user
+
+        get :search, query: 'name'
+        assert_response :success
+      end
+
       it 'returns a searched org' do
         3.times { |i| Organization.create(name: "name #{i}") }
 

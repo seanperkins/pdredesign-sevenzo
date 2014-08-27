@@ -1,5 +1,5 @@
 class V1::OrganizationsController < ApplicationController
-  before_action :authenticate_user!
+  before_action :authenticate_user!, except: [:search]
 
   def create
     authorize_action_for Organization
