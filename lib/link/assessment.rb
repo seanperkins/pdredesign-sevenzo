@@ -2,8 +2,8 @@ module Link
   class Assessment
     attr_reader :assessment, :user
 
-    delegate :network_partner?,            to: :user
-    delegate :facilitator?, :participant?, to: :assessment
+    delegate :network_partner?, to: :user
+    delegate :facilitator?, :viewer?, :participant?, to: :assessment
 
     def initialize(assessment, user)
       @assessment = assessment
@@ -20,7 +20,7 @@ module Link
     def target
       return Link::Facilitator if facilitator?(user)
       return Link::Participant if participant?(user)
-      return Link::Partner     if network_partner?
+      return Link::Partner     if network_partner? && !viewer?(user)
       Link::Viewer
     end
   end
