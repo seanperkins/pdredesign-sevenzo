@@ -25,6 +25,15 @@ describe Link::Assessment do
       expect(target).to eq(Link::Participant)
     end
 
+    it 'returns viewer when a network_partner is a viewer of an assessment' do
+      partner = Application::create_sample_user
+      partner.update(role: :network_partner)
+
+      assessment.viewers << partner
+      target = subject.new(assessment, partner).send(:target)
+      expect(target).to eq(Link::Viewer)
+    end
+
     it 'defaults to Viewer when its a rando user' do
       user = Application::create_sample_user
       target = subject.new(assessment, user).send(:target)
