@@ -26,10 +26,13 @@ class V1::OrganizationsController < ApplicationController
 
   def upload
     @organization = find_organization(params[:organization_id])
+    authorize_action_for @organization
+    
     @organization.update(logo: params[:file])
 
     render nothing: true
   end
+  authority_actions upload: 'update'
 
   private
 

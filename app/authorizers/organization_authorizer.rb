@@ -4,7 +4,7 @@ class OrganizationAuthorizer < ApplicationAuthorizer
   end
 
   def updatable_by?(user)
-    true
+    user.network_partner?
   end
 
   def self.creatable_by?(user)
