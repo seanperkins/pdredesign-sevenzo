@@ -23,12 +23,21 @@ describe V1::OrganizationsController do
     before { create_org }
 
     it 'sends the file to carrierwave' do
-      double = double(Organization)
+      double = double(Organization).as_null_object
       file   = fixture_file_upload('files/logo.png', 'image/png')
       allow(controller).to receive(:find_organization).and_return(double)
 
       expect(double).to receive(:update).with(logo: anything)
       post :upload, upload: file, organization_id: @org.id
+    end
+
+    it 'does not allow non-networkpartner to upload' do
+      @user.update(role: :district_member)
+
+      file   = fixture_file_upload('files/logo.png', 'image/png')
+
+      post :upload, file: file, organization_id: @org.id
+      assert_response 403 
     end
   end
 
