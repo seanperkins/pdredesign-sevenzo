@@ -19,6 +19,19 @@ describe V1::OrganizationsController do
     @org = Organization.create!(name: 'example org', category_ids: [@cat.id]) 
   end
 
+  describe '#upload' do
+    before { create_org }
+
+    it 'sends the file to carrierwave' do
+      double = double(Organization)
+      file   = fixture_file_upload('files/logo.png', 'image/png')
+      allow(controller).to receive(:find_organization).and_return(double)
+
+      expect(double).to receive(:update).with(logo: anything)
+      post :upload, upload: file, organization_id: @org.id
+    end
+  end
+
   describe '#create' do
     it 'creates an organization' do
       post :create, name: 'Org LLC', category_ids: '1,2,3'

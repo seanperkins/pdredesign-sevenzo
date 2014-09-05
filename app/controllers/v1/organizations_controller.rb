@@ -24,6 +24,13 @@ class V1::OrganizationsController < ApplicationController
     @organization = find_organization
   end
 
+  def upload
+    @organization = find_organization(params[:organization_id])
+    @organization.update(logo: params[:file])
+
+    render nothing: true
+  end
+
   private
 
   def render_errors(errors)
@@ -31,8 +38,8 @@ class V1::OrganizationsController < ApplicationController
     render 'v1/shared/errors', status: 422
   end
 
-  def find_organization
-    Organization.find(params[:id])
+  def find_organization(id = params[:id])
+    Organization.find(id)
   end
 
   def organization_params
