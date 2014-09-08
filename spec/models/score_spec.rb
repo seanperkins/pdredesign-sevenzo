@@ -29,12 +29,11 @@ describe Score do
       Score.create(value: nil, evidence: nil)
     end
 
-    xit 'does not allow for empty evidence after create' do
+    it 'allows for skipped questions' do
       score = Score.create!(value: nil, evidence: nil)
       score.value = 1
 
-      expect(score.save).to eq(false)
-      expect(score.errors_on(:evidence)).not_to be_empty
+      expect(score.save).to eq(true)
     end
   end
 
