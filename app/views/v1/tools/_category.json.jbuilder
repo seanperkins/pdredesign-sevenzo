@@ -5,3 +5,7 @@ json.display_order category.display_order
 json.subcategories category.tool_subcategories do |subcategory|
   json.partial! 'subcategory', subcategory: subcategory
 end
+
+json.tools category.tools do |tool|
+  json.partial! 'tool', tool: tool 
+end
