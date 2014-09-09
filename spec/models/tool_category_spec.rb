@@ -6,10 +6,9 @@ describe ToolCategory do
     category = ToolCategory.create(title: 'category', tool_phase: phase)
 
     5.times {
-      Tool.create(tool_category_id: category.id, title: '', description:'', url:'')
+      Tool.create!(tool_category_id: category.id, title: 'Some title', description:'', url:'')
     }
 
-
-    expect(category.tools.count).to eq(3)
+    expect(category.tools.count).to eq(5)
   end
 end
