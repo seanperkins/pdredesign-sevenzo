@@ -1,6 +1,6 @@
 GIT
   remote: https://cf91ac52033be9b3a1d81b413955d22ab80c45e8:x-oauth-basic@github.com/MobilityLabs/pdr-client.git
-  revision: 7d6bcc7f85686e96ce9a4434d1724ccbd2fadd3a
+  revision: 371185cc20a49a93b795d48bd8c79bdfbc177569
   specs:
     pdr_client (1.0.0)
       angular-rails-templates (>= 0.1.3)
@@ -198,7 +198,7 @@ GEM
       subexec (~> 0.2.1)
     mini_portile (0.6.0)
     minitest (5.4.0)
-    momentjs-rails (2.8.1)
+    momentjs-rails (2.8.3)
       railties (>= 3.1)
     multi_json (1.10.1)
     multipart-post (2.0.0)
