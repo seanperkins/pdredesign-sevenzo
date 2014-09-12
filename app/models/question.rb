@@ -16,6 +16,8 @@ class Question < ActiveRecord::Base
 	belongs_to :category
 	has_one :axis, through: :category
 
+  has_one :key_question, class_name: 'KeyQuestion::Question'
+
 	has_many :answers
 	has_many :scores
 	has_many :feedbacks
