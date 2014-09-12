@@ -10,7 +10,7 @@ json.categories @categories do |category|
   json.name       category.name
   json.axis_id    category.axis_id
 
-  json.questions category.rubric_questions(@rubric) do |question| 
+  json.questions category.rubric_questions(@rubric) do |question|
     json.number      number += 1
     json.id          question.id
     json.order       question.order
@@ -20,6 +20,8 @@ json.categories @categories do |category|
     json.score       controller.score_for(@response, question)
     json.answers     question.answers
     json.partial!    'question', question: question if @response.is_consensus?
+    json.partial!    'v1/shared/key_question', key_question: question.key_question if question.key_question
+
   end
 end
 

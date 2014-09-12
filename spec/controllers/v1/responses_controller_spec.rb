@@ -34,7 +34,6 @@ describe V1::ResponsesController do
       assert_response :forbidden
     end
 
-
     it 'returns the category => question => score struct' do
       get :show, assessment_id: assessment.id, id: 99
 
@@ -70,6 +69,19 @@ describe V1::ResponsesController do
       answers   = questions.first["answers"]
       expect(answers.count).to eq(4)
       expect(answers.first["value"]).to eq(1)
+    end
+
+    it 'returns KeyQuestion and points' do
+      question     = Question.find_by(headline: 'headline 0')
+      key_question = KeyQuestion::Question.create!(text: 'Sometext', question: question)
+      3.times { |i| KeyQuestion::Point.create!(text: "point #{i}", key_question: key_question) }
+
+      get :show, assessment_id: assessment.id, id: 99
+
+      category  = json["categories"].detect { |category| category["name"] == "first"}
+      questions = category["questions"]
+      expect(questions.first["key_question"]).not_to be_nil
+      expect(questions.first["key_question"]["points"].count).to eq(3)
     end
 
   end

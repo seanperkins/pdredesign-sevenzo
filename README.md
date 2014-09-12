@@ -25,3 +25,8 @@ suite.
 ###Foreman
 Alternatively, foreman can be used to start everything by running `foreman start`.  Note that 
 redis server needs to start independently since its more a platform dependency
+
+
+##Rake Tasks
+The `rake db:create_default_toolkit` - task creates the default toolkits.
+The `rake db:create_default_key_questions` - task creates the default key questions.
