@@ -148,6 +148,16 @@ describe V1::UserController do
       kim = User.find_by(email: 'kim@gov.nk')
       expect(kim.districts.count).to eq(0)
     end
+
+    it 'it can take multiple organization_ids' do
+      org1 = Organization.create!(name: "org1")
+      org2 = Organization.create!(name: "org2")
+
+      post_create_user(organization_ids: "#{org1.id}, #{org2.id}")
+
+      kim = User.find_by(email: 'kim@gov.nk')
+      expect(kim.organizations.count).to eq(2)
+    end
   end
 
   context '#show' do

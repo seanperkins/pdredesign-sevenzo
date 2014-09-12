@@ -6,9 +6,10 @@ class V1::UserController < ApplicationController
   end
 
   def create
-    @user              = User.new(user_params)
-    @user.role         = params[:role] || :member
-    @user.district_ids = extract_ids_from_params(:district_ids)
+    @user                  = User.new(user_params)
+    @user.role             = params[:role] || :member
+    @user.district_ids     = extract_ids_from_params(:district_ids)
+    @user.organization_ids = extract_ids_from_params(:organization_ids)
 
     if @user.save
       send_notification_email
