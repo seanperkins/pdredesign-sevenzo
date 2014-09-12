@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 source 'https://rails-assets.org'
 ruby '2.1.2'
 
-gem 'rails', '~> 4.1.0'
+gem 'rails', '= 4.1.5'
 
 gem 'unicorn'
 gem 'pg'
@@ -33,7 +33,7 @@ gem 'pdr_client', git: 'https://cf91ac52033be9b3a1d81b413955d22ab80c45e8:x-oauth
 group :development, :test do
   gem 'foreman'
   gem 'dotenv-rails'
-  gem 'rspec-rails', '~> 3.0.1'
+  gem 'rspec-rails', '~> 3.0'
   gem 'rspec-collection_matchers'
   gem 'spring-commands-rspec'
   gem 'pry'
