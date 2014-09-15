@@ -25,10 +25,10 @@ class UserInvitation < ActiveRecord::Base
   private
   def create_token
     return if token
-    self.token = hash
+    self.token = generate_hash 
   end
 
-  def hash
+  def generate_hash
     SecureRandom.hex[0..9]
   end
 end
