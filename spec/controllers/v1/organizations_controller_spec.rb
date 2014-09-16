@@ -67,18 +67,14 @@ describe V1::OrganizationsController do
       expect(json["errors"]).not_to be_empty
     end
 
-    it 'requires a user to create an org' do
+    it 'anyone can create an org' do
       sign_out :user
 
-      post :create
-      assert_response :unauthorized
-    end
+      post :create, name: 'Org LLC'
+      assert_response :success
 
-    it 'only allows :network_partners to create an org' do
-      @user.update(role: :district_member)
-
-      post :create
-      assert_response :forbidden
+      org = Organization.find_by(name: 'Org LLC')
+      expect(org).not_to be_nil
     end
   end
 
