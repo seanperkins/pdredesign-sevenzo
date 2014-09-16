@@ -1,8 +1,7 @@
 class V1::OrganizationsController < ApplicationController
-  before_action :authenticate_user!, except: [:search]
+  before_action :authenticate_user!, except: [:search, :create]
 
   def create
-    authorize_action_for Organization
     @organization = Organization.new(organization_params)
 
     render_errors(@organization.errors) unless @organization.save
