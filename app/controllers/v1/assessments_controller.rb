@@ -39,6 +39,8 @@ class V1::AssessmentsController < ApplicationController
       @assessment.district_id = assessment_create_params[:district_id]
     end
 
+    assign_current_user_as_participant(@assessment) if current_user.district_member?
+
     if @assessment.save
       render :show
     else
@@ -48,6 +50,11 @@ class V1::AssessmentsController < ApplicationController
   end
 
   private
+  def assign_current_user_as_participant(assessment)
+    participant = Participant.create!(assessment: assessment, user: current_user)
+    @assessment.participants << participant
+  end
+
   def invite_all_users(assessment)
     assessment.participants.update_all(invited_at: Time.now)
     AllParticipantsNotificationWorker.perform_async(assessment.id)

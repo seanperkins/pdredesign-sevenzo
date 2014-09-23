@@ -266,6 +266,31 @@ describe V1::AssessmentsController do
       expect(json["facilitator"]["id"]).to eq(@facilitator.id)
     end
 
+    it 'district member is assigned as a participant automatically' do
+      post :create, 
+        name: 'some assessment', 
+        rubric_id: @rubric.id,
+        due_date: Time.now
+
+      assessment = Assessment.find(json["id"])
+
+      expect(assessment.participant?(@facilitator)).to eq(true)
+    end
+
+    it 'district member is assigned as a participant automatically' do
+      @facilitator.update(role: :network_partner)
+
+      post :create, 
+        name: 'some assessment', 
+        rubric_id: @rubric.id,
+        due_date: Time.now
+
+      assessment = Assessment.find(json["id"])
+
+      expect(assessment.participant?(@facilitator)).to eq(false)
+    end
+
+
     it 'creates a record' do
       post :create, 
         name: 'some assessment', 
