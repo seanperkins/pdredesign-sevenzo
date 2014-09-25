@@ -209,7 +209,8 @@ describe Assessment do
 
         @user.update(team_role: :non_worker)
         @user2.update(team_role: :worker)
-        expect(assessment.team_roles_for_participants).to eq(["non_worker", "worker"])
+        expect(assessment.team_roles_for_participants).to include("non_worker")
+        expect(assessment.team_roles_for_participants).to include("worker")
       end
 
       it 'returns an empty array for nil participants' do
