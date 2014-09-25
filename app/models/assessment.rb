@@ -174,6 +174,7 @@ class Assessment < ActiveRecord::Base
       .joins(:user)
       .pluck("users.team_role")
       .uniq
+      .compact
   end
 
   def response_scores
