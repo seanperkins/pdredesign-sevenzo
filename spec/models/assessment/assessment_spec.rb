@@ -177,6 +177,10 @@ describe Assessment do
         expect(assessment.scores_for_team_role(:worker).count).to eq(3)
       end
 
+      it 'returns an empty array when users dont have roles' do
+        expect(assessment.scores_for_team_role(:worker)).to eq([])
+      end
+
       it 'does not return nil scores' do
         assessment.answered_scores.first.update(value: nil)
 
@@ -206,6 +210,10 @@ describe Assessment do
         @user.update(team_role: :non_worker)
         @user2.update(team_role: :worker)
         expect(assessment.team_roles_for_participants).to eq(["non_worker", "worker"])
+      end
+
+      it 'returns an empty array for nil participants' do
+        expect(assessment.team_roles_for_participants).to eq([])
       end
     end
 
