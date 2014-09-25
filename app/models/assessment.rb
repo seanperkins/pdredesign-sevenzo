@@ -132,7 +132,6 @@ class Assessment < ActiveRecord::Base
     access_requests.where(user_id: user.id).present?
   end
 
-
 	def score_count(question_id, value)
     response_ids = participant_responses.pluck(:id)
 		Score.where(value: value,
@@ -160,15 +159,30 @@ class Assessment < ActiveRecord::Base
 		  .new(scores)
   end
 
-  def all_scores
-    Score
-      .where(response_id: participant_responses.pluck(:id))
-      .where.not(value: nil)
+  def answered_scores
+    response_scores.where.not(value: nil)
+  end
+
+  def scores_for_team_role(role)
+    answered_scores
+      .includes(:response, :participant, :user)
+      .where(users: { team_role: role })
+  end
+
+  def team_roles_for_participants
+    participants 
+      .joins(:user)
+      .pluck("users.team_role")
+      .uniq
   end
 
   def response_scores
-    Score
-      .where(response_id: all_participant_responses.pluck(:id))
+    scores_for_response_ids(all_participant_responses.pluck(:id)) 
+  end
+
+  def scores_for_response_ids(response_ids)
+   Score
+    .where(response_id: response_ids)
   end
 
   def scores(question_id)
@@ -180,9 +194,8 @@ class Assessment < ActiveRecord::Base
 
 	def consensus_score(question_id)
     return unless response
-    Score
-      .find_by(question_id: question_id,
-               response_id: self.response.id).value
+    Score.find_by(question_id: question_id,
+                  response_id: self.response.id).value
 	end
 
   def responses(user)
@@ -194,7 +207,7 @@ class Assessment < ActiveRecord::Base
 	## methods for participants
   #TODO: extract
 	def participant_responses
-      all_participant_responses
+    all_participant_responses
       .where.not(submitted_at: nil)
 	end
 
@@ -214,17 +227,11 @@ class Assessment < ActiveRecord::Base
 		 responder: participants)
   end
 	
-	def consensus_responses
-		self
-		  .includes(:response)
-		  .where("responses.responder_type = 'Assessment' AND responses.submitted_at IS NOT NULL")
-		  .references(:responses)
-	end
-
 	def self.consensus_responses
 		Assessment
 	    .includes(:response)
-	    .where("responses.responder_type = 'Assessment' AND responses.submitted_at IS NOT NULL")
+	    .where("responses.responder_type = 'Assessment' " +
+             "AND responses.submitted_at IS NOT NULL")
 	    .references(:responses)
 	end
 

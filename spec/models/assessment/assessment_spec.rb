@@ -21,7 +21,7 @@
 require 'spec_helper'
 
 describe Assessment do
-  context 'validations' do
+  describe 'validations' do
     it { should validate_presence_of :name }
     it { should validate_presence_of :rubric_id }
     it { should validate_presence_of :district_id }
@@ -71,7 +71,7 @@ describe Assessment do
     end
   end
 
-  context '#pending_requests?' do
+  describe '#pending_requests?' do
     before { create_magic_assessments }
     let(:assessment) { @assessment_with_participants }
 
@@ -84,7 +84,7 @@ describe Assessment do
     end
   end
 
-  context '#completed?' do
+  describe '#completed?' do
     before { @assessment = Assessment.new }
     it 'is completed' do
       allow(@assessment).to receive(:percent_completed)
@@ -99,7 +99,7 @@ describe Assessment do
     end
   end
 
-  context 'status' do
+  describe 'status' do
     before { @assessment = Assessment.new }
 
     it 'is draft when not assigned' do
@@ -128,7 +128,7 @@ describe Assessment do
     end
   end
   
-  context '#all_scores' do
+  describe '#answered_scores' do
     let(:assessment) { @assessment_with_participants }
 
     before { create_magic_assessments }
@@ -140,7 +140,7 @@ describe Assessment do
     end
 
     it 'returns all the scores for an assessment' do
-      expect(assessment.all_scores.count).to eq(3)
+      expect(assessment.answered_scores.count).to eq(3)
     end
 
     it 'does not count Assessment scores' do
@@ -149,10 +149,67 @@ describe Assessment do
                       submitted_at: Time.now,
                       id: 42)
 
-      expect(assessment.all_scores.count).to eq(3)
+      expect(assessment.answered_scores.count).to eq(3)
     end
 
-    context '#scores' do
+    it 'does not return nil scores' do
+      Score.first.update(value: nil)
+      expect(assessment.answered_scores.count).to eq(2)
+    end
+
+    describe '#scores_for_team_role' do
+      let(:assessment) { @assessment_with_participants }
+      before { create_magic_assessments }
+
+      before do
+       create_struct
+
+       Response
+         .find(99)
+         .update(responder: @participant, submitted_at: Time.now)
+      end     
+
+      it 'returns scores for the specified :team_role' do
+        expect(assessment.scores_for_team_role(:worker).count).to eq(0)
+
+        @user.update(team_role: :worker)
+
+        expect(assessment.scores_for_team_role(:worker).count).to eq(3)
+      end
+
+      it 'does not return nil scores' do
+        assessment.answered_scores.first.update(value: nil)
+
+        @user.update(team_role: :worker)
+        expect(assessment.scores_for_team_role(:worker).count).to eq(2)
+      end
+    end
+
+    describe '#team_roles_for_participants' do
+      let(:assessment) { @assessment_with_participants }
+      before { create_magic_assessments }
+
+      before do
+       create_struct
+
+       Response
+         .find(99)
+         .update(responder: @participant, submitted_at: Time.now)
+      end      
+
+      it 'returns distinct roles for all answered scores participant' do
+        @user.update(team_role: :worker)
+        @user2.update(team_role: :worker)
+
+        expect(assessment.team_roles_for_participants).to eq(["worker"])
+
+        @user.update(team_role: :non_worker)
+        @user2.update(team_role: :worker)
+        expect(assessment.team_roles_for_participants).to eq(["non_worker", "worker"])
+      end
+    end
+
+    describe '#scores' do
       it 'returns scores for a particular question id' do
         question = Question.find_by(headline: "headline 1")
         expect(assessment.scores(question.id).count).to eq(1)
@@ -160,7 +217,7 @@ describe Assessment do
     end
   end
 
-  context '#score_count' do
+  describe '#score_count' do
     before { create_magic_assessments }
     before { create_struct }
     before { create_responses }
@@ -173,7 +230,7 @@ describe Assessment do
     end
   end
 
-  context 'with data' do
+  describe 'with data' do
     before { create_magic_assessments }
     let(:assessment) { @assessment_with_participants }
 
@@ -252,7 +309,7 @@ describe Assessment do
         end
       end
 
-      context '#participant_response' do
+      describe '#participant_response' do
         it 'returns the participants submitted responses' do
           expect do
             @response.update(submitted_at: Time.now)
@@ -260,7 +317,7 @@ describe Assessment do
        end
       end
 
-      context '#participants_not_responded' do
+      describe '#participants_not_responded' do
         it 'returns the participants that have not responded' do
           expect do
             @response.update(submitted_at: Time.now)
@@ -268,7 +325,7 @@ describe Assessment do
        end
       end
 
-      context '#participants_viewed_report' do
+      describe '#participants_viewed_report' do
         it 'gets users who have viewed the report' do
           expect do
             @participant.update(report_viewed_at: Time.now)
@@ -276,7 +333,7 @@ describe Assessment do
         end
       end
 
-      context '#response_submitted' do
+      describe '#response_submitted' do
         before do
           @response = Response.create(responder_type: 'Assessment',
                                       responder:      @facilitator2)
@@ -293,7 +350,7 @@ describe Assessment do
         end
       end
 
-      context '#percent_completed' do
+      describe '#percent_completed' do
         it 'gets 0% complete' do
           expect(assessment.percent_completed).to eq(0.0)
         end

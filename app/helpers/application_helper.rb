@@ -1,6 +1,7 @@
 module ApplicationHelper
-  def scores_for_assessment(assessment)
-    assessment.all_scores
+  def scores_for_assessment(assessment, team_role = nil)
+    return assessment.scores_for_team_role(team_role) if team_role
+    assessment.answered_scores
   end
 
   def timestamp(date_time)

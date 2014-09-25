@@ -23,10 +23,13 @@ class V1::ConsensusController < V1::ResponsesController
   end
 
   def show
-    @response = find_response
+    @response  = find_response
+
     if @response
       @rubric     = assessment.rubric
       @categories = @response.categories
+      @team_role  = params[:team_role]
+      @team_roles = assessment.team_roles_for_participants
       authorize_action_for @response
     else
       render status: 404, nothing: true
