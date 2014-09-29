@@ -119,6 +119,13 @@ describe V1::OrganizationsController do
         get :show, id: @org.id
         expect(assigns(:organization)).to eq(@org)
       end
+
+      it 'does not require a user' do
+        sign_out @user
+
+        get :show, id: @org.id
+        expect(assigns(:organization)).to eq(@org)
+      end
     end
 
   end
