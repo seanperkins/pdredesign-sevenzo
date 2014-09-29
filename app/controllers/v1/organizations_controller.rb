@@ -1,5 +1,5 @@
 class V1::OrganizationsController < ApplicationController
-  before_action :authenticate_user!, except: [:search, :create]
+  before_action :authenticate_user!, except: [:search, :create, :show]
 
   def create
     @organization = Organization.new(organization_params)
