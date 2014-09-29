@@ -7,6 +7,11 @@
 `pdr_server` is the API for the PD Redesign server. It also
 consumes the `pdc_client` gem.  Which is an Angular client.
 
+##Deploy
+run `bundle exec rake assets:precompile` to precompile assets
+and push to heroku via `git push heroku`.
+
+
 ##Specs
 Specs are implemented with RSpec(3.x) and the `expect` syntax.
 Specs can be run via `spring rspec` to run the test 
