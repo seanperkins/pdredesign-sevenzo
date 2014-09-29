@@ -6,8 +6,6 @@ class V1::ToolsController < ApplicationController
   end
 
   def create
-    status(403) and return unless current_user.network_partner?
-
     @tool      = Tool.new(tool_create_params)
     @tool.user = current_user
 
