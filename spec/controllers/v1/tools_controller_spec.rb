@@ -23,13 +23,6 @@ describe V1::ToolsController do
       assert_response :unauthorized
     end
 
-    it 'requires a network partner to create' do
-      @partner.update(role: :other)
-
-      post :create
-      assert_response :forbidden
-    end
-
     it 'can create a tool' do
       phase    = ToolPhase.create(title: 'test', description: 'description') 
       category = ToolCategory.create(title: 'category', tool_phase: phase)
