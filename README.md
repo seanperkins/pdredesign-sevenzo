@@ -8,7 +8,7 @@
 consumes the `pdc_client` gem.  Which is an Angular client.
 
 ##Deploy
-run `bundle exec rake assets:precompile` to precompile assets
+run `RAILS_ENV=production bundle exec rake assets:precompile` to precompile assets
 and push to heroku via `git push heroku`.
 
 
