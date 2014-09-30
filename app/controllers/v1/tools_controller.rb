@@ -17,13 +17,16 @@ class V1::ToolsController < ApplicationController
     end
   end
 
-  def tools_for(subcategory)
-    default_tools(subcategory) +
-    subcategory
-      .tools
-      .joins(:districts)
-      .where(districts: {id: current_user.district_ids})
-      .uniq
+  def tools_for_subcategory(subcategory)
+    default_tools(subcategory) + tools_for(subcategory)
+  end
+
+  def tools_for(category)
+    category 
+     .tools
+     .joins(:districts)
+     .where(districts: {id: current_user.district_ids})
+     .uniq
   end
 
   private
