@@ -47,6 +47,7 @@ class V1::ParticipantsController < ApplicationController
       .includes(:districts)
       .where(districts: { id: district_id})
       .where.not(id: user_ids)
+      .where.not(role: :network_partner)
   end
 
   def participant_params

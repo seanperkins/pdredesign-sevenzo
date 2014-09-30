@@ -132,6 +132,18 @@ describe V1::ParticipantsController do
       expect(participants.count).to eq(1)
     end
 
+    it 'does not return network partners' do
+      get :all, assessment_id: assessment.id  
+
+      Application::create_sample_user(
+        districts: [@district2],
+        role: :network_partner)
+
+      participants = assigns(:users)
+      expect(participants.count).to eq(1)
+    end
+
+
     it 'forbids non-facilitators users' do
       sign_in @user
       get :all, assessment_id: assessment.id  
