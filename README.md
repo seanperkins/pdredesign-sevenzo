@@ -8,9 +8,10 @@
 consumes the `pdc_client` gem.  Which is an Angular client.
 
 ##Deploy
-run `RAILS_ENV=production bundle exec rake assets:precompile` to precompile assets
-and push to heroku via `git push heroku`.
-
+- run `bundle install` to ensure the latest `pdr_client` is being refrenced
+- run `RAILS_ENV=production S3_KEY=i S3_SECRET=i bundle exec rake assets:precompile` to precompile assets
+- Commit newly created assets to the repo and push to heroku
+- push to heroku `git push heroku`.
 
 ##Specs
 Specs are implemented with RSpec(3.x) and the `expect` syntax.
