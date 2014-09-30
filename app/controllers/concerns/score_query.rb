@@ -3,6 +3,7 @@ module ScoreQuery
 
   def create_empty_scores(response)
     response.questions.each do |question|
+      next if score_for(response, question).present?
       response.scores.create!(question: question)
     end
   end

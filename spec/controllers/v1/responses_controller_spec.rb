@@ -141,6 +141,7 @@ describe V1::ResponsesController do
       expect(json["id"]).to eq(42)
     end
 
+
     it 'only creates a response if the user is a participant' do
       sign_in @user3
       post :create, assessment_id: assessment.id
@@ -154,5 +155,23 @@ describe V1::ResponsesController do
       post :create, assessment_id: assessment.id
       expect(json["scores"].count).to eq(3)
     end
+
+    it 'does not create scores for a response that already has them' do
+      3.times { @rubric.questions.create! }
+
+      response = Response.create(
+                  rubric_id:      @rubric.id,
+                  responder_id:   @participant.id,
+                  responder_type: 'Participant',
+                  id: 42)
+
+
+      controller.create_empty_scores(response)
+      post :create, assessment_id: assessment.id
+
+      assert_response :success
+      expect(json["scores"].count).to eq(3)
+    end
+
   end
 end
