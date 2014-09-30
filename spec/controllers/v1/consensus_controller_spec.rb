@@ -112,6 +112,19 @@ describe V1::ConsensusController do
       expect(assessment.has_response?).to eq(true)
     end
 
+    it 'does not error when a consensus already exists' do
+      consensus = Response.create!(
+                    rubric: assessment.rubric,
+                    responder_type: 'Assessment',
+                    responder_id: assessment.id)
+
+      sign_in @facilitator2
+
+      post :create, assessment_id: assessment.id
+      assert_response :success
+
+    end
+
   end
 end
 
