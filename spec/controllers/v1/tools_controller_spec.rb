@@ -169,11 +169,24 @@ describe V1::ToolsController do
         end
 
         it 'does not return other district users tools' do
-           sign_in @other_user
+          sign_in @other_user
 
           get :index
           tools = json.first["categories"].first["tools"]
           expect(tools.count).to eq(0)
+        end
+
+        it 'returns category tools when users share an organization' do
+          org = Organization.create!(name: "justice league")
+
+          @other_user.update(organization_ids: org.id)
+          @creating_user.update(organization_ids: org.id)
+
+          sign_in @other_user
+
+          get :index
+          tools = json.first["categories"].first["tools"]
+          expect(tools.count).to eq(1)
         end
       end
 

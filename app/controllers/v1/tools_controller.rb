@@ -22,6 +22,7 @@ class V1::ToolsController < ApplicationController
   end
 
   def tools_for(category)
+    tools_for_category_and_org(category, current_user.organizations.first) +
     category 
      .tools
      .joins(:districts)
@@ -30,6 +31,15 @@ class V1::ToolsController < ApplicationController
   end
 
   private
+  def tools_for_category_and_org(category, organization)
+    return [] unless organization
+    category 
+     .tools
+     .joins(:organizations)
+     .where(organizations: {id: organization.id})
+     .uniq
+  end
+
   def default_tools(subcategory)
     subcategory.tools.where(is_default: true)
   end
