@@ -2,10 +2,10 @@ class V1::ConsensusController < V1::ResponsesController
   before_action :authenticate_user!
 
   def create
-    @response = Response
-      .new(responder_type: 'Assessment',
-           responder_id: assessment.id,
-           rubric: assessment.rubric)
+    @response = Response.find_or_initialize_by(
+                  responder_type: 'Assessment',
+                  responder_id: assessment.id,
+                  rubric: assessment.rubric)
 
     authorize_action_for @response
     @response.save
