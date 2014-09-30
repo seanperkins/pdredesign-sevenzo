@@ -19,6 +19,7 @@ class Tool < ActiveRecord::Base
 
   has_one    :tool_category, through: :tool_subcategory
   has_many   :districts, through: :user
+  has_many   :organizations, through: :user
 
   validates :title, presence: true
 
