@@ -119,10 +119,10 @@ describe V1::ToolsController do
 
     context 'with data' do
       def create_data
-        phase       = ToolPhase.create(title: 'test', description: 'description') 
-        category    = ToolCategory.create(title: "category 1", tool_phase: phase)
-        subcategory = ToolSubcategory.create(title: 'Expected Title',
-                                             tool_category: category)
+        @phase       = ToolPhase.create(title: 'test', description: 'description') 
+        @category    = ToolCategory.create(title: "category 1", tool_phase: @phase)
+        @subcategory = ToolSubcategory.create(title: 'Expected Title',
+                                             tool_category: @category)
 
         district  = District.create!
         
@@ -136,20 +136,48 @@ describe V1::ToolsController do
         Tool.create(title: 't',
                     description: 'd',
                     user: @creating_user,
-                    tool_subcategory: subcategory)
+                    tool_subcategory: @subcategory)
 
+        
       end
 
-      it 'returns user created tools' do
-        create_data
+      before { create_data }
+
+      it 'returns user created tools for subcategory' do
         sign_in @login_user
         get :index
         tools = json.first["categories"].first["subcategories"].first["tools"]
         expect(tools.count).to eq(1)
       end
 
+      context 'with category level tool' do
+        before do 
+         Tool.create(title: 'example tool',
+            description: 'some desc',
+            user: @creating_user,
+            tool_category_id: @category.id)
+        end
+
+        it 'returns user created tools for categories' do
+          sign_in @login_user
+
+          get :index
+          tools = json.first["categories"].first["tools"]
+
+          expect(tools.count).to eq(1)
+          expect(tools.first['title']).to eq('example tool')
+        end
+
+        it 'does not return other district users tools' do
+           sign_in @other_user
+
+          get :index
+          tools = json.first["categories"].first["tools"]
+          expect(tools.count).to eq(0)
+        end
+      end
+
       it 'does not return duplicates if part of multiple districts' do
-        create_data
         district2 = District.create!
         @creating_user.districts << district2
         @login_user.districts << district2
@@ -162,7 +190,6 @@ describe V1::ToolsController do
       end
 
       it 'returns user created tools for current district' do
-        create_data
         sign_in @other_user
 
         get :index
