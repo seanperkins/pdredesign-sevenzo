@@ -10,6 +10,7 @@
 #  display_order       :integer
 #  tool_subcategory_id :integer
 #  user_id             :integer
+#  tool_category_id    :integer
 #
 
 class Tool < ActiveRecord::Base
