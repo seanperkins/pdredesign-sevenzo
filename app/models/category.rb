@@ -18,5 +18,6 @@ class Category < ActiveRecord::Base
     Question
       .includes(:rubrics)
       .where(category: self, rubrics: { id: rubric.id })
+      .ordered
   end
 end

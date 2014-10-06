@@ -18,10 +18,12 @@ class Question < ActiveRecord::Base
 
   has_one :key_question, class_name: 'KeyQuestion::Question'
 
-	has_many :answers
+	has_many :answers, dependent: :destroy
 	has_many :scores
 	has_many :feedbacks
 
 	has_and_belongs_to_many :rubrics
 	accepts_nested_attributes_for :answers, allow_destroy: true
+
+  scope :ordered, -> { order(order: :asc) } 
 end

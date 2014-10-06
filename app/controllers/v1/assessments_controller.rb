@@ -61,7 +61,7 @@ class V1::AssessmentsController < ApplicationController
   end
 
   def pick_rubric
-    Rubric.order("version ASC").first.id
+    Rubric.where.not(version: nil).order(version: :desc).first.id
   end
 
   def user_role
