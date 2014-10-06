@@ -36,14 +36,14 @@ describe V1::InvitationsController do
     describe '#redeem' do
       it 'authorizes a user if they already have an account' do
         post :redeem, token: 'expected_token'
-        expect(warden.authenticated?(:user)).to eq(true)
+        expect(controller.current_user).not_to be_nil
       end
 
       it 'gives a 401 when a user does exist' do
         @user.delete
 
         post :redeem, token: 'expected_token'
-        expect(warden.authenticated?(:user)).to eq(false)
+        expect(controller.current_user).to be_nil
 
         assert_response :unauthorized
       end
