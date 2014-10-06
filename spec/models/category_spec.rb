@@ -36,5 +36,27 @@ describe Category do
       expect(rubric2_questions.first[:id]).to eq(question2.id)
 
     end
+
+    it 'orders the questions correctly' do
+      category = Category.create!(name: 'some cat')  
+      rubric   = Rubric.create!
+
+      question1 = rubric.questions
+        .create!(headline: 'question1',
+                 order: 1, 
+                 content: 'some content',
+                 category: category)
+
+      question2 = rubric.questions
+        .create!(headline: 'question2',
+                 order: 0, 
+                 content: 'some content',
+                 category: category)     
+
+      questions = category.rubric_questions(rubric)
+      expect(questions[0]).to eq(question2)
+      expect(questions[1]).to eq(question1)
+
+    end
   end
 end

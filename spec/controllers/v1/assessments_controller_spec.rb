@@ -302,6 +302,8 @@ describe V1::AssessmentsController do
 
     it 'sets the newest rubric if one is not provided' do
       @rubric = Rubric.create!(version: 99)
+      Rubric.create!(version: 95)
+      
       create_struct
 
       post :create, 
@@ -313,6 +315,7 @@ describe V1::AssessmentsController do
 
     it 'allows to set the district_id' do
       district = District.create!
+      Rubric.create!(version: 95)
       create_struct
 
       post :create, 
