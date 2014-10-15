@@ -7,9 +7,12 @@ class ReminderNotificationWorker
     create_message_entry(assessment, message)
 
     assessment.participants.each do |participant|
+      next if participant.response && participant.response.completed?
       AssessmentsMailer
         .reminder(assessment, message, participant)
         .deliver
+
+      participant.update(reminded_at: Time.now)
     end
   end
 
