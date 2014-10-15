@@ -17,6 +17,34 @@ describe ReminderNotificationWorker do
     subject.new.perform(assessment.id, 'the message')
   end
 
+  it 'does not send an email to users that have completed a response' do
+    create_struct
+    create_responses
+
+    @participant.response.update(submitted_at: Time.now)
+    @participant2.response.update(submitted_at: nil)
+
+    double = double("mailer").as_null_object
+    expect(AssessmentsMailer).to receive(:reminder)
+      .exactly(1).times
+      .with(anything, anything, @participant2).and_return(double)
+
+    subject.new.perform(assessment.id, 'the message')
+
+  end
+
+  it 'sets the :reminded_at field' do
+    subject.new.perform(assessment.id, 'the message')
+    @participant.update(reminded_at: nil)
+    @participant2.update(reminded_at: nil)
+
+    @participant.reload
+    @participant2.reload
+
+    expect(@participant.reminded_at).not_to be_nil
+    expect(@participant2.reminded_at).not_to be_nil
+  end
+
   it 'adds a message entry for the assessment' do
     subject.new.perform(assessment.id, 'the message')
     message = Message
