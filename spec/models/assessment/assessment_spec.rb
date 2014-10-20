@@ -153,8 +153,13 @@ describe Assessment do
     end
 
     it 'does not return nil scores' do
-      Score.first.update(value: nil)
+      Score.first.update(value: nil, evidence: nil)
       expect(assessment.answered_scores.count).to eq(2)
+    end
+
+    it 'returns skipped scores' do
+      Score.first.update(value: nil)
+      expect(assessment.answered_scores.count).to eq(3)
     end
 
     describe '#scores_for_team_role' do
@@ -182,7 +187,7 @@ describe Assessment do
       end
 
       it 'does not return nil scores' do
-        assessment.answered_scores.first.update(value: nil)
+        assessment.answered_scores.first.update(value: nil, evidence: nil)
 
         @user.update(team_role: :worker)
         expect(assessment.scores_for_team_role(:worker).count).to eq(2)
