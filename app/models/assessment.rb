@@ -160,7 +160,9 @@ class Assessment < ActiveRecord::Base
   end
 
   def answered_scores
-    response_scores.where.not(evidence: nil)
+    response_scores
+      .where.not(evidence: nil)
+      .where.not(evidence: '')
   end
 
   def scores_for_team_role(role)

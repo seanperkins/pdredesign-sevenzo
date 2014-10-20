@@ -153,7 +153,7 @@ describe Assessment do
     end
 
     it 'does not return nil scores' do
-      Score.first.update(value: nil, evidence: nil)
+      Score.first.update(value: nil, evidence: '')
       expect(assessment.answered_scores.count).to eq(2)
     end
 
