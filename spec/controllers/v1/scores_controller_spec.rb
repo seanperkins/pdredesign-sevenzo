@@ -28,6 +28,25 @@ describe V1::ScoresController do
       expect(score.evidence).to eq('new score')
     end
 
+    it 'renders errors' do
+      question = Question.first
+
+      double = double("Score").as_null_object
+      allow(double).to receive(:save).and_return(false)
+      allow(double).to receive(:errors).and_return([{'value' => 'is bad'}])
+      allow(controller).to receive(:find_or_initialize).and_return(double)
+
+      post :create, assessment_id: assessment.id, 
+                    response_id: 99,
+                    question_id: question.id,
+                    value: 1,
+                    evidence: 'new score' 
+
+
+      expect(response.status).to eq(422)
+      expect(json["errors"]).not_to be_empty
+    end
+
     it 'does not allow a non-owner to create a score' do
       sign_in @user2
       question = Question.first
