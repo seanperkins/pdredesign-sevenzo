@@ -26,4 +26,8 @@ class Question < ActiveRecord::Base
 	accepts_nested_attributes_for :answers, allow_destroy: true
 
   scope :ordered, -> { order(order: :asc) } 
+  def ordered_answers
+    answers.reorder(value: :asc)
+  end
+
 end
