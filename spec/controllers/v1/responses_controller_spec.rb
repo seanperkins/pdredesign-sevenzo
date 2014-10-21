@@ -71,6 +71,20 @@ describe V1::ResponsesController do
       expect(answers.first["value"]).to eq(1)
     end
 
+    it 'returns the answers in the correct order' do
+      db_answers = Response.find(99).questions.first.answers
+      db_answers.first.update(value: 4)
+      db_answers.last.update(value: 1)
+
+      get :show, assessment_id: assessment.id, id: 99
+
+      category  = json["categories"].detect { |category| category["name"] == "first"}
+      questions = category["questions"]
+      answers   = questions.first["answers"]
+      expect(answers.count).to eq(4)
+      expect(answers.first["value"]).to eq(1)
+    end
+
     it 'returns KeyQuestion and points' do
       question     = Question.find_by(headline: 'headline 0')
       key_question = KeyQuestion::Question.create!(text: 'Sometext', question: question)
