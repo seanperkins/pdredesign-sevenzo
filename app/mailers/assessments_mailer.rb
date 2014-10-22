@@ -13,6 +13,7 @@ class AssessmentsMailer < ApplicationMailer
     subject = 'Invitation to participate in the Readiness Assessment'
     mail(subject: subject, to: participant.user.email) do |format|
       format.html { render 'notifications_mailer/invite' }
+      format.text { render 'notifications_mailer/invite' }
     end
  end
 
