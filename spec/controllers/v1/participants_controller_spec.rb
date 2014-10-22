@@ -173,7 +173,7 @@ describe V1::ParticipantsController do
       end
 
       it 'returns the invitation email body of assigned email' do
-        double = double('AssessmentMailer', body: 'expected')
+        double = double('AssessmentMailer', text_part: OpenStruct.new(body: 'expected'))
         allow(AssessmentsMailer).to receive(:assigned).and_return(double)
 
         get :mail, assessment_id: assessment.id, participant_id: @participant.id
@@ -181,7 +181,7 @@ describe V1::ParticipantsController do
       end
 
       it 'returns the invitation email body of the user invitation email' do
-        double = double('NotificationsMailer', body: 'expected')
+        double = double('AssessmentMailer', text_part: OpenStruct.new(body: 'expected'))
         allow(NotificationsMailer).to receive(:invite).and_return(double)
 
         UserInvitation.create!(user_id: @participant.user.id,

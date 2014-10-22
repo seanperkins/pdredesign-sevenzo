@@ -14,7 +14,7 @@ describe AssessmentsMailer do
     
     it 'sends the corrent assessment link' do
       mail = subject.assigned(assessment, @participant)
-      expect(mail.body).to include("/\#/assessments/#{assessment.id}/responses")
+      expect(mail.html_part.body).to include("/\#/assessments/#{assessment.id}/responses")
     end
   end
 
