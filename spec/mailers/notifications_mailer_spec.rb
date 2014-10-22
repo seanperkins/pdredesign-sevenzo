@@ -23,6 +23,7 @@ describe NotificationsMailer do
 
     it 'has the correct invite link' do
       expect(mail.html_part.body.to_s).to include('/#/invitations/expected')
+      expect(mail.text_part.body.to_s).to include('/#/invitations/expected')
     end
 
     it 'renders the email in plain text' do
