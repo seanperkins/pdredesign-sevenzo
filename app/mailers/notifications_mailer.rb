@@ -15,7 +15,7 @@ class NotificationsMailer < ApplicationMailer
     @message             = invite.assessment.message.html_safe
     @due_date            = invite.assessment.due_date.strftime("%B %d, %Y")    
     @assessment_link     = invite_url(invite.token)
-
+    
     mail(to: invite.email)
   end
 

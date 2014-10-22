@@ -20,9 +20,15 @@ describe NotificationsMailer do
     it 'sends the invite mail to the user on invite' do
       expect(mail.to).to include('test@user.com')
     end
-    
+
     it 'has the correct invite link' do
-      expect(mail.body).to include('/#/invitations/expected')
+      expect(mail.html_part.body.to_s).to include('/#/invitations/expected')
     end
+
+    it 'renders the email in plain text' do
+      mail = NotificationsMailer.invite(@invite.id)
+      expect(mail.text_part.body.to_s).not_to be_nil
+    end
+
   end
 end
