@@ -1,6 +1,6 @@
 GIT
   remote: https://cf91ac52033be9b3a1d81b413955d22ab80c45e8:x-oauth-basic@github.com/MobilityLabs/pdr-client.git
-  revision: 8a0991a773b1c283f6beba9ead91d06195b1fcaa
+  revision: 169a45061722f3ffc7ef20b2cbeb13abd77bfd02
   specs:
     pdr_client (1.0.0)
       angular-rails-templates (>= 0.1.3)
@@ -261,7 +261,7 @@ GEM
     rails-assets-angular (1.2.26)
     rails-assets-angular-bootstrap (0.11.2)
       rails-assets-angular (>= 1)
-    rails-assets-angular-file-upload (1.1.1)
+    rails-assets-angular-file-upload (1.1.5)
       rails-assets-angular (~> 1.2.11)
       rails-assets-es5-shim (>= 3.4.0)
     rails-assets-angular-moment (0.8.2)
@@ -354,7 +354,7 @@ GEM
       sass (~> 3.2.0)
       sprockets (~> 2.8, <= 2.11.0)
       sprockets-rails (~> 2.0)
-    selectize-rails (0.11.0)
+    selectize-rails (0.11.2)
     shoulda-matchers (2.7.0)
       activesupport (>= 3.0.0)
     sidekiq (3.2.5)
