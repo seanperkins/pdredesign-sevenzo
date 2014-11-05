@@ -9,7 +9,7 @@ consumes the `pdc_client` gem.  Which is an Angular client.
 
 ##Deploy
 - run `bundle install` to ensure the latest `pdr_client` is being refrenced
-- run `RAILS_ENV=production S3_KEY=i S3_SECRET=i bundle exec rake assets:precompile` to precompile assets
+- run `RAILS_ENV=production S3_KEY=i S3_SECRET=i bundle exec rake assets:precompile ROLLBAR_ENV=production ROLLBAR_TOKEN=xxxxx` to precompile assets
 - Commit newly created assets to the repo and push to heroku
 - push to heroku `git push heroku`.
 
