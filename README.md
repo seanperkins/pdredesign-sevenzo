@@ -17,11 +17,17 @@ consumes the `pdc_client` gem.  Which is an Angular client.
 Specs are implemented with RSpec(3.x) and the `expect` syntax.
 Specs can be run via `spring rspec` to run the test 
 suite.
+  - run `rake db:drop RAILS_ENV=test` to remove any test db
+  - run `rake db:create RAILS_ENV=test` to remove any test db
+  - Import an existing database run `psql "pdr_test" < db/data/pdr_dev.sql`
+  - run `rake db:migrate RAILS_ENV=test`
+
+This should be a one time database setup for the testing env
 
 ##Getting Started
   - Run `bundle install` to install dependencies
   - Run `rake db:create` to create database.
-  - Import an existing database run `psql "pdr_dev" < db/database/pdr_dev.sql`
+  - Import an existing database run `psql "pdr_dev" < db/data/pdr_dev.sql`
   - Run `rake db:migrate` to migrate the database
   - Start `rails` with `rails server`
   - Start `redis` with `redis-server /usr/local/etc/redis.conf` (OS X, `brew install redis`)
