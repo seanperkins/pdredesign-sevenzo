@@ -19,8 +19,8 @@ Specs can be run via `spring rspec` to run the test
 suite.
   - run `rake db:drop RAILS_ENV=test` to remove any test db
   - run `rake db:create RAILS_ENV=test` to remove any test db
-  - Import an existing database run `psql "pdr_test" < db/data/pdr_dev.sql`
-  - run `rake db:migrate RAILS_ENV=test`
+  - run `rake db:schema:load RAILS_ENV=test`
+  - run `bundle exec rspec`
 
 This should be a one time database setup for the testing env
 
