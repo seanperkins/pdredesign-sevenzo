@@ -16,20 +16,15 @@ class V1::ReportController < ApplicationController
     @assessment   = assessment
     @rubric       = assessment.rubric
     @response     = consensus
-    @categories   = @response.categories
-    unless @response
-      not_found
-    end
+    @categories   = @assessment.categories
+    not_found and return unless @response
   end
 
   def participant_consensu_report
     @assessment   = assessment
     @consensu     = consensus
     @participant  = Participant.find_by(assessment: assessment)
-
-    unless @participant
-      not_found
-    end
+    not_found and return unless @response
   end
 
   private

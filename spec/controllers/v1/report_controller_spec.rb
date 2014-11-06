@@ -63,9 +63,10 @@ describe V1::ReportController do
 
     it 'get the consensus report response' do
       get :consensus_report, assessment_id: assessment.id, consensu_id: consensu.id
+
+      assert_response 200
       assert_match /participants/, response.body
       assert_match /questions/, response.body
-      assert_response 200
     end
 
     it 'render not found when consensus does not exist' do
@@ -80,7 +81,7 @@ describe V1::ReportController do
     end
   end
 
-  context "#participant_consensu_report" do
+  xcontext "#participant_consensu_report" do
     it 'get the participant consensus report' do
       get :participant_consensu_report, assessment_id: assessment.id, consensu_id: consensu.id, participant_id: 1
       assert_match /participants/, response.body
