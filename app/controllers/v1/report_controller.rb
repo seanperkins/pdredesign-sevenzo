@@ -16,8 +16,9 @@ class V1::ReportController < ApplicationController
     @assessment   = assessment
     @rubric       = assessment.rubric
     @response     = consensus
-    @categories   = @assessment.categories
     not_found and return unless @response
+    @categories   = @response.categories
+    not_found and return unless @categories
   end
 
   def participant_consensu_report
