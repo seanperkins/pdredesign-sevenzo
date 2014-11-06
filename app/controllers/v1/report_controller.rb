@@ -12,6 +12,26 @@ class V1::ReportController < ApplicationController
     update_participant
   end
 
+  def consensus_report
+    @assessment   = assessment
+    @rubric       = assessment.rubric
+    @response     = consensus
+    @categories   = @response.categories
+    unless @response
+      not_found
+    end
+  end
+
+  def participant_consensu_report
+    @assessment   = assessment
+    @consensu     = consensus
+    @participant  = Participant.find_by(assessment: assessment)
+
+    unless @participant
+      not_found
+    end
+  end
+
   private
   def report 
     @report ||= Assessments::Report.new(assessment)
@@ -27,7 +47,11 @@ class V1::ReportController < ApplicationController
   end
 
   def assessment
-    Assessment.find(params[:assessment_id])
+    Assessment.find_by(id: params[:assessment_id])
+  end
+
+  def consensus
+    Response.find_by(responder_type: 'Assessment', id: params[:consensu_id])
   end
 end
 

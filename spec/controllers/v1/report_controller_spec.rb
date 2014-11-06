@@ -2,15 +2,18 @@ require  'spec_helper'
 
 describe V1::ReportController do
   render_views
+
   before :each do
     request.env["HTTP_ACCEPT"] = 'application/json'
   end
 
+  before { create_magic_assessments }
+  before { create_struct }
+  before { sign_in @user2 }
+  let(:assessment) { @assessment_with_participants }
+  let(:consensu){ Response.create(responder_id:   assessment.id, responder_type: 'Assessment') }
+
   context '#show' do
-    before { create_magic_assessments }
-    before { create_struct }
-    before { sign_in @user2 }
-    let(:assessment) { @assessment_with_participants }
 
     it 'requires a user login' do
       sign_out :user
@@ -54,6 +57,47 @@ describe V1::ReportController do
       assert_response :forbidden
     end
 
+  end
+
+  context "#consensus_report" do
+
+    it 'get the consensus report response' do
+      get :consensus_report, assessment_id: assessment.id, consensu_id: consensu.id
+      assert_match /participants/, response.body
+      assert_match /questions/, response.body
+      assert_response 200
+    end
+
+    it 'render not found when consensus does not exist' do
+      get :consensus_report, assessment_id: assessment.id, consensu_id: 9990
+      assert_response 404
+    end
+
+    it 'requires a user login' do
+      sign_out :user
+      get :consensus_report, assessment_id: 1, consensu_id: 1
+      assert_response 401
+    end
+  end
+
+  context "#participant_consensu_report" do
+    it 'get the participant consensus report' do
+      get :participant_consensu_report, assessment_id: assessment.id, consensu_id: consensu.id, participant_id: 1
+      assert_match /participants/, response.body
+      assert_match /questions/, response.body
+      assert_response 200
+    end
+
+    it 'render not found when consensus does not exist' do
+      get :participant_consensu_report, assessment_id: 900, consensu_id: 900, participant_id: 800
+      assert_response 404
+    end
+
+    it 'requires a user login' do
+      sign_out :user
+      get :participant_consensu_report, assessment_id: 1, consensu_id: 1, participant_id: 1
+      assert_response 401
+    end
   end
 
 

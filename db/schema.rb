@@ -407,4 +407,28 @@ ActiveRecord::Schema.define(version: 20141009150320) do
   add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree
   add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
 
+  create_table "walk_through_containers", force: true do |t|
+    t.string   "title"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "walk_through_slides", force: true do |t|
+    t.string   "title"
+    t.string   "type"
+    t.text     "content"
+    t.text     "sidebar_content"
+    t.string   "image"
+    t.integer  "container_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "walk_through_views", force: true do |t|
+    t.integer  "container_id"
+    t.integer  "user_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
 end
