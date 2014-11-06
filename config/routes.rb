@@ -33,7 +33,12 @@ PdrServer::Application.routes.draw do
         get 'mail', to: 'participants#mail'
       end
       resources :user_invitations, only: [:create]
-      resources :consensus, except: [:delete, :index]
+      resources :consensus, except: [:delete, :index] do
+        get 'consensus_report', to: 'report#consensus_report'
+        resources :participants, :only => [] do
+          get 'report', to: 'report#participant_consensu_report'
+        end
+      end
       resources :responses, except: [:delete] do
         resources :scores, only: [:update, :create, :index]
       end
