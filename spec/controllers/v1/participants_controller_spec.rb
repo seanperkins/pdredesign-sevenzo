@@ -113,11 +113,11 @@ describe V1::ParticipantsController do
 
   context '#all' do
     it 'gives a list of all participants in assessment district' do
-      get :all, assessment_id: assessment.id  
-
       Application::create_sample_user(
         districts: [@district2],
-        role: :member)
+        role: :district_member)
+
+      get :all, assessment_id: assessment.id  
 
       assert_response :success
       participants = assigns(:users)
@@ -133,14 +133,19 @@ describe V1::ParticipantsController do
     end
 
     it 'does not return network partners' do
-      get :all, assessment_id: assessment.id  
 
       Application::create_sample_user(
         districts: [@district2],
         role: :network_partner)
 
+      Application::create_sample_user(
+        districts: [@district2],
+        role: nil)
+
+      get :all, assessment_id: assessment.id  
+
       participants = assigns(:users)
-      expect(participants.count).to eq(1)
+      expect(participants.count).to eq(2)
     end
 
 
