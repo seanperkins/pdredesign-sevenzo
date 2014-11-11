@@ -69,11 +69,11 @@ class V1::ParticipantsController < ApplicationController
     district_id = assessment.district_id
     user_ids    = assessment.participants.pluck(:user_id)
     
-    User
+    users = User
       .includes(:districts)
       .where(districts: { id: district_id})
       .where.not(id: user_ids)
-      .where.not(role: :network_partner)
+      .reject { |u| u.role.to_sym == :network_partner }
   end
 
   def participant_params
