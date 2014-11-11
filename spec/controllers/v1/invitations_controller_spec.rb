@@ -31,6 +31,13 @@ describe V1::InvitationsController do
         expect(json["token"]).to be_nil
         expect(json["email"]).to eq(@user.email)
       end
+
+      it 'returns an assessment_id' do
+        get :show, token: 'expected_token'
+        assert_response :success
+
+        expect(json["assessment_id"]).to eq(assessment.id)
+      end
     end
 
     describe '#redeem' do

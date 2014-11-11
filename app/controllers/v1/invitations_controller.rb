@@ -18,7 +18,10 @@ class V1::InvitationsController < ApplicationController
     not_found    and return unless invitation
     unauthorized and return unless invited_user
 
-    render partial: 'v1/shared/user', locals: { user: invited_user }
+    render :show, locals: {
+      user: invited_user,
+      assessment_id: invitation.assessment_id
+    }
   end
 
   private
