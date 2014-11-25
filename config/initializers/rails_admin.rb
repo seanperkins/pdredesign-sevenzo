@@ -1,4 +1,16 @@
+require Rails.root.join('lib', 'rails_admin_masquerade.rb')
+
+
 RailsAdmin.config do |config|
+module RailsAdmin
+  module Config
+    module Actions
+      class Masquerade < RailsAdmin::Config::Actions::Base
+        RailsAdmin::Config::Actions.register(self)
+      end
+    end
+  end
+end
 
 
   ################  Global configuration  ################
@@ -30,5 +42,12 @@ RailsAdmin.config do |config|
     edit
     delete
     show_in_app
+
+    masquerade do
+      visible do
+        bindings[:abstract_model].model.to_s == "User"
+      end
+    end
+
   end
 end
