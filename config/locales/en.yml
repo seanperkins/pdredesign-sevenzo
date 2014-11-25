@@ -21,3 +21,7 @@
 
 en:
   hello: "Hello world"
+  admin:
+    actions:
+      masquerade:
+        bulk_link: "Masquerade"
