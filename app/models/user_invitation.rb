@@ -22,7 +22,12 @@ class UserInvitation < ActiveRecord::Base
   belongs_to :assessment
   belongs_to :user
 
+  def email=(value)
+    self[:email] = (value && value.downcase)
+  end
+
   private
+
   def create_token
     return if token
     self.token = generate_hash 
