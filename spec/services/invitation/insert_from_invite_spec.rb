@@ -5,12 +5,12 @@ describe Invitation::InsertFromInvite do
   let(:subject)    { Invitation::InsertFromInvite }
   let(:assessment) { @assessment_with_participants }
 
-  def create_valid_invite
+  def create_valid_invite(email = 'john_doe@gmail.com')
     UserInvitation.create!(assessment_id: assessment.id,
       first_name:    "john",
       last_name:     "doe",
       team_role:     "Finance",
-      email:         "john_doe@gmail.com")
+      email:         email)
   end
 
   def existing_user_invite
@@ -23,6 +23,11 @@ describe Invitation::InsertFromInvite do
 
   it 'creates a user account' do
     subject.new(create_valid_invite).execute
+    expect(User.find_by(email: 'john_doe@gmail.com')).not_to be_nil
+  end
+
+  it 'creates a user account with mismatched case' do
+    subject.new(create_valid_invite('John_Doe@gmail.com')).execute
     expect(User.find_by(email: 'john_doe@gmail.com')).not_to be_nil
   end
 

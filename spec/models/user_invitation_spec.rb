@@ -26,6 +26,13 @@ describe UserInvitation do
     expect(record.errors_on(:email)).to be_empty
   end
 
+  it 'dowcases an email address' do
+    record = subject.create!(
+      assessment_id: 1,
+      email: 'SomeUserEmail@user.com')
+    expect(record.email).to eq('someuseremail@user.com')
+  end
+
   it 'requires an assessment_id' do
     record = subject.new(assessment_id: nil)
     expect(record.valid?).to eq(false)
