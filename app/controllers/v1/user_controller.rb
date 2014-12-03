@@ -40,9 +40,12 @@ class V1::UserController < ApplicationController
     status(401) and return unless user
 
     reset_password(user, params[:password])
-    render_errors(user.errors) and return if user.errors.present?
-
-    render nothing: true
+    if user.errors.present?
+      return render_errors(user.errors)
+    else
+      sign_in(:user, user)
+      render nothing: true
+    end
   end
 
   def request_reset
