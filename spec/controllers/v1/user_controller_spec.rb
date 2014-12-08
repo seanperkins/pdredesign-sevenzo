@@ -20,6 +20,11 @@ describe V1::UserController do
       assert_response :success
     end
 
+    it 'sends the reset to a user even if the email contains capital letters' do
+      post :request_reset, email: 'SOME_User@GMail.com'
+      assert_response :success
+    end
+
     it 'sets the reset_password_token' do
       allow(controller).to receive(:hash).and_return('xyz')
 
@@ -39,6 +44,11 @@ describe V1::UserController do
         .with(@user.id)
 
       post :request_reset, email: 'some_user@gmail.com'
+    end
+
+    it 'return error when the email does not exist' do
+      post :request_reset, email: 'notexisting@user.com'
+      assert_response 422
     end
 
   end
