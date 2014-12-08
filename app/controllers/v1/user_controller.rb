@@ -49,9 +49,9 @@ class V1::UserController < ApplicationController
   end
 
   def request_reset
-    user = User.find_by(email: params[:email])
+    user = User.find_by(email: params[:email].downcase)
 
-    status(200) and return unless user
+    render_errors("Email doesn't exist") and return unless user
     user.update(reset_password_token: hash, 
                 reset_password_sent_at: Time.now)
 
