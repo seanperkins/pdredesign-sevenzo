@@ -141,7 +141,6 @@ describe V1::UserController do
       expect(json["errors"]).not_to be_nil
     end
 
-
     it 'sets the user to the role provided' do
       post_create_user(role: :other)
 
@@ -169,7 +168,7 @@ describe V1::UserController do
       expect(kim.districts.count).to eq(0)
     end
 
-    it 'it can take multiple organization_ids' do
+    it 'can take multiple organization_ids' do
       org1 = Organization.create!(name: "org1")
       org2 = Organization.create!(name: "org2")
 
@@ -178,6 +177,30 @@ describe V1::UserController do
       kim = User.find_by(email: 'kim@gov.nk')
       expect(kim.organizations.count).to eq(2)
     end
+    
+    it 'can find and update an existing user' do
+      @user.update(email: 'kim@gov.nk')
+
+      post_create_user
+      assert_response 422
+    end
+    
+    it 'redeems an already existing invite and updates the user' do 
+      create_magic_assessments
+      @user.update(email: 'kim@gov.nk')
+      UserInvitation.create!(email: 'kim@gov.nk',
+                            assessment: @assessment_with_participants,
+                            first_name: 'Kim',
+                            last_name: 'Possible', 
+                            team_role: 'role;')
+
+      post_create_user(first_name: 'New')
+
+      assert_response :success
+      expect(UserInvitation.find_by(email: 'kim@gov.nk')).to eq(nil)
+      user = User.find_by_email('kim@gov.nk')
+      expect(user[:first_name]).to eq('New')
+    end 
   end
 
   context '#show' do
