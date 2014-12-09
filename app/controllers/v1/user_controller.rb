@@ -6,7 +6,7 @@ class V1::UserController < ApplicationController
   end
 
   def create
-    @user                  = User.new(user_params)
+    @user                  = find_by_invite_or_initialize(user_params)
     @user.role             = params[:role] || :member
     @user.district_ids     = extract_ids_from_params(:district_ids)
     @user.organization_ids = extract_ids_from_params(:organization_ids)
@@ -60,6 +60,17 @@ class V1::UserController < ApplicationController
   end
 
   private
+  def find_by_invite_or_initialize(user_params)
+    user_invitation = UserInvitation.find_by(email: user_params[:email])
+    user            = User.new
+
+    if user_invitation
+      user = User.find_by(email: user_params[:email])
+      user_invitation.destroy
+    end
+
+    user.tap { |u| u.update_attributes(user_params) }
+  end
 
   def hash
     SecureRandom.hex[0..9]
