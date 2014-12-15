@@ -9233,10 +9233,10 @@ return jQuery;
  **/
 
 var _rollbarConfig = {
-    accessToken: "978fab70a3bc46dc9c7759dad7e2903b",
+    accessToken: "25c1cf523cd2412fade1ef33f38afae4",
     captureUncaught: true,
     payload: {
-      environment: "staging"
+      environment: "production"
     }
 };
 (function(window, document){
