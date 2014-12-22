@@ -16,7 +16,7 @@ var BrowserDetector = {
       case lib.firefox == true && version < 17.0:
       case lib.chrome  == true && version < 23.0:
       case lib.safari  == true && version < 6:
-      case lib.msie    == true && version < 10:
+      case lib.msie    == true && version < 9:
         validBrowser = false;
         break;
       default:
@@ -37,7 +37,7 @@ var BrowserDetector = {
 
 BrowserDetector.redirectInvalidBrowser(bowser);
 /*!
- * jQuery JavaScript Library v2.1.1
+ * jQuery JavaScript Library v2.1.3
  * http://jquery.com/
  *
  * Includes Sizzle.js
@@ -47,20 +47,20 @@ BrowserDetector.redirectInvalidBrowser(bowser);
  * Released under the MIT license
  * http://jquery.org/license
  *
- * Date: 2014-05-01T17:11Z
+ * Date: 2014-12-18T15:11Z
  */
 
 
 (function( global, factory ) {
 
 	if ( typeof module === "object" && typeof module.exports === "object" ) {
-		// For CommonJS and CommonJS-like environments where a proper window is present,
-		// execute the factory and get jQuery
-		// For environments that do not inherently posses a window with a document
-		// (such as Node.js), expose a jQuery-making factory as module.exports
-		// This accentuates the need for the creation of a real window
+		// For CommonJS and CommonJS-like environments where a proper `window`
+		// is present, execute the factory and get jQuery.
+		// For environments that do not have a `window` with a `document`
+		// (such as Node.js), expose a factory as module.exports.
+		// This accentuates the need for the creation of a real `window`.
 		// e.g. var jQuery = require("jquery")(window);
-		// See ticket #14549 for more info
+		// See ticket #14549 for more info.
 		module.exports = global.document ?
 			factory( global, true ) :
 			function( w ) {
@@ -76,10 +76,10 @@ BrowserDetector.redirectInvalidBrowser(bowser);
 // Pass this if window is not defined yet
 }(typeof window !== "undefined" ? window : this, function( window, noGlobal ) {
 
-// Can't do this because several apps including ASP.NET trace
+// Support: Firefox 18+
+// Can't be in strict mode, several libs including ASP.NET trace
 // the stack via arguments.caller.callee and Firefox dies if
 // you try to trace through "use strict" call chains. (#13335)
-// Support: Firefox 18+
 //
 
 var arr = [];
@@ -106,7 +106,7 @@ var
 	// Use the correct document accordingly with window argument (sandbox)
 	document = window.document,
 
-	version = "2.1.1",
+	version = "2.1.3",
 
 	// Define a local copy of jQuery
 	jQuery = function( selector, context ) {
@@ -224,7 +224,7 @@ jQuery.extend = jQuery.fn.extend = function() {
 	if ( typeof target === "boolean" ) {
 		deep = target;
 
-		// skip the boolean and the target
+		// Skip the boolean and the target
 		target = arguments[ i ] || {};
 		i++;
 	}
@@ -234,7 +234,7 @@ jQuery.extend = jQuery.fn.extend = function() {
 		target = {};
 	}
 
-	// extend jQuery itself if only one argument is passed
+	// Extend jQuery itself if only one argument is passed
 	if ( i === length ) {
 		target = this;
 		i--;
@@ -291,9 +291,6 @@ jQuery.extend({
 
 	noop: function() {},
 
-	// See test/unit/core.js for details concerning isFunction.
-	// Since version 1.3, DOM methods and functions like alert
-	// aren't supported. They return false on IE (#2968).
 	isFunction: function( obj ) {
 		return jQuery.type(obj) === "function";
 	},
@@ -308,7 +305,8 @@ jQuery.extend({
 		// parseFloat NaNs numeric-cast false positives (null|true|false|"")
 		// ...but misinterprets leading-number strings, particularly hex literals ("0x...")
 		// subtraction forces infinities to NaN
-		return !jQuery.isArray( obj ) && obj - parseFloat( obj ) >= 0;
+		// adding 1 corrects loss of precision from parseFloat (#15100)
+		return !jQuery.isArray( obj ) && (obj - parseFloat( obj ) + 1) >= 0;
 	},
 
 	isPlainObject: function( obj ) {
@@ -342,7 +340,7 @@ jQuery.extend({
 		if ( obj == null ) {
 			return obj + "";
 		}
-		// Support: Android < 4.0, iOS < 6 (functionish RegExp)
+		// Support: Android<4.0, iOS<6 (functionish RegExp)
 		return typeof obj === "object" || typeof obj === "function" ?
 			class2type[ toString.call(obj) ] || "object" :
 			typeof obj;
@@ -372,6 +370,7 @@ jQuery.extend({
 	},
 
 	// Convert dashed to camelCase; used by the css and data modules
+	// Support: IE9-11+
 	// Microsoft forgot to hump their vendor prefix (#9572)
 	camelCase: function( string ) {
 		return string.replace( rmsPrefix, "ms-" ).replace( rdashAlpha, fcamelCase );
@@ -587,14 +586,14 @@ function isArraylike( obj ) {
 }
 var Sizzle =
 /*!
- * Sizzle CSS Selector Engine v1.10.19
+ * Sizzle CSS Selector Engine v2.2.0-pre
  * http://sizzlejs.com/
  *
- * Copyright 2013 jQuery Foundation, Inc. and other contributors
+ * Copyright 2008, 2014 jQuery Foundation, Inc. and other contributors
  * Released under the MIT license
  * http://jquery.org/license
  *
- * Date: 2014-04-18
+ * Date: 2014-12-16
  */
 (function( window ) {
 
@@ -621,7 +620,7 @@ var i,
 	contains,
 
 	// Instance-specific data
-	expando = "sizzle" + -(new Date()),
+	expando = "sizzle" + 1 * new Date(),
 	preferredDoc = window.document,
 	dirruns = 0,
 	done = 0,
@@ -636,7 +635,6 @@ var i,
 	},
 
 	// General-purpose constants
-	strundefined = typeof undefined,
 	MAX_NEGATIVE = 1 << 31,
 
 	// Instance methods
@@ -646,12 +644,13 @@ var i,
 	push_native = arr.push,
 	push = arr.push,
 	slice = arr.slice,
-	// Use a stripped-down indexOf if we can't use a native one
-	indexOf = arr.indexOf || function( elem ) {
+	// Use a stripped-down indexOf as it's faster than native
+	// http://jsperf.com/thor-indexof-vs-for/5
+	indexOf = function( list, elem ) {
 		var i = 0,
-			len = this.length;
+			len = list.length;
 		for ( ; i < len; i++ ) {
-			if ( this[i] === elem ) {
+			if ( list[i] === elem ) {
 				return i;
 			}
 		}
@@ -691,6 +690,7 @@ var i,
 		")\\)|)",
 
 	// Leading and non-escaped trailing whitespace, capturing some non-whitespace characters preceding the latter
+	rwhitespace = new RegExp( whitespace + "+", "g" ),
 	rtrim = new RegExp( "^" + whitespace + "+|((?:^|[^\\\\])(?:\\\\.)*)" + whitespace + "+$", "g" ),
 
 	rcomma = new RegExp( "^" + whitespace + "*," + whitespace + "*" ),
@@ -742,6 +742,14 @@ var i,
 				String.fromCharCode( high + 0x10000 ) :
 				// Supplemental Plane codepoint (surrogate pair)
 				String.fromCharCode( high >> 10 | 0xD800, high & 0x3FF | 0xDC00 );
+	},
+
+	// Used for iframes
+	// See setDocument()
+	// Removing the function wrapper causes a "Permission Denied"
+	// error in IE
+	unloadHandler = function() {
+		setDocument();
 	};
 
 // Optimize for push.apply( _, NodeList )
@@ -784,19 +792,18 @@ function Sizzle( selector, context, results, seed ) {
 
 	context = context || document;
 	results = results || [];
+	nodeType = context.nodeType;
 
-	if ( !selector || typeof selector !== "string" ) {
+	if ( typeof selector !== "string" || !selector ||
+		nodeType !== 1 && nodeType !== 9 && nodeType !== 11 ) {
+
 		return results;
 	}
 
-	if ( (nodeType = context.nodeType) !== 1 && nodeType !== 9 ) {
-		return [];
-	}
+	if ( !seed && documentIsHTML ) {
 
-	if ( documentIsHTML && !seed ) {
-
-		// Shortcuts
-		if ( (match = rquickExpr.exec( selector )) ) {
+		// Try to shortcut find operations when possible (e.g., not under DocumentFragment)
+		if ( nodeType !== 11 && (match = rquickExpr.exec( selector )) ) {
 			// Speed-up: Sizzle("#ID")
 			if ( (m = match[1]) ) {
 				if ( nodeType === 9 ) {
@@ -828,7 +835,7 @@ function Sizzle( selector, context, results, seed ) {
 				return results;
 
 			// Speed-up: Sizzle(".CLASS")
-			} else if ( (m = match[3]) && support.getElementsByClassName && context.getElementsByClassName ) {
+			} else if ( (m = match[3]) && support.getElementsByClassName ) {
 				push.apply( results, context.getElementsByClassName( m ) );
 				return results;
 			}
@@ -838,7 +845,7 @@ function Sizzle( selector, context, results, seed ) {
 		if ( support.qsa && (!rbuggyQSA || !rbuggyQSA.test( selector )) ) {
 			nid = old = expando;
 			newContext = context;
-			newSelector = nodeType === 9 && selector;
+			newSelector = nodeType !== 1 && selector;
 
 			// qSA works strangely on Element-rooted queries
 			// We can work around this by specifying an extra ID on the root
@@ -1025,7 +1032,7 @@ function createPositionalPseudo( fn ) {
  * @returns {Element|Object|Boolean} The input node if acceptable, otherwise a falsy value
  */
 function testContext( context ) {
-	return context && typeof context.getElementsByTagName !== strundefined && context;
+	return context && typeof context.getElementsByTagName !== "undefined" && context;
 }
 
 // Expose support vars for convenience
@@ -1049,9 +1056,8 @@ isXML = Sizzle.isXML = function( elem ) {
  * @returns {Object} Returns the current document
  */
 setDocument = Sizzle.setDocument = function( node ) {
-	var hasCompare,
-		doc = node ? node.ownerDocument || node : preferredDoc,
-		parent = doc.defaultView;
+	var hasCompare, parent,
+		doc = node ? node.ownerDocument || node : preferredDoc;
 
 	// If no document and documentElement is available, return
 	if ( doc === document || doc.nodeType !== 9 || !doc.documentElement ) {
@@ -1061,9 +1067,7 @@ setDocument = Sizzle.setDocument = function( node ) {
 	// Set our document
 	document = doc;
 	docElem = doc.documentElement;
-
-	// Support tests
-	documentIsHTML = !isXML( doc );
+	parent = doc.defaultView;
 
 	// Support: IE>8
 	// If iframe document is assigned to "document" variable and if iframe has been reloaded,
@@ -1072,21 +1076,22 @@ setDocument = Sizzle.setDocument = function( node ) {
 	if ( parent && parent !== parent.top ) {
 		// IE11 does not have attachEvent, so all must suffer
 		if ( parent.addEventListener ) {
-			parent.addEventListener( "unload", function() {
-				setDocument();
-			}, false );
+			parent.addEventListener( "unload", unloadHandler, false );
 		} else if ( parent.attachEvent ) {
-			parent.attachEvent( "onunload", function() {
-				setDocument();
-			});
+			parent.attachEvent( "onunload", unloadHandler );
 		}
 	}
+
+	/* Support tests
+	---------------------------------------------------------------------- */
+	documentIsHTML = !isXML( doc );
 
 	/* Attributes
 	---------------------------------------------------------------------- */
 
 	// Support: IE<8
-	// Verify that getAttribute really returns attributes and not properties (excepting IE8 booleans)
+	// Verify that getAttribute really returns attributes and not properties
+	// (excepting IE8 booleans)
 	support.attributes = assert(function( div ) {
 		div.className = "i";
 		return !div.getAttribute("className");
@@ -1101,17 +1106,8 @@ setDocument = Sizzle.setDocument = function( node ) {
 		return !div.getElementsByTagName("*").length;
 	});
 
-	// Check if getElementsByClassName can be trusted
-	support.getElementsByClassName = rnative.test( doc.getElementsByClassName ) && assert(function( div ) {
-		div.innerHTML = "<div class='a'></div><div class='a i'></div>";
-
-		// Support: Safari<4
-		// Catch class over-caching
-		div.firstChild.className = "i";
-		// Support: Opera<10
-		// Catch gEBCN failure to find non-leading classes
-		return div.getElementsByClassName("i").length === 2;
-	});
+	// Support: IE<9
+	support.getElementsByClassName = rnative.test( doc.getElementsByClassName );
 
 	// Support: IE<10
 	// Check if getElementById returns elements by name
@@ -1125,7 +1121,7 @@ setDocument = Sizzle.setDocument = function( node ) {
 	// ID find and filter
 	if ( support.getById ) {
 		Expr.find["ID"] = function( id, context ) {
-			if ( typeof context.getElementById !== strundefined && documentIsHTML ) {
+			if ( typeof context.getElementById !== "undefined" && documentIsHTML ) {
 				var m = context.getElementById( id );
 				// Check parentNode to catch when Blackberry 4.6 returns
 				// nodes that are no longer in the document #6963
@@ -1146,7 +1142,7 @@ setDocument = Sizzle.setDocument = function( node ) {
 		Expr.filter["ID"] =  function( id ) {
 			var attrId = id.replace( runescape, funescape );
 			return function( elem ) {
-				var node = typeof elem.getAttributeNode !== strundefined && elem.getAttributeNode("id");
+				var node = typeof elem.getAttributeNode !== "undefined" && elem.getAttributeNode("id");
 				return node && node.value === attrId;
 			};
 		};
@@ -1155,14 +1151,20 @@ setDocument = Sizzle.setDocument = function( node ) {
 	// Tag
 	Expr.find["TAG"] = support.getElementsByTagName ?
 		function( tag, context ) {
-			if ( typeof context.getElementsByTagName !== strundefined ) {
+			if ( typeof context.getElementsByTagName !== "undefined" ) {
 				return context.getElementsByTagName( tag );
+
+			// DocumentFragment nodes don't have gEBTN
+			} else if ( support.qsa ) {
+				return context.querySelectorAll( tag );
 			}
 		} :
+
 		function( tag, context ) {
 			var elem,
 				tmp = [],
 				i = 0,
+				// By happy coincidence, a (broken) gEBTN appears on DocumentFragment nodes too
 				results = context.getElementsByTagName( tag );
 
 			// Filter out possible comments
@@ -1180,7 +1182,7 @@ setDocument = Sizzle.setDocument = function( node ) {
 
 	// Class
 	Expr.find["CLASS"] = support.getElementsByClassName && function( className, context ) {
-		if ( typeof context.getElementsByClassName !== strundefined && documentIsHTML ) {
+		if ( documentIsHTML ) {
 			return context.getElementsByClassName( className );
 		}
 	};
@@ -1209,13 +1211,15 @@ setDocument = Sizzle.setDocument = function( node ) {
 			// setting a boolean content attribute,
 			// since its presence should be enough
 			// http://bugs.jquery.com/ticket/12359
-			div.innerHTML = "<select msallowclip=''><option selected=''></option></select>";
+			docElem.appendChild( div ).innerHTML = "<a id='" + expando + "'></a>" +
+				"<select id='" + expando + "-\f]' msallowcapture=''>" +
+				"<option selected=''></option></select>";
 
 			// Support: IE8, Opera 11-12.16
 			// Nothing should be selected when empty strings follow ^= or $= or *=
 			// The test attribute must be unknown in Opera but "safe" for WinRT
 			// http://msdn.microsoft.com/en-us/library/ie/hh465388.aspx#attribute_section
-			if ( div.querySelectorAll("[msallowclip^='']").length ) {
+			if ( div.querySelectorAll("[msallowcapture^='']").length ) {
 				rbuggyQSA.push( "[*^$]=" + whitespace + "*(?:''|\"\")" );
 			}
 
@@ -1225,11 +1229,23 @@ setDocument = Sizzle.setDocument = function( node ) {
 				rbuggyQSA.push( "\\[" + whitespace + "*(?:value|" + booleans + ")" );
 			}
 
+			// Support: Chrome<29, Android<4.2+, Safari<7.0+, iOS<7.0+, PhantomJS<1.9.7+
+			if ( !div.querySelectorAll( "[id~=" + expando + "-]" ).length ) {
+				rbuggyQSA.push("~=");
+			}
+
 			// Webkit/Opera - :checked should return selected option elements
 			// http://www.w3.org/TR/2011/REC-css3-selectors-20110929/#checked
 			// IE8 throws error here and will not see later tests
 			if ( !div.querySelectorAll(":checked").length ) {
 				rbuggyQSA.push(":checked");
+			}
+
+			// Support: Safari 8+, iOS 8+
+			// https://bugs.webkit.org/show_bug.cgi?id=136851
+			// In-page `selector#id sibing-combinator selector` fails
+			if ( !div.querySelectorAll( "a#" + expando + "+*" ).length ) {
+				rbuggyQSA.push(".#.+[+~]");
 			}
 		});
 
@@ -1347,7 +1363,7 @@ setDocument = Sizzle.setDocument = function( node ) {
 
 			// Maintain original order
 			return sortInput ?
-				( indexOf.call( sortInput, a ) - indexOf.call( sortInput, b ) ) :
+				( indexOf( sortInput, a ) - indexOf( sortInput, b ) ) :
 				0;
 		}
 
@@ -1374,7 +1390,7 @@ setDocument = Sizzle.setDocument = function( node ) {
 				aup ? -1 :
 				bup ? 1 :
 				sortInput ?
-				( indexOf.call( sortInput, a ) - indexOf.call( sortInput, b ) ) :
+				( indexOf( sortInput, a ) - indexOf( sortInput, b ) ) :
 				0;
 
 		// If the nodes are siblings, we can do a quick check
@@ -1437,7 +1453,7 @@ Sizzle.matchesSelector = function( elem, expr ) {
 					elem.document && elem.document.nodeType !== 11 ) {
 				return ret;
 			}
-		} catch(e) {}
+		} catch (e) {}
 	}
 
 	return Sizzle( expr, document, null, [ elem ] ).length > 0;
@@ -1656,7 +1672,7 @@ Expr = Sizzle.selectors = {
 			return pattern ||
 				(pattern = new RegExp( "(^|" + whitespace + ")" + className + "(" + whitespace + "|$)" )) &&
 				classCache( className, function( elem ) {
-					return pattern.test( typeof elem.className === "string" && elem.className || typeof elem.getAttribute !== strundefined && elem.getAttribute("class") || "" );
+					return pattern.test( typeof elem.className === "string" && elem.className || typeof elem.getAttribute !== "undefined" && elem.getAttribute("class") || "" );
 				});
 		},
 
@@ -1678,7 +1694,7 @@ Expr = Sizzle.selectors = {
 					operator === "^=" ? check && result.indexOf( check ) === 0 :
 					operator === "*=" ? check && result.indexOf( check ) > -1 :
 					operator === "$=" ? check && result.slice( -check.length ) === check :
-					operator === "~=" ? ( " " + result + " " ).indexOf( check ) > -1 :
+					operator === "~=" ? ( " " + result.replace( rwhitespace, " " ) + " " ).indexOf( check ) > -1 :
 					operator === "|=" ? result === check || result.slice( 0, check.length + 1 ) === check + "-" :
 					false;
 			};
@@ -1798,7 +1814,7 @@ Expr = Sizzle.selectors = {
 							matched = fn( seed, argument ),
 							i = matched.length;
 						while ( i-- ) {
-							idx = indexOf.call( seed, matched[i] );
+							idx = indexOf( seed, matched[i] );
 							seed[ idx ] = !( matches[ idx ] = matched[i] );
 						}
 					}) :
@@ -1837,6 +1853,8 @@ Expr = Sizzle.selectors = {
 				function( elem, context, xml ) {
 					input[0] = elem;
 					matcher( input, null, xml, results );
+					// Don't keep the element (issue #299)
+					input[0] = null;
 					return !results.pop();
 				};
 		}),
@@ -1848,6 +1866,7 @@ Expr = Sizzle.selectors = {
 		}),
 
 		"contains": markFunction(function( text ) {
+			text = text.replace( runescape, funescape );
 			return function( elem ) {
 				return ( elem.textContent || elem.innerText || getText( elem ) ).indexOf( text ) > -1;
 			};
@@ -2269,7 +2288,7 @@ function setMatcher( preFilter, selector, matcher, postFilter, postFinder, postS
 				i = matcherOut.length;
 				while ( i-- ) {
 					if ( (elem = matcherOut[i]) &&
-						(temp = postFinder ? indexOf.call( seed, elem ) : preMap[i]) > -1 ) {
+						(temp = postFinder ? indexOf( seed, elem ) : preMap[i]) > -1 ) {
 
 						seed[temp] = !(results[temp] = elem);
 					}
@@ -2304,13 +2323,16 @@ function matcherFromTokens( tokens ) {
 			return elem === checkContext;
 		}, implicitRelative, true ),
 		matchAnyContext = addCombinator( function( elem ) {
-			return indexOf.call( checkContext, elem ) > -1;
+			return indexOf( checkContext, elem ) > -1;
 		}, implicitRelative, true ),
 		matchers = [ function( elem, context, xml ) {
-			return ( !leadingRelative && ( xml || context !== outermostContext ) ) || (
+			var ret = ( !leadingRelative && ( xml || context !== outermostContext ) ) || (
 				(checkContext = context).nodeType ?
 					matchContext( elem, context, xml ) :
 					matchAnyContext( elem, context, xml ) );
+			// Avoid hanging onto element (issue #299)
+			checkContext = null;
+			return ret;
 		} ];
 
 	for ( ; i < len; i++ ) {
@@ -2560,7 +2582,7 @@ select = Sizzle.select = function( selector, context, results, seed ) {
 // Sort stability
 support.sortStable = expando.split("").sort( sortOrder ).join("") === expando;
 
-// Support: Chrome<14
+// Support: Chrome 14-35+
 // Always assume duplicates if they aren't passed to the comparison function
 support.detectDuplicates = !!hasDuplicate;
 
@@ -2769,7 +2791,7 @@ var rootjQuery,
 				if ( match[1] ) {
 					context = context instanceof jQuery ? context[0] : context;
 
-					// scripts is true for back-compat
+					// Option to run scripts is true for back-compat
 					// Intentionally let the error be thrown if parseHTML is not present
 					jQuery.merge( this, jQuery.parseHTML(
 						match[1],
@@ -2797,8 +2819,8 @@ var rootjQuery,
 				} else {
 					elem = document.getElementById( match[2] );
 
-					// Check parentNode to catch when Blackberry 4.6 returns
-					// nodes that are no longer in the document #6963
+					// Support: Blackberry 4.6
+					// gEBID returns nodes no longer in the document (#6963)
 					if ( elem && elem.parentNode ) {
 						// Inject the element directly into the jQuery object
 						this.length = 1;
@@ -2851,7 +2873,7 @@ rootjQuery = jQuery( document );
 
 
 var rparentsprev = /^(?:parents|prev(?:Until|All))/,
-	// methods guaranteed to produce a unique set when starting from a unique set
+	// Methods guaranteed to produce a unique set when starting from a unique set
 	guaranteedUnique = {
 		children: true,
 		contents: true,
@@ -2931,8 +2953,7 @@ jQuery.fn.extend({
 		return this.pushStack( matched.length > 1 ? jQuery.unique( matched ) : matched );
 	},
 
-	// Determine the position of an element within
-	// the matched set of elements
+	// Determine the position of an element within the set
 	index: function( elem ) {
 
 		// No argument, return index in parent
@@ -2940,7 +2961,7 @@ jQuery.fn.extend({
 			return ( this[ 0 ] && this[ 0 ].parentNode ) ? this.first().prevAll().length : -1;
 		}
 
-		// index in selector
+		// Index in selector
 		if ( typeof elem === "string" ) {
 			return indexOf.call( jQuery( elem ), this[ 0 ] );
 		}
@@ -3356,7 +3377,7 @@ jQuery.extend({
 
 			progressValues, progressContexts, resolveContexts;
 
-		// add listeners to Deferred subordinates; treat others as resolved
+		// Add listeners to Deferred subordinates; treat others as resolved
 		if ( length > 1 ) {
 			progressValues = new Array( length );
 			progressContexts = new Array( length );
@@ -3373,7 +3394,7 @@ jQuery.extend({
 			}
 		}
 
-		// if we're not waiting on anything, resolve the master
+		// If we're not waiting on anything, resolve the master
 		if ( !remaining ) {
 			deferred.resolveWith( resolveContexts, resolveValues );
 		}
@@ -3452,7 +3473,7 @@ jQuery.ready.promise = function( obj ) {
 		readyList = jQuery.Deferred();
 
 		// Catch cases where $(document).ready() is called after the browser event has already occurred.
-		// we once tried to use readyState "interactive" here, but it caused issues like the one
+		// We once tried to use readyState "interactive" here, but it caused issues like the one
 		// discovered by ChrisS here: http://bugs.jquery.com/ticket/12282#comment:15
 		if ( document.readyState === "complete" ) {
 			// Handle it asynchronously to allow scripts the opportunity to delay ready
@@ -3546,7 +3567,7 @@ jQuery.acceptData = function( owner ) {
 
 
 function Data() {
-	// Support: Android < 4,
+	// Support: Android<4,
 	// Old WebKit does not have Object.preventExtensions/freeze method,
 	// return new empty object instead with no [[set]] accessor
 	Object.defineProperty( this.cache = {}, 0, {
@@ -3555,7 +3576,7 @@ function Data() {
 		}
 	});
 
-	this.expando = jQuery.expando + Math.random();
+	this.expando = jQuery.expando + Data.uid++;
 }
 
 Data.uid = 1;
@@ -3583,7 +3604,7 @@ Data.prototype = {
 				descriptor[ this.expando ] = { value: unlock };
 				Object.defineProperties( owner, descriptor );
 
-			// Support: Android < 4
+			// Support: Android<4
 			// Fallback to a less secure definition
 			} catch ( e ) {
 				descriptor[ this.expando ] = unlock;
@@ -3723,17 +3744,16 @@ var data_user = new Data();
 
 
 
-/*
-	Implementation Summary
+//	Implementation Summary
+//
+//	1. Enforce API surface and semantic compatibility with 1.9.x branch
+//	2. Improve the module's maintainability by reducing the storage
+//		paths to a single mechanism.
+//	3. Use the same single mechanism to support "private" and "user" data.
+//	4. _Never_ expose "private" data to user code (TODO: Drop _data, _removeData)
+//	5. Avoid exposing implementation details on user objects (eg. expando properties)
+//	6. Provide a clear path for implementation upgrade to WeakMap in 2014
 
-	1. Enforce API surface and semantic compatibility with 1.9.x branch
-	2. Improve the module's maintainability by reducing the storage
-		paths to a single mechanism.
-	3. Use the same single mechanism to support "private" and "user" data.
-	4. _Never_ expose "private" data to user code (TODO: Drop _data, _removeData)
-	5. Avoid exposing implementation details on user objects (eg. expando properties)
-	6. Provide a clear path for implementation upgrade to WeakMap in 2014
-*/
 var rbrace = /^(?:\{[\w\W]*\}|\[[\w\W]*\])$/,
 	rmultiDash = /([A-Z])/g;
 
@@ -3938,7 +3958,7 @@ jQuery.extend({
 				queue.unshift( "inprogress" );
 			}
 
-			// clear up the last queue stop function
+			// Clear up the last queue stop function
 			delete hooks.stop;
 			fn.call( elem, next, hooks );
 		}
@@ -3948,7 +3968,7 @@ jQuery.extend({
 		}
 	},
 
-	// not intended for public consumption - generates a queueHooks object, or returns the current one
+	// Not public - generate a queueHooks object, or return the current one
 	_queueHooks: function( elem, type ) {
 		var key = type + "queueHooks";
 		return data_priv.get( elem, key ) || data_priv.access( elem, key, {
@@ -3978,7 +3998,7 @@ jQuery.fn.extend({
 			this.each(function() {
 				var queue = jQuery.queue( this, type, data );
 
-				// ensure a hooks for this queue
+				// Ensure a hooks for this queue
 				jQuery._queueHooks( this, type );
 
 				if ( type === "fx" && queue[0] !== "inprogress" ) {
@@ -4045,21 +4065,22 @@ var rcheckableType = (/^(?:checkbox|radio)$/i);
 		div = fragment.appendChild( document.createElement( "div" ) ),
 		input = document.createElement( "input" );
 
-	// #11217 - WebKit loses check when the name is after the checked attribute
+	// Support: Safari<=5.1
+	// Check state lost if the name is set (#11217)
 	// Support: Windows Web Apps (WWA)
-	// `name` and `type` need .setAttribute for WWA
+	// `name` and `type` must use .setAttribute for WWA (#14901)
 	input.setAttribute( "type", "radio" );
 	input.setAttribute( "checked", "checked" );
 	input.setAttribute( "name", "t" );
 
 	div.appendChild( input );
 
-	// Support: Safari 5.1, iOS 5.1, Android 4.x, Android 2.3
-	// old WebKit doesn't clone checked state correctly in fragments
+	// Support: Safari<=5.1, Android<4.2
+	// Older WebKit doesn't clone checked state correctly in fragments
 	support.checkClone = div.cloneNode( true ).cloneNode( true ).lastChild.checked;
 
+	// Support: IE<=11+
 	// Make sure textarea (and checkbox) defaultValue is properly cloned
-	// Support: IE9-IE11+
 	div.innerHTML = "<textarea>x</textarea>";
 	support.noCloneChecked = !!div.cloneNode( true ).lastChild.defaultValue;
 })();
@@ -4437,8 +4458,8 @@ jQuery.event = {
 			j = 0;
 			while ( (handleObj = matched.handlers[ j++ ]) && !event.isImmediatePropagationStopped() ) {
 
-				// Triggered event must either 1) have no namespace, or
-				// 2) have namespace(s) a subset or equal to those in the bound event (both can have no namespace).
+				// Triggered event must either 1) have no namespace, or 2) have namespace(s)
+				// a subset or equal to those in the bound event (both can have no namespace).
 				if ( !event.namespace_re || event.namespace_re.test( handleObj.namespace ) ) {
 
 					event.handleObj = handleObj;
@@ -4588,7 +4609,7 @@ jQuery.event = {
 			event.target = document;
 		}
 
-		// Support: Safari 6.0+, Chrome < 28
+		// Support: Safari 6.0+, Chrome<28
 		// Target should not be a text node (#504, #13143)
 		if ( event.target.nodeType === 3 ) {
 			event.target = event.target.parentNode;
@@ -4693,7 +4714,7 @@ jQuery.Event = function( src, props ) {
 		// by a handler lower down the tree; reflect the correct value.
 		this.isDefaultPrevented = src.defaultPrevented ||
 				src.defaultPrevented === undefined &&
-				// Support: Android < 4.0
+				// Support: Android<4.0
 				src.returnValue === false ?
 			returnTrue :
 			returnFalse;
@@ -4783,8 +4804,8 @@ jQuery.each({
 	};
 });
 
-// Create "bubbling" focus and blur events
 // Support: Firefox, Chrome, Safari
+// Create "bubbling" focus and blur events
 if ( !support.focusinBubbles ) {
 	jQuery.each({ focus: "focusin", blur: "focusout" }, function( orig, fix ) {
 
@@ -4937,7 +4958,7 @@ var
 	// We have to close these tags to support XHTML (#13200)
 	wrapMap = {
 
-		// Support: IE 9
+		// Support: IE9
 		option: [ 1, "<select multiple='multiple'>", "</select>" ],
 
 		thead: [ 1, "<table>", "</table>" ],
@@ -4948,7 +4969,7 @@ var
 		_default: [ 0, "", "" ]
 	};
 
-// Support: IE 9
+// Support: IE9
 wrapMap.optgroup = wrapMap.option;
 
 wrapMap.tbody = wrapMap.tfoot = wrapMap.colgroup = wrapMap.caption = wrapMap.thead;
@@ -5038,7 +5059,7 @@ function getAll( context, tag ) {
 		ret;
 }
 
-// Support: IE >= 9
+// Fix IE bugs, see support tests
 function fixInput( src, dest ) {
 	var nodeName = dest.nodeName.toLowerCase();
 
@@ -5058,8 +5079,7 @@ jQuery.extend({
 			clone = elem.cloneNode( true ),
 			inPage = jQuery.contains( elem.ownerDocument, elem );
 
-		// Support: IE >= 9
-		// Fix Cloning issues
+		// Fix IE cloning issues
 		if ( !support.noCloneChecked && ( elem.nodeType === 1 || elem.nodeType === 11 ) &&
 				!jQuery.isXMLDoc( elem ) ) {
 
@@ -5110,8 +5130,8 @@ jQuery.extend({
 
 				// Add nodes directly
 				if ( jQuery.type( elem ) === "object" ) {
-					// Support: QtWebKit
-					// jQuery.merge because push.apply(_, arraylike) throws
+					// Support: QtWebKit, PhantomJS
+					// push.apply(_, arraylike) throws on ancient WebKit
 					jQuery.merge( nodes, elem.nodeType ? [ elem ] : elem );
 
 				// Convert non-html into a text node
@@ -5133,15 +5153,14 @@ jQuery.extend({
 						tmp = tmp.lastChild;
 					}
 
-					// Support: QtWebKit
-					// jQuery.merge because push.apply(_, arraylike) throws
+					// Support: QtWebKit, PhantomJS
+					// push.apply(_, arraylike) throws on ancient WebKit
 					jQuery.merge( nodes, tmp.childNodes );
 
 					// Remember the top-level container
 					tmp = fragment.firstChild;
 
-					// Fixes #12346
-					// Support: Webkit, IE
+					// Ensure the created nodes are orphaned (#12392)
 					tmp.textContent = "";
 				}
 			}
@@ -5503,7 +5522,7 @@ function actualDisplay( name, doc ) {
 		// getDefaultComputedStyle might be reliably used only on attached element
 		display = window.getDefaultComputedStyle && ( style = window.getDefaultComputedStyle( elem[ 0 ] ) ) ?
 
-			// Use of this method is a temporary fix (more like optmization) until something better comes along,
+			// Use of this method is a temporary fix (more like optimization) until something better comes along,
 			// since it was removed from specification and supported only in FF
 			style.display : jQuery.css( elem[ 0 ], "display" );
 
@@ -5553,7 +5572,14 @@ var rmargin = (/^margin/);
 var rnumnonpx = new RegExp( "^(" + pnum + ")(?!px)[a-z%]+$", "i" );
 
 var getStyles = function( elem ) {
-		return elem.ownerDocument.defaultView.getComputedStyle( elem, null );
+		// Support: IE<=11+, Firefox<=30+ (#15098, #14150)
+		// IE throws on elements created in popups
+		// FF meanwhile throws on frame elements through "defaultView.getComputedStyle"
+		if ( elem.ownerDocument.defaultView.opener ) {
+			return elem.ownerDocument.defaultView.getComputedStyle( elem, null );
+		}
+
+		return window.getComputedStyle( elem, null );
 	};
 
 
@@ -5565,7 +5591,7 @@ function curCSS( elem, name, computed ) {
 	computed = computed || getStyles( elem );
 
 	// Support: IE9
-	// getPropertyValue is only needed for .css('filter') in IE9, see #12537
+	// getPropertyValue is only needed for .css('filter') (#12537)
 	if ( computed ) {
 		ret = computed.getPropertyValue( name ) || computed[ name ];
 	}
@@ -5611,15 +5637,13 @@ function addGetHookIf( conditionFn, hookFn ) {
 	return {
 		get: function() {
 			if ( conditionFn() ) {
-				// Hook not needed (or it's not possible to use it due to missing dependency),
-				// remove it.
-				// Since there are no other hooks for marginRight, remove the whole object.
+				// Hook not needed (or it's not possible to use it due
+				// to missing dependency), remove it.
 				delete this.get;
 				return;
 			}
 
 			// Hook needed; redefine it so that the support test is not executed again.
-
 			return (this.get = hookFn).apply( this, arguments );
 		}
 	};
@@ -5636,6 +5660,8 @@ function addGetHookIf( conditionFn, hookFn ) {
 		return;
 	}
 
+	// Support: IE9-11+
+	// Style of cloned element affects source element cloned (#8908)
 	div.style.backgroundClip = "content-box";
 	div.cloneNode( true ).style.backgroundClip = "";
 	support.clearCloneStyle = div.style.backgroundClip === "content-box";
@@ -5668,6 +5694,7 @@ function addGetHookIf( conditionFn, hookFn ) {
 	if ( window.getComputedStyle ) {
 		jQuery.extend( support, {
 			pixelPosition: function() {
+
 				// This test is executed only once but we still do memoizing
 				// since we can use the boxSizingReliable pre-computing.
 				// No need to check if the test was already performed, though.
@@ -5681,6 +5708,7 @@ function addGetHookIf( conditionFn, hookFn ) {
 				return boxSizingReliableVal;
 			},
 			reliableMarginRight: function() {
+
 				// Support: Android 2.3
 				// Check if div with explicit width and no margin-right incorrectly
 				// gets computed margin-right based on width of container. (#3333)
@@ -5702,6 +5730,7 @@ function addGetHookIf( conditionFn, hookFn ) {
 				ret = !parseFloat( window.getComputedStyle( marginDiv, null ).marginRight );
 
 				docElem.removeChild( container );
+				div.removeChild( marginDiv );
 
 				return ret;
 			}
@@ -5733,8 +5762,8 @@ jQuery.swap = function( elem, options, callback, args ) {
 
 
 var
-	// swappable if display is none or starts with table except "table", "table-cell", or "table-caption"
-	// see here for display values: https://developer.mozilla.org/en-US/docs/CSS/display
+	// Swappable if display is none or starts with table except "table", "table-cell", or "table-caption"
+	// See here for display values: https://developer.mozilla.org/en-US/docs/CSS/display
 	rdisplayswap = /^(none|table(?!-c[ea]).+)/,
 	rnumsplit = new RegExp( "^(" + pnum + ")(.*)$", "i" ),
 	rrelNum = new RegExp( "^([+-])=(" + pnum + ")", "i" ),
@@ -5747,15 +5776,15 @@ var
 
 	cssPrefixes = [ "Webkit", "O", "Moz", "ms" ];
 
-// return a css property mapped to a potentially vendor prefixed property
+// Return a css property mapped to a potentially vendor prefixed property
 function vendorPropName( style, name ) {
 
-	// shortcut for names that are not vendor prefixed
+	// Shortcut for names that are not vendor prefixed
 	if ( name in style ) {
 		return name;
 	}
 
-	// check for vendor prefixed names
+	// Check for vendor prefixed names
 	var capName = name[0].toUpperCase() + name.slice(1),
 		origName = name,
 		i = cssPrefixes.length;
@@ -5788,7 +5817,7 @@ function augmentWidthOrHeight( elem, name, extra, isBorderBox, styles ) {
 		val = 0;
 
 	for ( ; i < 4; i += 2 ) {
-		// both box models exclude margin, so add it if we want it
+		// Both box models exclude margin, so add it if we want it
 		if ( extra === "margin" ) {
 			val += jQuery.css( elem, extra + cssExpand[ i ], true, styles );
 		}
@@ -5799,15 +5828,15 @@ function augmentWidthOrHeight( elem, name, extra, isBorderBox, styles ) {
 				val -= jQuery.css( elem, "padding" + cssExpand[ i ], true, styles );
 			}
 
-			// at this point, extra isn't border nor margin, so remove border
+			// At this point, extra isn't border nor margin, so remove border
 			if ( extra !== "margin" ) {
 				val -= jQuery.css( elem, "border" + cssExpand[ i ] + "Width", true, styles );
 			}
 		} else {
-			// at this point, extra isn't content, so add padding
+			// At this point, extra isn't content, so add padding
 			val += jQuery.css( elem, "padding" + cssExpand[ i ], true, styles );
 
-			// at this point, extra isn't content nor padding, so add border
+			// At this point, extra isn't content nor padding, so add border
 			if ( extra !== "padding" ) {
 				val += jQuery.css( elem, "border" + cssExpand[ i ] + "Width", true, styles );
 			}
@@ -5825,7 +5854,7 @@ function getWidthOrHeight( elem, name, extra ) {
 		styles = getStyles( elem ),
 		isBorderBox = jQuery.css( elem, "boxSizing", false, styles ) === "border-box";
 
-	// some non-html elements return undefined for offsetWidth, so check for null/undefined
+	// Some non-html elements return undefined for offsetWidth, so check for null/undefined
 	// svg - https://bugzilla.mozilla.org/show_bug.cgi?id=649285
 	// MathML - https://bugzilla.mozilla.org/show_bug.cgi?id=491668
 	if ( val <= 0 || val == null ) {
@@ -5840,7 +5869,7 @@ function getWidthOrHeight( elem, name, extra ) {
 			return val;
 		}
 
-		// we need the check for style in case a browser which returns unreliable values
+		// Check for style in case a browser which returns unreliable values
 		// for getComputedStyle silently falls back to the reliable elem.style
 		valueIsBorderBox = isBorderBox &&
 			( support.boxSizingReliable() || val === elem.style[ name ] );
@@ -5849,7 +5878,7 @@ function getWidthOrHeight( elem, name, extra ) {
 		val = parseFloat( val ) || 0;
 	}
 
-	// use the active box-sizing model to add/subtract irrelevant styles
+	// Use the active box-sizing model to add/subtract irrelevant styles
 	return ( val +
 		augmentWidthOrHeight(
 			elem,
@@ -5913,12 +5942,14 @@ function showHide( elements, show ) {
 }
 
 jQuery.extend({
+
 	// Add in style property hooks for overriding the default
 	// behavior of getting and setting a style property
 	cssHooks: {
 		opacity: {
 			get: function( elem, computed ) {
 				if ( computed ) {
+
 					// We should always get a number back from opacity
 					var ret = curCSS( elem, "opacity" );
 					return ret === "" ? "1" : ret;
@@ -5946,12 +5977,12 @@ jQuery.extend({
 	// Add in properties whose names you wish to fix before
 	// setting or getting the value
 	cssProps: {
-		// normalize float css property
 		"float": "cssFloat"
 	},
 
 	// Get and set the style property on a DOM Node
 	style: function( elem, name, value, extra ) {
+
 		// Don't set styles on text and comment nodes
 		if ( !elem || elem.nodeType === 3 || elem.nodeType === 8 || !elem.style ) {
 			return;
@@ -5964,33 +5995,32 @@ jQuery.extend({
 
 		name = jQuery.cssProps[ origName ] || ( jQuery.cssProps[ origName ] = vendorPropName( style, origName ) );
 
-		// gets hook for the prefixed version
-		// followed by the unprefixed version
+		// Gets hook for the prefixed version, then unprefixed version
 		hooks = jQuery.cssHooks[ name ] || jQuery.cssHooks[ origName ];
 
 		// Check if we're setting a value
 		if ( value !== undefined ) {
 			type = typeof value;
 
-			// convert relative number strings (+= or -=) to relative numbers. #7345
+			// Convert "+=" or "-=" to relative numbers (#7345)
 			if ( type === "string" && (ret = rrelNum.exec( value )) ) {
 				value = ( ret[1] + 1 ) * ret[2] + parseFloat( jQuery.css( elem, name ) );
 				// Fixes bug #9237
 				type = "number";
 			}
 
-			// Make sure that null and NaN values aren't set. See: #7116
+			// Make sure that null and NaN values aren't set (#7116)
 			if ( value == null || value !== value ) {
 				return;
 			}
 
-			// If a number was passed in, add 'px' to the (except for certain CSS properties)
+			// If a number, add 'px' to the (except for certain CSS properties)
 			if ( type === "number" && !jQuery.cssNumber[ origName ] ) {
 				value += "px";
 			}
 
-			// Fixes #8908, it can be done more correctly by specifying setters in cssHooks,
-			// but it would mean to define eight (for every problematic property) identical functions
+			// Support: IE9-11+
+			// background-* props affect original clone's values
 			if ( !support.clearCloneStyle && value === "" && name.indexOf( "background" ) === 0 ) {
 				style[ name ] = "inherit";
 			}
@@ -6018,8 +6048,7 @@ jQuery.extend({
 		// Make sure that we're working with the right name
 		name = jQuery.cssProps[ origName ] || ( jQuery.cssProps[ origName ] = vendorPropName( elem.style, origName ) );
 
-		// gets hook for the prefixed version
-		// followed by the unprefixed version
+		// Try prefixed name followed by the unprefixed name
 		hooks = jQuery.cssHooks[ name ] || jQuery.cssHooks[ origName ];
 
 		// If a hook was provided get the computed value from there
@@ -6032,12 +6061,12 @@ jQuery.extend({
 			val = curCSS( elem, name, styles );
 		}
 
-		//convert "normal" to computed value
+		// Convert "normal" to computed value
 		if ( val === "normal" && name in cssNormalTransform ) {
 			val = cssNormalTransform[ name ];
 		}
 
-		// Return, converting to number if forced or a qualifier was provided and val looks numeric
+		// Make numeric if forced or a qualifier was provided and val looks numeric
 		if ( extra === "" || extra ) {
 			num = parseFloat( val );
 			return extra === true || jQuery.isNumeric( num ) ? num || 0 : val;
@@ -6050,8 +6079,9 @@ jQuery.each([ "height", "width" ], function( i, name ) {
 	jQuery.cssHooks[ name ] = {
 		get: function( elem, computed, extra ) {
 			if ( computed ) {
-				// certain elements can have dimension info if we invisibly show them
-				// however, it must have a current display style that would benefit from this
+
+				// Certain elements can have dimension info if we invisibly show them
+				// but it must have a current display style that would benefit
 				return rdisplayswap.test( jQuery.css( elem, "display" ) ) && elem.offsetWidth === 0 ?
 					jQuery.swap( elem, cssShow, function() {
 						return getWidthOrHeight( elem, name, extra );
@@ -6079,8 +6109,6 @@ jQuery.each([ "height", "width" ], function( i, name ) {
 jQuery.cssHooks.marginRight = addGetHookIf( support.reliableMarginRight,
 	function( elem, computed ) {
 		if ( computed ) {
-			// WebKit Bug 13343 - getComputedStyle returns wrong value for margin-right
-			// Work around by temporarily setting element display to inline-block
 			return jQuery.swap( elem, { "display": "inline-block" },
 				curCSS, [ elem, "marginRight" ] );
 		}
@@ -6098,7 +6126,7 @@ jQuery.each({
 			var i = 0,
 				expanded = {},
 
-				// assumes a single number if not a string
+				// Assumes a single number if not a string
 				parts = typeof value === "string" ? value.split(" ") : [ value ];
 
 			for ( ; i < 4; i++ ) {
@@ -6221,17 +6249,18 @@ Tween.propHooks = {
 				return tween.elem[ tween.prop ];
 			}
 
-			// passing an empty string as a 3rd parameter to .css will automatically
-			// attempt a parseFloat and fallback to a string if the parse fails
-			// so, simple values such as "10px" are parsed to Float.
-			// complex values such as "rotate(1rad)" are returned as is.
+			// Passing an empty string as a 3rd parameter to .css will automatically
+			// attempt a parseFloat and fallback to a string if the parse fails.
+			// Simple values such as "10px" are parsed to Float;
+			// complex values such as "rotate(1rad)" are returned as-is.
 			result = jQuery.css( tween.elem, tween.prop, "" );
 			// Empty strings, null, undefined and "auto" are converted to 0.
 			return !result || result === "auto" ? 0 : result;
 		},
 		set: function( tween ) {
-			// use step hook for back compat - use cssHook if its there - use .style if its
-			// available and use plain properties where available
+			// Use step hook for back compat.
+			// Use cssHook if its there.
+			// Use .style if available and use plain properties where available.
 			if ( jQuery.fx.step[ tween.prop ] ) {
 				jQuery.fx.step[ tween.prop ]( tween );
 			} else if ( tween.elem.style && ( tween.elem.style[ jQuery.cssProps[ tween.prop ] ] != null || jQuery.cssHooks[ tween.prop ] ) ) {
@@ -6245,7 +6274,6 @@ Tween.propHooks = {
 
 // Support: IE9
 // Panic based approach to setting things on disconnected nodes
-
 Tween.propHooks.scrollTop = Tween.propHooks.scrollLeft = {
 	set: function( tween ) {
 		if ( tween.elem.nodeType && tween.elem.parentNode ) {
@@ -6301,16 +6329,16 @@ var
 				start = +target || 1;
 
 				do {
-					// If previous iteration zeroed out, double until we get *something*
-					// Use a string for doubling factor so we don't accidentally see scale as unchanged below
+					// If previous iteration zeroed out, double until we get *something*.
+					// Use string for doubling so we don't accidentally see scale as unchanged below
 					scale = scale || ".5";
 
 					// Adjust and apply
 					start = start / scale;
 					jQuery.style( tween.elem, prop, start + unit );
 
-				// Update scale, tolerating zero or NaN from tween.cur()
-				// And breaking the loop if scale is unchanged or perfect, or if we've just had enough
+				// Update scale, tolerating zero or NaN from tween.cur(),
+				// break the loop if scale is unchanged or perfect, or if we've just had enough
 				} while ( scale !== (scale = tween.cur() / target) && scale !== 1 && --maxIterations );
 			}
 
@@ -6342,8 +6370,8 @@ function genFx( type, includeWidth ) {
 		i = 0,
 		attrs = { height: type };
 
-	// if we include width, step value is 1 to do all cssExpand values,
-	// if we don't include width, step value is 2 to skip over Left and Right
+	// If we include width, step value is 1 to do all cssExpand values,
+	// otherwise step value is 2 to skip over Left and Right
 	includeWidth = includeWidth ? 1 : 0;
 	for ( ; i < 4 ; i += 2 - includeWidth ) {
 		which = cssExpand[ i ];
@@ -6365,7 +6393,7 @@ function createTween( value, prop, animation ) {
 	for ( ; index < length; index++ ) {
 		if ( (tween = collection[ index ].call( animation, prop, value )) ) {
 
-			// we're done with this property
+			// We're done with this property
 			return tween;
 		}
 	}
@@ -6380,7 +6408,7 @@ function defaultPrefilter( elem, props, opts ) {
 		hidden = elem.nodeType && isHidden( elem ),
 		dataShow = data_priv.get( elem, "fxshow" );
 
-	// handle queue: false promises
+	// Handle queue: false promises
 	if ( !opts.queue ) {
 		hooks = jQuery._queueHooks( elem, "fx" );
 		if ( hooks.unqueued == null ) {
@@ -6395,8 +6423,7 @@ function defaultPrefilter( elem, props, opts ) {
 		hooks.unqueued++;
 
 		anim.always(function() {
-			// doing this makes sure that the complete handler will be called
-			// before this completes
+			// Ensure the complete handler is called before this completes
 			anim.always(function() {
 				hooks.unqueued--;
 				if ( !jQuery.queue( elem, "fx" ).length ) {
@@ -6406,7 +6433,7 @@ function defaultPrefilter( elem, props, opts ) {
 		});
 	}
 
-	// height/width overflow pass
+	// Height/width overflow pass
 	if ( elem.nodeType === 1 && ( "height" in props || "width" in props ) ) {
 		// Make sure that nothing sneaks out
 		// Record all 3 overflow attributes because IE9-10 do not
@@ -6468,7 +6495,7 @@ function defaultPrefilter( elem, props, opts ) {
 			dataShow = data_priv.access( elem, "fxshow", {} );
 		}
 
-		// store state if its toggle - enables .stop().toggle() to "reverse"
+		// Store state if its toggle - enables .stop().toggle() to "reverse"
 		if ( toggle ) {
 			dataShow.hidden = !hidden;
 		}
@@ -6528,8 +6555,8 @@ function propFilter( props, specialEasing ) {
 			value = hooks.expand( value );
 			delete props[ name ];
 
-			// not quite $.extend, this wont overwrite keys already present.
-			// also - reusing 'index' from above because we have the correct "name"
+			// Not quite $.extend, this won't overwrite existing keys.
+			// Reusing 'index' because we have the correct "name"
 			for ( index in value ) {
 				if ( !( index in props ) ) {
 					props[ index ] = value[ index ];
@@ -6548,7 +6575,7 @@ function Animation( elem, properties, options ) {
 		index = 0,
 		length = animationPrefilters.length,
 		deferred = jQuery.Deferred().always( function() {
-			// don't match elem in the :animated selector
+			// Don't match elem in the :animated selector
 			delete tick.elem;
 		}),
 		tick = function() {
@@ -6557,7 +6584,8 @@ function Animation( elem, properties, options ) {
 			}
 			var currentTime = fxNow || createFxNow(),
 				remaining = Math.max( 0, animation.startTime + animation.duration - currentTime ),
-				// archaic crash bug won't allow us to use 1 - ( 0.5 || 0 ) (#12497)
+				// Support: Android 2.3
+				// Archaic crash bug won't allow us to use `1 - ( 0.5 || 0 )` (#12497)
 				temp = remaining / animation.duration || 0,
 				percent = 1 - temp,
 				index = 0,
@@ -6593,7 +6621,7 @@ function Animation( elem, properties, options ) {
 			},
 			stop: function( gotoEnd ) {
 				var index = 0,
-					// if we are going to the end, we want to run all the tweens
+					// If we are going to the end, we want to run all the tweens
 					// otherwise we skip this part
 					length = gotoEnd ? animation.tweens.length : 0;
 				if ( stopped ) {
@@ -6604,8 +6632,7 @@ function Animation( elem, properties, options ) {
 					animation.tweens[ index ].run( 1 );
 				}
 
-				// resolve when we played the last frame
-				// otherwise, reject
+				// Resolve when we played the last frame; otherwise, reject
 				if ( gotoEnd ) {
 					deferred.resolveWith( elem, [ animation, gotoEnd ] );
 				} else {
@@ -6687,7 +6714,7 @@ jQuery.speed = function( speed, easing, fn ) {
 	opt.duration = jQuery.fx.off ? 0 : typeof opt.duration === "number" ? opt.duration :
 		opt.duration in jQuery.fx.speeds ? jQuery.fx.speeds[ opt.duration ] : jQuery.fx.speeds._default;
 
-	// normalize opt.queue - true/undefined/null -> "fx"
+	// Normalize opt.queue - true/undefined/null -> "fx"
 	if ( opt.queue == null || opt.queue === true ) {
 		opt.queue = "fx";
 	}
@@ -6711,10 +6738,10 @@ jQuery.speed = function( speed, easing, fn ) {
 jQuery.fn.extend({
 	fadeTo: function( speed, to, easing, callback ) {
 
-		// show any hidden elements after setting opacity to 0
+		// Show any hidden elements after setting opacity to 0
 		return this.filter( isHidden ).css( "opacity", 0 ).show()
 
-			// animate to the value specified
+			// Animate to the value specified
 			.end().animate({ opacity: to }, speed, easing, callback );
 	},
 	animate: function( prop, speed, easing, callback ) {
@@ -6777,9 +6804,9 @@ jQuery.fn.extend({
 				}
 			}
 
-			// start the next in the queue if the last step wasn't forced
-			// timers currently will call their complete callbacks, which will dequeue
-			// but only if they were gotoEnd
+			// Start the next in the queue if the last step wasn't forced.
+			// Timers currently will call their complete callbacks, which
+			// will dequeue but only if they were gotoEnd.
 			if ( dequeue || !gotoEnd ) {
 				jQuery.dequeue( this, type );
 			}
@@ -6797,17 +6824,17 @@ jQuery.fn.extend({
 				timers = jQuery.timers,
 				length = queue ? queue.length : 0;
 
-			// enable finishing flag on private data
+			// Enable finishing flag on private data
 			data.finish = true;
 
-			// empty the queue first
+			// Empty the queue first
 			jQuery.queue( this, type, [] );
 
 			if ( hooks && hooks.stop ) {
 				hooks.stop.call( this, true );
 			}
 
-			// look for any active animations, and finish them
+			// Look for any active animations, and finish them
 			for ( index = timers.length; index--; ) {
 				if ( timers[ index ].elem === this && timers[ index ].queue === type ) {
 					timers[ index ].anim.stop( true );
@@ -6815,14 +6842,14 @@ jQuery.fn.extend({
 				}
 			}
 
-			// look for any animations in the old queue and finish them
+			// Look for any animations in the old queue and finish them
 			for ( index = 0; index < length; index++ ) {
 				if ( queue[ index ] && queue[ index ].finish ) {
 					queue[ index ].finish.call( this );
 				}
 			}
 
-			// turn off finishing flag
+			// Turn off finishing flag
 			delete data.finish;
 		});
 	}
@@ -6925,21 +6952,21 @@ jQuery.fn.delay = function( time, type ) {
 
 	input.type = "checkbox";
 
-	// Support: iOS 5.1, Android 4.x, Android 2.3
-	// Check the default checkbox/radio value ("" on old WebKit; "on" elsewhere)
+	// Support: iOS<=5.1, Android<=4.2+
+	// Default value for a checkbox should be "on"
 	support.checkOn = input.value !== "";
 
-	// Must access the parent to make an option select properly
-	// Support: IE9, IE10
+	// Support: IE<=11+
+	// Must access selectedIndex to make default options select
 	support.optSelected = opt.selected;
 
-	// Make sure that the options inside disabled selects aren't marked as disabled
-	// (WebKit marks them as disabled)
+	// Support: Android<=2.3
+	// Options inside disabled selects are incorrectly marked as disabled
 	select.disabled = true;
 	support.optDisabled = !opt.disabled;
 
-	// Check if an input maintains its value after becoming a radio
-	// Support: IE9, IE10
+	// Support: IE<=11+
+	// An input loses its value after becoming a radio
 	input = document.createElement( "input" );
 	input.value = "t";
 	input.type = "radio";
@@ -7036,8 +7063,6 @@ jQuery.extend({
 			set: function( elem, value ) {
 				if ( !support.radioValue && value === "radio" &&
 					jQuery.nodeName( elem, "input" ) ) {
-					// Setting the type on a radio button after the value resets the value in IE6-9
-					// Reset value to default in case type is set after value during creation
 					var val = elem.value;
 					elem.setAttribute( "type", value );
 					if ( val ) {
@@ -7107,7 +7132,7 @@ jQuery.extend({
 		var ret, hooks, notxml,
 			nType = elem.nodeType;
 
-		// don't get/set properties on text, comment and attribute nodes
+		// Don't get/set properties on text, comment and attribute nodes
 		if ( !elem || nType === 3 || nType === 8 || nType === 2 ) {
 			return;
 		}
@@ -7143,8 +7168,6 @@ jQuery.extend({
 	}
 });
 
-// Support: IE9+
-// Selectedness for an option in an optgroup can be inaccurate
 if ( !support.optSelected ) {
 	jQuery.propHooks.selected = {
 		get: function( elem ) {
@@ -7252,7 +7275,7 @@ jQuery.fn.extend({
 						}
 					}
 
-					// only assign if different to avoid unneeded rendering.
+					// Only assign if different to avoid unneeded rendering.
 					finalValue = value ? jQuery.trim( cur ) : "";
 					if ( elem.className !== finalValue ) {
 						elem.className = finalValue;
@@ -7279,14 +7302,14 @@ jQuery.fn.extend({
 
 		return this.each(function() {
 			if ( type === "string" ) {
-				// toggle individual class names
+				// Toggle individual class names
 				var className,
 					i = 0,
 					self = jQuery( this ),
 					classNames = value.match( rnotwhite ) || [];
 
 				while ( (className = classNames[ i++ ]) ) {
-					// check each className given, space separated list
+					// Check each className given, space separated list
 					if ( self.hasClass( className ) ) {
 						self.removeClass( className );
 					} else {
@@ -7301,7 +7324,7 @@ jQuery.fn.extend({
 					data_priv.set( this, "__className__", this.className );
 				}
 
-				// If the element has a class name or if we're passed "false",
+				// If the element has a class name or if we're passed `false`,
 				// then remove the whole classname (if there was one, the above saved it).
 				// Otherwise bring back whatever was previously saved (if anything),
 				// falling back to the empty string if nothing was stored.
@@ -7345,9 +7368,9 @@ jQuery.fn.extend({
 				ret = elem.value;
 
 				return typeof ret === "string" ?
-					// handle most common string cases
+					// Handle most common string cases
 					ret.replace(rreturn, "") :
-					// handle cases where value is null/undef or number
+					// Handle cases where value is null/undef or number
 					ret == null ? "" : ret;
 			}
 
@@ -7455,7 +7478,7 @@ jQuery.extend({
 					}
 				}
 
-				// force browsers to behave consistently when non-matching value is set
+				// Force browsers to behave consistently when non-matching value is set
 				if ( !optionSet ) {
 					elem.selectedIndex = -1;
 				}
@@ -7476,8 +7499,6 @@ jQuery.each([ "radio", "checkbox" ], function() {
 	};
 	if ( !support.checkOn ) {
 		jQuery.valHooks[ this ].get = function( elem ) {
-			// Support: Webkit
-			// "" is returned instead of "on" if a value isn't specified
 			return elem.getAttribute("value") === null ? "on" : elem.value;
 		};
 	}
@@ -7559,10 +7580,6 @@ jQuery.parseXML = function( data ) {
 
 
 var
-	// Document location
-	ajaxLocParts,
-	ajaxLocation,
-
 	rhash = /#.*$/,
 	rts = /([?&])_=[^&]*/,
 	rheaders = /^(.*?):[ \t]*([^\r\n]*)$/mg,
@@ -7591,22 +7608,13 @@ var
 	transports = {},
 
 	// Avoid comment-prolog char sequence (#10098); must appease lint and evade compression
-	allTypes = "*/".concat("*");
+	allTypes = "*/".concat( "*" ),
 
-// #8138, IE may throw an exception when accessing
-// a field from window.location if document.domain has been set
-try {
-	ajaxLocation = location.href;
-} catch( e ) {
-	// Use the href attribute of an A element
-	// since IE will modify it given document.location
-	ajaxLocation = document.createElement( "a" );
-	ajaxLocation.href = "";
-	ajaxLocation = ajaxLocation.href;
-}
+	// Document location
+	ajaxLocation = window.location.href,
 
-// Segment location into parts
-ajaxLocParts = rurl.exec( ajaxLocation.toLowerCase() ) || [];
+	// Segment location into parts
+	ajaxLocParts = rurl.exec( ajaxLocation.toLowerCase() ) || [];
 
 // Base "constructor" for jQuery.ajaxPrefilter and jQuery.ajaxTransport
 function addToPrefiltersOrTransports( structure ) {
@@ -8085,7 +8093,8 @@ jQuery.extend({
 		}
 
 		// We can fire global events as of now if asked to
-		fireGlobals = s.global;
+		// Don't fire events if jQuery.event is undefined in an AMD-usage scenario (#15118)
+		fireGlobals = jQuery.event && s.global;
 
 		// Watch for a new set of requests
 		if ( fireGlobals && jQuery.active++ === 0 ) {
@@ -8158,7 +8167,7 @@ jQuery.extend({
 			return jqXHR.abort();
 		}
 
-		// aborting is no longer a cancellation
+		// Aborting is no longer a cancellation
 		strAbort = "abort";
 
 		// Install callbacks on deferreds
@@ -8270,8 +8279,7 @@ jQuery.extend({
 					isSuccess = !error;
 				}
 			} else {
-				// We extract error from statusText
-				// then normalize statusText and status for non-aborts
+				// Extract error from statusText and normalize for non-aborts
 				error = statusText;
 				if ( status || !statusText ) {
 					statusText = "error";
@@ -8327,7 +8335,7 @@ jQuery.extend({
 
 jQuery.each( [ "get", "post" ], function( i, method ) {
 	jQuery[ method ] = function( url, data, callback, type ) {
-		// shift arguments if data argument was omitted
+		// Shift arguments if data argument was omitted
 		if ( jQuery.isFunction( data ) ) {
 			type = type || callback;
 			callback = data;
@@ -8341,13 +8349,6 @@ jQuery.each( [ "get", "post" ], function( i, method ) {
 			data: data,
 			success: callback
 		});
-	};
-});
-
-// Attach a bunch of functions for handling common AJAX events
-jQuery.each( [ "ajaxStart", "ajaxStop", "ajaxComplete", "ajaxError", "ajaxSuccess", "ajaxSend" ], function( i, type ) {
-	jQuery.fn[ type ] = function( fn ) {
-		return this.on( type, fn );
 	};
 });
 
@@ -8568,8 +8569,9 @@ var xhrId = 0,
 
 // Support: IE9
 // Open requests must be manually aborted on unload (#5280)
-if ( window.ActiveXObject ) {
-	jQuery( window ).on( "unload", function() {
+// See https://support.microsoft.com/kb/2856746 for more info
+if ( window.attachEvent ) {
+	window.attachEvent( "onunload", function() {
 		for ( var key in xhrCallbacks ) {
 			xhrCallbacks[ key ]();
 		}
@@ -8922,6 +8924,16 @@ jQuery.fn.load = function( url, params, callback ) {
 
 
 
+// Attach a bunch of functions for handling common AJAX events
+jQuery.each( [ "ajaxStart", "ajaxStop", "ajaxComplete", "ajaxError", "ajaxSuccess", "ajaxSend" ], function( i, type ) {
+	jQuery.fn[ type ] = function( fn ) {
+		return this.on( type, fn );
+	};
+});
+
+
+
+
 jQuery.expr.filters.animated = function( elem ) {
 	return jQuery.grep(jQuery.timers, function( fn ) {
 		return elem === fn.elem;
@@ -8958,7 +8970,8 @@ jQuery.offset = {
 		calculatePosition = ( position === "absolute" || position === "fixed" ) &&
 			( curCSSTop + curCSSLeft ).indexOf("auto") > -1;
 
-		// Need to be able to calculate position if either top or left is auto and position is either absolute or fixed
+		// Need to be able to calculate position if either
+		// top or left is auto and position is either absolute or fixed
 		if ( calculatePosition ) {
 			curPosition = curElem.position();
 			curTop = curPosition.top;
@@ -9015,8 +9028,8 @@ jQuery.fn.extend({
 			return box;
 		}
 
+		// Support: BlackBerry 5, iOS 3 (original iPhone)
 		// If we don't have gBCR, just use 0,0 rather than error
-		// BlackBerry 5, iOS 3 (original iPhone)
 		if ( typeof elem.getBoundingClientRect !== strundefined ) {
 			box = elem.getBoundingClientRect();
 		}
@@ -9038,7 +9051,7 @@ jQuery.fn.extend({
 
 		// Fixed elements are offset from window (parentOffset = {top:0, left: 0}, because it is its only offset parent
 		if ( jQuery.css( elem, "position" ) === "fixed" ) {
-			// We assume that getBoundingClientRect is available when computed position is fixed
+			// Assume getBoundingClientRect is there when computed position is fixed
 			offset = elem.getBoundingClientRect();
 
 		} else {
@@ -9101,16 +9114,18 @@ jQuery.each( { scrollLeft: "pageXOffset", scrollTop: "pageYOffset" }, function( 
 	};
 });
 
+// Support: Safari<7+, Chrome<37+
 // Add the top/left cssHooks using jQuery.fn.position
 // Webkit bug: https://bugs.webkit.org/show_bug.cgi?id=29084
-// getComputedStyle returns percent when specified for top/left/bottom/right
-// rather than make the css module depend on the offset module, we just check for it here
+// Blink bug: https://code.google.com/p/chromium/issues/detail?id=229280
+// getComputedStyle returns percent when specified for top/left/bottom/right;
+// rather than make the css module depend on the offset module, just check for it here
 jQuery.each( [ "top", "left" ], function( i, prop ) {
 	jQuery.cssHooks[ prop ] = addGetHookIf( support.pixelPosition,
 		function( elem, computed ) {
 			if ( computed ) {
 				computed = curCSS( elem, prop );
-				// if curCSS returns percentage, fallback to offset
+				// If curCSS returns percentage, fallback to offset
 				return rnumnonpx.test( computed ) ?
 					jQuery( elem ).position()[ prop ] + "px" :
 					computed;
@@ -9123,7 +9138,7 @@ jQuery.each( [ "top", "left" ], function( i, prop ) {
 // Create innerHeight, innerWidth, height, width, outerHeight and outerWidth methods
 jQuery.each( { Height: "height", Width: "width" }, function( name, type ) {
 	jQuery.each( { padding: "inner" + name, content: type, "": "outer" + name }, function( defaultExtra, funcName ) {
-		// margin is only for outerHeight, outerWidth
+		// Margin is only for outerHeight, outerWidth
 		jQuery.fn[ funcName ] = function( margin, value ) {
 			var chainable = arguments.length && ( defaultExtra || typeof margin !== "boolean" ),
 				extra = defaultExtra || ( margin === true || value === true ? "margin" : "border" );
@@ -9214,8 +9229,8 @@ jQuery.noConflict = function( deep ) {
 	return jQuery;
 };
 
-// Expose jQuery and $ identifiers, even in
-// AMD (#7102#comment:10, https://github.com/jquery/jquery/pull/557)
+// Expose jQuery and $ identifiers, even in AMD
+// (#7102#comment:10, https://github.com/jquery/jquery/pull/557)
 // and CommonJS for browser emulators (#13566)
 if ( typeof noGlobal === strundefined ) {
 	window.jQuery = window.$ = jQuery;
@@ -12495,7 +12510,7 @@ d*m,p+c.scaleFontSize),b.rotate(-(w*(Math.PI/180))),b.fillText(a.labels[d],0,0),
 k),c.scaleShowGridLines?(b.lineWidth=c.scaleGridLineWidth,b.strokeStyle=c.scaleGridLineColor,b.lineTo(n+r+5,p-(d+1)*k)):b.lineTo(n-0.5,p-(d+1)*k),b.stroke(),c.scaleShowLabels&&b.fillText(j.labels[d],n-8,p-(d+1)*k)},function(d){b.lineWidth=c.barStrokeWidth;for(var e=0;e<a.datasets.length;e++){b.fillStyle=a.datasets[e].fillColor;b.strokeStyle=a.datasets[e].strokeColor;for(var f=0;f<a.datasets[e].data.length;f++){var g=n+c.barValueSpacing+m*f+s*e+c.barDatasetSpacing*e+c.barStrokeWidth*e;b.beginPath();
 b.moveTo(g,p);b.lineTo(g,p-d*v(a.datasets[e].data[f],j,k)+c.barStrokeWidth/2);b.lineTo(g+s,p-d*v(a.datasets[e].data[f],j,k)+c.barStrokeWidth/2);b.lineTo(g+s,p);c.barShowStroke&&b.stroke();b.closePath();b.fill()}}},b)},D=window.requestAnimationFrame||window.webkitRequestAnimationFrame||window.mozRequestAnimationFrame||window.oRequestAnimationFrame||window.msRequestAnimationFrame||function(a){window.setTimeout(a,1E3/60)},F={}};
 /**
- * @license AngularJS v1.2.27
+ * @license AngularJS v1.2.28
  * (c) 2010-2014 Google, Inc. http://angularjs.org
  * License: MIT
  */
@@ -12565,7 +12580,7 @@ function minErr(module) {
       return match;
     });
 
-    message = message + '\nhttp://errors.angularjs.org/1.2.27/' +
+    message = message + '\nhttp://errors.angularjs.org/1.2.28/' +
       (module ? module + '/' : '') + code;
     for (i = 2; i < arguments.length; i++) {
       message = message + (i == 2 ? '?' : '&') + 'p' + (i-2) + '=' +
@@ -12731,8 +12746,8 @@ if ('i' !== 'I'.toLowerCase()) {
 }
 
 
-var /** holds major version number for IE or NaN for real browsers */
-    msie,
+var
+    msie,             // holds major version number for IE, or NaN if UA is not IE.
     jqLite,           // delay binding since jQuery could be loaded after us.
     jQuery,           // delay binding
     slice             = [].slice,
@@ -14484,11 +14499,11 @@ function setupModuleLoader(window) {
  * - `codeName` – `{string}` – Code name of the release, such as "jiggling-armfat".
  */
 var version = {
-  full: '1.2.27',    // all of these placeholder strings will be replaced by grunt's
+  full: '1.2.28',    // all of these placeholder strings will be replaced by grunt's
   major: 1,    // package task
   minor: 2,
-  dot: 27,
-  codeName: 'prime-factorization'
+  dot: 28,
+  codeName: 'finnish-disembarkation'
 };
 
 
@@ -18308,6 +18323,21 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
     };
 
     Attributes.prototype = {
+      /**
+       * @ngdoc method
+       * @name $compile.directive.Attributes#$normalize
+       * @kind function
+       *
+       * @description
+       * Converts an attribute name (e.g. dash/colon/underscore-delimited string, optionally prefixed with `x-` or
+       * `data-`) to its normalized, camelCase form.
+       *
+       * Also there is special case for Moz prefix starting with upper case letter.
+       *
+       * For further information check out the guide on {@link guide/directive#matching-directives Matching Directives}
+       *
+       * @param {string} name Name to normalize
+       */
       $normalize: directiveNormalize,
 
 
@@ -19641,13 +19671,6 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 var PREFIX_REGEXP = /^(x[\:\-_]|data[\:\-_])/i;
 /**
  * Converts all accepted directives format into proper directive name.
- * All of these will become 'myDirective':
- *   my:Directive
- *   my-directive
- *   x-my-directive
- *   data-my:directive
- *
- * Also there is special case for Moz prefix starting with upper case letter.
  * @param name Name to normalize
  */
 function directiveNormalize(name) {
@@ -20206,6 +20229,21 @@ function $HttpProvider() {
      * In addition, you can supply a `headers` property in the config object passed when
      * calling `$http(config)`, which overrides the defaults without changing them globally.
      *
+     * To explicitly remove a header automatically added via $httpProvider.defaults.headers on a per request basis,
+     * Use the `headers` property, setting the desired header to `undefined`. For example:
+     *
+     * ```js
+     * var req = {
+     *  method: 'POST',
+     *  url: 'http://example.com',
+     *  headers: {
+     *    'Content-Type': undefined
+     *  },
+     *  data: { test: 'test' },
+     * }
+     *
+     * $http(req).success(function(){...}).error(function(){...});
+     * ```
      *
      * # Transforming Requests and Responses
      *
@@ -21495,33 +21533,33 @@ function $IntervalProvider() {
       *             // Don't start a new fight if we are already fighting
       *             if ( angular.isDefined(stop) ) return;
       *
-      *           stop = $interval(function() {
-      *             if ($scope.blood_1 > 0 && $scope.blood_2 > 0) {
-      *               $scope.blood_1 = $scope.blood_1 - 3;
-      *               $scope.blood_2 = $scope.blood_2 - 4;
-      *             } else {
-      *               $scope.stopFight();
+      *             stop = $interval(function() {
+      *               if ($scope.blood_1 > 0 && $scope.blood_2 > 0) {
+      *                 $scope.blood_1 = $scope.blood_1 - 3;
+      *                 $scope.blood_2 = $scope.blood_2 - 4;
+      *               } else {
+      *                 $scope.stopFight();
+      *               }
+      *             }, 100);
+      *           };
+      *
+      *           $scope.stopFight = function() {
+      *             if (angular.isDefined(stop)) {
+      *               $interval.cancel(stop);
+      *               stop = undefined;
       *             }
-      *           }, 100);
-      *         };
+      *           };
       *
-      *         $scope.stopFight = function() {
-      *           if (angular.isDefined(stop)) {
-      *             $interval.cancel(stop);
-      *             stop = undefined;
-      *           }
-      *         };
+      *           $scope.resetFight = function() {
+      *             $scope.blood_1 = 100;
+      *             $scope.blood_2 = 120;
+      *           };
       *
-      *         $scope.resetFight = function() {
-      *           $scope.blood_1 = 100;
-      *           $scope.blood_2 = 120;
-      *         };
-      *
-      *         $scope.$on('$destroy', function() {
-      *           // Make sure that the interval is destroyed too
-      *           $scope.stopFight();
-      *         });
-      *       }])
+      *           $scope.$on('$destroy', function() {
+      *             // Make sure that the interval is destroyed too
+      *             $scope.stopFight();
+      *           });
+      *         }])
       *       // Register the 'myCurrentTime' directive factory method.
       *       // We inject $interval and dateFilter service since the factory method is DI.
       *       .directive('myCurrentTime', ['$interval', 'dateFilter',
@@ -23372,7 +23410,7 @@ Parser.prototype = {
       ensureSafeObject(context, parser.text);
       ensureSafeFunction(fnPtr, parser.text);
 
-      // IE stupidity! (IE doesn't have apply for some native functions)
+      // IE doesn't have apply for some native functions
       var v = fnPtr.apply
             ? fnPtr.apply(context, args)
             : fnPtr(args[0], args[1], args[2], args[3], args[4]);
@@ -28306,9 +28344,8 @@ var htmlAnchorDirective = valueFn({
  * make the link go to the wrong URL if the user clicks it before
  * Angular has a chance to replace the `{{hash}}` markup with its
  * value. Until Angular replaces the markup the link will be broken
- * and will most likely return a 404 error.
- *
- * The `ngHref` directive solves this problem.
+ * and will most likely return a 404 error. The `ngHref` directive
+ * solves this problem.
  *
  * The wrong way to write it:
  * ```html
@@ -33928,7 +33965,6 @@ var scriptDirective = ['$templateCache', function($templateCache) {
     compile: function(element, attr) {
       if (attr.type == 'text/ng-template') {
         var templateUrl = attr.id,
-            // IE is not consistent, in scripts we have to read .text but in other nodes we have to read .textContent
             text = element[0].text;
 
         $templateCache.put(templateUrl, text);
@@ -37565,7 +37601,7 @@ var styleDirective = valueFn({
     }
 }).call(this);
 /**
- * @license AngularJS v1.2.27
+ * @license AngularJS v1.2.28
  * (c) 2010-2014 Google, Inc. http://angularjs.org
  * License: MIT
  */
@@ -38872,7 +38908,7 @@ angular.module('ngSanitize').filter('linky', ['$sanitize', function($sanitize) {
 
 })(window, window.angular);
 /**
- * @license AngularJS v1.2.27
+ * @license AngularJS v1.2.28
  * (c) 2010-2014 Google, Inc. http://angularjs.org
  * License: MIT
  */
@@ -39456,7 +39492,7 @@ function $RouteProvider(){
         if (i === 0) {
           result.push(segment);
         } else {
-          var segmentMatch = segment.match(/(\w+)(.*)/);
+          var segmentMatch = segment.match(/(\w+)(?:[?*])?(.*)/);
           var key = segmentMatch[1];
           result.push(params[key]);
           result.push(segmentMatch[2] || '');
@@ -59482,6 +59518,183 @@ module
 
     return module;
 }));
+/*! angular-shims-placeholder - v0.3.4 - 2014-12-17
+* https://github.com/cvn/angular-shims-placeholder
+* Copyright (c) 2014 Chad von Nau; Licensed MIT */
+
+(function (angular, document, undefined) {
+  'use strict';
+  angular.module('ng.shims.placeholder', []).service('placeholderSniffer', [
+    '$document',
+    function ($document) {
+      this.emptyClassName = 'empty', this.hasPlaceholder = function () {
+        var test = $document[0].createElement('input');
+        return test.placeholder !== void 0;
+      };
+    }
+  ]).directive('placeholder', [
+    '$timeout',
+    '$document',
+    'placeholderSniffer',
+    function ($timeout, $document, placeholderSniffer) {
+      if (placeholderSniffer.hasPlaceholder())
+        return {};
+      var documentListenersApplied = false;
+      return {
+        restrict: 'A',
+        require: '?ngModel',
+        priority: 110,
+        link: function (scope, elem, attrs, ngModel) {
+          var orig_val = getValue(), domElem = elem[0], elemType = domElem.nodeName.toLowerCase(), isInput = elemType === 'input' || elemType === 'textarea', is_pwd = attrs.type === 'password', text = attrs.placeholder, emptyClassName = placeholderSniffer.emptyClassName, hiddenClassName = 'ng-hide', clone;
+          if (!isInput) {
+            return;
+          }
+          attrs.$observe('placeholder', function (newValue) {
+            if (elem.hasClass(emptyClassName) && elem.val() === text) {
+              elem.val('');
+            }
+            text = newValue;
+            updateValue();
+          });
+          if (is_pwd) {
+            setupPasswordPlaceholder();
+          }
+          setValue(orig_val);
+          elem.bind('focus', function () {
+            if (elem.hasClass(emptyClassName)) {
+              elem.val('');
+              elem.removeClass(emptyClassName);
+              domElem.select();
+            }
+          });
+          elem.bind('blur', updateValue);
+          if (!ngModel) {
+            elem.bind('change', updateValue);
+          }
+          if (ngModel) {
+            ngModel.$render = function () {
+              setValue(ngModel.$viewValue);
+              if (domElem === document.activeElement && !elem.val()) {
+                domElem.select();
+              }
+            };
+          }
+          if (!documentListenersApplied) {
+            $document.on('selectstart', function (e) {
+              var elmn = angular.element(e.target);
+              if (elmn.hasClass(emptyClassName) && elmn.prop('disabled')) {
+                e.preventDefault();
+              }
+            });
+            documentListenersApplied = true;
+          }
+          function updateValue(e) {
+            var val = elem.val();
+            if (elem.hasClass(emptyClassName) && val && val === text) {
+              return;
+            }
+            conditionalDefer(function () {
+              setValue(val);
+            });
+          }
+          function conditionalDefer(callback) {
+            if (document.documentMode <= 11) {
+              $timeout(callback, 0);
+            } else {
+              callback();
+            }
+          }
+          function setValue(val) {
+            if (!val && domElem !== document.activeElement) {
+              elem.addClass(emptyClassName);
+              if (!is_pwd) {
+                elem.val(text);
+              }
+            } else {
+              elem.removeClass(emptyClassName);
+              elem.val(val);
+            }
+            if (is_pwd) {
+              updatePasswordPlaceholder();
+            }
+          }
+          function getValue() {
+            if (ngModel) {
+              return scope.$eval(attrs.ngModel) || '';
+            }
+            return getDomValue() || '';
+          }
+          function getDomValue() {
+            var val = elem.val();
+            if (val === attrs.placeholder) {
+              val = '';
+            }
+            return val;
+          }
+          function setAttrUnselectable(elmn, enable) {
+            if (enable) {
+              elmn.attr('unselectable', 'on');
+            } else {
+              elmn.removeAttr('unselectable');
+            }
+          }
+          function setupPasswordPlaceholder() {
+            clone = angular.element('<input type="text" value="' + text + '"/>');
+            stylePasswordPlaceholder();
+            clone.addClass(emptyClassName).addClass(hiddenClassName).bind('focus', hidePasswordPlaceholderAndFocus);
+            domElem.parentNode.insertBefore(clone[0], domElem);
+            var watchAttrs = [
+                attrs.ngDisabled,
+                attrs.ngReadonly,
+                attrs.ngRequired,
+                attrs.ngShow,
+                attrs.ngHide
+              ];
+            for (var i = 0; i < watchAttrs.length; i++) {
+              if (watchAttrs[i]) {
+                scope.$watch(watchAttrs[i], updatePasswordPlaceholder);
+              }
+            }
+          }
+          function updatePasswordPlaceholder() {
+            stylePasswordPlaceholder();
+            if (isNgHidden()) {
+              clone.addClass(hiddenClassName);
+            } else if (elem.hasClass(emptyClassName) && domElem !== document.activeElement) {
+              showPasswordPlaceholder();
+            } else {
+              hidePasswordPlaceholder();
+            }
+          }
+          function stylePasswordPlaceholder() {
+            clone.val(text).attr('class', elem.attr('class') || '').attr('style', elem.attr('style') || '').prop('disabled', elem.prop('disabled')).prop('readOnly', elem.prop('readOnly')).prop('required', elem.prop('required'));
+            setAttrUnselectable(clone, elem.attr('unselectable') === 'on');
+          }
+          function showPasswordPlaceholder() {
+            elem.addClass(hiddenClassName);
+            clone.removeClass(hiddenClassName);
+          }
+          function hidePasswordPlaceholder() {
+            clone.addClass(hiddenClassName);
+            elem.removeClass(hiddenClassName);
+          }
+          function hidePasswordPlaceholderAndFocus() {
+            hidePasswordPlaceholder();
+            domElem.focus();
+          }
+          function isNgHidden() {
+            var hasNgShow = typeof attrs.ngShow !== 'undefined', hasNgHide = typeof attrs.ngHide !== 'undefined';
+            if (hasNgShow || hasNgHide) {
+              return hasNgShow && !scope.$eval(attrs.ngShow) || hasNgHide && scope.$eval(attrs.ngHide);
+            } else {
+              return false;
+            }
+          }
+        }
+      };
+    }
+  ]);
+}(window.angular, window.document));
 /*
 //! version : 3.1.3
 =========================================================
@@ -65380,6 +65593,7 @@ PDRClient = angular.module("PDRClient", [
   'angular-redactor',
   'angularMoment',
   'angularFileUpload',
+  'ng.shims.placeholder',
   'ui.utils',
   'ui.router',
   'ui.bootstrap']);
@@ -65432,7 +65646,6 @@ angular.module("PDRClient").config(['$tooltipProvider', function($tooltipProvide
     'focus': 'blur',
   });
 }]);
-
 PDRClient.config(['$stateProvider', '$urlRouterProvider',
   function($stateProvider, $urlRouterProvider) {
 
@@ -65832,700 +66045,700 @@ PDRClient.config(['$stateProvider', '$urlRouterProvider',
   }
 ]);
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/access/grant.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/access/grant.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/access/grant.html", '<div class="invite-redeem">\n  <div class=\'row row-bg row-header\'>\n    <div class="col-md-offset-1 col-md-9">\n      <div class="col-md-12">\n        <h1>Access Request</h1>\n        <span></span>\n      </div>\n    </div>\n  </div>\n\n</div>\n\n')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/assessments/assessment-list.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/assessments/assessment-list.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
-  $templateCache.put("client/views/assessments/assessment-list.html", '<div class=\'assessments\'>\n\n  <div ng-repeat="assessment in assessments\n     | filter:{district_name: selectedDistrict}\n     | filter: permissionsFilter(selectedPermission)\n     | filter:{status: selectedStatus}">\n\n    <div class=\'row assessment\'>\n      <div class=\'col-md-1 col-xs-2 overview\' style=\'background-color: {{backgroundColor(assessment)}};\'>\n        <div class="type">\n          {{assessment.status}}\n        </div>\n\n        <div class="status" ng-switch on="assessment.status">\n          <div ng-switch-when="consensus">\n            <i class="fa {{consensusReportIcon(assessment)}}"></i>\n          </div>\n          <div ng-switch-when="assessment">\n            {{roundNumber(assessment.percent_completed)}}%\n          </div>\n          <div ng-switch-default>\n            N/A\n          </div>\n        </div>\n\n      </div>\n\n      <div class=\'col-md-9 col-xs-7 details\'\n        ng-class="activeAssessmentLink(assessment)"\n        ng-click="gotoLocation(responseLink(assessment))">\n        <div class=\'row no-gutters\'>\n          <div class=\'col-md-12 col-xs-12 \'>\n            <h2 class=\'name\'>{{assessment.name}}</h2>\n          </div>\n        </div>\n        <div class=\'row\'>\n          <div class=\'col-md-3 col-sm-3 no-gutter-left \'>\n            <p class=\'assessment-stat\'>\n              <span class=\'category\'>Participants</span>\n              <span class=\'stat\'>{{assessment.participant_count}}</span>\n            </p>\n          </div>\n          <div class=\'col-md-4 col-sm-4 no-gutter-left\'>\n            <p class=\'assessment-stat\'>\n            <span class=\'category\'>Completed</span>\n            <span class=\'stat\'>{{assessment.completed_responses}}</span>\n            </p>\n          </div>\n          <div class=\'col-md-5 col-sm-5 no-gutter-left\'>\n            <p class=\'assessment-stat\'>\n            <span class=\'category\'>Meeting</span>\n            <span class=\'stat\'>{{meetingTime(assessment.meeting_date)}}</span>\n            </p>\n          </div>\n        </div>\n      </div>\n\n      <div class=\'col-md-2 col-xs-3 links\'>\n        <div class="repeat" ng-repeat="link in orderLinks(assessment.links)">\n          <assessment-links\n          data-title="{{link.title}}"\n          data-active="{{link.active}}"\n          data-type="{{link.type}}"\n          data-id="{{assessment.id}}"\n          data-consensus-id="{{assessment.consensus.id}}"\n          data-role="{{role}}">\n          </assessment-links>\n        </div>\n      </div>\n\n    </div>\n    <!-- I added bootstraps center-block class here to center the avatar img and it\'s parent. Shouldn\'t cause any problems though.  -->\n    <div class=\'row assessment-footer\'>\n      <div class=\'avatar col-md-1 col-xs-2 center-block\' style=\'background-color: {{backgroundColor(assessment)}};\'>\n        <avatar\n        data-imgclass="media-object img-circle center-block"\n        data-width="28"\n        data-has-tooltip="true"\n        data-name="{{assessment.facilitator.full_name}}"\n        data-avatar="{{assessment.facilitator.avatar}}"\n        data-role="{{assessment.facilitator.team_role}}">\n        </avatar>\n      </div>\n\n      <div class=\'col-md-7 col-xs-7\'>\n        <div class="media">\n          <p class="pull-left subheading-text">{{assessment.subheading.text}}</p>\n          <div ng-repeat="p in assessment.subheading.participants">\n            <avatar\n            data-has-tooltip="true"\n            data-style="margin-right:0.375em;"\n            data-name="{{p.full_name}}"\n            data-avatar="{{p.avatar}}"\n            data-role="{{p.team_role}}"\n            data-width="28"\n            data-toolplacement="bottom"\n            data-imgclass="pull-left media-object img-circle">\n            </avatar>\n          </div>\n        </div>\n      </div>\n\n      <div ng-show="isNetworkPartner()" class=\'col-md-4 col-xs-3 district-name\'>\n        {{assessment.district_name}}\n      </div>\n    </div>\n\n  </div>\n</div>')
+  $templateCache.put("client/views/assessments/assessment-list.html", '<div class=\'assessments\'>\n\n  <div ng-repeat="assessment in assessments\n     | filter:{district_name: selectedDistrict}\n     | filter: permissionsFilter(selectedPermission)\n     | filter:{status: selectedStatus}">\n\n    <div class=\'row assessment\'>\n      <div class=\'col-md-1 col-xs-2 overview assessment-background-color disable-assessment\'>\n        <div class="type">\n          {{assessment.status}}\n        </div>\n\n        <div class="status" ng-switch on="assessment.status">\n          <div ng-switch-when="consensus">\n            <i class="fa {{consensusReportIcon(assessment)}}"></i>\n          </div>\n          <div ng-switch-when="assessment">\n            {{roundNumber(assessment.percent_completed)}}%\n          </div>\n          <div ng-switch-default>\n            <i class="fa {{draftStatusIcon(assessment)}}"></i>\n          </div>\n        </div>\n\n      </div>\n\n      <div class=\'col-md-9 col-xs-9 disable-assessment details\'\n        ng-class="activeAssessmentLink(assessment)"\n        ng-click="gotoLocation(responseLink(assessment))">\n        <div class=\'row no-gutters\'>\n          <div class=\'col-md-12 col-xs-12 \'>\n            <h2 class=\'name\'>{{assessment.name}}\n              <i ng-hide="assessment.has_access" class="fa fa-lock"></i>\n            </h2>\n          </div>\n        </div>\n        <div class=\'row stat-row\'>\n          <div class=\'col-md-3 col-sm-3 col-xs-3 no-gutter-left\'>\n            <p class=\'assessment-stat\'>\n              <span class=\'category\'>Participants</span>\n              <span class=\'stat\'>{{assessment.participant_count}}</span>\n            </p>\n          </div>\n          <div class=\'col-md-4 col-sm-3 col-xs-3 no-gutter-left\'>\n            <p class=\'assessment-stat\'>\n            <span class=\'category\'>Completed</span>\n            <span class=\'stat\'>{{assessment.completed_responses}}</span>\n            </p>\n          </div>\n          <div class=\'col-md-5 col-sm-6 col-xs-4 no-gutter-left\'>\n            <p class=\'assessment-stat\'>\n            <span class=\'category\'>Meeting</span>\n            <span class=\'stat\'>{{meetingTime(assessment.meeting_date)}}</span>\n            </p>\n          </div>\n        </div>\n      </div>\n\n      <div class=\'col-md-2 col-xs-1 links\'>\n        <div class="repeat" ng-repeat="link in orderLinks(assessment.links)">\n          <assessment-links\n          data-title="{{link.title}}"\n          data-active="{{link.active}}"\n          data-type="{{link.type}}"\n          data-id="{{assessment.id}}"\n          data-consensus-id="{{assessment.consensus.id}}"\n          data-role="{{role}}">\n          </assessment-links>\n        </div>\n      </div>\n\n    </div>\n    <!-- I added bootstraps center-block class here to center the avatar img and it\'s parent. Shouldn\'t cause any problems though.  -->\n    <div class=\'row assessment-footer\'>\n      <div class=\'avatar col-md-1 col-xs-2 center-block assessment-background-color disable-assessment\'>\n        <avatar\n        data-imgclass="media-object img-circle center-block"\n        data-width="28"\n        data-has-tooltip="true"\n        data-name="{{assessment.facilitator.full_name}}"\n        data-avatar="{{assessment.facilitator.avatar}}"\n        data-role="{{assessment.facilitator.team_role}}">\n        </avatar>\n      </div>\n\n      <div class=\'col-md-7 col-xs-7 disable-assessment\'>\n        <div class="media">\n          <p class="pull-left subheading-text">{{assessment.subheading.text}}</p>\n          <div class="participants-details">\n            <div ng-repeat="p in assessment.subheading.participants">\n              <avatar\n                data-has-tooltip="true"\n                data-style="margin-right:0.375em;"\n                data-name="{{p.full_name}}"\n                data-avatar="{{p.avatar}}"\n                data-role="{{p.team_role}}"\n                data-width="28"\n                data-toolplacement="bottom"\n                data-imgclass="pull-left media-object img-circle">\n              </avatar>\n            </div>\n          </div>\n        </div>\n      </div>\n\n      <div ng-show="isNetworkPartner()" class=\'col-md-4 col-xs-3 district-name disable-assessment\'>\n        {{assessment.district_name}}\n      </div>\n    </div>\n\n  </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/assessments/assign/assign.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/assessments/assign/assign.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/assessments/assign/assign.html", "<div class=\"assign-assessment\">\n  <div class='row row-messages'>\n    <div class='col-md-12'>\n      <alert ng-repeat=\"alert in alerts\" type=\"{{alert.type}}\" close=\"closeAlert($index)\">{{alert.msg}}</alert>\n   </div>\n  </div>\n\n    <div class='row row-wizard'>\n        <div class='col-md-2'>\n          <p class='wizard-step'>Step <span class=\"fa-stack fa-lg\"><i class=\"fa fa-circle fa-stack-2x\"></i><i class=\"fa fa-text fa-stack-1x\">1</i></span></p>\n          <p class='wizard-instruction'> This is the name others will see for this assessment.</p>\n        </div>\n        <div class='col-md-10'>\n          <h1>\n            {{assessment.name}}\n          </h1>\n          <p class='byline'>\n            organized by: {{assessment.facilitator.full_name}} on {{formattedDate(assessment.created_at)}}\n          </p>\n\n          <div class='row row--0-settings'>\n            <div class='col-md-3 col-sm-3'>\n              <div class='control-group'>\n                <label for=\"assessment_name\">Assessment Name</label>\n                <input class=\"form-control\" ng-model=\"assessment.name\" type=\"text\">\n              </div>\n            </div>\n\n            <div class='col-md-3 col-sm-3'>\n              <label for=\"district\">District</label>\n              <select\n                required\n                class=\"form-control\"\n                ng-model=\"district\"\n                ng-options=\"district.text for district in user.districts\">\n              </select>\n            </div>\n\n            <div class='col-md-3 col-sm-3'>\n              <div class=\"control-group\">\n                <label for=\"assessment_Due Date\">Due date</label>\n                <div class=\"input-group date datetime\">\n                  <input\n                    class=\"form-control\"\n                    ng-model=\"due_date\"\n                    data-defaultDate=\"{{due_date}}\"\n                    data-format=\"dd/MM/yyyy\"\n                    id=\"due-date\"\n                    name=\"due-date\">\n                  <span class=\"input-group-addon\"><i class=\"fa fa-calendar\"></i></span>\n                </div>\n              </div>\n            </div>\n\n            <div class='col-md-2 col-sm-2 update-holder'>\n              <div class='control-group'>\n                <label>&nbsp;</label>\n                 <div class='btn btn-primary form-control' ng-click=\"save(assessment)\">\n                  <i class='fa fa-spinner fa-spin' ng-show=\"saving\"></i>\n                  Update\n                 </div>\n              </div>\n            </div>\n          </div>\n        </div>\n    </div>\n\n    <div class='row row-wizard'>\n      <div class='col-md-2'>\n        <p class='wizard-step'>Step <span class=\"fa-stack fa-lg\"><i class=\"fa fa-circle fa-stack-2x\"></i><i class=\"fa fa-text fa-stack-1x\">2</i></span></p>\n        <p class='wizard-instruction'>\n          These are the individuals from the district who will receive an invite to participate in the assessment.</p>\n      </div>\n      <div class='col-md-10'>\n        <h2>Participants</h2>\n        <p ng-if=\"isNetworkPartner()\" class='section-subheader'>Recommend the Readiness Assessment to district staff. We recommend inviting 1-2 representatives from different roles and functions involved with PD, including: Teaching & Learning, Human Resources, Curriculum & Instruction, Data & Accountability, Finance, IT, teachers, and principals. You may add participants later on from the dashboard.</p>\n\n        <p ng-if=\"!isNetworkPartner()\" class='section-subheader'>Invite a team of colleagues from your district to participate in the assessment. We recommend inviting 1-2 representatives from different roles and functions involved with PD, including: Teaching & Learning, Human Resources, Curriculum & Instruction, Data & Accountability, Finance, IT, teachers, and principals. You may add participants later on from the dashboard.</p>\n\n        <div class='row row-participant-headers'>\n          <div class='col-md-1 col-sm-1'>&nbsp;</div>\n          <div class='col-md-2 col-sm-2'>Name</div>\n          <div class='col-md-4 col-sm-4'>Email Address</div>\n          <div class='col-md-1 col-sm-3'>Team Role</div>\n        </div>\n\n        <div ng-repeat=\"user in participants\">\n          <div class='row row-participant'>\n            <div class='col-md-1 col-sm-1 '>\n              <avatar data-avatar=\"{{user.avatar}}\" data-width=\"57\"></avatar>\n\n            </div>\n            <div class='col-md-2 col-sm-2'>\n              <p class='name'>{{ user.full_name}}</p>\n            </div>\n            <div class='col-md-4 col-sm-4'>\n              <p class='info'>{{ user.email }}</p>\n            </div>\n            <div class='col-md-2 col-sm-3'>\n              <p class='info'>{{ user.team_role || \"N/A\" }}</p>\n            </div>\n            <div class='col-md-1 col-sm-1 text-center'>\n              <div class=\"btn btn-primary remove_user_button\" ng-click=\"removeParticipant(user)\">Remove</div>\n            </div>\n          </div>\n        </div>\n\n        <manage-participants data-assessment-id=\"{{assessment.id}}\"></manage-participants>\n        <invite-user data-assessment-id=\"{{assessment.id}}\"></invite-user>\n\n      </div>\n    </div>\n    <div class='row row-wizard'>\n      <div class='col-md-2'>\n        <p class='wizard-step'>Step <span class=\"fa-stack fa-lg\"><i class=\"fa fa-circle fa-stack-2x\"></i><i class=\"fa fa-text fa-stack-1x\">3</i></span></p>\n        <p class='wizard-instruction'> Each participant will receive an email invite. You can customize the email message here.</p>\n      </div>\n      <div class='col-md-10'>\n        <h2>Invite Message</h2>\n        <p class='section-subheader'>You can customize the message to all participants. This is the initial invite they'll receive. You can send additional reminders later.</p>\n\n        <div class='row'>\n          <div class='col-md-12 col-sm-12 message'>\n\n            <div class='row'>\n              <div class='col-md-12 col-sm-12'>\n                <h3>Hello (Participant Name),</h3>\n\n                <div class='media'>\n                 <avatar\n                    data-imgclass=\"pull-left media-object img-circle\"\n                    data-width=\"57\"\n                    data-has-tooltip=\"true\"\n                    data-name=\"{{assessment.facilitator.full_name}}\"\n                    data-avatar=\"{{assessment.facilitator.avatar}}\"\n\n                    data-role=\"{{assessment.facilitator.team_role}}\">\n                 </avatar>\n\n                  <div class='media-body'>\n                    <p class='media-heading'>\n                      <span class='name'>{{assessment.user_name}}</span>\n                      {{user.full_name}}\n                      has invited you to participate in {{assessment.name}}\n                    </p>\n                    <customalert  ng-show='alertError' data-message=\"{{messageError}}\" data-type='error'>\n\n                    </customalert>\n                  </div>\n                </div>\n\n                <div class='form-group'>\n                  <textarea redactor ng-model=\"assessment.message\"></textarea>\n                </div>\n\n                <h3>Please complete this assessment by {{formattedDate(assessment.due_date)}}.</h3>\n                <button class=\"btn btn-primary\" name=\"commit\" type=\"submit\" id='assign_assessment' ng-click='assignAndSave(assessment)'>\n                  <i class='fa fa-spinner fa-spin' ng-show=\"saving\"></i>\n                  <i class='fa fa-envelope-o'></i> Send\n                </button>\n                <button class=\"btn right\" name=\"commit\" type=\"submit\" ng-click='save(assessment)'>\n                  <i class='fa fa-spinner fa-spin' ng-show=\"saving\"></i>\n                  <i class='fa fa-save'></i> Save\n                </button>\n             </div>\n            </div>\n\n          </div>\n        </div>\n\n      </div>\n    </div>\n</div>")
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/assessments/dashboard.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/assessments/dashboard.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/assessments/dashboard.html", '<div class=\'dashboard\'>\n  <div class=\'row row-bg row-header\'>\n    <div class="col-md-12">\n      <h1  class="greeting">{{assessment.name}}</h1>\n      <h4 class="byline">organized by: <a href="#">{{assessment.facilitator.full_name}} </a>\n      on {{assessment.created_at | amDateFormat:\'MMMM Do, YYYY\'}}\n      </h4>\n\n      <p id="report-header">\n        {{assessment.overview.text}}\n        <a  ng-if="assessment.overview.link == \'view_consensus\' " href="#/assessments/{{assessment.id}}/consensus/{{assessment.consensus.id}}">View Consensus</a>\n        <a  ng-if="assessment.overview.link == \'edit_consensus\' " href="#/assessments/{{assessment.id}}/consensus/{{assessment.consensus.id}}">Edit Consensus</a>\n      </p>\n      <assessment-priority\n        data-editable="false"\n        data-assessment-id="{{assessment.id}}">\n      </assessment-priority>\n    </div>\n  </div>\n\n  <div class=\'row\'>\n        <div id=\'participants\' ng-show="assessment.is_facilitator">\n          <div class=\'row\'>\n              <div class=\'col-md-12 header\'>\n                <h2>\n                  <span class=\'stat\'>{{assessment.participant_count}} </span>\n                  Participants\n                </h2>\n              </div>\n              <div class=\'col-md-6 col-sm-6\' ng-repeat="user in assessment.participants">\n                <div class=\'row row-participant\' >\n                  <div class=\'col-md-2 col-sm-2 col-xs-2\'>\n                    <avatar data-avatar="{{user.avatar}}"  data-width="100%" ></avatar>\n                  </div>\n                  <div class=\'col-md-6 col-sm-6 col-xs-6\'>\n                    <p class=\'name\'>{{user.full_name}}</p>\n                    <p class=\'email\'>{{user.email}}</p>\n                  </div>\n                  <div class=\'col-md-4 col-sm-4 col-xs-4\'>\n                    <div class=\'status\'>\n                      <response-status data-user="user"></response-status>\n                      <p class="date">{{user.status_date | amDateFormat:\'MMMM Do, YYYY\'}}</p>\n                    </div>\n                  </div>\n                </div>\n              </div>\n          </div>\n        </div>\n        <div class=\'col-md-12 header\'>\n          <manage-participants data-send-invite="true" data-assessment-id="{{assessment.id}}">\n          </manage-participants>\n          \n          <invite-user data-send-invite="true" data-assessment-id="{{assessment.id}}">\n          </invite-user>\n        </div>\n\n        <div id=\'messages\' ng-show="assessment.messages">\n          <div class=\'col-md-12 header\'>\n            <h2>\n              <span class=\'stat\'>{{assessment.messages.length}}</span> Sent Messages\n            </h2>\n          </div>\n\n          <div ng-repeat="message in assessment.messages">\n            <div class=\'row\'>\n              <div class="col-md-12 col-sm-12">\n                <div class="row row-message">\n                  <a href="">\n                    <div class="col-md-1 col-sm-1 col-xs-2">\n                      <i class="fa {{messageIcon(message.category)}}"></i>\n                    </div>\n                    <div class="col-md-11 col-sm-11 col-xs-10 message-content">\n                      <h4 class="subject">\n                        {{messageTitle(message.category)}}\n                        <small class="date">- {{message.sent_at| amDateFormat:\'MMMM Do, YYYY\'}}</small>\n                      </h4>\n                      <p class="content">{{message.teaser}}</p>\n                    </div>\n                  </a>\n                </div>\n\n              </div>\n            </div>\n\n          </div>\n        </div>\n    </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/assessments/dashboard/consensus_modal.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/assessments/dashboard/consensus_modal.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/assessments/dashboard/consensus_modal.html", ' <div id="createConsensus" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="min-height: 570px;"  data-backdrop="false">\n  <div class="modal-dialog">\n    <div class="modal-content">\n      <div class="modal-header">\n        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>\n        <h3 class="modal-title" id="createConsensusLabel">Create Consensus Response</h3>\n      </div>\n      <div class="modal-body">\n        <h3>Creating a consensus response will show all participants\' responses and allow you to facilitate the consensus meeting.</h3>\n        <h3>Keep in mind, however, that this will prevent participants from leaving additional feedback in their own individual responses.</h3>\n      </div>\n      <div class=\'modal-footer\'>\n        <a class="btn btn-primary" href="">Create Consensus Response</a>\n\n      </div>\n    </div><!-- /.modal-content -->\n  </div><!-- /.modal-dialog -->\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/assessments/dashboard/new_reminder_modal.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/assessments/dashboard/new_reminder_modal.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/assessments/dashboard/new_reminder_modal.html", '<div id=\'newReminder\' class="modal fade" tabindex="-1" role="dialog" aria-labelledby="newReminderLabel" aria-hidden="true" style="display: none;"  data-backdrop="false">\n  <div class="modal-dialog">\n    <div class="modal-content"  ng-controller="AssessmentAssignCtrl">\n      <div class="modal-header">\n        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>\n        <h3 class="modal-title" id="newReminderLabel">Send Reminder</h3>\n      </div>\n      <div class="modal-body">\n        <form accept-charset="UTF-8" class="new_message" id="new_message" method="post">\n          <input id="message_category" name="message[category]" type="hidden" value="reminder">\n          <div class="form-group">\n            <label for="message_Message*">Message*</label>\n            <textarea class="form-control" id="message_content" name="message[content]" rows="4">\n              {{assessment.message}}\n            </textarea>\n          </div>\n\n          <div class="form-group">\n            <button class="btn btn-primary pull-left" name="commit" type="submit"><i class="fa fa-envelope-o"></i> Send</button>\n          </div>\n          <div class="clearfix"></div>\n          </form>\n      </div>\n\n    </div><!-- /.modal-content -->\n  </div><!-- /.modal-dialog -->\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/assessments/filters/district-filter.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/assessments/filters/district-filter.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/assessments/filters/district-filter.html", '<div class="form-group">\n  <label for="selected-district" class="control-label">Districts</label>\n    <select class="form-control" id="selected-district" ng-model="selectedDistrict">\n      <option value="" selected>All Districts</option>\n      <option value="{{district}}" ng-repeat="district in districts">\n        {{district}}\n      </option>\n    </select>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/assessments/filters/permission-filter.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/assessments/filters/permission-filter.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/assessments/filters/permission-filter.html", '<div class="form-group">\n  <label for="permission" class="control-label">Permission Level</label>\n    <select class="form-control" id="permission" ng-model="selectedPermission">\n      <option value="" selected>All Permissions</option>\n      <option value="{{permission}}" ng-repeat="permission in types">\n        {{permission}}\n      </option>\n    </select>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/assessments/filters/status-filter.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/assessments/filters/status-filter.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/assessments/filters/status-filter.html", '<div class="form-group">\n  <label for="status" class="control-label">Status</label>\n  <select class="form-control text-capitalize" id="status" ng-model="selectedStatus">\n    <option value="" selected>All</option>\n    <option value="{{status}}" ng-repeat="status in statuses">\n      {{status}}\n    </option>\n  </select>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/assessments/index.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/assessments/index.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
-  $templateCache.put("client/views/assessments/index.html", '<div class="row secondary user-header">\n    <div class="col-md-12">\n      <h1>Hi {{user.first_name}}</h1>\n      <p>This is your Readiness Assessment dashboard. Create a new assessment or check the status of an existing one to proceed.</p>\n    </div>\n  </div>\n  <div class="col-md-12">\n    <div ng-show="isNetworkPartner()">\n      <div id="assessments-filter">\n        <div class="col-md-4">\n          <district-filter\n            districts="districts"\n            selected-district="selectedDistrict">\n          </district-filter>\n        </div>\n        <div class="col-md-4">\n          <permission-filter\n            types="permissionTypes"\n            selected-permission="selectedPermission">\n          </permission-filter>\n        </div>\n\n        <div class="col-md-4">\n          <status-filter\n            statuses="statuses"\n            selected-status="selectedStatus">\n          </status-filter>\n        </div>\n      </div>\n    </div>\n    <!-- <start-assessment></start-assessment> -->\n    <ng-include src="\'client/views/assessments/assessment-list.html\'" scope="this"></ng-include>\n  </div>\n</div>')
+  $templateCache.put("client/views/assessments/index.html", '<div class="row secondary user-header">\n    <div class="col-md-12">\n      <h1>Hi {{user.first_name}}</h1>\n      <p>This is your Readiness Assessment dashboard. Create a new assessment or check the status of an existing one to proceed.</p>\n    </div>\n  </div>\n  <div class="col-md-12">\n    <div ng-show="isNetworkPartner()">\n      <div id="assessments-filter">\n        <div class="col-md-4">\n          <district-filter\n            districts="districts"\n            selected-district="selectedDistrict">\n          </district-filter>\n        </div>\n        <div class="col-md-4">\n          <permission-filter\n            types="permissionTypes"\n            selected-permission="selectedPermission">\n          </permission-filter>\n        </div>\n\n        <div class="col-md-4">\n          <status-filter\n            statuses="statuses"\n            selected-status="selectedStatus">\n          </status-filter>\n        </div>\n      </div>\n    </div>\n    <!-- <start-assessment></start-assessment> -->\n    <div ng-include src="\'client/views/assessments/assessment-list.html\'" scope="this"></div>\n  </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/assessments/report.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/assessments/report.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/assessments/report.html", '<div class=\'report\'>\n  <div class=\'row-bg row-header\'>\n      <div class=\'row\'>\n        <div class="col-md-12">\n          <h1 class="greeting">{{assessment.name}}</h1>\n          <h4 class="byline">organized by:\n            <a href="#">{{assessment.facilitator.full_name}} </a>\n            on {{assessment.created_at | amDateFormat:\'MMMM Do, YYYY\'}}\n          </h4>\n\n          <p id="report-header">\n            {{assessment.overview.text}}\n            <a ng-if="assessment.overview.link == \'view_consensus\' " href="#/assessments/{{assessment.id}}/consensus/{{assessment.consensus.id}}">View Consensus</a>\n          </p>\n          <assessment-priority\n          data-editable="{{canEditPriorities()}}"\n          data-assessment-id="{{assessment.id}}"></assessment-priority>\n        </div>\n      </div>\n  </div>\n  <div class=\'row-bg row-body\'>\n      <div class=\'row\'>\n        <div class=\'col-md-12\'>\n          <h2>Report Detail</h2>\n          <div class=\'axis col-md-4\' ng-repeat=\'axis in report.axes\'>\n            <h4>{{axis.name}}</h4>\n            <div class=\'question col-md-12\' ng-repeat=\'question in axis.questions\'>\n              <div class=\'col-md-7\'>\n                {{question.headline}}\n              </div>\n              <div class=\'col-md-5\'>\n                <div class=\'answer col-md-2\' ng-repeat=\'answer in question.answers\'>\n                  <i ng-class="{selected: answer.value == question.score.value}"\n                  class="fa fa-circle scored-{{answer.value}}"></i>\n                </div>\n              </div>\n            </div>\n            <div class=\'question col-md-12\'>\n              <div class=\'average col-md-7\'>\n                Average\n              </div>\n              <div class=\'average col-md-5\'>\n                <div class=\'answer col-md-2\' ng-repeat=\'answer in [1, 2, 3, 4]\'>\n                  <i ng-class="{selected: axis.average == answer}"\n                    class="fa fa-circle scored-{{answer}}"></i>\n                </div>\n              </div>\n            </div>\n\n            <div class=\'question col-md-12\'>\n              <div class=\'col-md-7\'></div>\n              <div class=\'col-md-5\'>\n                <div class=\'answer col-md-2\' ng-repeat=\'answer in [1, 2, 3, 4]\'>\n                  {{answer}}\n                </div>\n              </div>\n            </div>\n          </div>\n        </div>\n      </div>\n  </div>\n  <div class="row">\n    <take-away assessment-id="{{id}}"></take-away>\n  </div>\n    <div class="row">\n      <div class="col-md-12 col-sm-12">\n        <div id="next-steps">\n          <h2>Next Steps</h2>\n\n          <div class="row">\n            <div class="col-md-12 col-sm-12">\n              <div class="row row-step">\n                <div class="col-md-1 col-sm-1 col-xs-2">\n                  <i class="fa fa-check"></i>\n                </div>\n                <div class="col-md-11 col-sm-11 col-xs-10">\n                  <h4 class="subject">Root Cause</h4>\n                  <p class="content">\n                  Engage in a "root cause" discussion to answer potential follow up questions like:\n                  </p><ul class="content">\n                    <li>Are there any common problems connecting low scored categories?</li>\n                    <li>Why is _____________ category weaker than others?</li>\n                    <li>Which category is most important to improve?</li>\n                  </ul>\n                  <p></p>\n                </div>\n              </div>\n            </div>\n          </div>\n\n\n          <div class="row">\n            <div class="col-md-12 col-sm-12">\n              <div class="row row-step">\n                <div class="col-md-1 col-sm-1 col-xs-2">\n                  <i class="fa fa-check"></i>\n                </div>\n                <div class="col-md-11 col-sm-11 col-xs-10">\n                  <h4 class="subject">Review</h4>\n                  <p class="content">Review this report with others in your organization to clarify, review, gather more evidence, etc. You can start by <a href="mailto:?body=Check%20out%20the%20report%20here%3A%20http%3A%2F%2Fstaging.pdredesign.org%2Fassessments%2F37%2Freport&amp;subject=PD%20Redesign%3A%20Report%20from%20Michael%20Test%20School%20County%20" target="_blank">sharing this report</a> with specific colleagues.</p>\n                </div>\n              </div>\n            </div>\n          </div>\n\n          <div class="row">\n            <div class="col-md-12 col-sm-12">\n              <div class="row row-step">\n                <div class="col-md-1 col-sm-1 col-xs-2">\n                  <i class="fa fa-check"></i>\n                </div>\n                <div class="col-md-11 col-sm-11 col-xs-10">\n                  <h4 class="subject">Prioritize</h4>\n                  <p class="content">Prioritize your PD strategy based on the strengths and weaknesses identified in the Readiness Assessment. Clarify how your organization will build upon strengths and improve upon weaknesses.</p>\n                </div>\n              </div>\n            </div>\n          </div>\n\n\n          <div class="row">\n            <div class="col-md-12 col-sm-12">\n              <div class="row row-step">\n                <div class="col-md-1 col-sm-1 col-xs-2">\n                  <i class="fa fa-check"></i>\n                </div>\n                <div class="col-md-11 col-sm-11 col-xs-10">\n                  <h4 class="subject">Find Out More Information</h4>\n                  <p class="content">Identify areas where you need to learn more detailed information, or conduct a "deep dive diagnostic". For example, if your Data Infrastructure category scored low, perhaps doing a more exhaustive analysis of your Data Infrastructure will help prioritize your PD strategic plan.</p>\n                </div>\n              </div>\n            </div>\n          </div>\n\n          <div class="row">\n            <div class="col-md-12 col-sm-12">\n              <div class="row row-step">\n                <div class="col-md-1 col-sm-1 col-xs-2">\n                  <i class="fa fa-check"></i>\n                </div>\n                <div class="col-md-11 col-sm-11 col-xs-10">\n                  <h4 class="subject">Future Vision</h4>\n                  <p class="content">This should include a roadmap of the first 100 days of PDredesign.</p>\n                </div>\n              </div>\n            </div>\n          </div>\n\n        </div>\n      </div>\n    </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/consensus/header.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/consensus/header.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/consensus/header.html", '<div class=\'row secondary user-header\'>\n  <div class="col-md-12">\n    <div class="media">\n      <div class="media-body">\n        <h1>{{assessment.name}}</h1>\n        <p class=\'byline\'>organized by:\n          <a href=""> {{assessment.facilitator.full_name}}</a>\n          on {{assessment.created_at  | amDateFormat:\'MMMM Do, YYYY\'}}\n        </p>\n        <h2 class=\'instructions-header\'>Instructions</h2>\n\n        <div class=\'col-md-12\'>\n          <p class=\'instructions-content\'>\n            The Readiness Assessment consists of questions across the 8 categories of the <readiness-assessment-modal title="PD System Map"></readiness-assessment-modal>. As the assessment facilitator, use this page to guide and document the conversation during the in-person consensus meeting.\n          </p>\n          <p class=\'instructions-content\'>\n            For each question, discuss the individual responses as a group to collectively decide a consensus score, including notes for reference. You may sort or skip questions to support a targeted discussion. Save each completed response as you move through the consensus meeting.\n          </p>\n        </div>\n      </div>\n\n    </div>\n  </div>\n</div>\n\n<div class="row">\n  <div class="export-buttons col-md-12 text-right">\n    <button class="btn btn-primary" ng-click="exportToPDF()">Export to PDF</button>\n    <button class="btn btn-primary" ng-click="exportToCSV()">Export to CSV</button>\n  </div>\n</div>\n')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/consensus/show.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/consensus/show.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/consensus/show.html", '<ng-include src="\'client/views/consensus/header.html\'"></ng-include>\n\n  <div class="col-md-12 col-sm-12">\n    <consensus data-assessment-id="{{assessmentId}}" data-response-id="{{responseId}}">\n    </consensus>\n  </div>\n')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/directives/add_tool.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/directives/add_tool.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/directives/add_tool.html", '<a href="">\n  <div ng-click="showAddToolModal()" class="row add-tool">\n    <div class="col-sm-1 col-md-1 icon">\n      <i class="fa fa-plus"></i>\n    </div>\n    <div class="col-sm-9 col-md-9 heading">\n      <p>\n        Add Tool\n      </p>\n    </div>\n  </div>\n</a>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/directives/assessment_chart.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/directives/assessment_chart.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/directives/assessment_chart.html", '<div id="chart" class="col-md-5 col-sm-5">\n  <p class="title">Readiness Assessment Profile</p>\n  <div id="assessment-chart"></div>\n</div>\n')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/directives/assessment_dashboard_link.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/directives/assessment_dashboard_link.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/directives/assessment_dashboard_link.html", '<div class="col-md-2 col-sm-2">\n  <a class="active" href="#"><i class="fa fa-dashboard"></i>Dashboard</a>\n  <a class="active" href="#"><i class="fa fa-group"></i> Consensus</a>\n  <a href="#"><i class="fa fa-file-text-o"></i> Report</a>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/directives/assessment_index_links.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/directives/assessment_index_links.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
-  $templateCache.put("client/views/directives/assessment_index_links.html", '<div\n  ng-show="title"\n  class="col-md-12 col-sm-12 link"\n  ng-class="linkActive(active)"\n  ng-click="gotoLocation(assessmentLink(type, active))">\n    <div class="col-md-2 col-sm-2">\n      <i class="fa fa-{{linkIcon(type)}}"></i>\n    </div>\n    <div class="col-md-10 col-sm-10 title">\n      {{title}}\n    </div>\n</div>')
+  $templateCache.put("client/views/directives/assessment_index_links.html", '<div\n  ng-show="title"\n  class="link"\n  ng-click="gotoLocation(assessmentLink(type))">\n    <div class="btn btn-primary pull-right link-button">\n      <i class="fa fa-{{linkIcon(type)}}"></i>\n      {{title}}\n    </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/directives/assessment_priority.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/directives/assessment_priority.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/directives/assessment_priority.html", '<div class="assessment-priority" class="col-md-9">\n  <div class="header row">\n    <div class="priority col-md-7 col-sm-7">\n      <table class="table table-diagnostic" ng-hide="loading">\n        <thead>\n          <tr>\n            <td class="category-header">Priority</td>\n            <td>PD Category</td>\n            <td>Consensus Score</td>\n            <td>Diagnostic Min</td>\n            <td>Diagnostic Suggested</td>\n          </tr>\n        </thead>\n        <tbody>\n        <tr ng-repeat="category in categories"\n          class="category scored-{{scoredAverage(category)}}"\n          id="{{category.id}}">\n          <td class="centered">{{$index + 1}}</td>\n          <td>{{category.name}}</td>\n          <td>{{roundedAverage(category.average)}}</td>\n          <td>{{category.diagnostic_min}}</td>\n          <td ng-show="category.diagnostic_suggested">Yes</td>\n          <td ng-hide="category.diagnostic_suggested">No</td>\n        </tr>\n        </tbody>\n      </table>\n      <div ng-show="editable">\n        <button\n          class="btn btn-primary"\n          ng-click="savePriority()">\n          <i ng-hide="loading" class="fa fa-save"></i>\n          <i ng-show="loading" class="fa fa-spinner fa-spin"></i>\n          Save Priority\n        </button>\n      </div>\n\n    </div>\n    <assessment-chart data-assessment-id="{{assessmentId}}">></assessment-chart>\n  </div>\n</div>\n')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/directives/avatar.html.erb
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/directives/avatar.html.erb
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
-  $templateCache.put("client/views/directives/avatar.html", '<div class="avatar">\n    <img ng-hide="avatar == \'\'"\n      ng-src="{{avatar}}"\n      class="{{imgclass}}"\n      width="{{width}}"\n      height="{{height}}"\n      style="{{style}}"\n      data-html="true"\n      data-placement="{{toolplacement}}"\n      data-title="{{title}}"\n      data-toggle="tooltip"\n      data-original-title="">\n\n      <img ng-show="avatar == \'\'"\n      ng-src="/assets/fallback/default-10e6f9c25af967a477d555084cd11503.png"\n      class="{{imgclass}}"\n      width="{{width}}"\n      height="{{height}}"\n      style="{{style}}"\n      data-html="true"\n      data-placement="{{toolplacement}}"\n      data-title="{{title}}"\n      data-toggle="tooltip"\n      data-original-title="">\n</div>')
+  $templateCache.put("client/views/directives/avatar.html", '<div class="avatar">\n    <img ng-hide="avatar == \'\'"\n      ng-style="ngWidth"\n      ng-src="{{avatar}}"\n      class="{{imgclass}}"\n      style="{{style}}"\n      data-html="true"\n      data-placement="{{toolplacement}}"\n      data-title="{{title}}"\n      data-toggle="tooltip"\n      data-original-title="">\n\n      <img ng-show="avatar == \'\'"\n      ng-src="/assets/fallback/default-10e6f9c25af967a477d555084cd11503.png"\n      ng-style="ngWidth"\n      class="{{imgclass}}"\n      style="{{style}}"\n      data-html="true"\n      data-placement="{{toolplacement}}"\n      data-title="{{title}}"\n      data-toggle="tooltip"\n      data-original-title="">\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/directives/consensus.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/directives/consensus.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/directives/consensus.html", '<div class="categories">\n  <div class="category" ng-repeat="category in categories">\n    <div class="row">\n      <div class="row">\n        <div class="col-sm-12 col-md-12">\n          <p class="category-label">{{category.name}}</p>\n        </div>\n        <div class="row question-container question-{{question.id}}" ng-repeat="question in category.questions">\n\n          <div class="col-md-12 col-sm-12 question-row" ng-click="toggleAnswers(question)">\n            <div class="col-md-1 col-sm-1 question">\n              <p class="question-id scored-{{question.score.value}}" ng-show="question.loading">\n                <i class="fa fa-spinner fa-spin"></i>\n              </p>\n              <p class="question-id scored-{{question.score.value}}" ng-hide="question.loading">\n                <a href="#question-{{question.id}}"></a>\n                {{question.number}}\n              </p>\n            </div>\n            <div class="row question-content">\n              <div class="col-md-11">\n                <p class="question">{{question.headline}}</p>\n              </div>\n              <div class="col-md-11">\n                <p class="content">{{question.content}}</p>\n              </div>\n            </div>\n          </div>\n          <div class="col-md-12 col-sm-12 answers" ng-show="question.answersVisible">\n            <div class="answer" ng-repeat="answer in question.answers">\n              <div class="col-md-1 col-sm-1"></div>\n              <div class="col-md-11 col-sm-11 answer-row value-color-{{answer.value}}" ng-class="{scored{{answer.value}}: question.score.value == answer.value}">\n                <div class="answer-info-row">\n                  <div class="col-md-1 col-sm-1 scored-{{answer.value}} answer-value">\n                    <span>{{answer.value}}</span>\n                  </div>\n                  <div class="col-md-3 col-sm-3 answer-title title-{{answer.value}}">\n                    {{answerTitle(answer.value)}}\n                  </div>\n                  <div class="col-md-8 col-sm-8 answer-description">\n                    {{answer.content}}\n                  </div>\n                </div>\n              </div>\n            </div>\n          </div>\n\n        </div>\n      </div>\n    </div>\n  </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/directives/consensus_scoring.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/directives/consensus_scoring.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/directives/consensus_scoring.html", '<div>\n  <div class="evidence-discussion col-md-12">\n    <span>Consensus Scoring</span>\n  </div>\n  <div class="col-md-12 evidence-holder">\n    <span class="consensus-header">Notes</span>\n    <div class="consensus-notes">\n      <textarea class="col-md-12" ng-model="question.score.evidence"></textarea>\n    </div>\n      <div class="consensus-header">Score</div>\n    <div class=\'col-md-10\'>\n       <div class=\'row row-values\'>\n        <div ng-repeat="answer in question.answers">\n          <div class="col-md-3">\n            <button class=\'btn btn-block btn-value-{{answer.value}}\' ng-click="\n            assignAnswerToQuestion(answer, question)" ng-class="">\n              {{answer.value}}\n            </button>\n          </div>\n        </div>\n       </div>\n\n    </div>\n    <div class="col-md-2">\n      <button class="btn btn-block"><i class="fa fa-save"></i>Save</button>\n    </div>\n  </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/directives/district_message.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/directives/district_message.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/directives/district_message.html", '<div>\n  <ng-include src="\'client/views/shared/errors.html\'"> </ng-include>\n  <input\n    ng-model="message.name"\n    class="form-group form-control"\n    placeholder="Their Name*"\n    type="text">\n\n  <input\n    ng-model="message.address"\n    class="form-group form-control"\n    placeholder="Their Address*"\n    type="text">\n\n  <input\n    ng-model="message.sender_name"\n    class="form-group form-control"\n    placeholder="Your Name*"\n    type="text">\n\n  <input\n    ng-model="message.sender_email"\n    class="form-group form-control"\n    placeholder="Your Email Address*"\n    type="text">\n\n  <button ng-click="sendMessage(message)" class="btn btn-primary btn-lg send-message">Send a Message</button>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/directives/district_select.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/directives/district_select.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/directives/district_select.html", '<div class="districts-selector">\n  <input placeholder="Select a district" id="districts" ng-model="districts"/>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/directives/evidence_discussion.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/directives/evidence_discussion.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/directives/evidence_discussion.html", '<div>\n  <div class="evidence-discussion col-md-12">\n      <span>Evidence Discussion</span>\n  </div>\n\n  <div class="col-md-12 evidence-holder">\n    <div class="col-md-1"></div>\n    <div class="col-md-11">\n      <div class="evidence-list box-scroll">\n        <div ng-repeat="answer in question.answers">\n          <table class="table table-evidence">\n            <tbody>\n              <tr>\n                <!-- TODOO MOCH RESPONSE USER   -->\n                <td class="response-value scored-{{question.score.value}}">4</td>\n                <td><p>This is my evidence for this question.</p></td>\n              </tr>\n              <tr>\n                <td>\n                  <!-- TODOO MOCH RESPONSE USER   -->\n                  <avatar  data-avatar="https://avatars1.githubusercontent.com/u/221008?s=140"   data-width="37">\n                  </avatar>\n                </td>\n                <td>by: <a href="#">Sean Perkins</a> on: Apr 01, 2014</td>\n              </tr>\n            </tbody>\n          </table>\n\n        </div>\n      </div>\n    </div>\n  </div>\n\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/directives/faqs.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/directives/faqs.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/directives/faqs.html", '<div class="faq-container">\n  <div class="row faq filters">\n      <div class="col-sm-12">\n        <b>Filter By:</b>\n          <div class="row filter-container">\n            <div class="col-sm-12 col-md-4">\n              <span><h4>Role:</h4></span>\n              <select id="role-filter" class="form-control" ng-model="selectedRole" ng-change="updatedSelection()">\n                <option value="">All Roles</option>\n                <option value="{{role}}" ng-selected="selectedRole == role" ng-repeat="role in roles()">\n                  {{role}}\n                </option>\n\n              </select>\n            </div>\n            <div class="col-sm-12 col-md-4">\n              <span><h4>Topic:</h4></span>\n              <select id="topic-filter" class="form-control" ng-model="selectedTopic" ng-change="updatedSelection()">\n                <option value="">All Topics</option>\n                <option value="{{topic}}" ng-selected="selectedTopic == topic" ng-repeat="topic in topics()">\n                  {{topic}}\n                </option>\n\n              </select>\n            </div>\n\n          </div>\n    </div>\n  </div>\n\n  <div class="row faq category" ng-repeat="category in categories">\n    <div class="col-sm-12">\n      <h2>{{category.heading}}</h2>\n      <div class="panel-group" id="accordion">\n        <div class="panel"  ng-repeat="question in category.questions | propertyFilter:\'role\':selectedRole | propertyFilter:\'topic\':selectedTopic">\n          <div class="panel-heading" ng-click="toggleQuestion(question)">\n            <h3 class="panel-title">\n              <a href="">\n                {{question.content}}\n              </a>\n            </h3>\n          </div>\n          <div id="question-{{question.id}}">\n            <div \n              class="panel-body"\n              collapse="!question.visible"\n              ng-bind-html="question.answer">\n            </div>\n          </div>\n        </div>\n      </div>\n    </div>\n  </div>\n\n  <div class="row">\n    <div class="col-sm-12 text-center">\n      <h3>Is your question not listed here?</h3> \n      <a href="mailto:support@mail.pdredesign.org?subject=I%20have%20a%20question"\n         class="btn btn-primary">Ask Us a Question</a>\n    </div>\n  </div>\n\n</div>\n')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/directives/invite_user.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/directives/invite_user.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/directives/invite_user.html", '<div class="row manage manage-participants plus-button" ng-click="showInviteUserModal()">\n  <a href="">\n    <div class="col-sm-1 col-md-1">\n      <i class="fa fa-plus"></i>\n    </div>\n    <div class="col-sm-11 col-md-11 heading">\n      <h1>Add New Participants</h1>\n    </div>\n  </a>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/directives/manage_participants.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/directives/manage_participants.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/directives/manage_participants.html", '<div class="row manage manage-participants plus-button" ng-click="showAddParticipants()">\n  <a href="">\n    <div class="col-sm-1 col-md-1">\n      <i class="fa fa-plus"></i>\n    </div>\n    <div class="col-sm-11 col-md-11 heading">\n      <h1>Add Participants</h1>\n    </div>\n  </a>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/directives/mode_answer.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/directives/mode_answer.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/directives/mode_answer.html", '<span class="label label-mode">\n  <i ng-if="question.score.value == answer.value" class="fa fa-heart"></i>\n  <!-- TODOO MOCK SCORE AND RESPONSES -->\n  <span class="score_count">{{scores}}</span><span class="response_count">/{{responses}}</span\n</span>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/directives/organization_select.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/directives/organization_select.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/directives/organization_select.html", '<div class="row organization-selector">\n  <div class="col-md-12">\n    <label for="organization">Organization</label>\n  </div>\n\n  <div class=\'col-md-8 selector\'>\n    <input placeholder="Select or create organization" id="organization"/>\n  </div>\n\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/directives/readiness_assessment_link.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/directives/readiness_assessment_link.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/directives/readiness_assessment_link.html", '<a ng-click="pdrOverview()" class="normal-cursor-hover">{{title}}</a>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/directives/response_questions.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/directives/response_questions.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
-  $templateCache.put("client/views/directives/response_questions.html", '<div class="categories">\n  <ng-include\n    ng-show="isConsensus"\n    src="\'client/views/shared/responses/sort_by.html\'" >\n  </ng-include>\n\n  <ng-include\n    ng-show="isConsensus"\n    src="\'client/views/shared/responses/filter_by_role.html\'" >\n  </ng-include>\n\n  <div class="category" ng-repeat="category in categories">\n    <div class="row">\n      <div class="row">\n        <div class="col-md-12">\n          <p class="category-label" ng-click="toggleCategoryAnswers(category)">\n            <i class="fa fa-chevron-right" ng-class="{\'fa-chevron-down\' : category.toggled == true}"></i>\n            {{category.name}}\n          </p>\n        </div>\n        <div class="row question-container question-{{question.id}}" ng-repeat="question in category.questions">\n          <div class="col-md-12 question-row" ng-click="toggleAnswers(question)">\n            <div class="col-md-1 question">\n              <p class="question-id scored-{{question.score.value}}" ng-show="question.loading">\n                <i class="fa fa-spinner fa-spin"></i>\n              </p>\n              <p id="question-{{question.number}}" class="question-id {{questionColor(question, isConsensus)}}" ng-hide="question.loading">\n                <a href="#question-{{question.id}}"></a>\n                {{question.number}}\n              </p>\n            </div>\n            <div class="row question-content">\n              <div class="col-md-9">\n                <p class="question">\n                  {{question.headline}}\n                </p>\n                <p class="content">{{question.content}}</p>\n              </div>\n\n              <div class="col-md-1" ng-hide="isConsensus">\n                <sample-evidence ng-hide="!question.key_question" key-question="question.key_question"></sample-evidence>\n              </div>\n\n              <div class="col-md-2">\n                <div class="consensus-percentage-bar" ng-show="isConsensus">\n                  <div\n                    class="scored-{{answer.value}} bar bar-{{answer.value}}"\n                    ng-repeat="answer in question.answers | orderBy:value"\n                    style="height: {{percentageByResponse(scores, question.id, answer.value, question.answers.length)}}">\n                  </div>\n                  <div\n                    class="scored-skipped bar skipped"\n                    style="height: {{percentageByResponse(scores, question.id, null, question.answers.length)}}">\n                  </div>\n                </div>\n              </div>\n\n            </div>\n          </div>\n          <div class="col-md-12 answers" ng-show="question.answersVisible">\n            <div class="answer" ng-repeat="answer in question.answers" ng-click="assignAnswerToQuestion(answer, question)">\n              <div class="left-score col-md-1">\n                <ng-include\n                  ng-show="isConsensus"\n                  src="\'client/views/shared/responses/score_count.html\'">\n                </ng-include>\n              </div>\n\n              <div\n                class="col-md-11 answer-row value-color-{{answer.value}}"\n                ng-class="{scored{{answer.value}}: question.score.value == answer.value}">\n\n                <div class="answer-info-row">\n                  <div class="col-md-1 scored-{{answer.value}} answer-value">\n                    <span>{{answer.value}}</span>\n                  </div>\n                  <div class="col-md-3 answer-title title-{{answer.value}}">\n                    {{answerTitle(answer.value)}}\n                  </div>\n                  <div class="col-md-8 answer-description" ng-bind-html="answer.content">\n                  </div>\n                </div>\n\n                <ng-include\n                  ng-hide="isConsensus"\n                  src="\'client/views/shared/responses/member_question.html\'" >\n                </ng-include>\n\n              </div>\n            </div>\n            <div class="left-score col-md-1" ng-if="isConsensus">\n              <ng-include\n                src="\'client/views/shared/responses/score_count.html\'">\n              </ng-include>\n            </div>\n\n            <skip-question\n              editable="!isConsensus"\n              question="question"\n              response-id="{{responseId}}"\n              assessment-id="{{assessmentId}}">\n            </skip-question>\n\n            <ng-include\n              ng-show="isConsensus"\n              src="\'client/views/shared/responses/evidence.html\'" >\n            </ng-include>\n\n            <ng-include\n              ng-show="isConsensus"\n              src="\'client/views/shared/responses/consensus_score_entry.html\'" >\n            </ng-include>\n\n          </div>\n        </div>\n      </div>\n    </div>\n  </div>\n</div>')
+  $templateCache.put("client/views/directives/response_questions.html", '<div class="categories">\n  <ng-include\n    ng-show="isConsensus"\n    src="\'client/views/shared/responses/sort_by.html\'" >\n  </ng-include>\n\n  <ng-include\n    ng-show="isConsensus"\n    src="\'client/views/shared/responses/filter_by_role.html\'" >\n  </ng-include>\n\n  <div class="category" ng-repeat="category in categories">\n    <div class="row">\n      <div class="row">\n        <div class="col-md-12">\n          <p class="category-label" ng-click="toggleCategoryAnswers(category)">\n            <i class="fa fa-chevron-right" ng-class="{\'fa-chevron-down\' : category.toggled == true}"></i>\n            {{category.name}}\n          </p>\n        </div>\n        <div class="row question-container question-{{question.id}}" ng-repeat="question in category.questions">\n          <div class="col-md-12 question-row" ng-click="toggleAnswers(question)">\n            <div class="col-md-1 question">\n              <p class="question-id scored-{{question.score.value}}" ng-show="question.loading">\n                <i class="fa fa-spinner fa-spin"></i>\n              </p>\n              <p id="question-{{question.number}}" class="question-id {{questionColor(question, isConsensus)}}" ng-hide="question.loading">\n                <a href="#question-{{question.id}}"></a>\n                {{question.number}}\n              </p>\n            </div>\n            <div class="row question-content">\n              <div class="col-md-9">\n                <p class="question">\n                  {{question.headline}}\n                </p>\n                <p class="content">{{question.content}}</p>\n              </div>\n\n              <div class="col-md-1" ng-hide="isConsensus">\n                <sample-evidence ng-hide="!question.key_question" key-question="question.key_question"></sample-evidence>\n              </div>\n\n              <div class="col-md-2">\n                <div class="consensus-percentage-bar" ng-show="isConsensus">\n                  <div\n                    class="scored-{{answer.value}} bar bar-{{answer.value}}"\n                    ng-repeat="answer in question.answers | orderBy:value"\n                    ng-style="{height: \'{{percentageByResponse(scores, question.id, answer.value, question.answers.length)}}\'}">\n                  </div>\n                  <div\n                    class="scored-skipped bar skipped"\n                    ng-style="{height: \'{{percentageByResponse(scores, question.id, answer.value, question.answers.length)}}\'}">\n                  </div>\n                </div>\n              </div>\n\n            </div>\n          </div>\n          <div class="col-md-12 answers" ng-show="question.answersVisible">\n            <div class="answer" ng-repeat="answer in question.answers" ng-click="assignAnswerToQuestion(answer, question)">\n              <div class="left-score col-md-1">\n                <ng-include\n                  ng-show="isConsensus"\n                  src="\'client/views/shared/responses/score_count.html\'">\n                </ng-include>\n              </div>\n\n              <div\n                class="col-md-11 answer-row value-color-{{answer.value}}"\n                ng-class="{scored{{answer.value}}: question.score.value == answer.value}">\n\n                <div class="answer-info-row">\n                  <div class="col-md-1 scored-{{answer.value}} answer-value">\n                    <span>{{answer.value}}</span>\n                  </div>\n                  <div class="col-md-3 answer-title title-{{answer.value}}">\n                    {{answerTitle(answer.value)}}\n                  </div>\n                  <div class="col-md-8 answer-description" ng-bind-html="answer.content">\n                  </div>\n                </div>\n\n                <ng-include\n                  ng-hide="isConsensus"\n                  src="\'client/views/shared/responses/member_question.html\'" >\n                </ng-include>\n\n              </div>\n            </div>\n            <div class="left-score col-md-1" ng-if="isConsensus">\n              <ng-include\n                src="\'client/views/shared/responses/score_count.html\'">\n              </ng-include>\n            </div>\n\n            <skip-question\n              editable="!isConsensus"\n              question="question"\n              response-id="{{responseId}}"\n              assessment-id="{{assessmentId}}">\n            </skip-question>\n\n            <ng-include\n              ng-show="isConsensus"\n              src="\'client/views/shared/responses/evidence.html\'" >\n            </ng-include>\n\n            <ng-include\n              ng-show="isConsensus"\n              src="\'client/views/shared/responses/consensus_score_entry.html\'" >\n            </ng-include>\n\n          </div>\n        </div>\n      </div>\n    </div>\n  </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/directives/response_status.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/directives/response_status.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/directives/response_status.html", '<div>\n  <div class=\'invite-email\' ng-show="showMailLink()">\n    <i class="fa fa-fa {{statusMessageIcon(user.status)}}"></i>\n    <a href="" ng-click="sendEmail()">{{user.status_human}}</a>\n  </div>\n  <div class=\'user-status\' ng-hide="showMailLink()">\n    <i class="fa fa-fa {{statusMessageIcon(user.status)}}"></i>\n      {{user.status_human}}\n  </div>\n\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/directives/sample_evidence.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/directives/sample_evidence.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/directives/sample_evidence.html", '<span class="sample-evidence">\n  <i class="fa fa-question"\n    data-toggle="sampleEvidence"\n    data-content="{{content}}">\n  </i>\n</span>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/directives/signup.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/directives/signup.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/directives/signup.html", '<div class="signup-directive">\n  <form name="signup">\n  <ng-include src="\'client/views/shared/errors.html\'"> </ng-include>\n    <input\n    required\n    ng-model="user.first_name"\n    class="form-group form-control"\n    placeholder="First Name*"\n    type="text">\n\n    <input\n    required\n    ng-model="user.last_name"\n    class="form-group form-control"\n    placeholder="Last Name*"\n    type="text">\n\n    <input\n    required\n    ng-model="user.email"\n    class="form-group form-control"\n    placeholder="Email Address*"\n    type="text">\n\n    <input\n    required\n    ng-model="user.password"\n    class="form-group form-control"\n    placeholder="Password*"\n    type="password">\n\n    <organization-select\n\n      ng-show="isNetworkPartner"\n      messages="errors"\n      update-user-record="false"\n      organization-id="user.organization_ids">\n    </organization-select>\n\n    <district-select\n      ng-hide="isNetworkPartner"\n      multiple="false"\n      districts="user.district_ids">\n    </district-select>\n\n    </form>\n\n    <button ng-disabled="signup.$invalid" ng-click="createUser(user)" class="btn btn-primary btn-lg create-user">Create my account</button>\n\n    <p ng-show="isNetworkPartner || isAdministrator">\n      If you are having trouble creating an account, contact us at support@mail.pdredesign.org\n    </p>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/directives/start_assessment.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/directives/start_assessment.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/directives/start_assessment.html", '<div>\n  <div class="row start-assessment plus-button">\n      <a href="" data-toggle="modal" data-target="#startAssessment">\n        <div class="col-sm-1 col-md-1">\n          <i class="fa fa-plus"></i>\n        </div>\n        <div class="col-sm-11 col-md-11 heading">\n          <h1>{{text()}}</h1>\n        </div>\n      </a>\n  </div>\n  <div class="modal fade" id="startAssessment" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">\n    <div class="modal-dialog">\n      <div class="modal-content">\n        <div class="modal-header">\n          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>\n          <h4 class="modal-title">{{text()}}</h4>\n        </div>\n        <div class="modal-body">\n          <p ng-hide="isNetworkPartner()">Facilitate the Readiness Assessment process for your district by creating a new assessment.<a ng-click="hideModal()"\n            href="#/assessments"> Click here</a> to view current assessments for your district or to participate in an existing assessment.</p>\n          <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>\n          <form name="startAssessment">\n            <div class="row">\n              <div class="col-md-12">\n                <input class="form-control" type="text" ng-model="assessment.name" placeholder="Name*" required>\n              </div>\n            </div>\n\n            <div class="row">\n              <div class="col-md-6">\n                <select\n                  required\n                  ng-hide="noDistrict()"\n                  class="form-control"\n                  ng-model="district"\n                  ng-options="district.text for district in user.districts">\n                </select>\n                <div ng-show="noDistrict()" class="col-md-12">\n                  <p>\n                    You have not selected districts that you work with. Please update your profile\n                    <a href="#/settings" ng-click="hideModal()" >here</a>\n                  </p>\n                </div>\n              </div>\n              <div class="col-md-6">\n                <div class="input-group date datetime">\n                  <input\n                    id="due-date"\n                    name="due-date"\n                    required\n                    ng-model="due_date"\n                    type="text"\n                    placeholder="Due Date*"\n                    class="form-control"\n                    data-format="dd/MM/yyyy hh:mm:ss">\n                  <span class="input-group-addon"><i class="fa fa-calendar"></i></span>\n                </div>\n              </div>\n            </div>\n\n          </div>\n          <div class="modal-footer">\n            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>\n            <button type="submit"\n              ng-disabled="startAssessment.$invalid"\n              ng-click="create(assessment)"\n              class="btn btn-primary">\n              Create\n            </button>\n        </div>\n      </form>\n      </div>\n    </div>\n  </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/directives/take_away.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/directives/take_away.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/directives/take_away.html", '<div class="col-md-12" id=\'takeaway\'>\n    <div ng-hide="isFacilitator()">\n      <h2>High Level Takeaways</h2>\n      <p>{{assessment.report_takeaway}}</p>\n    </div>\n\n    <div ng-show="isFacilitator()">\n      <h2>High Level Takeaways</h2>\n      <div ng-show=\'editing\'>\n        <textarea ng-model="assessment.report_takeaway"\n                  placeholder="Briefly summarize the top 3-5 high level findings about the current state of the professional development system in the district (including common themes, trends, or areas where additional research is needed)">\n        </textarea>\n\n        <div class=\'text-center\'>\n          <button class=\'btn btn-sm btn-primary save\' ng-click="save(assessment)">\n            <i class=\'fa fa-spinner fa-spin\' ng-hide="!saving"></i>\n            <i class=\'fa fa-save\' ng-hide="saving"></i> SAVE\n          </button>\n        </div>\n      </div>\n\n      <div class=\'evidence-read\' ng-hide="editing" ng-click="setEditing(true)">\n        <div>{{assessment.report_takeaway}}</div>\n\n        <div class=\'edit-button\'>\n          <button class=\'btn btn-sm btn-primary\' ng-click="setEditing(true)">\n            <i class=\'fa fa-edit\'></i> EDIT\n          </button>\n        </div>\n      </div>\n    </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/directives/user_header.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/directives/user_header.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/directives/user_header.html", '<div class="row secondary user-header">\n  <div class="col-md-12">\n    <h1>Hi {{firstName}}</h1>\n    <p>Welcome to PDredesign.</p>\n  </div>\n</div>\n')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/directives/user_login.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/directives/user_login.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/directives/user_login.html", '<div class="row">\n  <div class="col-md-12">\n    <h3 class="heading">Sign in to PDredesign</h3>\n\n    <div>\n      <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">\n        {{alert.msg}}\n      </alert>\n    </div>\n\n    <form ui-keypress="{13:\'authenticate(email, password)\'}">\n    <div class"row">\n      <div class="form-group">\n        <input autofocus\n               id="email"\n               class="form-control"\n               type="text"\n               placeholder="Email Address"\n               ng-model="email"/>\n      </div>\n      <div class="form-group">\n        <input class="form-control"\n               id="password"\n               type="password"\n               placeholder="Password"\n               ng-model="password"/>\n      </div>\n      <div class="checkbox">\n        <label>\n          <input\n            name="user[remember_me]"\n            type="hidden"\n            value="0">\n          <input\n            id="user_remember_me"\n            name="user[remember_me]"\n            type="checkbox" value="1">\n              Remember Me\n          <div class="row">\n            <a href="#/reset">Forgot Password?</a>\n          </div>\n        </label>\n      </div>\n      <div class="input col-md-12">\n        <input class="btn btn-devise btn-info btn-block"\n               id="authenticate"\n               name="commit"\n               type="submit"\n               value="Sign In"\n               ng-click="authenticate(email, password)"/>\n      </div>\n    </div>\n    </form>\n  </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/faqs/faqs.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/faqs/faqs.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/faqs/faqs.html", '<div class="row secondary">\n  <div class="col-sm-12">\n    <h1>Frequently Asked Questions</h1>\n  </div>\n</div>\n\n<faqs topic="{{topic}}" role="{{role}}"></faqs>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/home/home_anon.html.erb
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/home/home_anon.html.erb
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/home/home_anon.html", "<section class='hero'>\n  <div class='row'>\n    <div class='col-sm-12 text-center'>\n      <h1>PDredesign</h1>\n    </div> \n  </div> \n\n  <div class='row'>\n    <div class='col-sm-12 text-center'>\n      <p>A digital toolkit and community of practice</br>\n      dedicated to improving professional</br>\n      development for teachers.</p>\n    </div> \n  </div> \n\n  <div class='row'>\n    <div class='col-sm-12 text-center'>\n      <button type='button' class='btn btn-default' ng-click=\"chooseRole()\">Sign Up</button>\n    </div> \n  </div> \n\n</section>\n\n<section class='body'>\n  <div class='row'>\n    <div class='col-sm-12 text-center'>\n      <h2 class=\"secondary-color\">Why Redesign PD?</h2>\n    </div> \n  </div> \n\n  <div class='row'>\n    <div class='col-sm-12 text-center'>\n      <p class=\"primary-color\">Teachers, more than ever, are looking for relevant, flexible,</br>\n      collaborative PD to meet the needs of students in their</br>\n      classrooms.</p>\n    </div> \n  </div> \n</section>\n\n<section class='stats'>\n  <div class='row'>\n    <div class='col-sm-12 text-center'>\n      <img alt=\"Landing page graph\" src=\"/assets/landing-page-graph-d47e14d37bf64b692498853a345e83ff.png\" />\n    </div>\n  </div> \n\n  <div class='row'>\n    <div class='col-sm-12 text-center legal dark-primary-color'>\n      Teachers surveyed were asked \"in the past 12 months, to what extent have\n      the following factors limited the effectiveness of your PD?\" 936 teachers responded<br/>\n      Source: PD teacher survey, February 2014<br/>\n    </div> \n  </div> \n</section>\n\n<section class='path'>\n  <div class='row'>\n    <div class='col-sm-12 text-center'>\n      <h2 class=\"secondary-color\">Redesign for continous improvement and sustainable change</h2>\n    </div>\n  </div>\n\n  <div class='row'>\n    <div class='col-sm-12 col-md-4 col-md-offset-2 text-center'>\n      <div class=\"points\">\n        <h3 class=\"primary-color\">Where are we now?</h3>\n        <p>Understand your strengths across the district and identify priorities for growth.</p>\n        <img alt=\"Landpage icons mappin\" class=\"visible-xs-inline\" src=\"/assets/landpage-icons-mappin-e93c30f50b60a35516f9d520a8519ade.png\" />\n      </div>\n      <div class=\"points\">\n        <h3 class=\"primary-color\">Where do we need to grow?</h3>\n        <p>Analyze resources and gaps in priority areas.</p>\n        <img alt=\"Landpage icons tools\" class=\"visible-xs-inline\" src=\"/assets/landpage-icons-tools-25e90d2defd981c99cffbb751c580110.png\" />\n      </div>\n      <div class=\"points\">\n        <h3 class=\"primary-color\">How do we reach our goals?</h3>\n        <p>Leverage best practices and tools to make your plan come to life.</p>\n        <img alt=\"Landpage icons playbook\" class=\"visible-xs-inline\" src=\"/assets/landpage-icons-playbook-d426f418f9112a4c2c53700416ba16da.png\" />\n      </div>\n      <div class=\"points\">\n        <h3 class=\"primary-color\">Who can help us get there?</h3>\n        <p>Find districts and partners working on solutions.</p>\n        <img alt=\"Landpage icons community\" class=\"visible-xs-inline\" src=\"/assets/landpage-icons-community-390089d991ea2edc61fceaf5e64e6693.png\" />\n      </div>\n\n    </div>\n    <div class='col-sm-12 col-md-3 col-md-offset-1 icons hidden-sm hidden-xs'>\n      <img alt=\"Path\" src=\"/assets/path-ab0b4db2f52e1270edb5bc7728ed903d.png\" />\n    </div>\n\n  </div>\n\n</section>\n\n<section class='action'>\n  <div class='row'>\n    <div class='col-sm-12 text-center'>\n      <h2 class=\"secondary-color\">Join PD redesign</h2>\n    </div>\n  </div>\n\n  <div class='row'>\n    <div class='col-sm-12 text-center'>\n      A digital toolkit and community of practice dedicated to<br/>\n      improving professional development for teachers.\n    </div>\n\n    <div class='row'>\n      <div class='col-sm-12 text-center'>\n        <button type='button' class='btn btn-default' ng-click=\"chooseRole()\">Sign Up</button>\n      </div> \n    </div> \n\n\n  </div>\n\n</section>")
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/home/home_user.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/home/home_user.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/home/home_user.html", '<div class="home-controller">\n  <user-header></user-header>\n    <div class="row">\n      <div class="col-md-12">\n        <h1>Where to start?</h1>\n        You can use any of the tools or resources in the process. We recommend you start with the Readiness Assessment.\n        <start-assessment></start-assessment>\n        <div ng-if="isNetworkPartner()">\n          <div class="row add-district plus-button">\n            <a href="#/settings">\n              <div class="col-sm-1 col-md-1">\n                <i class="fa fa-plus"></i>\n              </div>\n              <div class="col-sm-11 col-md-11 heading">\n                <h1>Add Districts</h1>\n              </div>\n            </a>\n          </div>\n        </div>\n\n      </div>\n    </div>\n\n    <div class="row">\n      <div class="col-md-12">\n        <h1>PD System Redesign Tool Kit</h1>\n        Learn more about the tools currently under development as part of the PDredesign process.\n\n        <div class="row toolkits">\n          <div class="col-md-4 toolkit" ng-repeat="phase in tools">\n            <div class="row title title-{{$index}}">\n              {{phase.title}}\n              <div class="triangle-right"></div>\n            </div>\n            <div class="goal">Goal: {{phase.description}}</div>\n\n            <div class="categories" ng-repeat="category in phase.categories">\n              <div class="title">{{category.name}}</div>\n              <span class="subcategories" ng-repeat="subcategory in category.subcategories">\n                {{subcategory.name}}\n                <ul class="tool" ng-repeat="tool in subcategory.tools">\n                  <li\n                    data-html="true"\n                    data-placement="right"\n                    data-content="{{popoverContent(tool)}}"\n                    data-toggle="tooltip">\n                    <span class="tool-check">\n                      <i class="fa fa-check" ng-class="{active: tool.url, inactive: !tool.url}"></i>\n                    </span>\n                    <span class="tool-title">{{tool.title}}</span>\n                  </li>\n                </ul>\n              </span>\n              <span>\n               <ul class="tool extra-tool" ng-repeat="tool in category.tools">\n                  <li\n                    data-html="true"\n                    data-placement="right"\n                    data-content="{{popoverContent(tool)}}"\n                    data-toggle="tooltip">\n                    <i class="fa fa-check" ng-class="{active: tool.url, inactive: !tool.url}"></i>\n                    {{tool.title}}\n                  </li>\n               </ul>\n              </span>\n              <div class="tool">\n                <add-tool category="category"></add-tool>\n              </div>\n          </div>\n\n          </div>\n        </div>\n\n      </div>\n    </div>\n\n    <div class="design-principles">\n      <h1>Design Principles</h1>\n      <div class="icons">\n        <span class="fa-stack"><i class="fa fa-circle fa-stack-2x"></i><i class="fa fa-font fa-stack-1x"></i></span> Common Language &amp; Frameworks\n        <span class="fa-stack"><i class="fa fa-circle fa-stack-2x"></i><i class="fa fa-group fa-stack-1x"></i></span> Cross-Team Collaboration\n        <span class="fa-stack"><i class="fa fa-circle fa-stack-2x"></i><i class="fa fa-user fa-stack-1x"></i></span> Teacher Centered Design\n        <span class="fa-stack"><i class="fa fa-circle fa-stack-2x"></i><i class="fa fa-comments fa-stack-1x"></i></span> Actionable Feedback\n        <span class="fa-stack"><i class="fa fa-circle fa-stack-2x"></i><i class="fa fa-refresh fa-stack-1x"></i></span> Continuous Improvement\n      </div>\n\n    </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/invitation/redeem.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/invitation/redeem.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/invitation/redeem.html", '<div class=\'row row-bg row-header\'>\n  <div class="col-md-12">\n    <div class="col-md-12">\n      <h1>Create Password</h1>\n      <span>Please confirm the information below and set your password</span>\n    </div>\n  </div>\n</div>\n\n\n<div class="row">\n  <div class="col-md-12">\n    <div class="invite-redeem">\n\n      <form name="invitation">\n        <div class="row">\n          <div class="col-md-12">\n            <div class="alert">\n              <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>\n            </div>\n          </div>\n        </div>\n\n        <div class="row">\n          <div class="col-md-5">\n            <label for="user_first_name">First Name*</label>\n            <input\n              class="form-control ng-pristine ng-valid"\n              placeholder="First Name*"\n              type="text"\n              required\n              ng-model="invitedUser.first_name">\n          </div>\n          <div class="col-md-offset-1 col-md-6">\n            <label for="user_last_name">Last Name*</label>\n            <input\n              class="form-control ng-pristine ng-valid"\n              placeholder="Last Name*"\n              type="text"\n              required\n              ng-model="invitedUser.last_name">\n          </div>\n        </div>\n\n          <div class="row">\n            <div class="col-md-12">\n              <label for="team_role">Team Role</label>\n              <input\n                class="form-control ng-pristine ng-valid"\n                placeholder="Team Role"\n                type="text"\n                ng-model="invitedUser.team_role">\n            </div>\n          </div>\n\n          <div class="row">\n            <div class="col-md-12">\n              <label for="user_email">Email*</label>\n              <input\n              class="form-control ng-pristine ng-valid"\n              placeholder="Email*"\n              type="text"\n              required\n              ng-model="invitedUser.email">\n            </div>\n          </div>\n\n          <div class="row">\n            <div class="col-md-6">\n              <label for="user_password">Password*</label>\n              <input\n              class="form-control ng-pristine ng-valid"\n              placeholder="Password*"\n              type="password"\n              required\n              ng-model="invitedUser.password">\n            </div>\n            <div class="col-md-6">\n              <label for="user_password_confirmation">Confirm Password*</label>\n              <input\n              ui-validate="\'$value==invitedUser.password\'"\n              ui-validate-watch="\'invitedUser.password\'"\n              class="form-control ng-pristine ng-valid"\n              placeholder="Password Confirm*"\n              type="password"\n              required\n              ng-model="invitedUser.password_confirm">\n            </div>\n          </div>\n\n          <div class="row">\n            <div class="col-md-12">\n              <button\n                ng-disabled="invitation.$invalid"\n                ng-click="redeemInvite()"\n                class="btn btn-primary pull-right">\n                  Continue\n              </button>\n            </div>\n          </div>\n        </div>\n      </form>\n    </div>\n  </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/login/login.html.erb
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/login/login.html.erb
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/login/login.html", '<div class="login">\n  <div class="row secondary">\n    <div class="col-md-12">\n      <h1>Welcome back to PDredesign!</h1>\n    </div>\n\n    <div class="col-md-12 hidden-md hidden-lg">\n      <user-login></user-login>\n    </div>\n  </div>\n\n  <div class="row">\n    <div class="col-md-12 intro">\n      <img alt="Sign in image" src="/assets/sign-in-image-44d0d6eea3aeae435d7efa6c17dab382.png" />\n    </div>\n  </div>\n\n  <div class="row">\n    <div class="col-md-12 intro">\n      <h3>About PDredesign</h3>\n      <p>\n        PDredesign is the place for meaningful collaboration to reimagine teacher professional development.\n      </p>\n      <p>\n       Join our community of educators and designers committed to continuously improving professional development systems to better support teachers. Alongside leaders from classrooms, schools, charters, districts, and partner organizations across the country, we are building an open digital toolkit and community of practice to support districts to redesign systems that meet the needs of educators and students.\n      </p>\n      <p>\n        Improving professional development for teachers will take all of us working together.\n      </p>\n    </div>\n  </div>\n</div>\n\n')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/modals/add_tool.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/modals/add_tool.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/modals/add_tool.html", '<div class="modal-header">\n  <h3 class="modal-title">Add Tool to {{category.name}}</h3>\n  <p>The PDredesign toolkit is the place for tools that support your district to collaborate across departments and roles to strategically implement redesigned PD systems. Recommend a tool for colleagues in your district  to use as part of the redesign process.</p>\n</div>\n\n<form ng-submit="create(tool)">\n  <div class="modal-body" id="modal-invite-participant">\n    <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>\n\n    <div class="form-group">\n      <input class="form-control" type="text" ng-model="tool.title" placeholder="Tool Name" required>\n    </div>\n\n    <div class="form-group">\n      <input class="form-control" type="text" ng-model="tool.url" placeholder="Url" type="url" http-prefix required>\n    </div>\n\n    <div class="form-group">\n      <textarea class="form-control" type="text" ng-model="tool.description" placeholder="Description 250 max characters" required></textarea>\n    </div>\n\n  </div>\n  <div class="modal-footer">\n    <button type="button" class="btn btn-default" ng-click="hideModal()">Close</button>\n\n    <input type="submit" class="btn btn-primary" value="Create">\n  </div>\n</form>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/modals/choose_role.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/modals/choose_role.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/modals/choose_role.html", '<div id="choose-role">\n  <div class="modal-content">\n    <div class="modal-header">\n      <button ng-click="close()" type="button" class="close">×</button>\n      <h3 class="modal-title" id="createConsensusLabel">Get Started</h3>\n    </div>\n    <div class="modal-body">\n      <div class="row">\n        <div class="col-md-6">\n          <div class="panel panel-default">\n            <div class="panel-body">\n              <p>I am part of a school district or charter management organization.</p>\n              <br class="hidden-sm hidden-xs">\n              <a  ng-click="close()" href="#/administrators" class="btn btn-primary btn-lg">District</a>\n            </div>\n          </div>\n        </div>\n        <div class="col-md-6">\n          <div class="panel panel-default">\n            <div class="panel-body">\n              <p>I work with an organization that partners with districts to provide support.</p>\n              <a ng-click="close()" href="#/networks"  class="btn btn-primary btn-lg">Partner</a>\n            </div>\n          </div>\n        </div>\n      </div>\n    </div>\n  </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/modals/create_consensus.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/modals/create_consensus.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/modals/create_consensus.html", '<div id="createConsensus">\n  <div class="modal-content">\n    <div class="modal-header">\n      <button ng-click="close()" type="button" class="close">×</button>\n      <h3 class="modal-title" id="createConsensusLabel">Create Consensus Response</h3>\n    </div>\n    <div class="modal-body">\n      <h3>Creating a consensus response will show all participants\' responses and allow you to facilitate the consensus meeting.</h3>\n      <h3>Keep in mind, however, that this will prevent participants from leaving additional feedback in their own individual responses.</h3>\n    </div>\n    <div class=\'modal-footer\'>\n      <a\n        ng-click="redirectToCreateConsensus()"\n        class="btn btn-primary"\n        href="">\n          Create Consensus Response\n      </a>\n    </div>\n  </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/modals/invite_user.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/modals/invite_user.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/modals/invite_user.html", '<div class="modal-header">\n  <h3 class="modal-title">Add New Participant</h3>\n</div>\n<div class="modal-body" id="modal-invite-participant">\n\n  <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>\n  <form  name="formInviteParticipant"  novalidate>\n    <div class=\'row\'>\n      <div class=\'flush-left col-md-4 col-sm-4\'>\n        <div class="form-group">\n          <input placeholder="First Name" type="text" class="form-control" ng-model="inviteUser.first_name" required>\n        </div>\n      </div>\n\n      <div class=\'flush-right col-md-8 col-sm-8\'>\n        <div class="form-group">\n          <input placeholder="Last Name" type="text" class="form-control" ng-model="inviteUser.last_name" required>\n        </div>\n      </div>\n    </div>\n\n    <div class="form-group">\n      <input placeholder="Email Address" type="email" name="input" ng-model="inviteUser.email" class="form-control" required>\n    </div>\n\n    <div class="form-group">\n      <input placeholder="Team Role (e.g. Finance, HR)" class="form-control" type="text" ng-model="inviteUser.team_role">\n    </div>\n\n    <div class="form-group">\n      <div\n        class="btn btn-primary pull-left"\n        ng-disabled="formInviteParticipant.$invalid"\n        ng-click="createInvitation(inviteUser)"\n        data-dismiss="modal">\n          Add to District\n      </div>\n    </div>\n    <div class=\'clearfix\'>\n    </div>\n  </form>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/modals/login.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/modals/login.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/modals/login.html", '<div id="login-modal">\n  <div class="modal-content">\n    <div class="modal-header">\n      <button ng-click="close()" type="button" class="close">×</button>\n      <h3 class="modal-title" id="createConsensusLabel">Sign in to PDredesign</h3>\n    </div>\n    <div class="modal-body">\n      <user-login></user-login>\n    </div>\n  </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/modals/manage_participants.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/modals/manage_participants.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/modals/manage_participants.html", '<div class="modal-header">\n  <h3 class="modal-title">Add to Assessment</h3>\n</div>\n\n<div class=\'row row-participant-headers-modal edit_modal_table_head\'>\n  <div class=\'col-md-1 col-sm-1\' style="margin-left: 9px;">&nbsp;</div>\n  <div class=\'col-md-4 col-sm-4\'>Name</div>\n  <div class=\'col-md-4 col-sm-4\'>Email Address</div>\n</div>\n<div id="participantModalholder">\n  <div class="participantholder">\n    <div ng-repeat="user in participants">\n      <div ng-class="{addParticipantAnimation: user.hide == \'yes\' }" class=\'row row-participant-add\'>\n        <div class=\'col-md-1 col-sm-1\'>\n          <img alt="" class="img-polaroid pull-right" ng-src="{{user.avatar}}" width="47"></div>\n          <div class=\'col-md-4 col-sm-4\'>\n            <p class=\'name\'>{{user.full_name}}</p>\n          </div>\n          <div class=\'col-md-4 col-sm-4\'>\n            <p class=\'info\'>{{user.email }}</p>\n          </div>\n          <div class=\'col-md-3 col-sm-3 text-center\'>\n            <div class="btn btn-primary pull-right add_to_assessment_button" ng-click="addParticipant(user)">Add to Assessment</div>\n          </div>\n        </div>\n      </div>\n    </div>\n  </div>\n</div>\n')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/modals/modify_schedule.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/modals/modify_schedule.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/modals/modify_schedule.html", '<div id="modify-schedule" ng-controller="ModifyScheduleCtrl">\n  <button ng-click="close()" type="button" class="close" aria-hidden="true">×</button>\n  <div class="control-group">\n    <label for="assessment_Due Date">Response due date</label>\n    <div class="due-date input-group date datetime">\n      <input\n        class="form-control"\n        data-date-format="MM/DD/YYYY"\n        ng-model="modal_due_date"\n        id="due-date">\n      <span class="input-group-addon">\n        <i class="fa fa-calendar"></i>\n      </span>\n    </div>\n  </div>\n\n  <div class="control-group">\n    <label for="assessment_Due Date">Consensus meeting date</label>\n    <div class="meeting-date input-group date datetime">\n      <input\n        ng-model="modal_meeting_date"\n        data-date-format="MM/DD/YYYY"\n        class="form-control"\n        id="meeting-date">\n      <span class="input-group-addon">\n        <i class="fa fa-calendar"></i>\n      </span>\n    </div>\n  </div>\n  <button\n    ng-click="updateAssessment()"\n    class="btn btn-primary">\n    Submit\n  </button>\n</div>\n')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/modals/new_reminder.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/modals/new_reminder.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/modals/new_reminder.html", '<div id=\'newReminder\'>\n  <div class="modal-header">\n    <button ng-click="close()" type="button" class="close" >×</button>\n    <h3 class="modal-title" id="newReminderLabel">Send Reminder</h3>\n  </div>\n  <div class="modal-body">\n    <form ng-submit="sendReminder(reminderMessage)" accept-charset="UTF-8" class="new_message" id="reminder" method="post">\n      <input id="message_category" name="message[category]" type="hidden" value="reminder">\n      <div class="form-group">\n        <label for="message_Message*">Message*</label>\n        <textarea\n          required\n          ng-model="reminderMessage"\n          class="form-control"\n          id="message_content"\n          name="message[content]" rows="4">\n          Your participation is a critical step in the process. Once you and your colleagues have finished their assessments, the team can meet to reach consensus. Please answer these questions today if you have not done so already.\n        </textarea>\n      </div>\n\n      <div class="form-group">\n        <button\n          ng-disabled="reminder.$invalid"\n          class="btn btn-primary pull-left"\n          name="commit"\n          type="submit">\n          <i class="fa fa-envelope-o"></i> Send\n        </button>\n      </div>\n      <div class="clearfix"></div>\n      </form>\n  </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/modals/pdr_overview.html.erb
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/modals/pdr_overview.html.erb
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/modals/pdr_overview.html", '<div id="pd-overview">\n  <div class="overview-holder">\n    <div class="modal-header">\n      <button ng-click="close()" type="button" class="close" aria-hidden="true">&times;</button>\n      <h4 class="modal-title">\n        PDredesign: Readiness Assessment\n      </h4>\n    </div>\n    <div class="holder">\n      <div class="row">\n       <div class="col-md-6">\n          <p class=\'sidebar-question\'>What is it?</p>\n          <div class=\'overview\'>\n            The PDredesign Readiness Assessment Tool is designed to help districts and LEAs:\n            <ol>\n              <li>Engage in a candid, cross-functional discussion about innovative Professional Development using a common language anchored to key program elements from the Gates Foundation\'s PD System Map (below).</li>\n              <li>Gain a high level understanding of the organization\'s current strengths and weaknesses and overall readiness, aid in the PD strategy design, and support the associated whole system change.</li>\n            </ol>\n          </div>\n\n          <p class=\'sidebar-question\'>How is it used?</p>\n          <div class=\'overview\'>\n            Ideally, the process for using the PD Readiness Assessment consists of:\n            <ul>\n              <li>Gathering a cross-functional team</li>\n              <li>Having each team member review and fill out the assessment</li>\n              <li>Discussing the questions one by one as a group, coming to a consensus on a score for each question, and providing evidence and bright spots to support the consensus score</li>\n              <li>Creating the report: After filing out the scoring rubric, a printable version of the assessment report will be generated</li>\n            </ul>\n          </div>\n\n        </div>\n        <div class="col-md-6">\n          <img alt="Diagram" src="/assets/diagram-419c9ac366c8e2974338cd6244f318fe.png" style="width: 100%" />\n        </div>\n      </div>\n    </div>\n  </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/modals/request_access.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/modals/request_access.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/modals/request_access.html", '<div class="request-access-modal">\n  <div class="modal-header">\n    <button ng-click="close()" type="button" class="close" aria-hidden="true">×</button>\n    <h2>Request Access</h2>\n  </div>\n  <div class="modal-body">\n\n    <span class="question-holder">Select the role you would like to request in this assessment.\n      <i data-toggle="requestPopover"\n        data-content="{{popoverContent()}}" class="fa fa-question question-tip">\n      </i>\n    </span>\n\n    <div ng-show="isNetworkPartner()" class="btn-group">\n      <span class="btn btn-xs btn-primary" ng-model="accessLevel" btn-radio="\'facilitator\'">\n        <i class="fa fa-bullhorn"></i><span>Organizer</span>\n      </span>\n      <span class="btn btn-xs btn-primary" ng-model="accessLevel" btn-radio="\'viewer\'">\n        <i class="fa fa-eye"></i><span>Observer</span>\n      </span>\n    </div>\n\n    <div ng-show="!isNetworkPartner()" class="btn-group">\n      <span class="btn btn-xs btn-primary" ng-model="accessLevel" btn-radio="\'facilitator\'">\n        <i class="fa fa-bullhorn"></i><span>Facilitator</span>\n      </span>\n      <span class="btn btn-xs btn-primary" ng-model="accessLevel" btn-radio="\'participant\'">\n        <i class="fa fa-edit"></i><span>Participant</span>\n      </span>\n      <span class="btn btn-xs btn-primary" ng-model="accessLevel" btn-radio="\'viewer\'">\n        <i class="fa fa-eye"></i><span>Viewer</span>\n      </span>\n    </div>\n  </div>\n\n  <div class=\'modal-footer\'>\n    <button ng-click=\'submitAccessRequest(accessLevel)\' class=\'btn btn-success\'>\n      <span>Done</span>\n    </button>\n  </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/modals/response_submit_modal.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/modals/response_submit_modal.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/modals/response_submit_modal.html", '<div class="response_submit_modal">\n  <div class="modal-header">\n    <button ng-click="cancel()" type="button" class="close" aria-hidden="true">×</button>\n    <h2>Submit {{responseTitle()}}</h2>\n  </div>\n  <div class="modal-body">\n    <h2>You are submitting your response to {{assessment.name}}!</h2>\n    <div ng-hide=\'unansweredQuestions() == 0\'>\n      <h2>You have left<span class=\'badge\'>{{unansweredQuestions()}}</span>questions unanswered.</h2>\n      <h3>Even though you can submit your response without answering all questions, we encourage you to try to answer as many as you can.</h3>\n    </div>\n\n    <p ng-if="!isResponse()">After you submit, a report will be generated based on the consensus scores. You will not be able to edit scores or notes after this point. If you are not ready to submit, you may save your responses and return to the consensus at a later time.\n    </p>\n\n    <p ng-if="isResponse()">After you submit your response, an email notification will be sent to your facilitator. You can still update your response to the assessment at any time before the consensus meeting.</p>\n  </div>\n\n  <div class=\'modal-footer\'>\n    <button ng-click="redirectToAssessmentsIndex(); cancel()" ng-if="!isResponse()" class=\'btn btn-primary btn-lg\'>\n      Save for Later\n    </button>\n\n    <button ng-click=\'submitResponse()\' class=\'btn btn-primary btn-lg\'>Submit {{responseTitle()}}</button>\n  </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/modals/save_retry.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/modals/save_retry.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/modals/save_retry.html", '<div>\n  <div class="modal-header">\n    <button ng-click="cancel()" type="button" class="close">×</button>\n    <h3 class="modal-title">Your Answer was not saved!</h3>\n  </div>\n\n  <div class="modal-body">\n      <p>Click below to resubmit. If the problem consists, please check your internet connection</p>\n  </div>\n  <div class="modal-footer">\n    <button ng-click="retryScorePost()" class="btn btn-primary btn-lg">Resubmit Answer</button>\n  </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/navigation/navigation_anon.html.erb
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/navigation/navigation_anon.html.erb
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/navigation/navigation_anon.html", '<nav class="navbar navbar-default" role="navigation">\n  <div class="container">\n    <div class="navbar-header">\n      <a href="#">\n        <img alt="Pdlogo" src="/assets/pdlogo-597477ea6b061321b82e7fb4befa6592.png" />\n      </a>\n    </div>\n\n   <button type="button" class="navbar-right navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">\n      <span class="sr-only">Toggle navigation</span>\n      <span class="icon-bar"></span>  \n      <span class="icon-bar"></span>\n    </button>\n\n    <div class="collapse navbar-collapse" id="menu">\n      <ul class="nav navbar-nav navbar-right">\n        <li class="navbar-form">\n          <button type="button" class="btn btn-primary btn-sm" ng-click="chooseRole()">Sign Up</button>\n        </li>\n\n        <li>\n          <a href="#/login">Log In</a> \n        </li>\n       </ul>\n    </div>\n\n  </div>\n</nav>\n')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/navigation/navigation_user.html.erb
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/navigation/navigation_user.html.erb
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/navigation/navigation_user.html", "<nav class=\"navbar navbar-default\" role=\"navigation\">\n  <div class=\"container\">\n    <div class='navbar-header'>\n      <button type=\"button\" class=\"navbar-toggle collapsed\" data-toggle=\"collapse\" data-target=\"#pdredesign-navbar\">\n        <span class=\"sr-only\">Toggle navigation</span>\n        <span class=\"icon-bar\"></span>\n        <span class=\"icon-bar\"></span>\n        <span class=\"icon-bar\"></span>\n      </button>\n      <a class='navbar-brand logo' href=\"#\">\n        <img alt=\"Pdlogo\" src=\"/assets/pdlogo-597477ea6b061321b82e7fb4befa6592.png\" />\n      </a>\n    </div>\n    \n    <div class=\"collapse navbar-collapse\" id=\"pdredesign-navbar\">\n      <ul class='nav navbar-nav'>\n        <li ng-class=\"activeClassFor('home')\">\n          <a href='#/home'>Home</a>\n        </li>\n        <li ng-class=\"activeClassFor('current_state')\" class=\"cursor\">\n          <a class='data-toggle' data-toggle='dropdown'>Current State</a>\n          <ul class='dropdown-menu'>\n            <li>\n              <a href='#/assessments'>Readiness Assessment</a>\n            </li>\n          </ul>\n\n        </li>\n        <li class='disabled'>\n          <a href='#'>Future State</a>\n        </li>\n        <li class='disabled'>\n          <a href='#'>Planning</a>\n        </li>\n        <li class='disabled'>\n          <a href='#'>Procurement</a>\n        </li>\n        <li class='disabled'>\n          <a href='#'>Implementation</a>\n        </li>\n        <li class='disabled'>\n          <a href='#'>Rollout</a>\n        </li>\n      </ul>\n      <ul class='nav navbar-nav navbar-right user-menu cursor'>\n        <li class='hidden-xs hidden-sm'>\n          <img alt=\"{{user.name}}\" class=\"polaroid\" height=\"40\" ng-src=\"{{user.avatar}}\">\n        </li>\n        <li>\n          <a class='data-toggle' data-toggle='dropdown'>\n            <i class='fa fa-caret-down'></i>\n            {{user.first_name}}\n          </a>\n\n          <ul class='dropdown-menu'>\n            <li>\n              <a href='#/settings'>\n                <i class='fa fa-gears'></i>\n                Settings\n              </a>\n            </li>\n            <li>\n              <a href='#/logout'>\n                <i class='fa fa-sign-out'></i>\n                Sign Out\n              </a>\n            </li>\n          </ul>\n        </li>\n\n      </ul>\n    </div>\n\n  </div>\n</nav>\n")
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/prospective_user/prospective_user.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/prospective_user/prospective_user.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/prospective_user/prospective_user.html", '          <div class="row" >\n            <div class="col-md-6 col-md-offset-3">\n              <ng-include src="\'client/views/shared/errors.html\'"> </ng-include>\n              <form accept-charset="UTF-8" class="new_prospective_user ng-pristine ng-valid" data-remote="true" id="new_prospective_user" method="post" role="form"><div style="display:none"><input name="utf8" type="hidden" value="✓"></div>\n                <input id="prospective_user_ip_address" name="prospective_user[ip_address]" type="hidden" value="50.246.91.65">\n                <div class="row">\n                  <div class="col-md-8 col-md-offset-1 col-sm-8 col-sm-offset-1 col-xs-8 col-xs-offset-1">\n                    <div class="form-group">\n                      <label class="sr-only" for="email">Email address</label>\n                      <input ng-model="prospectiveUser.email" class="form-control" id="prospective_user_email" name="prospective_user[email]" placeholder="Email Address" type="email" value="">\n                    </div>\n                  </div>\n                  <div class="col-md-3 col-sm-3 col-xs-3" >\n                    <input class="btn btn-primary" name="commit" ng-click="submit(prospectiveUser)" value="Stay in Touch">\n                  </div>\n                </div>\n              </form>\n            </div>\n          </div>\n')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/reset_password/request_reset.html.erb
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/reset_password/request_reset.html.erb
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/reset_password/request_reset.html", '<div class="login signup">\n  <div class="row secondary">\n    <div class="container">\n      <div class="col-md-4">\n        <h1>Forgot your password?</h1>\n        <h3 class="subheading" >We\'ll email you instructions to reset your password.</h3>\n        <p class="resetpass-help-text">Need help? Contact us at support@mail.pdredesign.org.</p>\n      </div>\n\n      <div class="col-md-8 form">\n        <div class="row">\n          <div class="col-md-7 col-sm-6">\n            <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>\n          </div>\n        </div>\n\n        <form id="resetForm">\n        <div class="row">\n          <div class="col-md-7 col-sm-6">\n            <input\n              required\n              ng-model="email"\n              class="form-group form-control"\n              placeholder="Email Address*"\n              type="text">\n            <input\n              ng-disabled="resetForm.$invalid"\n              type="button"\n              ng-click="requestReset(email)"\n              class="btn btn-devise btn-danger pull-right"\n              name="commit"\n              value="Request Reset Email">\n          </div>\n        </div>\n        </form>\n      </div>\n    </div>\n  </div>\n\n  <div class="container">\n    <div class="row">\n      <div class="col-md-9 intro">\n        <img alt="Sign in image" src="/assets/sign-in-image-44d0d6eea3aeae435d7efa6c17dab382.png" />\n      </div>\n    </div>\n  </div>\n\n  <div class="container">\n    <div class="row">\n      <div class="col-md-9 intro">\n        <h3>With this tool you will...</h3>\n        <p>\n          Engage in a candid, cross-functional discussion about innovative\n          Professional Development using a common language anchored to key\n          elements of a high-quality, multi-modal professional development system.\n          You\'ll gain a comprehensive understanding of the current state of multiple\n          aspects of PD in your district. You\'ll have the opportunity to contribute\n          to the PD strategy design at the district level to better support teachers\n          to improve student success in their classrooms.\n        </p>\n      </div>\n    </div>\n  </div>\n\n\n\n</div>\n')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/reset_password/reset.html.erb
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/reset_password/reset.html.erb
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/reset_password/reset.html", '<div class="login signup">\n  <div class="row secondary">\n    <div class="container">\n      <div class="col-md-4">\n        <h1>Password Reset</h1>\n        <h2 class="subheading" >PD Readiness Assessment Tool</h2>\n      </div>\n\n      <div class="col-md-8 form">\n        <div class="row">\n          <div class="col-md-7 col-sm-6">\n            <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>\n          </div>\n        </div>\n\n        <form id="resetForm">\n        <div class="row">\n          <div class="col-md-7 col-sm-6">\n            <input\n              required\n              ng-model="password"\n              class="form-group form-control"\n              placeholder="Password"\n              type="password">\n            <input\n              required\n              ng-model="password_confirm"\n              class="form-group form-control"\n              placeholder="Password Confirm*"\n              type="password">\n\n            <input\n              type="button"\n              ng-disabled="resetForm.$invalid"\n              ng-click="resetPassword(password, password_confirm)"\n              class="btn btn-devise btn-danger pull-right"\n              name="commit"\n              value="Reset Password">\n          </div>\n        </div>\n        </form>\n      </div>\n    </div>\n  </div>\n\n  <div class="container">\n    <div class="row">\n      <div class="col-md-9 intro">\n        <img alt="Sign in image" src="/assets/sign-in-image-44d0d6eea3aeae435d7efa6c17dab382.png" />\n      </div>\n    </div>\n  </div>\n\n  <div class="container">\n    <div class="row">\n      <div class="col-md-9 intro">\n        <h3>With this tool you will...</h3>\n        <p>\n          Engage in a candid, cross-functional discussion about innovative\n          Professional Development using a common language anchored to key\n          elements of a high-quality, multi-modal professional development system.\n          You\'ll gain a comprehensive understanding of the current state of multiple\n          aspects of PD in your district. You\'ll have the opportunity to contribute\n          to the PD strategy design at the district level to better support teachers\n          to improve student success in their classrooms.\n        </p>\n      </div>\n    </div>\n  </div>\n\n\n\n</div>\n')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/responses/edit.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/responses/edit.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/responses/edit.html", '<ng-include src="\'client/views/responses/header.html\'"></ng-include>\n    <div class="row">\n      <div class="col-md-12">\n        <response-questions data-assessment-id="{{assessmentId}}" data-response-id="{{responseId}}">\n        </response-questions>\n      </div>\n    </div>\n')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/responses/header.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/responses/header.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/responses/header.html", "<div class='row secondary user-header'>\n  <div class=\"col-md-12\">\n    <div class=\"media\">\n      <div class=\"media-body\">\n        <h1>{{assessment.name}}</h1>\n        <p class='byline'>organized by:\n          <a href=\"\"> {{assessment.facilitator.full_name}}</a>\n          on {{assessment.created_at  | amDateFormat:'MMMM Do, YYYY'}}\n        </p>\n        <h2 class='instructions-header'>Instructions</h2>\n\n        <div class='col-md-12'>\n          <p class='instructions-content'>\n            The Readiness Assessment consists of questions across the 8 categories from the <readiness-assessment-modal title=\"PD System Map\"></readiness-assessment-modal>. Following this individual survey, you will have the opportunity to discuss your responses with your colleagues in a consensus meeting.\n          </p>\n          <p class='instructions-content'>\n            For each question, answer carefully based on your experience and include evidence such as notes, links, or files to support your response. You may skip a question if you are not sure how to respond. Save each completed response as you move through the assessment\n          </p>\n        </div>\n      </div>\n\n    </div>\n  </div>\n</div>")
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/responses/show.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/responses/show.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/responses/show.html", '<ng-include src="\'client/views/responses/header.html\'"></ng-include>\n  <div class="col-md-12">\n    <consensus\n      data-assessment-id="{{assessmentId}}"\n      data-response-id="{{responseId}}">\n    </consensus>\n  </div>\n\n\n')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/settings/category_select.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/settings/category_select.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/settings/category_select.html", '<div class="row organization-specialize">\n  <div class=" col-md-12">\n    Which areas does your organization specialize in?\n    <div ng-repeat="category in categories">\n      <input\n        name="category-check-{{category.id}}"\n        id="category-check-{{category.id}}"\n        type="checkbox"\n        ng-model="category.selected">\n      <label for="category-check-{{category.id}}" value="">{{category.name}}</label>\n    </div>\n        <button\n        id="save-categories"\n        class="btn btn-success" ng-click="pushCategories(categories)">\n          <i class="fa fa-spinner fa-spin" ng-show="loading"/>\n          Update Categories\n        </button>\n  </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/settings/logo_uploader.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/settings/logo_uploader.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/settings/logo_uploader.html", '<div class="row flush logo-uploader">\n  <div ng-show="uploading" class="spinner">\n    <div class=\'col-md-12\'>\n      <i class="fa fa-spinner fa-spin"></i>\n    </div>\n  </div>\n\n  <div ng-hide="uploading">\n    <div class="col-md-3">\n      <img ng-src="{{logo}}" class="image">\n    </div>\n\n    <div class="col-md-9">\n      <h4>Upload an image to represent your organization</h4>\n      <input \n        ng-hide="uploader.queue"\n        type="file"\n        nv-file-select\n        uploader="uploader"/>\n      <span class=\'required\'>*</span>.GIF, .JPG, .JPEG, and .PNG filetypes only\n    </div>\n  </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/settings/organization_section.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/settings/organization_section.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/settings/organization_section.html", '<div class="row organization-settings">\n  <form name="organizationForm" role="form">\n    <div class="row">\n      <div class="col-md-5">\n        <h3>Organization Settings</h3>\n      </div>\n      <div class="col-md-7">\n        <alert ng-show="alertorganization.type == \'success\'" type="success"\n          >{{alertorganization.msg}}</alert>\n      </div>\n    </div>\n\n    <div class="form-group">\n      <organization-select messages="alertorganization" organization-id="organizationId">\n      </organization-select>\n    </div>\n\n    <div class="form-group" ng-show="organizationId">\n      <logo-uploader messages="alertorganization" organization-id="organizationId"></logo-uploader>\n    </div>\n\n    <div class="form-group" ng-show="organizationId">\n      <category-select messages="alertorganization" organization-id="organizationId"></category-select>\n    </div>\n\n\n  </form>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/settings/settings.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/settings/settings.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/settings/settings.html", '<user-header></user-header>\n\n<div class="settings">\n  <form ng-submit="updateUser(user)">\n    <div class="row">\n      <div id="form-top" class="col-md-12">\n        <ng-include src="\'client/views/shared/errors.html\'"></ng-include>\n        <h3>Account Settings</h3>\n        <div class="row">\n          <div class="flush col-md-5">\n            <label for="user_first_name">First name</label>\n            <input class="form-control"\n                   placeholder="First Name"\n                   type="text"\n                   ng-model="user.first_name"\n                   required>\n          </div>\n\n          <div class="col-md-7">\n            <label for="user_last_name">Last name</label>\n            <input class="form-control"\n                   placeholder="Last Name"\n                   type="text"\n                   ng-model="user.last_name"\n                   required>\n          </div>\n        </div>\n\n        <div class="row">\n          <div class="form-group">\n            <label for="user_email">E-mail address</label>\n            <input class="form-control"\n                   placeholder="Email"\n                   ng-model="user.email"\n                   type="email"\n                   required>\n          </div>\n\n          <div class="form-group">\n            <label for="district">District</label>\n              <district-select multiple="{{isNetworkPartner()}}"\n                               preselected="user.districts"\n                               districts="user.district_ids">\n            </district-select>\n          </div>\n\n          <div class="form-group">\n            <label for="user_team_role">Team role</label>\n            <input class="form-control" id="user_team_role" type="text" ng-model="user.team_role">\n          </div>\n\n          <div class="form-group">\n            <label for="user_twitter">Twitter</label>\n            <div class="input-group">\n              <span class="input-group-addon">@</span>\n              <input class="form-control" id="user_twitter" type="text" ng-model="user.twitter">\n            </div>\n          </div>\n\n          <h3>Change Password</h3>\n\n          <div class="form-group">\n            <label for="user_password">Password</label>\n            <input autocomplete="off"\n                   class="form-control"\n                   id="user_password"\n                   type="password"\n                   ng-model="user.password">\n          </div>\n\n          <div class="form-group">\n            <label for="user_password_confirmation">Password confirmation</label>\n            <input class="form-control"\n                   id="user_password_confirmation"\n                   type="password"\n                   ng-model="user.password_confirmation"\n                   ng-required="user.password.length > 0">\n          </div>\n          <div ng-if="user">\n            <organization-section\n              ng-if="isNetworkPartner()" organization-id="user.organization_ids">\n            </organization-section>\n          </div>\n\n          <input ng-click="scrollTop()" class="btn btn-success" name="commit" type="submit" value="Update ">\n        </div>\n      </div>\n    </div>\n  </form>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/shared/customalert.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/shared/customalert.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/shared/customalert.html", "<div>\n  <div class='customalert' ng-class=\"{error: isError, success: isSuccess}\">\n    <p>{{message}}</p>\n  </div>\n</div>")
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/shared/errors.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/shared/errors.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/shared/errors.html", '<div ng-show="success" id="ajax_message" class="alert alert-dismissable alert-success" style="display: block;">\n  {{success}}\n  <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>\n</div>\n<div ng-show="errors" id="ajax_message" class="alert alert-dismissable alert-danger" style="display: block;">\n  <div ng-repeat="(field, errorList) in errors">\n    <div ng-repeat="error in errorList">\n      <span>\n        {{field}}: {{error}}\n      </span>\n    </div>\n  </div>\n  <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>\n</div>\n')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/shared/include_template.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/shared/include_template.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/shared/include_template.html", '<ng-include src="template">\n</ng-include>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/shared/notification_modal.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/shared/notification_modal.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/shared/notification_modal.html", '<div class="notification-modal" ng-class="{error: isError, success: isSuccess}">\n  <div class="modal-body">\n    <div>\n      <p>{{notification}}</p>\n    </div>\n  </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/shared/responses/consensus_score_entry.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/shared/responses/consensus_score_entry.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/shared/responses/consensus_score_entry.html", '<div class="consensus-score-entry">\n  <h3>Consensus Discussion</h3>\n\n  <div class="entry">\n    <div class="row">\n      <div class="col-md-offset-1 col-md-11 secondary">\n        <h4>Notes</h4>\n          <alert class="alert" ng-show="question.isAlert" type="danger"> <p>Add evidence before saving.</p></alert>\n        <div ng-show="isReadOnly" ng-bind-html="question.score.evidence">\n        </div>\n\n        <div ng-hide="isReadOnly">\n          <textarea\n            class="col-md-12 col-sm-12"\n            ng-hide="isReadOnly"\n            ng-model="question.score.evidence"\n            placeholder="Write notes from the discussion, including evidence to support the consensus score and any follow up items.">\n          </textarea>\n        </div>\n      </div>\n\n      <div class="row">\n        <div class="col-md-offset-1 col-md-11 secondary">\n          <h4>Score</h4>\n\n          <div class="row">\n            <div class="answer col-md-3"\n              ng-repeat="answer in question.answers">\n\n                <p\n                  ng-class="{\'inactive\': answer.value != question.score.value}"\n                  class="scored-{{$index+1}}"\n                  ng-click="assignAnswerToQuestion(answer, question)">\n                  {{$index+1}}\n                </p>\n            </div>\n          </div>\n\n        </div>\n      </div>\n    </div>\n\n  </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/shared/responses/evidence.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/shared/responses/evidence.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/shared/responses/evidence.html", '<div class="evidence-discussion">\n  <h3>Individual Evidence</h3>\n  <div class="evidence-container">\n    <div class="evidence" ng-repeat="score in scores | scoreFilter:question.id">\n      <div class="row">\n        <div class="col-md-1 score {{scoreClass(score.value)}}">\n          <span class="ng-binding">{{scoreValue(score.value)}}</span>\n        </div>\n        <div class="col-md-11" ng-bind-html="score.evidence"></div>\n      </div>\n\n      <div class="row">\n        <div class="col-md-1">\n          <avatar\n          data-width="100%"\n          data-avatar="{{score.participant.avatar}}"\n          />\n        </div>\n\n        <div class="col-md-11 secondary">\n          by: <a href="">{{score.participant.full_name}}</a>\n          on: {{score.participant.updated_at | amDateFormat:\'MMMM Do, YYYY\'}}\n        </div>\n      </div>\n\n    </div>\n  </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/shared/responses/filter_by_role.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/shared/responses/filter_by_role.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/shared/responses/filter_by_role.html", '<div class="row sort-by">\n  <div class="col-md-3 label">\n    Filter by Team Role:\n  </div>\n  <div class="col-md-3">\n    <select \n      class="form-control text-capitalize" \n      id="status" \n      ng-change="updateTeamRole(teamRole)"\n      ng-model="teamRole">\n      <option value="" selected>All</option>\n      <option value="{{role}}" ng-repeat="role in teamRoles">\n        {{role}}\n      </option>\n    </select>\n\n  </div>\n  <div class="col-md-1">\n    <i class="fa fa-spinner fa-spin" ng-show="isLoading()"></i>\n  </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/shared/responses/member_question.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/shared/responses/member_question.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/shared/responses/member_question.html", '<div class="row score-evidence" ng-show="question.score.value == answer.value">\n  <div class="col-md-2"></div>\n  <div class="col-md-9">\n    <div ng-hide="question.score.editMode">\n      <textarea \n        class="col-md-12 col-sm-12"\n        ng-model="question.score.evidence"\n        placeholder="Write evidence of why you believe this is the correct score for this question. Skip to next question if you\'re not sure.">\n      </textarea>\n      <div class="save-holder">\n        <button\n          ng-disabled="invalidEvidence(question)"\n          class=\'btn btn-primary\'\n          ng-click="saveEvidence(question.score)">\n          <i class=\'fa fa-save\'></i>SAVE\n        </button>\n      </div>\n    </div>\n    <div ng-show="question.score.editMode ">\n      <div class="evidence-read">\n        <div ng-bind-html="question.score.evidence"></div>\n        <div class="edit-holder">\n\n          <button class=\'btn btn-primary edit-button\'\n            ng-click="editAnswer(question.score)">\n            <i class=\'fa fa-save\'></i>Edit\n          </button>\n        </div>\n      </div>\n    </div>\n  </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/shared/responses/score_count.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/shared/responses/score_count.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/shared/responses/score_count.html", '<span class="score-count scored-{{answer.value}}"\n  ng-class="{\'transparent\': answer.value != question.score.value}" >\n  <i class="fa fa-heart" ng-show="answer.value == question.mode && isReadOnly"></i>\n  <span class="value">\n    {{answerCount(scores, question.id, answer.value)}}\n  </span>\n\n  <span>/{{participantCount}}</span>\n</span>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/shared/responses/skip_question.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/shared/responses/skip_question.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/shared/responses/skip_question.html", '<div class="col-md-11 answer-row value-color-skipped"\n  ng-click="skipQuestion(question, question.score)"\n  ng-class="{skipped: skipped(question), \'col-md-offset-1\': editable}">\n  <div class="answer-info-row">\n    <div class="col-md-1 skipped answer-value">\n      <span>S</span>\n    </div>\n    <div class="col-md-3 answer-title title-{{answer.value}}">\n      Skip This Question\n    </div>\n    <div class="col-md-8 answer-description">\n      <p ng-show="question.score.value == null && editable">\n        Saved Evidence:\n        <p ng-show="question.score.value == null && editable"\n           ng-bind-html="question.score.evidence"></p>\n      </p>\n    </div>\n  </div>\n  <div class="row score-evidence" ng-show="skipped(question) && editable">\n    <div class="col-md-2"></div>\n    <div class="col-md-9">\n      <div ng-hide="question.score.editMode">\n        <textarea\n          class="col-md-12 col-sm-12"\n          ng-model="question.score.evidence"\n          placeholder="Write a note to explain why you skipped this question (optional).">\n        </textarea>\n        <div class="save-holder">\n          <button class=\'btn btn-primary\'\n            ng-click="skipQuestionSaveEvidence(question.score)">\n            <i class=\'fa fa-save\'></i>SAVE\n          </button>\n        </div>\n      </div>\n      <div ng-show="question.score.editMode ">\n        <div class="evidence-read">\n          <div ng-bind-html="question.score.evidence"></div>\n          <div class="edit-holder">\n            <button class=\'btn btn-primary edit-button\'\n              ng-click="editAnswer(question.score)">\n              <i class=\'fa fa-save\'></i>Edit\n            </button>\n          </div>\n        </div>\n      </div>\n    </div>\n  </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/shared/responses/sort_by.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/shared/responses/sort_by.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/shared/responses/sort_by.html", '<div class="row sort-by">\n  <div class="col-md-3 label">\n    Sort By:\n  </div>\n  <div class="col-md-5">\n    <div class="btn-group">\n      <button type="button" class="btn btn-default">\n        <i class="fa fa-fire"></i>\n        Popularity\n      </button>\n      <button type="button" class="btn btn-default" ng-click="changeViewMode(\'category\')">\n        <i class="fa fa-sort-numeric-asc"></i>\n        Numeric\n      </button>\n      <button type="button" class="btn btn-default" ng-click="changeViewMode(\'variance\')" ng-model="viewMode">\n        <i class="fa fa-bar-chart-o"></i>\n        Variance\n      </button>\n    </div>\n  </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/sidebar/assessment_dashboard.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/sidebar/assessment_dashboard.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/sidebar/assessment_dashboard.html", '<div class="sidebar">\n  <div id="assessment_dashboard_consensus_sidebar" ng-controller="AssessmentDashboardSidebarCtrl">\n    <div class=\'consensus\'>\n      <p ng-show="noMeetingDate()" class=\'header\'>Consensus Meeting not yet scheduled</p>\n      <p ng-show="preMeetingDate()" class=\'header\'>Consensus Meeting for</p>\n      <p ng-show="postMeetingDate()" class=\'header\'>Consensus Meeting was held</p>\n      <div class=\'outer\'>\n        <div class=\'inner\'>\n          <div ng-show="postMeetingDate()">\n            <p class=\'date\'>{{meetingDateDaysAgo()}}</p>\n            <p class=\'month\'>days ago</p>\n          </div>\n\n          <div ng-show="preMeetingDate()">\n            <p class=\'day\'>{{meetingDayName()}}</p>\n            <p class=\'date\'>{{meetingDayNumber()}}</p>\n            <p class=\'month\'>{{meetingMonthName()}}</p>\n          </div>\n\n          <div ng-show="noMeetingDate()">\n            <p class=\'date\'>?</p>\n          </div>\n        </div>\n      </div>\n    </div>\n    <div class="links">\n      <a\n        ng-class="{ active: $state.includes(\'assessment_dashboard\') }"\n        href="#/assessments/{{assessment.id}}/dashboard">Dashboard\n      </a>\n      <span ng-show="noMeetingDate()">\n        <a ng-click="modifySchedule()" href="">Schedule Consensus Meeting</a>\n        <a ng-click="newReminder()" href="">Send Reminder</a>\n      </span>\n\n      <span ng-show="preMeetingDate()">\n        <a ng-click="modifySchedule()" href="">Modify Schedule</a>\n        <a ng-click="createConsensus()" href="" >Create Consensus</a>\n        <a ng-click="newReminder()" href="">Send Reminder</a>\n      </span>\n\n      <span ng-show="postMeetingDate()">\n        <a href="#/assessments/{{assessment.id}}/consensus/{{assessment.consensus.id}}">View Consensus</a>\n      </span>\n\n      <span ng-show="reportPresent()">\n        <a\n          ng-class="{ active: $state.includes(\'assessment_report\') }"\n          href="#/assessments/{{assessment.id}}/report">Report\n        </a>\n      </span>\n    </div>\n  </div>\n\n  <div class="content">\n    <ng-include src="\'client/views/sidebar/why_pd_redesign.html\'"></ng-include>\n  </div>\n\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/sidebar/educator.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/sidebar/educator.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/sidebar/educator.html", '<div class="row sidebar">\n  <div class="col-md-12 register-sidebar">\n    <h3 class="heading">Tell your district about PDredesign</h3>\n    <district-message></district-message>\n  </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/sidebar/facilitator_pdf.html.erb
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/sidebar/facilitator_pdf.html.erb
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/sidebar/facilitator_pdf.html", '<div class="padding facilitation-guide">\n  <p class="title">\n  <i class="fa fa-star"></i> For Facilitators\n  </p>\n\n  <p>\n  For detailed instructions and question guides,\n  <a href="assets/PDRedesign RA Facilitation Guide.pdf" target="_blank">download the Facilitation Guide PDF</a>\n  </p>\n  <ng-include src="\'client/views/sidebar/facilitator_video.html\'" ng-hide="role == member"></ng-include>\n</div>\n')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/sidebar/facilitator_video.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/sidebar/facilitator_video.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/sidebar/facilitator_video.html", '<iframe width="100%" src="//www.youtube.com/embed/v-ueg3RL1VI?rel=0&showinfo=0&autohide=1" frameborder="0" allowfullscreen></iframe>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/sidebar/faqs.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/sidebar/faqs.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/sidebar/faqs.html", '<div class="why-pd">\n  <div class="row">\n    <div class="col-md-12">\n    <p class="title">\n      <i class="fa fa-question-circle"></i> <a ui-sref="faqs">Frequently Asked Questions</a>\n    </p> \n    </div>\n  </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/sidebar/member_video.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/sidebar/member_video.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/sidebar/member_video.html", '<iframe width="100%" src="//www.youtube.com/embed/5IxrUHAHdG4?rel=0&showinfo=0&autohide=1" frameborder="0" allowfullscreen></iframe>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/sidebar/minimal.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/sidebar/minimal.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/sidebar/minimal.html", '<div class="why-pd">\n  <div class="col-md-12">\n    <ng-include src="\'client/views/sidebar/facilitator_pdf.html\'">\n    </ng-include> \n    <ng-include src="\'client/views/sidebar/modal.html\'">\n    </ng-include> \n  </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/sidebar/modal.html.erb
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/sidebar/modal.html.erb
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/sidebar/modal.html", '<div class="what-is-pd">\n  <p class="title">\n    <i class="fa fa-info-circle"></i> Why Readiness Assessment?\n  </p>\n\n  <p>\n    <readiness-assessment-modal title="Learn more about PDredesign"></readiness-assessment-modal>\n    process and how this Readiness Assessment fits into the larger picture.\n  </p>\n\n  <ng-include src="\'client/views/sidebar/facilitator_pdf.html\'" ng-hide="role == member"></ng-include>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/sidebar/profile.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/sidebar/profile.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/sidebar/profile.html", '<div class="sidebar">\n  <div class="user">\n    <div class="col-md-3">\n      <span class="avatar">\n        <img ng-src="{{avatar}}">\n      </span>\n    </div>\n\n    <div class="col-md-6">\n      <div class="information">\n        <p id="name">\n        {{name}}\n      </span>\n      <p id="role">\n      {{role}}\n    </span>\n  </div>\n</div>\n\n<div class="row">\n  <div class="col-md-12">\n    <ul class="links">\n      <li>\n      <a href="#/settings">Edit profile</a>\n      </li>\n    </ul>\n  </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/sidebar/register.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/sidebar/register.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/sidebar/register.html", '<div class="row sidebar">\n  <div class="col-md-12 register-sidebar">\n    <h3 class="heading">Register now</h3>\n    <signup is-network-partner="{{$state.current.is_network_partner}}" is-administrator="{{$state.current.is_administrator}}"></signup>\n  </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/sidebar/response_card.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/sidebar/response_card.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/sidebar/response_card.html", '<div id=\'response-sidebar\'>\n  <div class=\'punchcard\'>\n    <div class="col-md-12">\n      <h1>{{responseTitle()}}</h1>\n      <h3 class="sidebar-title">\n        Saved Answers\n        <span class=\'score-count\'>\n          ({{answeredQuestions()}}/{{questions.length}})\n        </span>\n      </h3>\n    </div>\n    <div class=\'col-md-12 card\'>\n      <span>\n        <a href="" ng-click="scrollTo($index+1)" ng-repeat="question in questions" >\n          <span class="fa-stack fa-md">\n            <i class="fa fa-circle fa-stack-2x scored-{{questionScoreValue(question)}}"></i>\n            <i class="fa fa-text fa-stack-1x fa-inverse">{{$index+1}}</i>\n          </span>\n        </a>\n      </span>\n    </div>\n    <div class=\'col-md-12 flush\'>\n      <button\n        ng-show="canSubmit()"\n        class="submit btn btn-primary btn-block btn-lg"\n        data-toggle="modal"\n        data-target="#assessmentReview"\n        ng-click="submitResponseModal()">\n          <span ng-show=\'isResponseCompleted()\'>Update {{responseTitle()}}</span>\n          <span ng-hide=\'isResponseCompleted()\'>Submit {{responseTitle()}}</span>\n      </button>\n    </div>\n  </div>\n\n  <ng-include src="\'client/views/sidebar/minimal.html\'"></ng-include>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/sidebar/sidebar.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/sidebar/sidebar.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/sidebar/sidebar.html", '<div class="sidebar">\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/sidebar/sidebar_generic.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/sidebar/sidebar_generic.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/sidebar/sidebar_generic.html", '<div class="row" ng-show="visible">\n  <div class="sidebar">\n    <div class="user">\n      <div class="col-md-3">\n        <span class="avatar">\n          <img ng-src="{{avatar}}">\n        </span>\n      </div>\n\n      <div class="col-md-6">\n        <div class="information">\n          <p id="name">\n          {{name}}\n          </p>\n        <p id="role">\n        {{role}}\n         </p>\n    </div>\n  </div>\n\n  <div class="row">\n    <div class="col-md-12 no-padding">\n      <ul class="links">\n        <li>\n        <a href="#/settings">Edit profile</a>\n        </li>\n      </ul>\n    </div>\n  </div>\n\n</div>\n\n<div class="content">\n  <ng-include src="\'client/views/sidebar/faqs.html\'"></ng-include>\n  <ng-include src="\'client/views/sidebar/why_pd_redesign.html\'"></ng-include>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/sidebar/sidebar_login.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/sidebar/sidebar_login.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/sidebar/sidebar_login.html", '<div class="sidebar">\n  <div class="content">\n    <user-login></user-login>\n  </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/sidebar/why_pd_redesign.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/sidebar/why_pd_redesign.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/sidebar/why_pd_redesign.html", '<div class="why-pd">\n  <div class="row">\n    <div class="col-md-12">\n      <h5 class="title"></h5>\n    </div>\n  </div>\n\n  <div class="row">\n    <div class="col-md-12">\n      <ng-include src="\'client/views/sidebar/member_video.html\'" ng-show="role == member"></ng-include>\n      <ng-include src="\'client/views/sidebar/modal.html\'"></ng-include>\n    </div>\n  </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/signup/administrator.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/signup/administrator.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/signup/administrator.html", '<div class="partner-signup">\n  <div class="row">\n    <div class="col-md-12">\n      <h3>PDredesign for Districts</h3>\n      <p>We\'re here to help your district build capacity to reach professional development goals.</p>\n      <p>Access our toolkit to gather data from leaders and teachers about the current state of your professional development system, design a plan to reach local goals, and implement system changes that support teachers in the classroom.</p>\n      <p>Connect with a community of peers and partners to share solutions.</p>\n      <br></br>\n      <h4>What does PDredesign allow you to do?</h4>\n      <ul>\n        <li>Develop goals with colleagues from multiple roles and departments</li>\n        <li>Build consensus around high priority areas for growth</li>\n        <li>Find ideas and supports for change planning, implementation and course adjustment in one place</li>\n        <li>Learn about innovative strategies from districts around the country</li>\n      </ul>\n      <div class=\'hidden-md hidden-lg mobile-signup\'>\n        <h4>Register now</h4>\n        <signup is-administrator="{{$state.current.is_administrator}}"></signup>\n      </div>\n    </div>\n  </div>\n\n  <ng-include src="\'client/views/shared/footers/landing_footer.html\'"></ng-include>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/signup/educator.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/signup/educator.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/signup/educator.html", '<div class="partner-signup">\n  <div class="row">\n    <div class="col-md-12">\n      <h3>PDredesign for Educators</h3>\n      <p>We want you to have a voice in redesigning professional development to better meet the needs of teachers and students.</p>\n\n      <p>Share your ideas for improving the professional learning experience for teachers in your district and across the country.</p>\n\n      <br></br>\n      <h4>What does PDredesign allow you to do?</h4>\n      <ul>\n        <li>Collaborate with leaders in your district to improve your PD experience</li>\n        <li>Have a voice in redefining how PD can meet teacher needs</li>\n      </ul>\n      <div class="hidden-md hidden-lg mobile-signup">\n        <h4 class="heading">Tell your district about PDredesign</h4>\n        <district-message></district-message>\n      </div>\n    </div>\n  </div>\n\n\n  <ng-include src="\'client/views/shared/footers/landing_footer.html\'"></ng-include>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/signup/member.html.erb
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/signup/member.html.erb
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/signup/member.html", '<div class="login signup">\n  <div class="row secondary">\n    <div class="container">\n      <div class="col-md-4">\n        <h1>Register to use</h1>\n        <h2 class="subheading" >PD Readiness Assessment Tool</h2>\n      </div>\n\n      <div class="col-md-4">\n        <br>\n        <signup></signup>\n      </div>\n\n    </div>\n  </div>\n\n  <div class="container">\n    <div class="row">\n      <div class="col-md-9 intro">\n        <img alt="Sign in image" src="/assets/sign-in-image-44d0d6eea3aeae435d7efa6c17dab382.png" />\n      </div>\n    </div>\n  </div>\n\n  <div class="container">\n    <div class="row">\n      <div class="col-md-9 intro">\n        <h3>With this tool you will...</h3>\n        <p>\n          Engage in a candid, cross-functional discussion about innovative\n          Professional Development using a common language anchored to key\n          elements of a high-quality, multi-modal professional development system.\n          You\'ll gain a comprehensive understanding of the current state of multiple\n          aspects of PD in your district. You\'ll have the opportunity to contribute\n          to the PD strategy design at the district level to better support teachers\n          to improve student success in their classrooms.\n        </p>\n      </div>\n    </div>\n  </div>\n\n\n\n</div>\n\n')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/signup/network_partner.html.erb
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/signup/network_partner.html.erb
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/signup/network_partner.html", '<div class="login signup">\n  <div class="row secondary">\n    <div class="container">\n      <div class="col-md-4">\n        <h1>Welcome to the </h1>\n        <h2 class="subheading" >PD Readiness Assessment Tool</h2>\n        <p></p>\n      </div>\n\n      <div class="col-md-8 form">\n        <div class="row">\n          <div class="col-md-6 col-sm-6">\n            <ng-include src="\'client/views/shared/errors.html\'"> </ng-include>\n          </div>\n        </div>\n      </div>\n    </div>\n  </div>\n\n  <div class="container">\n    <div class="row">\n      <div class="col-md-6 col-sm-6">\n        <p>\n          Please tell us a little bit about yourself.  This information helps\n          us better understand the teachers that we are serving.\n        </p>\n\n        <h3>Contact and Login Information</h3>\n        <div class="row name">\n          <div class="flush col-md-6">\n            <input\n            ng-model="user.first_name"\n            class="form-group form-control"\n            placeholder="First Name*"\n            type="text">\n          </div>\n          <div class="flush col-md-6">\n            <input\n            ng-model="user.last_name"\n            class="form-group form-control"\n            placeholder="Last Name*"\n            type="text">\n          </div>\n\n        </div>\n\n\n        <input\n        ng-model="user.email"\n        class="form-group form-control"\n        placeholder="E-Mail*"\n        type="text">\n\n        <input\n        ng-model="user.password"\n        class="form-group form-control"\n        placeholder="Password *"\n        type="password">\n\n\n        <h3>Network Partner Profile</h3>\n\n        <em>What product of services do you provide?</em>\n        <textarea\n        ng-model="user.services"\n        class="form-group form-control"\n        placeholder=""\n        type="text"></textarea>\n\n\n        <em>What is your district?</em>\n        <district-select multiple="true"></district-select>\n\n        <input\n        type="button"\n        ng-click="createUser(user, true)"\n        class="btn btn-devise btn-danger"\n        name="commit"\n        value="Create PD Account">\n\n        <input\n          style="display: none;"\n          ng-model="user.role"\n          value="facilitator">\n\n        </form>\n\n      </div>\n\n    </div>\n  </div>\n</div>\n\n')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/signup/partner.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/signup/partner.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/signup/partner.html", '<div class="partner-signup">\n  <div class="row">\n    <div class="col-md-12">\n      <h3>PDredesign for Partners</h3>\n\n      <p>We\'re bringing together high quality tools and resources from the field to build a comprehensive toolkit for districts redesigning their professional development systems.</p>\n      <p>Partner with us to digitize your tools and expand your reach.</p>\n      <p>Use our toolkit with your district partners to plan and implement system change with teachers at the center.</p>\n      <p>Create communities of practice among the districts in your network to share solutions.</p>\n      <h4>What does PDredesign allow you to do?</h4>\n      <ul>\n        <li>Integrate with tools you already use</li>\n        <li>Connect with a community of educators, districts, and partners</li>\n        <li>Build on collective insights from the community about professional development redesign</li>\n      </ul>\n      <div class=\'hidden-md hidden-lg mobile-signup\'>\n        <h4>Register now</h4>\n        <signup is-network-partner="{{$state.current.is_network_partner}}"></signup>\n      </div>\n    </div>\n  </div>\n\n  <ng-include src="\'client/views/shared/footers/landing_footer.html\'"></ng-include>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/static/privacy.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/static/privacy.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/static/privacy.html", '<div class="row">\n  <div class="col-md-6 col-md-offset-3">\n    <article class="articleWrapper">\n      <h1>Privacy Policy</h1>\n\n      <strong>Gatesfoundation.org Privacy and Information Security Policy ("Privacy Policy" or "Policy")</strong></p>\n      <p>Effective Date: February 23, 2013</p>\n      <p>Welcome. This Policy is designed to help you understand generally how Gatesfoundation.org and other Foundation Web properties (the "Site") collect personally identifying information about you and how the Foundation uses and discloses that personal information. Gatesfoundation.org is a Web site of the Bill &amp; Melinda Gates Foundation (the "Foundation," "we," "us" etc.), a charitable trust existing under the laws of the State of Washington, U.S.A. You may contact us at our Address For Legal Notices below. This Policy applies to information that personally identifies you (other than publicly available information) ("personal information") collected on Gatesfoundation.org or any additional Foundation Web properties or third-party sites managed by the Bill &amp; Melinda Gates Foundation or, where indicated, other information you provide to us.<br>\n      <strong>USE OF OUR SITE OR PROVISION OF ANY PERSONAL INFORMATION CONSTITUTES AGREEMENT TO THIS POLICY. DO NOT USE THE SITE OR PROVIDE INFORMATION (OR ALLOW OTHERS TO DO SO ON YOUR BEHALF) IF YOU (AND YOUR PRINCIPAL IF YOU ARE ACTING AS AGENT) DO NOT AGREE WITH ALL OF THE TERMS OF USE INCLUDING THIS POLICY AND ANY APPLICABLE SUPPLEMENTAL PRIVACY POLICY.</strong></p>\n      <p><strong>Table of Contents</strong></p>\n      <ol>\n        <li>How Does This Policy Relate to Use of the Site?</li>\n        <li>Information We Collect That You Do Not Provide</li>\n        <li>Information We Collect That You Do Provide</li>\n        <li>Information You Provide About Others</li>\n        <li>What We Generally Do with Personal Information Collected</li>\n        <li>Your Ability to Update Personal Information</li>\n        <li>Information Security</li>\n        <li>Your Particular Consents</li>\n        <li>Children</li>\n        <li>Identity Theft</li>\n        <li>Amendments</li>\n        <li>Information About Enforcement of Our Policy</li>\n        <li>Supplemental Privacy Policy—Jobs</li>\n      </ol>\n      <p><strong>1. How Does This Policy Relate to Use of the Site?</strong> <br>\n      This Policy is part of and incorporated into the Gatesfoundation.org Terms of Use ("Terms of Use"), which is the contract between you and the foundation governing use of the Site. Parts of the Terms of Use affect this Policy, so, unless you have already done so, please review them prior to using the Site. Terms used but not defined in this Policy have the definitions in the Terms of Use.</p>\n      <p>This Policy is supplemented by additional policies relevant to particular activities, and each of the supplemental policies is incorporated into this Policy. Here are examples of areas in which you will encounter supplemental privacy policies but this list is not complete: if a supplemental policy is included on the Site with respect to a particular activity, or if one is included on a Third Party site relating to the mission of the Foundation, those supplemental policies will also apply and are also incorporated.</p>\n      <p><strong>2. Information We Collect That You Do Not Provide<br>\n      </strong>Sometimes we collect personal information without you having to enter any information on the Site. For example, we may receive personal information from public sources or from third parties (which we may combine with other information from other sources).</p>\n      <p>In addition, we collect some information automatically from visitors to the Site, for example through the use of "cookies", "web beacons", and other tracking mechanisms. We collect at least the following: your domain name and host for Internet access; the Internet address of the site from which you came; the date and time of your access; your computer\'s IP address and information about its operating system, browser and host; the date and time you access the Site and the pages you visit. If you do not want to receive cookies, you may set your browser to reject them. However, if you turn cookies off, you may not have access to some of the Site\'s services and features. Unless you have adjusted your browser setting so that it will refuse cookies, our system will issues cookies when you access the Site. We also may employ Web beacons from third parties to help us compile aggregated statistics regarding the operations of our site. We prohibit Web beacons on our site from being used by third parties to collect or access your personal information.</p>\n      <p><strong>3. Information We Collect That You Do Provide</strong><br>\n      It is always your choice, or the choice of anyone acting for you, whether to provide personal information. However, some must be provided to participate in certain programs or activities (such as to apply for a job), so the decision not to provide information might limit or eliminate certain functions of the Site or the ability to participate. Other information is up to your good judgment, e.g., do not provide personal information about yourself that could be misused by others in a chat room, bulletin board, blog or similar forum and do not provide personal information about others without their permission. The kinds of personal information we tend to request about you or others include but are not limited to your name, email address, native language, organization name, job title, city, state / province, region, age, locations for internet access and devices used. Additional information about what we collect is available in any supplemental privacy policies for particular activities.</p>\n      <p><strong>4. Information You Provide About Others</strong><br>\n      Do not supply personal information about others unless you are authorized or required to do so by applicable law or contract and you consent to the Terms of Use (including this Policy and supplemental policies) on behalf of yourself and the "data subject" (the person about whom you supply personal information). Before supplying personal information about others (except as otherwise allowed by law or contract), you must make available for the data subject\'s review, and obtain their written consent to, said Terms of Use and policies. By submitting any personal information about others, you represent and warrant that you are authorized to do so and that you did all of the foregoing before submitting the information. If applicable law allows you to supply the information without doing the foregoing, you represent and warrant that you have abided by that law and that it allows us to receive and Disclose the information under this Policy without any further action on our part. You agree to indemnify, defend and hold us harmless against any failure by you to comply with this paragraph.</p>\n      <p>The Foundation works with Third Parties on certain programs, and often those Third Parties own and/or are responsible for that program’s Web site. In those cases, if you provide personal information, you will be giving it to a third party and their privacy policy will apply. You agree that if they provide it to us then we may apply our Policy to what we receive.</p>\n      <p><strong>5. What We Generally Do with Personal Information Collected</strong> <br>\n      In general, we use personal information we collect to pursue our mission and operations and to engage in the activity (and related activities) for which we collect it.&nbsp; Specifically, we may use your personal information to:</p>\n      <ul>\n        <li>to fulfill our obligations to you and to respond to any questions or requests;</li>\n        <li>to contact you about material changes in our site terms or policies;</li>\n        <li>to comply with the law or in good faith belief that such action is necessary to conform with the requirements of law or to comply with legal process served on us; </li>\n        <li>to provide to third parties as a result of any reorganization process; </li>\n        <li>if you sign up for a blog, feed or newsletter, we may put you on our mailing list or even the list of a Third Party who we think has a similar mission.</li>\n        <li>if you apply for a job, we\'ll use the information to find out about you and share it with service providers and others we view as relevant to the employment process.</li>\n      </ul>\n      <p>Further information is available in the supplemental policies for some activities, but you should assume that we will use all information for all lawful purposes. Subject to applicable law, we reserve the right to make all lawful, worldwide uses of personal information, including without limitation, to: collect, use, access (or bar access), process, fulfill, disclose, display, share, respond to legal process or otherwise exercise our rights under applicable law, transfer, store, verify,&nbsp; enforce, delete, and otherwise deal with personal information, and information other than personal information (collectively "Disclose").</p>\n      <p><strong>6. Your Ability to Update Personal Information</strong><br>\n      To the extent our systems require your personal information, in general, they provide the ability for you to update your information.&nbsp; If you have any questions about what personal information about you the Foundation retains, please contact us at <a href="mailto:info@gatesfoundation.org">info@gatesfoundation.org</a>. The foundation endeavors to keep your personal information accurate and up to date.&nbsp;&nbsp; If your personal information has changed, you may submit your new information there as well. Some activities allow some updating, e.g., you may update your "Jobs" profile by using the functionality in that section of the Site.&nbsp;</p>\n      <p>We keep personal information for as long as we think is necessary or advisable and we reserve the right to retain it to the full extent not prohibited by law. We may discard personal information in our discretion, so you should retain your own records, and not rely upon our storage of any personal information or other data.</p>\n      <p><strong>7. Information Security</strong><br>\n      We use reasonable technical and organizational measures to protect the personal information received from our users from unauthorized use or disclosure.</p>\n      <p><strong>8. Your Particular Consents</strong> <br>\n      In addition to consenting to the Terms of Use, including this Policy (and any relevant supplemental policies), the Foundation is interested in letting you know about, and receiving your particular consent to, a few activities relating to personal information that will help us to deal with personal information that is Disclosed in furtherance of our mission, operations and programs. These are described immediately below.</p>\n      <ul>\n        <li><strong>Consent to International Transfer and Disclosure of Personal Information.</strong> We are involved in programs and activities in a variety of countries. You agree that the Foundation and those with whom we share personal information ("Recipients") may Disclose and transfer your personal information worldwide (including outside the European Economic Area, if you are based in the European Economic Area) for any purpose relating to our or their mission, operations, programs, or otherwise that is not allowed or prohibited by this Policy.</li>\n        <li><strong>Consent to Electronic Notice If There is a Security Breach:</strong> If we or a Recipient is required to provide notice of unauthorized access or other invasion of certain security systems, you agree that we (or they) may do so when required (or voluntarily) by posting notice on our Site or sending notice to any email address we have for you, in our (or their) good faith discretion. You agree that notice to you will count as notice to others for whom you are acting, and agree to pass the notice on to them.</li>\n      </ul>\n      <p><strong>9. Children<br>\n      </strong>We do not want to collect information from children. Do not provide any personal information unless you are at least 13 years of age, and please caution your children not to provide any. If a child under 13 has provided personal information, a parent or guardian may so inform us by writing us at Our Address for Legal Notices (see below) and we will use commercially reasonable efforts to delete it from our database, subject to applicable law and this Policy.</p>\n      <p><strong>10. Identity Theft</strong><br>\n      If anyone believes they\'re a victim of identity theft entitled by law to request information from us, write us at Our Address For Legal Notices and we\'ll explain what information we require in order to respond. After receiving that information, we’ll supply (without charge) information we then have that we are legally required to provide (subject to applicable law and reserving all rights and defenses).</p>\n      <p><strong>11. Amendments<br>\n      </strong>We will be changing what we do and how and why we Disclose data periodically—this Policy describes what we currently envision, but that will change as we change. You agree that this Policy amends and replaces any previous privacy polic(ies). We may further amend all or part of this Policy in the same way that we make amendments to our Terms of Use and such amended versions will be posted on this page.</p>\n      <p><strong>12. Information About Enforcement of Our Policy</strong><br>\n      This Policy is part of and supplemented by our Terms of Use, which together with any supplemental privacy policy form a contract. If there is a conflict between the Terms of Use and this Policy, the latest version of this Policy will control. We and you are bound by the Terms of Use, including this Policy. If you think we are in default, you may contact us by writing to Our Address For Legal Notices. There are no third party beneficiaries of this Policy.</p>\n      <p>Our Address for Legal Notices: </p>\n      <p>Bill &amp; Melinda Gates Foundation<br>\n      P.O. Box 23350<br>\n      Seattle, WA 98102<br>\n      Attn: Legal</p>\n      <p><strong>Supplemental Privacy Policy—Jobs</strong></p>\n      <p>Welcome. This Supplemental Privacy Policy—Jobs ("Jobs Policy") supplements the Privacy Policy for Gatesfoundation.org ("Site"). It applies if you use the “Jobs” section of the Site or if you allow or cause someone else to use it for you. If an applicant has a disability and needs assistance using our online systems, completing a profile, an application for employment, or any other aspect of the application process, please notify our Disability Coordinator (at <a href="mailto:disability.accomodations@gatesfoundation.org">disability.accomodations@gatesfoundation.org</a>) and we will make appropriate arrangements. We are an equal opportunity employer.</p>\n      <p>This Jobs Policy is part of our Privacy and Information Security Policy ("Privacy Policy") which is part of our Terms of Use; terms used but not defined in this Jobs Policy are defined in those documents. CREATING A PROFILE, SUBMITTING ANY INFORMATION RELATING TO A POSSIBLE JOB OPPORTUNITY, MAKING ANY APPLICATION(S), OR ALLOWING SOMEONE ELSE (SUCH AS A RECRUITER) TO DO THAT FOR YOU, WILL BE YOUR CONSENT TO OUR TERMS OF USE, INCLUDING OUR PRIVACY POLICY AND THIS SUPPLEMENTAL POLICY.</p>\n      <p>If you are a recruiter, friend or someone other than job applicant ("Applicant"), you represent and warrant to the Foundation that you have shown the Applicant the Terms of Use (including the Privacy Policy and Jobs Policy) and that you have obtained written consent from the Applicant to those terms and policies or that you are otherwise authorized to do so and to submit personal information about Applicant.</p>\n      <p><strong>Information That We Collect in Jobs.</strong> In addition to the personal information that we collect on the Site generally, in the Jobs section you may set up a "profile" which will require you to supply your email address and create a password and secret question to allow you to access your profile later. When you create a profile, submit an application, or authorize us to obtain a "consumer report" (such as a background check), we tend to collect this kind of information: name, address, telephone number, resume\', employment, compensation and educational history, previous grants from us, social security number (or national insurance number for an Applicant based in the UK or other local equivalent) and so on. We keep track of when applications are submitted and persons using your password can see several months of that history by clicking on "My Jobs" if you have a profile.</p>\n      <p>The information submitted about an Applicant online tends to be preliminary information. If we think there might be a good fit for a position, we often will ask the Applicant to complete a more formal application and also to authorize us to obtain a "consumer report" or "consumer investigative report." Under U.S. law, a "consumer report" is a report bearing on credit worthiness, credit standing, credit capacity, character, general reputation, personal characteristics, or mode of living which is expected to be used or collected to serve as a factor in establishing Applicant\'s eligibility for employment. An "investigative consumer report" tends to be the same thing but the information is obtained through personal interviews with neighbors, friends, associates or acquaintances etc. of the Applicant. Both kinds of reports (or other information we collect) can include information from court, administrative and criminal records.</p>\n      <p><strong>Access to Information.</strong> You may update your profile personal information by using that Site functionality in the Jobs section. The foundation retains profiles in accordance with our records retention policy. We reserve the right to delete them and other information stored by or for you, so don’t store, for example, the only copy of a resume with us (and sometimes information will need to be re-entered). Profiles may be deleted at any time upon request by contacting <a href="mailto:info@gatesfoundation.org">info@gatesfoundation.org</a>. Neither changes to or deletion of a profile will alter information already submitted or relied upon. </p>\n      <p><strong>How We Use Information Collected in Jobs.</strong> In addition to the uses of personal information allowed in the Privacy Policy, we make these kinds of uses of personal information submitted for a job. We Disclose it:</p>\n      <ul>\n        <li>to recruiters and other third parties who help us authenticate Applicants or review qualifications and credentials or to contact references;</li>\n        <li>to our affiliates and other Third Parties or persons with whom Applicant might work if Applicant gets the job;</li>\n        <li>when we are looking for someone who might fit a job need of ours or a Third Party, and to contact a previous Applicant to see if he or she might be interested in a job for which the Applicant did not apply. However, we do this in our discretion and without any obligation to do so; </li>\n        <li>to communicate about receiving the application or about the job for which application was made, or to deliver legal or other notices; and</li>\n        <li>to comply with applicable laws such as checking names against anti-terrorism lists or complying with immigration restrictions. </li>\n      </ul>\n      <p>If Applicant gets a job with us, we store the application and other information upon which we relied in Applicant’s personnel file and we may base post-employment decisions on it (including disciplinary actions).</p>\n      <p><strong>Passwords; Redact Your Resume.</strong> The Terms of Use require you to keep secret your password and other access credentials confidential. That\'s especially important if you don\'t want persons obtaining your password to be able to see any resume or a profile or to see other information available (e.g., positions for which applications have been made). Also, take steps to create a safe resume: before uploading a resume, remove any sensitive information such as social security numbers, identification numbers (e.g., driver\'s license), financial information, dates of birth etc. – we don\'t need or want that information in a resume.</p>\n      <p><strong>Security.</strong></p>\n      <ul>\n        <li>We store data associated with your application on a site provided by a service provider. The data is not encrypted but the service provider has agreed to provide a commercially reasonable level of security. Your resume and other data will also circulate through our offices and relevant Third Parties, and as explained in the Terms of Use, we do not guarantee security; also, we do not control Third Parties.&nbsp;</li>\n        <li>You should assume the Site, storage and use generally is not encrypted and you should take steps to promote security (e.g., see the "Passwords; Redact Your Resume" section above).</li>\n        <li>Please be wary of email "phishing" or other scams by persons pretending to be us or a Third Party working with us – if you are contacted and asked for sensitive personal information such as financial information or your social security number etc., you should assume that someone is trying to defraud you. We will already have that information if you provided it to us on one of our documents and so will anyone with whom we share personal information: generally we don’t need to ask for it again. If you\'d like to check with us to help determine if the person communicating with you is really us or someone we shared with, please contact <a href="mailto:info@gatesfoundation.org">info@gatesfoundation.org</a>.</li>\n      </ul>\n\n    </article>\n  </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-986d387040b2/app/assets/javascripts/client/views/static/terms_of_use.html
+// source: /Users/ortuna/.gem/ruby/2.1.2/bundler/gems/pdr-client-197a6344c79e/app/assets/javascripts/client/views/static/terms_of_use.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/static/terms_of_use.html", '<div class="row">\n  <div class="col-md-6 col-md-offset-3">\n    <article class="articleWrapper">\n      <h1>Terms of Use</h1>\n        <p><strong>YOUR USE OF OUR SITE, YOUR REGISTRATION ON OUR SITE or any other Foundation Web properties or third-party sites managed by the Bill &amp; Melinda Gates Foundation, OR YOUR PROVISION TO US OF ANY CONTENT OR PERSONAL INFORMATION CONSTITUTES YOUR AGREEMENT TO THESE TERMS, INCLUDING BUT NOT LIMITED TO THE PRIVACY AND INFORMATION SECURITY POLICY (THE "PRIVACY POLICY") all as amended from time to time. DO NOT USE THE SITE OR PROVIDE CONTENT OR PERSONAL INFORMATION IF YOU DO NOT AGREE TO THE TERMS OR IF YOUR JURISDICTION WILL NOT HONOR THEM. </strong></p>\n        <p><strong>Table of Contents</strong></p>\n        <ol>\n            <li>Restrictions on Use of Content </li>\n            <li>Registration and Creating Profiles etc.; Attribution of Electronic Acts to You </li>\n            <li>User Generated Content &amp; Site Activities <br>\n            A. User Generated Content --Your Responsibility and License to Others <br>\n            B. Site Activities <br>\n            C. No Commissions\n            </li>\n            <li>Privacy and Information Security,<strong> INCLUDING CONSENT TO INTERNATIONAL DATA TRANSFERS &amp; DISCLOSURE </strong></li>\n            <li>Infringement of Our Rights or the Rights of Others; Your Warranty </li>\n            <li>Feedback; Your License to Us </li>\n            <li>Indemnification&nbsp; </li>\n            <li>NO WARRANTIES, CONDITIONS OR OTHER DUTIES </li>\n            <li>NO INCIDENTAL, CONSEQUENTIAL OR CERTAIN OTHER DAMAGES </li>\n            <li>EXCLUSIVE REMEDY; DAMAGE LIMITATION </li>\n            <li>Linked Sites </li>\n            <li>Amendments </li>\n            <li>GOVERNING LAW AND EXCLUSIVE JURISDICTION </li>\n            <li>Legal &amp; Other Notices &amp; Disclosures </li>\n            <li>Termination or Cancellation; No Continuing Rights </li>\n            <li>Entire Agreement; Miscellaneous</li>\n            <li>Electronic Transactions </li>\n            <li>Additional or Required Notices </li>\n        </ol>\n        <p>Gatesfoundation.org is a web site associated with the Bill &amp; Melinda Gates Foundation, a charitable trust existing under the laws of the State of Washington. U.S.A. ("Foundation," "we," "us" etc.). These Terms are an agreement between the Foundation and you and govern your use of the Site and all information on or submitted through it.</p>\n        <p>Most users of this Site are employees or other agents of entities, so references to "you" means both: (1) any entity or individual that is your employer or for whom you act as agent, and (2) the "user" individually unless otherwise stated on the Site or in these Terms. Persons under 18 years of age are not authorized to use the Site.</p>\n        <p><strong>1.</strong> &nbsp;<strong>Restrictions on Use of Content</strong> <br>\n        The Site contains a variety of information, including (without limitation) information, data, text, software, music, sound, photographs, graphics, video, messages or other materials, that you upload, post or otherwise provide in connection with the Site ("<strong>Content</strong>"). Much of the Content on the Site is not available for downloading, such as our copyrighted works that we do not distribute or works of others that we are not permitted to distribute. However, we also may have Content that if so designated may be downloaded by you pursuant to these Terms ("<strong>Available Content</strong>"). YOU MAY REVIEW, DOWNLOAD, COPY, DISTRIBUTE AND USE THE AVAILABLE CONTENT SOLELY FOR THE PURPOSE OF FURTHERING YOUR MISSION IN THE ORDINARY COURSE OF YOUR GOVERNMENTAL OR CHARITABLE PURPOSE AND ATTENDANT OPERATIONS. YOU MAY NOT SELL THE AVAILABLE CONTENT OR OTHERWISE DISTRIBUTE IT FOR A FEE. YOU WILL NOT USE OR DISCLOSE IT OR THE SITE TO ANY THIRD PARTIES EXCEPT AS EXPRESSLY PERMITTED BY THESE TERMS.</p>\n        <p>This Site is controlled by us from our offices within the United States of America. If you choose to access this Site from locations outside the U.S. you do so at your own risk and you are responsible for compliance with any local laws. You may not use or export anything (including information) from the Site in violation of U.S. export laws, regulations or the Terms. </p>\n        <p><strong>2.</strong> &nbsp;<strong>Registration and Creating Profiles etc.; Attribution of Electronic Acts to You</strong><br>\n        For some areas of the Site, you may have to complete a registration process or create a profile for use in applying for something (e.g., a job or a grant). Completion of the process will usually create an account with a user name and password or other identifier which you agree to guard as confidential information—if you are careless with it, others may be able to access the information. You agree to provide accurate, current and complete information at all times. You also agree that you will review, maintain, correct, and update such information in a timely manner to maintain its accuracy and completeness by using the means allowed for the relevant information or, when appropriate, by contacting us. If you provide (or the Foundation has reasonable grounds to believe that you provided) any information that is inaccurate, not current, or incomplete, the Foundation may suspend or terminate your access, application, grant or participation in a program, in addition to exercising all rights and remedies allowed by law.</p>\n        <p>You agree that all uses of the identifier established for you during a registration or similar process will be attributed to and legally bind you and may be relied upon by us and our agents, affiliates, and other third parties with whom we work in order to provide the Site, Content, services or pursue our mission (including but not limited to our and their respective affiliates, officers, employees and agents) (collectively "Third Parties"), as being a use made by you, even if someone else used your identifier.</p>\n        <p><strong>3.&nbsp;User Generated Content and Site Activities</strong></p>\n        <p><strong>A. User Generated Content</strong> -- Your Responsibility and License to Others.&nbsp; Sometimes you may wish to provide Content, such as by uploading a video or information, or submitting comments in a chat room.&nbsp; When you provide Content, you:</p>\n        <ul>\n            <li>represent and warrant that the Content is (a) wholly your original work, or (b) that you have all necessary right, title, interest and licenses to upload it and make it available to the Foundation and other users for download, distribution and use under these Terms without (i) violation (by you, us, Third Parties, users or anyone else) of any applicable license, restriction or law, or (ii) a potentially adverse consequence to us, Third Parties, users or anyone else that you have not conspicuously disclosed in the Content.&nbsp; As used here, "adverse consequence," means a restriction governing the Content which could be triggered if we or others exercise a right under the license you grant below and which imposes an obligation, liability or impairment of rights on us or others that was not conspicuously disclosed by you before exercise of a right. To disclose an adverse action, you agree to conspicuously place on or in the Content notice that adverse actions can result and that you may be contacted at the email address and telephone number in the notice to obtain your full disclosure of applicable licenses and restrictions applicable to the Content; </li>\n            <li>grant the Foundation, its affiliates, Third Parties sub-licensees and successors and assigns, and each Site user who downloads the Content under these Terms, a perpetual, nonexclusive, worldwide, royalty-free, fully paid up, irrevocable license to (i) use, copy, distribute, modify and create derivative works from the Content; (ii) publicly perform or display, license and distribute copies of the Content, modified Content and derivative works of the Content; and (iii) sublicense to third parties the foregoing rights, including the right to sublicense to further third parties, as necessary or advisable (as determine by the Foundation or other licensed person in its sole discretion) to allow the Foundation or other licensed person to fulfill its charitable or governmental mission, to further its related operations, and to create, advertise, operate and manage the Site. </li>\n        </ul>\n        <p>In addition to the rights above, you acknowledge and agree that we may keep Content indefinitely and disclose it for any purpose, including but not limited to:&nbsp; (a) comply with legal process; (b) enforce these Terms; (c) respond to claims that any Content violates the rights of third-parties; or (d) without undertaking a duty to do so, protect the rights, property, or personal safety of the Foundation, its users and the public.</p>\n        <p>You agree not to upload, post or otherwise transmit through the Site any Content or any other materials whatsoever that are or could appear to:</p>\n        <p>(i) be defamatory, obscene, invasive to another person\'s privacy or protected data, or tortious; (ii) be infringing upon anyone\'s intellectual property rights, including any patent, trademark, trade secret, copyright, or right of publicity; (iii) contain any software viruses or any other harmful computer code, files, or programs, including any designed to interrupt, destroy, or limit the functionality of any computer software or hardware or telecommunications equipment; and (iv) in violation of any applicable license, law or contractual or fiduciary duty or provision (including by exercise of the rights you grant to the Foundation above).</p>\n        <p>The Foundation anticipates that substantial Content or even assistance will be made available to you and others through the Site or otherwise.&nbsp; Content may be outdated or contain typographical errors, inaccuracies, omissions, or problematic or defective functionality, and assistance (such as Foundation help with a report you are obligated to make) will need your review. YOU AGREE NOT TO RELY ON CONTENT OR ASSISTANCE AND TO DETERMINE ALL RELEVANT FACTORS ON YOUR OWN, INCLUDING (WITHOUT LIMITATION) ACCURACY, FUNCTIONALITY, QUALITY, RELIABILITY AND OTHER RELEVANT FACTORS. We reserve the right to monitor and exercise all other rights of ours, and also to modify or remove any Content or assistance at any time, but do not undertake any duty to do so.</p>\n        <p>Any opinions, advice, statements, assistance, services, offers, or information expressed or made available by third parties, including users, are those of the respective author(s) or distributor(s) and not of the Foundation.</p>\n        <p><strong>B. Site Activities.</strong> The Site is provided as is and when available, and we may change all Content, functionality and services in our discretion at any time.&nbsp; We may also do this for particular activities even if you have started to participate. For example, we can change a job or grant description at any time even if you have already applied, and not all jobs or grants may be posted at all or on the Site – we use various methods for pursuing our mission and they are not limited to the Site. Also, we or Third Parties might make a mistake and we reserve the right to correct anything, including but not limited to Content or assistance on the Site. For example, we may correct, change, withdraw or do anything else with a job or grant description even if you have already taken action based on it.&nbsp;</p>\n        <p><strong>C. No Commissions.</strong> We do not want to deal with persons desiring to be paid for something unless we intentionally enter into an express contract to do so. This means, for example, that we do not pay commissions or other sums to anyone who helps arrange a job, grant or anything else unless we have expressly contracted to do so in writing prior to any such arrangement. For example, if you submit an application for someone else without entering into such a contract with us, we will not pay you (or anyone else) a commission or other amount even if we accept the application, hire the person or make the grant etc. We may also use, delete or ignore any information you provided without paying you anything and without undertaking any duties to you or anyone else. If you do not want that result then do not submit any information without entering into a written contract with us first.</p>\n        <p><strong>4.</strong>&nbsp; <strong>Privacy and Information Security Policy, INCLUDING CONSENT TO INTERNATIONAL DATA TRANSFERS &amp; DISCLOSURE (“Privacy Policy”).</strong>&nbsp; Our Privacy Policy is part of these Terms and is incorporated herein. DO NOT PROVIDE, OR ALLOW OTHERS TO PROVIDE, PERSONAL INFORMATION ABOUT ANYONE UNLESS YOU, ON YOUR OWN BEHALF AND ON BEHALF OF ANYONE WHOSE INFORMATION YOU PROVIDE: (A) HAVE REVIEWED AND AGREE WITH THE PRIVACY POLICY, AND (B) ARE AUTHORIZED TO, AND DO, CONSENT TO HAVE ALL DATA USED AND TRANSFERRED INTERNATIONALLY.</p>\n        <p><strong>5.&nbsp; Infringement of Our Rights or the Rights of Others; Your Warranty.</strong>&nbsp; Our Site, including the Content, is protected by intellectual property laws and you agree to respect them. See the "Additional or Required Notices" section of these Terms for more information about our trademarks and copyrights. All rights not expressly granted to you are reserved. As for intellectual property rights of others, anyone who believes that their work has been infringed, may provide a notice to our copyright agent—see the Additional or Required Notices section of thee Terms. It is our policy to terminate in appropriate circumstances any (if any) account or right of access for repeated infringement, and we also reserve the right to terminate for even one infringement.</p>\n        <p><strong>6.&nbsp; Feedback; Your License to Us.</strong>&nbsp; We hope that you will provide your Feedback (as defined below) so that we may better support, improve and pursue our charitable mission. However, you agree that you will not supply Feedback that infringes or violates the rights of others, and you hereby grant a License to the Foundation (as defined below) in your Feedback. You agree that we have no obligation to pay you or anyone else for Feedback or for the License to the Foundation. "Feedback" means all remarks, data, suggestions, methods, surveys, reports, processes and ideas (including patentable ideas) and other Content that you provide by using the Site or provide about it, Content or any aspect of our mission or operations, whether provided to us or persons working with us or the Feedback, and whether provided through the Site or media such as a chat room, survey, report, grant, software tool, bulletin board or otherwise.</p>\n        <p>As used above, "License to the Foundation" means a non-exclusive, perpetual, irrevocable, royalty-free, transferable, sub-licensable, worldwide license to the Foundation to exercise all now or later existing intellectual property rights or other rights of yours or others in the Feedback, for purposes of supporting the Foundation\'s charitable purposes (as determined by us in our discretion from time to time) in full or in part and in all possible media (now known or later developed). The foregoing rights include (but are not limited to), the right to display, perform, read (on air or otherwise), and publish in public or private sites, newspapers or other media, brochures, reports and so on, all or part of the Feedback and any other information that you provide through or relating to our Site or the Content. The License to the Foundation is in addition to any (if any) that you may be required to provide under any separate agreement between us and you (including grants or other agreements).</p>\n        <p><strong>7.&nbsp; Indemnification.</strong>&nbsp; You agree to indemnify, defend and hold harmless the Foundation and Third Parties, from and against any and all losses, damage, liability and costs of every nature incurred by any of them in connection with any claim, damage or loss related to or arising out of: the Content, use of the Site or related sites, any assistance or services provided by us or Third Parties,&nbsp; any alleged unauthorized use of the Site, or any breach or alleged breach by you of these Terms. You agree to cooperate fully in the defense of any of the foregoing. We reserve the right, at our own expense, to control exclusively the defense of any matter otherwise subject to indemnification by you and you will not settle any matter without our consent in a non-electronic record.&nbsp; Your obligation to indemnify, defend and hold harmless shall be limited to the extent that you are afforded sovereign immunity under applicable federal, state or local laws.&nbsp; In such cases where your obligation to indemnify may be limited due to the requirements of federal, state or local laws, you shall be responsible for the ordinary negligent acts and omissions of your agents and employees causing harm to persons not a party to this agreement.</p>\n        <p><strong>8.&nbsp; NO WARRANTIES, CONDITIONS OR OTHER DUTIES.</strong>&nbsp; THE SITE&nbsp; AND ALL CONTENT (regardless of who generates it), SITE FUNCTIONALITY, ASSISTANCE AND SERVICES PROVIDED BY SITE, THE FOUNDATION OR THIRD PARTIES&nbsp; (collectively, "COMPLETE SITE") ARE SUBJECT TO CHANGE AND PROVIDED BY US OR THIRD PARTIES "AS IS" WITHOUT ANY WARRANTY OR CONDITION, AND WITHOUT THE UNDERTAKING OF ANY DUTY, OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, ANY (IF ANY) WARRANTIES OR CONDITIONS OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE, AND ANY DUTY (IF ANY) OF WORKMANLIKE EFFORT OR LACK OF NEGLIGENCE. THE COMPLETE SITE IS PROVIDED: (1) WITH ALL FAULTS AND THE ENTIRE RISK AS TO SATISFACTORY QUALITY, PERFORMANCE, ACCURACY AND EFFORT IS WITH YOU; AND (2) WITHOUT ANY ASSURANCE, OR WARRANTY, CONDITION OR DUTY OF OR REGARDING: FUNCTIONALITY; PRIVACY; SECURITY; ACCURACY; AVAILABILITY; LACK OF: NEGLIGENCE, INTERRUPTION, VIRUSES OR OF OTHER HARMFUL CODE, COMPONENTS OR TRANSMISSIONS; OR THE NATURE OR CONSEQUENCES OF AVAILABLE CONTENT SUCH AS (WITHOUT LIMITATION) WHETHER SOFTWARE OR OTHER CONTENT IS SUBJECT TO ANY PARTICULAR LICENSE, OR WHETHER IT IS SUBJECT TO ANY RESTRICTIONS OR CONSEQUENCES THAT MIGHT BE TRIGGERED BY ANY EXERCISE OF A RIGHT GRANTED UNDER THESE TERMS. ALSO, THERE IS NO WARRANTY BY US OR THIRD PARTIES OF TITLE OR AGAINST INFRINGEMENT OR INTERFERENCE WITH ENJOYMENT OF ANY ASPECT OF THE COMPLETE SITE. YOU AGREE THAT YOU WILL OBTAIN (INCLUDING THROUGH DOWNLOAD) ANY CONTENT ENTIRELY AT YOUR OWN RISK, AND YOU WILL BE SOLELY RESPONSIBLE FOR ANY RESULTING INFRINGEMENT, BREACH OF CONTRACT, CONSEQUENCE OR DAMAGE, INCLUDING (WITHOUT LIMITATION) TO YOUR COMPUTER SYSTEM OR LOSS OF DATA.</p>\n        <p><strong>9.&nbsp; NO INCIDENTAL, CONSEQUENTIAL OR CERTAIN OTHER DAMAGES.</strong>&nbsp; TO THE FULL EXTENT ALLOWED BY LAW, YOU AGREE THAT NEITHER THE FOUNDATION NOR ANY OF THE THIRD PARTIES, WILL BE LIABLE TO YOU OR ANYONE ELSE FOR ANY SPECIAL, CONSEQUENTIAL, INCIDENTAL OR PUNITIVE DAMAGES, DAMAGES FOR LOST PROFITS, FOR LOSS OF PRIVACY OR SECURITY, FOR LOSS OF REPUTATION, FOR FAILURE TO MEET ANY DUTY (INCLUDING WITHOUT LIMITATION ANY DUTY OF GOOD FAITH OR LACK OF NEGLIGENCE OR OF WORKMANLIKE EFFORT), OR FOR ANY OTHER SIMILAR DAMAGES WHATSOEVER THAT ARISE OUT OF OR ARE RELATED TO ANY ASPECT OF THE COMPLETE SITE OR TO ANY BREACH OF THESE TERMS (INCLUDING WITHOUT LIMITATION, THE PRIVACY POLICY), EVEN IF WE OR A THIRD PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES AND EVEN IN THE EVENT OF FAULT, TORT (INCLUDING NEGLIGENCE) OR STRICT OR PRODUCTS LIABILITY OR MISREPRESENTATION.</p>\n        <p><strong>10.&nbsp; EXCLUSIVE REMEDY; DAMAGE LIMITATION.</strong>&nbsp; YOU AGREE THAT YOUR EXCLUSIVE REMEDY FOR ANY BREACH OF THESE TERMS (INCLUDING WITHOUT LIMITATION, THE PRIVACY POLICY) AND FOR ANY AGGREGATE DAMAGES DUE YOU (OR OTHERS RELATED TO YOU) BY THE FOUNDATION OR ANY OF THE THIRD PARTIES FOR ANY REASON RELATING TO ANY PART OF THE COMPLETE SITE, WILL BE AT OUR OPTION: (A) SUBSTITUTION, CORRECTION OR REPLACEMENT OF ALL OR PART OF THE CONTENT OR SERVICE CAUSING YOUR DAMAGE (IF ANY); OR (B) THE AMOUNT OF YOUR DAMAGES THAT ARE NOT EXCLUDED IN THE PRECEDING SECTION AND WHICH YOU ACTUALLY INCUR IN REASONABLE RELIANCE, WHICH AMOUNT WILL BE THE LESSER OF THE AMOUNT YOU ACTUALLY PAID US FOR THE ITEM CAUSING THE DAMAGE (IF ANY) OR THE AMOUNT OF SAID DAMAGES SO INCURRED. The damage exclusions and limitations in these Terms are independent and will apply even if any remedy fails of its essential purpose.</p>\n        <p><strong>11.&nbsp; Linked Sites.</strong>&nbsp; Our Links to Other Sites: Our Site may contain links to Web sites of third parties. We provide these links as a convenience, but do not endorse the linked site or anything on it. While their information, products, services and information may be helpful to you, they are independent entities and we do not control or endorse them. You agree that any visits to linked sites are at your own risk and governed by their privacy policies (if any).</p>\n        <p><em>Your Links to Our Site</em> You are not permitted to link or shortcut to our Site from your Web site, blog or similar application, without obtaining prior written permission from us. </p>\n        <p><strong>12.&nbsp; Amendments.</strong>&nbsp; You agree that from time to time we may alter (including adding or eliminating all or parts of provisions) these Terms, including but not limited to the Privacy Policy ("Amendments"). Amended versions of these Terms will take effect on the date specified for the amended version ("Effective Date") and will apply to all information that was collected before or after the Effective Date, including information in databases. You have no continuing right to use the Site – it is like a store and each time you visit you will be subject to the version of the Terms in effect on your visit. Like terms on the door to a store, those terms will change from time to time and the changes will be effective when they appear in a replacement version of these Terms as posted by us on the Site. No other Amendments will be valid unless they are in a paper writing signed by us and by you.</p>\n        <p>Each time you return to the Site, you are responsible for checking the effective date of the then posted version of these Terms—if it is later than the date of the version last reviewed, the Terms have been changed and the new version should be reviewed before using the Site. USE OF THE SITE AFTER THE EFFECTIVE DATE WILL CONSTITUTE YOUR CONSENT TO THE AMENDMENTS, SO IF YOU DO NOT WANT TO BE BOUND BY AN AMENDED VERSION, DO NOT USE THE SITE AND CEASE ALL USE OF THE CONTENT OR SERVICES.</p>\n        <p><strong>13.&nbsp; GOVERNING LAW AND EXCLUSIVE JURISDICTION.</strong>&nbsp; These Terms and your use of the Site are governed by the laws of the State of Washington, U.S.A., without regard to its choice of law provisions, except where you are required by published governmental law, ordinance, regulation, directive, order, or the like (collectively, "Mandate") to contract for application of the law of your local jurisdiction. You hereby consent to exclusive jurisdiction of a state or federal court of general jurisdiction sitting in King County, Washington, U.S.A. except to the extent you are prohibited from doing so by a Mandate. </p>\n        <p><strong>14.&nbsp; Legal and Other Notices or Disclosures.</strong>&nbsp; <strong>Notice to You:</strong> You agree that we may give all notices we are required to give you by posting notice on the Site or, if we have your email address, by sending notice by email at our discretion, including (without limitation), disclosures that we are required to give you, legal notices, notice of subpoenas or other legal process (if any), and all other communications. When we communicate by email, we may use any email address you provide when communicating with us or that we otherwise have in our records, so only supply to us an email address at which you are willing to receive all communications, including “legal” or potentially sensitive communications such as information about a job or grant application. You agree to check for notices posted on the Site.</p>\n        <p><strong>Notice to Us (Our Legal Notices Address):</strong> We receive many emails and not all employees are trained to deal with every kind of communication. Accordingly, you agree to send us notice by mailing it to the following ("Our Legal Notice Address"):</p>\n        <p>Bill &amp; Melinda Gates Foundation<br>\n        P.O. Box 23350<br>\n        Seattle, WA 98102<br>\n        Attn: Legal</p>\n        <p><strong>15.&nbsp; Termination or Cancellation; No Continuing Rights.</strong>&nbsp; You have no continuing right to use the Site and we may deny or suspend access, or terminate or cancel this agreement with or without cause and at any time and without prior notice. This is so even if you elect to store documents on this site such as your resume for use in a job application or a draft of a grant application, so make your own copies of anything to which you want to ensure access. We may give notice of termination or cancellation in the same way that we may provide other notices.</p>\n        <p>Termination or cancellation will not eliminate the surviving provisions of these Terms (see "Entire Agreement; Miscellaneous") and you will still be liable for obligations incurred before the agreement or access ended.</p>\n        <p><strong>16.&nbsp; Entire Agreement; Miscellaneous.</strong>&nbsp; These Terms, including the Privacy Policy (including any of the supplemental privacy policies), Amendments and any:&nbsp; (a) notices, terms and items incorporated into any of them; (b) additional terms and conditions contained on the Site for particular activities or Content; and (c) our disclosures and your consents provided on or in connection with the Site or any Content, service or other activity; constitute the entire agreement between you and the Foundation regarding the Complete Site or the subject matter of the foregoing (collectively, "Entire Agreement").&nbsp; If any provision of the Entire Agreement is found by a court of competent jurisdiction to be invalid, its remaining provisions will remain in full force and effect, provided that the allocation of risks described herein is given effect to the fullest extent possible.&nbsp; The foregoing does not impair the enforceability of additional agreements you enter into such as an agreement for a grant.</p>\n        <p>Our failure to act with respect to a breach by you does not waive our right to act with respect to subsequent or similar breaches. Time is of the essence of the Entire Agreement and there are no third party beneficiaries of it. The terms of this Section 16, Sections 3 and 4, 6 through 10, and 13 through 16, and our rights under the Privacy Policy will survive termination or cancellation of this Agreement. You may print or make an electronic copy of the Entire Agreement for your official records; to the extent required by law, we hereby instruct you to do so. You may not assign these Terms or any of your rights or obligations under these Terms without our prior written consent.</p>\n        <p><strong>17.&nbsp; Electronic Transactions.</strong>&nbsp; We and each of the Third Parties may deal with you electronically now and in the future in their respective discretion during the entire course of activities pursued with you (e.g., applying for, obtaining, implementing, terminating and enforcing a grant or anything else), including but not limited to having you electronically sign documents and receive electronic notices.&nbsp; We and each of the Third Parties also reserves the right to deal non-electronically and to require you to do so.</p>\n        <p><strong>18.&nbsp; Additional or Required Notices.</strong>&nbsp; Various laws require or allow us to give users certain notices and each of them is incorporated into these Terms. Users may review the notices by clicking on their link:</p>\n        <ol>\n            <li>Notice: No Harvesting or Dictionary Attacks Allowed (this provides information about conduct that is unlawful under the U.S. CAN SPAM Act of 2003). </li>\n            <li>Notice Re Trademarks (this provides notice regarding who owns the trademarks used on our Site and cautions against infringement). </li>\n            <li>Notice Re Copyright Ownership (this provides notice regarding who owns the copyrights in the Site and its contents and cautions against infringement). </li>\n            <li>Notice of Copyright Agent (this provides contact and other information regarding the Site\'s copyright agent who may be notified of claimed infringement). </li>\n            <li>Notice of Availability of Filtering Software (this provides a notice under the U.S. Communications Decency Act). </li>\n        </ol>\n        <p><strong>Notice: No Harvesting or Dictionary Attacks Allowed.</strong>&nbsp; The Foundation will not give, sell, or otherwise transfer addresses maintained by it to any other party for the purposes of initiating, or enabling others to initiate, electronic mail messages except as authorized by law or appropriate Foundation personnel or policies. Except for parties authorized to have such addresses, persons may violate federal law if they: (1) initiate the transmission to our computers or devices of a commercial electronic mail message (as defined in the U.S. "CAN-SPAM Act of 2003") that does not meet the message transmission requirements of that act; or (2) assist in the origination of such messages through the provision or selection of addresses to which the messages will be transmitted.</p>\n        <p><strong>Notice Regarding Trademarks.</strong>&nbsp; The trademarks used in the Site are owned by (1) the Foundation or (2) their respective trademark owners, and are either trademarks or registered trademarks of the Foundation. The names of actual companies and products mentioned in the Site may be the trademarks of their respective owners. You may not use any of the above or other trademarks displayed on this Site or in any Content. All rights are reserved.</p>\n        <p><strong>Notice Regarding Copyright ownership:</strong> Copyright 2006 The Bill & Melinda Gates Foundation and/or its affiliates and suppliers. All rights reserved.</p>\n        <p>All Services provided on the Site and any services or Content provided on any related site owned, operated, licensed or controlled by the Foundation or any of its units or affiliated entities (collectively, "Group"), are subject to intellectual property rights, contractual and other protections. The intellectual property rights are owned by the Foundation or others in the Group or their licensors (which may include you). Except for Available Content or Content that you own, no Content may be copied, distributed, republished, uploaded, posted or transmitted in any way except pursuant to the express provisions of the Terms or with the prior non-electronic consent of the Foundation or its designee. Modification or use of the Available Content for any other purpose may violate intellectual property rights. No title to copies or to intellectual property rights are transferred to users—all title and rights remain with the Foundation or others in the Group.</p>\n        <p><strong>Notice Regarding Copyright Agent.</strong>&nbsp; The Foundation respects the intellectual property rights of others and requests that Site users do the same. Anyone who believes that their work has been infringed under copyright law may provide a notice to the designated Copyright Agent for the Site containing the following:</p>\n        <ul>\n            <li>An electronic or physical signature of a person authorized to act on behalf of the owner of the copyright interest; </li>\n            <li>Identification of the copyrighted work claimed to have been infringed; </li>\n            <li>Identification of the material that is claimed to be infringing and information reasonably sufficient to permit the Foundation to locate the material; </li>\n            <li>The address, telephone number, and, if available, an e-mail address at which the complaining party may be contacted; </li>\n            <li>A representation that the complaining party has a good faith belief that use of the material in the manner complained of is not authorized by the copyright owner, its agent, or the law; </li>\n            <li>A representation that the information in the notice is accurate, and under penalty of perjury, that the complaining party is authorized to act on behalf of the owner of an exclusive right that is allegedly infringed. </li>\n        </ul>\n        <p>Copyright infringement claims and notices should be sent in the following manner to: </p>\n        <p>Bill &amp; Melinda Gates Foundation&nbsp; <br>\n        Attn: Connie Collingsworth, Legal<br>\n        P.O. Box 23350<br>\n        Seattle, WA 98102</p>\n        <p><strong>Notice of Availability of Filtering Software.</strong>&nbsp; We do not believe that the Site contains materials that would typically be the subject of filtering software and minors are not authorized to visit our Site. Nevertheless, all users are hereby informed that parental control protections (such as computer hardware, software, or filtering services) are commercially available that may assist in limiting access to material that is harmful to minors. A report detailing some of those protections can be found at <strong>Children\'s Internet Protection Act: Report on the Effectiveness of Internet Protection Measures and Safety Policies.</strong></p>\n\n        </article>\n    </div>\n  </div>')
@@ -67196,12 +67409,20 @@ PDRClient.controller('AssessmentsCtrl', ['$scope', '$location', 'SessionService'
         return 'fa-spinner';
       };
 
+      $scope.draftStatusIcon = function(assessment) {
+        if (assessment.owner)
+          return "fa-eye-slash";
+        if (assessment.has_access)
+          return "fa-minus-circle";
+        return "fa-eye";
+      };
+
       $scope.orderLinks = function(items) {
         var filteredArray = [];
         angular.forEach(items, function(item) {
           var title = item.title.toLowerCase();
           switch(true) {
-            case title == "dashboard":
+            case title == "view dashboard":
               item.order = 0;
               break;
             case title == "consensus":
@@ -67234,7 +67455,6 @@ PDRClient.controller('AssessmentsCtrl', ['$scope', '$location', 'SessionService'
         });
         return filteredArray;
       };
-
 
       $scope.districtOptions = function(assessments) {
 
@@ -67279,14 +67499,6 @@ PDRClient.controller('AssessmentsCtrl', ['$scope', '$location', 'SessionService'
         return "TBD";
       };
 
-      $scope.backgroundColor = function(assessment) {
-        if(assessment.status == "draft")
-          return '#b1bbbf';
-        else if(assessment.status == "assessment")
-          return $scope.percentBackgroundColor(assessment.percent_completed);
-        return "#4e5e66";
-      };
-
       $scope.gotoLocation = function(location) {
         if(location)
           $location.url(location);
@@ -67317,20 +67529,6 @@ PDRClient.controller('AssessmentsCtrl', ['$scope', '$location', 'SessionService'
         return false;
       };
 
-      $scope.percentBackgroundColor = function(percent) {
-        switch(true) {
-          case percent < 20:
-            return '#f7bcb9';
-          case percent  < 40:
-            return '#f29b95';
-          case percent < 60:
-            return '#ee7972';
-          case percent < 80:
-            return '#046262';
-          default:
-            return '#884541';
-        }
-      };
     }
 ]);
 PDRClient.controller('ConsensusCreateCtrl', [
@@ -67765,6 +67963,25 @@ PDRClient.controller('SidebarResponseCardCtrl', [
 
   }
 ]);
+PDRClient.directive('assessmentBackgroundColor', function() {
+  return {
+    restrict: 'C',
+    link: function(scope, element, attrs, controller) {
+
+      var backgroundColor = function(assessment) {
+
+        if(assessment.status == "draft")
+          return  element.css('background-color', '#97A0A5');
+        else if(assessment.status == "assessment")
+          return element.css('background-color', '#5BC1B4');
+
+        return element.css('background-color', '#0D4865');
+      };
+
+      backgroundColor(scope.assessment);
+    }
+  };
+});
 PDRClient.directive('assessmentChart', [
     function() {
       return {
@@ -67907,7 +68124,7 @@ PDRClient.directive('assessmentLinks', [
             $scope.linkIcon = function(type){
               icons = {
                   "response": "check",
-                  "request_access": "eye",
+                  "request_access": "unlock-alt",
                   "pending": "spinner",
                   "dashboard": "dashboard",
                   "consensus": "group",
@@ -67994,7 +68211,7 @@ PDRClient.directive('assessmentLinks', [
             };
 
             $scope.assessmentLink = function(type, active) {
-              if(typeof type === 'undefined' || active == "false" || !active)
+              if(typeof type === 'undefined')
                 return false;
 
               routes = {
@@ -68013,13 +68230,6 @@ PDRClient.directive('assessmentLinks', [
               };
 
               return routes[type];
-            };
-
-            $scope.linkActive = function(link){
-              if(link == "true")
-                return "active";
-              else
-                return "disabled";
             };
 
         }],
@@ -68096,6 +68306,15 @@ PDRClient.directive('assessmentPriority', [
       };
     }
 ]);
+PDRClient.directive('disableAssessment', function() {
+  return {
+    restrict: 'C',
+    link: function(scope, element, attrs) {
+      if (!scope.assessment.has_access)
+        element.css('opacity', '0.5');
+    }
+  };
+});
 PDRClient.directive('districtFilter', [
   function() {
     return {
@@ -68363,6 +68582,7 @@ PDRClient.directive('avatar', [
     },
     templateUrl: 'client/views/directives/avatar.html',
     link: function(scope, elm, attrs) {
+      scope.ngWidth = {'width': scope.width};
       scope.title  = "<p class='name'>" + scope.name + "</p><p class='role'>" + scope.role + "</p>";
       scope.elm    = elm;
     },
@@ -70011,6 +70231,7 @@ PDRClient.factory('UrlService', [function() {
 
   return service;
 }]);
+
 
 
 
