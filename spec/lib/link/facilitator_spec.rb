@@ -17,9 +17,9 @@ describe Link::Facilitator do
   it 'returns a dashboard link when an assessment is not a draft' do
     allow(assessment).to receive(:status).and_return(:assessment)
 
-    expect(links[:dashboard][:title]).to  eq("Dashboard")
+    expect(links[:dashboard][:title]).to  eq("View Dashboard")
     expect(links[:dashboard][:active]).to eq(true)
-    expect(links[:dashboard][:type]).to   eq(:dashboard)   
+    expect(links[:dashboard][:type]).to   eq(:dashboard)
 
 
     allow(assessment).to receive(:status).and_return(:draft)
@@ -33,7 +33,7 @@ describe Link::Facilitator do
 
   describe 'dashboard' do
     it 'returns a dashboard link' do
-      expect(links[:dashboard][:title]).to  eq("Dashboard")
+      expect(links[:dashboard][:title]).to  eq("View Dashboard")
       expect(links[:dashboard][:active]).to eq(true)
       expect(links[:dashboard][:type]).to   eq(:dashboard)
     end
@@ -43,7 +43,7 @@ describe Link::Facilitator do
     it 'returns a new consensus link when there isnt one' do
       allow(assessment).to receive(:status).and_return(:assessment)
 
-      expect(links[:consensus][:title]).to  eq("Consensus")
+      expect(links[:consensus][:title]).to  eq("Create Consensus")
       expect(links[:consensus][:active]).to eq(true)
       expect(links[:consensus][:type]).to   eq(:new_consensus)
     end
@@ -53,23 +53,77 @@ describe Link::Facilitator do
 
       expect(links[:consensus][:type]).to   eq(:consensus)
     end
+
+    it 'returns a no consensus link when is a draft' do
+      allow(assessment).to receive(:status).and_return(:draft)
+
+      expect(links[:consensus]).to  eq(nil)
+    end
   end
 
   describe 'report' do
-    it 'returns a disabled report link when not consensus' do
+    it 'returns no report link when is assessment' do
       allow(assessment).to receive(:status).and_return(:assessment)
 
-      expect(links[:report][:title]).to  eq("Report")
-      expect(links[:report][:active]).to eq(false)
-      expect(links[:report][:type]).to   eq(:report)
+      expect(links[:report]).to  eq(nil)
     end
 
-    it 'returns an active report link when consensus' do
+    it 'returns no report link when is draft' do
+      allow(assessment).to receive(:status).and_return(:draft)
+
+      expect(links[:report]).to  eq(nil)
+    end
+
+    it 'returns an active report link when consensus is fully complete' do
       allow(assessment).to receive(:status).and_return(:consensus)
+      allow(assessment).to receive(:fully_complete?).and_return(true)
 
       expect(links[:report][:active]).to eq(true)
     end
   end
-  
-end
 
+  describe 'execute' do
+    it 'only returns finish when is draft' do
+      allow(assessment).to receive(:status).and_return(:draft)
+      expect(links.length).to eq(1)
+      expect(links[:finish][:title]).to eq('Finish & Assign')
+    end
+
+    it 'returns dashboard, report, and consensus finish when is fully complete' do
+      allow(assessment).to receive(:status).and_return(:consensus)
+      allow(assessment).to receive(:fully_complete?).and_return(true)
+
+      expect(links.length).to eq(3)
+      expect(links[:dashboard][:title]).to eq('View Dashboard')
+      expect(links[:report][:title]).to eq('View Report')
+      expect(links[:consensus][:title]).to eq('Consensus')
+    end
+
+    it 'returns dashboard and consensus finish when consensus but not  fully complete' do
+      allow(assessment).to receive(:status).and_return(:consensus)
+      allow(assessment).to receive(:fully_complete?).and_return(false)
+
+      expect(links.length).to eq(2)
+      expect(links[:dashboard][:title]).to eq('View Dashboard')
+      expect(links[:consensus][:title]).to eq('Consensus')
+    end
+
+    it 'returns response, consensus, and dashboard when assessment and is participant' do
+      allow(assessment).to receive(:participant?).and_return(:true)
+      allow(assessment).to receive(:status).and_return(:assessment)
+
+      expect(links.length).to eq(3)
+      expect(links[:dashboard][:title]).to eq('View Dashboard')
+      expect(links[:response][:title]).to eq('Complete Survey')
+      expect(links[:consensus][:title]).to eq('Create Consensus')
+    end
+
+    it 'returns consensus and dashboard when assessment and is not participant' do
+      allow(assessment).to receive(:status).and_return(:assessment)
+      expect(links.length).to eq(2)
+      expect(links[:dashboard][:title]).to eq('View Dashboard')
+      expect(links[:consensus][:title]).to eq('Create Consensus')
+    end
+  end
+
+end

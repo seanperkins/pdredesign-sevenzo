@@ -9,12 +9,19 @@ module Link
     end
 
     def execute
-      { report: report, action: action }
+      return nil if draft?
+
+      if fully_complete?
+        { report: report, action: action }
+      else
+        { action: action }
+      end
     end
 
     private
     def action
       return response unless consensus?
+      return edit_response unless fully_complete?
       consensus
     end
 
@@ -22,8 +29,12 @@ module Link
       {title: 'Complete Survey', active: true, type: :response}
     end
 
+    def edit_response
+      {title: 'Edit Survey', active: true, type: :response}
+    end
+
     def report
-      {title: 'Report', active: fully_complete?, type: :report}
+      {title: 'View Report', active: fully_complete?, type: :report}
     end
 
     def consensus
@@ -32,6 +43,10 @@ module Link
 
     def consensus?
       assessment.status == :consensus
+    end
+
+    def draft?
+      assessment.status == :draft
     end
 
   end
