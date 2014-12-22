@@ -10,17 +10,25 @@ describe Link::Participant do
     subject.new(assessment).execute
   end
 
-  describe 'report' do
-    it 'returns a disabled report link when not consensus' do
-      allow(assessment).to receive(:fully_complete?).and_return(false)
+  describe 'draft'  do
+    it "returns nil if assesment is a draft" do
+      allow(assessment).to receive(:status).and_return(:draft)
 
-      expect(links[:report][:title]).to  eq("Report")
-      expect(links[:report][:active]).to eq(false)
-      expect(links[:report][:type]).to   eq(:report)
+      expect(links).to  eq(nil)
+    end
+  end
+
+  describe 'report' do
+    it 'does not return a report link when not fully_complete and consensus' do
+      allow(assessment).to receive(:fully_complete?).and_return(false)
+      allow(assessment).to receive(:status).and_return(:consensus)
+
+      expect(links[:report]).to  eq(nil)
     end
 
-    it 'returns an active report link when consensus' do
+    it 'returns report link when fully_complete and consensus' do
       allow(assessment).to receive(:fully_complete?).and_return(true)
+      allow(assessment).to receive(:status).and_return(:consensus)
 
       expect(links[:report][:active]).to eq(true)
     end
@@ -35,13 +43,11 @@ describe Link::Participant do
       expect(links[:action][:type]).to   eq(:response)
     end
 
-    it 'returns a disabled consensus link when consensus' do
+    it 'returns a edit_response link when not fully_complete' do
       allow(assessment).to receive(:status).and_return(:consensus)
       allow(assessment).to receive(:fully_complete?).and_return(false)
 
-      expect(links[:action][:title]).to  eq('Consensus')
-      expect(links[:action][:active]).to eq(false)
-      expect(links[:action][:type]).to   eq(:consensus)
+      expect(links[:action][:title]).to  eq('Edit Survey')
     end
 
     it 'returns a consensus link when completed consensus' do

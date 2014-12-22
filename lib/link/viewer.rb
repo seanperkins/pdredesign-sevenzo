@@ -10,13 +10,10 @@ module Link
     end
 
     def execute
-      { report: report, access: access }
+      { access: access }
     end
 
     private
-    def report
-      {title: 'Report', active: consensus?, type: :report}
-    end
 
     def access
       return pending if pending_requests?(user)
@@ -24,11 +21,11 @@ module Link
     end
 
     def request
-      { title: 'Request Access', type: :request_access, active: true}
+      { title: 'Request Access', type: :request_access}
     end
 
     def pending
-      { title: 'Access Pending', type: :pending, active: false }
+      { title: 'Access Pending', type: :pending }
     end
 
     def consensus?
