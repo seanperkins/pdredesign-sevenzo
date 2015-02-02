@@ -52,7 +52,7 @@ class Assessment < ActiveRecord::Base
 
 	accepts_nested_attributes_for :participants, allow_destroy: true
 
-	attr_accessor :add_participants
+	attr_accessor :add_participants, :assign
 
 	## VALIDATIONS
 	validates :name, presence: true
@@ -62,6 +62,8 @@ class Assessment < ActiveRecord::Base
 	validates :message, presence: true, if: "assigned_at.present?"
 
 	validate :validate_participants, if: "assigned_at.present?"
+
+  before_save :set_assigned_at
 
 	def validate_participants
     return unless self.participants.empty?
@@ -232,6 +234,10 @@ class Assessment < ActiveRecord::Base
 	def all_participant_responses
 		Response.where(responder_type: 'Participant',
 		 responder: participants)
+  end
+
+  def set_assigned_at
+    self.assigned_at = Time.now if self.assign
   end
 
 	def self.consensus_responses
