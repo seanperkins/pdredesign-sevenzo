@@ -41,7 +41,7 @@ module Link
     end
 
     def existing_consensus
-      {title: 'Consensus', active: true, type: :consensus}
+      {title: 'View Consensus', active: true, type: :consensus}
     end
 
     def new_consensus
