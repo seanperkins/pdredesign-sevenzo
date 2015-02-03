@@ -129,5 +129,16 @@ module Application
       district = Application.create_district
       Application.create_user({ role: :district_member, districts: [district]}.merge(opts))
     end
+
+    def request_access_to_assessment(opts)
+      # opts = { user: user_object, assessment: assessment_obj, roles: roles_array }
+      ar = AccessRequest.new({
+        roles: opts[:roles], token: SecureRandom.hex[0..9]
+      })
+      ar.user = opts[:user]
+      ar.assessment = opts[:assessment]
+      ar.save
+      return ar
+    end
   end
 end

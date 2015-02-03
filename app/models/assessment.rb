@@ -236,6 +236,11 @@ class Assessment < ActiveRecord::Base
 		 responder: participants)
   end
 
+  def flush_cached_version
+    # Caching is based at :updated_at attribute so when it changes will discard the cached version and do the caching agin.
+    self.touch
+  end
+
   def set_assigned_at
     self.assigned_at = Time.now if self.assign
   end
