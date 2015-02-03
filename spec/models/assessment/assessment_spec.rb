@@ -401,6 +401,21 @@ describe Assessment do
         end
       end
     end
+
+    context "#flush_cached_version" do
+      before { create_magic_assessments }
+      let(:assessment) { @assessment_with_participants }
+
+      it {should respond_to(:flush_cached_version)}
+
+      it "should touch the assessment and change the updated_at for the assessment" do
+        uab = assessment.updated_at
+        assessment.flush_cached_version
+        assessment.reload
+        expect(assessment.updated_at).not_to eq(uab)
+      end
+    end
+
   end
 
 end
