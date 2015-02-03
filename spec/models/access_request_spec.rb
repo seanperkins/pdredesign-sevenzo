@@ -15,15 +15,27 @@ require 'spec_helper'
 
 describe AccessRequest do
 
-  context "#after_destroy" do
-    before { create_magic_assessments }
-    let(:assessment) { @assessment_with_participants }
-    let(:user_requesting_access) { Application.create_user }
-    let(:access_request){ Application.request_access_to_assessment(assessment: assessment, user: user_requesting_access, roles: ["facilitator"]) }
+  before { create_magic_assessments }
+  let(:assessment) { @assessment_with_participants }
+  let(:user_requesting_access) { Application.create_user }
 
+  context "#before_destroy" do
     it "should flush_cached_version to the assessment when the access is granted" do
+      access_request = Application.request_access_to_assessment(assessment: assessment, user: user_requesting_access, roles: ["facilitator"])
+      
       expect(assessment).to receive(:flush_cached_version)
       access_request.destroy
+    end
+  end
+
+  context "#after_create" do
+    it "should flush_cached_version to the assessment when the access is requested" do
+      ar = AccessRequest.new({ roles: ["facilitator"], token: SecureRandom.hex[0..9] })
+      ar.user = user_requesting_access
+      ar.assessment = assessment
+
+      expect(assessment).to receive(:flush_cached_version)
+      ar.save
     end
   end
 
