@@ -96,7 +96,7 @@ describe Link::Facilitator do
       expect(links.length).to eq(3)
       expect(links[:dashboard][:title]).to eq('View Dashboard')
       expect(links[:report][:title]).to eq('View Report')
-      expect(links[:consensus][:title]).to eq('Consensus')
+      expect(links[:consensus][:title]).to eq('View Consensus')
     end
 
     it 'returns dashboard and consensus finish when consensus but not  fully complete' do
@@ -105,7 +105,7 @@ describe Link::Facilitator do
 
       expect(links.length).to eq(2)
       expect(links[:dashboard][:title]).to eq('View Dashboard')
-      expect(links[:consensus][:title]).to eq('Consensus')
+      expect(links[:consensus][:title]).to eq('View Consensus')
     end
 
     it 'returns response, consensus, and dashboard when assessment and is participant' do
