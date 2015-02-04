@@ -18,4 +18,11 @@ class AccessRequest < ActiveRecord::Base
   validates :roles, presence: true
   validates :user_id, presence: true
   validates :assessment_id, presence: true
+
+  before_destroy  :flush_assessment_cached_version
+  after_create    :flush_assessment_cached_version
+
+  def flush_assessment_cached_version
+    self.assessment.flush_cached_version
+  end
 end
