@@ -20,4 +20,7 @@ stdout
 .ruby-gemset
 .ruby-version
 
+# Migration data folder
+public/exported_*
+
 .DS_Store
