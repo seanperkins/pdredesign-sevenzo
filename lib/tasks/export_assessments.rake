@@ -14,7 +14,9 @@ namespace :db do
       csv_export_file = CSV.open(filename, "wb") do |csv|
         csv << valid_columns
         data.each do |data|
-          csv << data.attributes.slice(*valid_columns).values
+          unless data.nil?
+            csv << data.attributes.slice(*valid_columns).values
+          end
         end
       end
     end
@@ -36,18 +38,36 @@ namespace :db do
     # Getting User Owners' assessments and participants
     user_owners = []
     participants = []
+    rubrics = []
+    consensus = []
     # User
     user_owners_filename = "#{migration_dir}/user_owners_and_participants.csv"
     valid_user_columns = User.column_names.delete_if{ |k,v| k == "id" }
     # Participant
     participants_filename = "#{migration_dir}/participants.csv"
     valid_participant_columns = Participant.column_names.delete_if{ |k,v| k == "id" }
-
+    # Rubrics
+    rubric_filename = "#{migration_dir}/rubrics.csv"
+    valid_rubric_columns = Rubric.column_names.delete_if{ |k,v| k == "id" }
+    # Response/Consensus
+    response_filename = "#{migration_dir}/consensus.csv"
+    valid_consensus_columns = Response.column_names.delete_if{ |k,v| k == "id" }
 
     assessments.each do |assessment|
-      user = assessment.user
+      user      = assessment.user
+      rubric    = assessment.rubric
+      response  = assessment.response
+
       unless user_owners.include?(user)
         user_owners << user
+      end
+
+      unless rubrics.include?(rubric)
+        rubrics << rubric
+      end
+
+      unless consensus.include?(response)
+        consensus << response
       end
 
       assessment.participants.each do |participant|
@@ -62,6 +82,9 @@ namespace :db do
     export_model(user_owners, { valid_columns: valid_user_columns, filename: user_owners_filename })
     export_model(assessments, { valid_columns: valid_assessments_columns, filename: assessments_filename})
     export_model(participants, { valid_columns: valid_participant_columns, filename: participants_filename })
+    export_model(rubrics, { valid_columns: valid_rubric_columns, filename: rubric_filename })
+    # TODO: Consensus linked with proper assessment ID.
+    export_model(consensus, { valid_columns: valid_consensus_columns, filename: response_filename })
   end
 
 end
