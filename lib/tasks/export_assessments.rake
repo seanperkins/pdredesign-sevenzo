@@ -21,6 +21,10 @@ namespace :db do
       end
     end
 
+    class RakeTaskHelper
+      include ScoreQuery
+    end
+
     email = args[:email]
     migration_dir = "public/exported_assessments/#{email}"
 
@@ -40,6 +44,9 @@ namespace :db do
     participants = []
     rubrics = []
     consensus = []
+    categories = []
+    questions = []
+    scores = []
     # User
     user_owners_filename = "#{migration_dir}/user_owners_and_participants.csv"
     valid_user_columns = User.column_names.delete_if{ |k,v| k == "id" }
@@ -52,6 +59,15 @@ namespace :db do
     # Response/Consensus
     response_filename = "#{migration_dir}/consensus.csv"
     valid_consensus_columns = Response.column_names.delete_if{ |k,v| k == "id" }
+    # Category
+    categories_filename = "#{migration_dir}/categories.csv"
+    valid_categories_columns = Category.column_names.delete_if{ |k,v| k == "id" }
+    # Question
+    questions_filename = "#{migration_dir}/questions.csv"
+    valid_questions_columns = Question.column_names.delete_if{ |k,v| k == "id" }
+    # Score
+    scores_filename = "#{migration_dir}/scores.csv"
+    valid_scores_columns = Score.column_names.delete_if { |k,v| k == "id" }
 
     assessments.each do |assessment|
       user      = assessment.user
@@ -70,6 +86,24 @@ namespace :db do
         consensus << response
       end
 
+      if response
+        response.categories.each do |category|
+          unless categories.include?(category)
+            categories << category
+          end
+
+          category.rubric_questions(rubric) do |question|
+            unless questions.include?(question)
+              questions << question
+            end
+
+            # scores for this question
+            scores_for_question = RakeTaskHelper.score_for(response, question)
+            scores = scores + scores_for_question
+          end
+        end
+      end
+
       assessment.participants.each do |participant|
         unless  participants.include?(participant)
           participants << participant
@@ -85,6 +119,9 @@ namespace :db do
     export_model(rubrics, { valid_columns: valid_rubric_columns, filename: rubric_filename })
     # TODO: Consensus linked with proper assessment ID.
     export_model(consensus, { valid_columns: valid_consensus_columns, filename: response_filename })
+    export_model(categories, { valid_columns: valid_categories_columns, filename: categories_filename })
+    export_model(questions, { valid_columns: valid_questions_columns, filename: questions_filename })
+    export_model(scores, { valid_columns: valid_scores_columns, filename: scores_filename })
   end
 
 end
