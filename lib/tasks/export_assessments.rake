@@ -35,7 +35,7 @@ namespace :db do
 
     # Getting Assessments data from user    
     assessments_filename = "#{migration_dir}/assessments.csv"
-    valid_assessments_columns = Assessment.column_names.delete_if{ |k,v| k == "id" }
+    valid_assessments_columns = Assessment.column_names
     assessments = Assessment.assessments_for_user(user)
 
     # Getting User Owners' assessments and participants
@@ -48,25 +48,25 @@ namespace :db do
     scores = []
     # User
     user_owners_filename = "#{migration_dir}/user_owners_and_participants.csv"
-    valid_user_columns = User.column_names.delete_if{ |k,v| k == "id" }
+    valid_user_columns = User.column_names
     # Participant
     participants_filename = "#{migration_dir}/participants.csv"
-    valid_participant_columns = Participant.column_names.delete_if{ |k,v| k == "id" }
+    valid_participant_columns = Participant.column_names
     # Rubrics
     rubric_filename = "#{migration_dir}/rubrics.csv"
-    valid_rubric_columns = Rubric.column_names.delete_if{ |k,v| k == "id" }
+    valid_rubric_columns = Rubric.column_names
     # Response/Consensus
     response_filename = "#{migration_dir}/consensus.csv"
-    valid_consensus_columns = Response.column_names.delete_if{ |k,v| k == "id" }
+    valid_consensus_columns = Response.column_names
     # Category
     categories_filename = "#{migration_dir}/categories.csv"
-    valid_categories_columns = Category.column_names.delete_if{ |k,v| k == "id" }
+    valid_categories_columns = Category.column_names
     # Question
     questions_filename = "#{migration_dir}/questions.csv"
-    valid_questions_columns = Question.column_names.delete_if{ |k,v| k == "id" }
+    valid_questions_columns = Question.column_names
     # Score
     scores_filename = "#{migration_dir}/scores.csv"
-    valid_scores_columns = Score.column_names.delete_if { |k,v| k == "id" }
+    valid_scores_columns = Score.column_names
 
     assessments.each do |assessment|
       user      = assessment.user
