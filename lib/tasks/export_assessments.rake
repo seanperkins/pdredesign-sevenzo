@@ -6,6 +6,9 @@ namespace :db do
 
   task :export_assessments, [:email] => :environment do |t,args|
 
+    include ApplicationHelper
+    include ScoreQuery
+
     # TODO: put this method in a helper lib class
     def export_model(data, options)
       valid_columns = options[:valid_columns]
@@ -19,10 +22,6 @@ namespace :db do
           end
         end
       end
-    end
-
-    class RakeTaskHelper
-      include ScoreQuery
     end
 
     email = args[:email]
@@ -87,6 +86,22 @@ namespace :db do
       end
 
       if response
+        # filling scores
+        response_scores = ApplicationHelper.scores_for_assessment(response.responder)
+        response_scores.each do |score|
+          scores << score
+          # storing participant
+          participant = score.participant
+          unless participants.include?(participant)
+            participants << participant
+          end
+          # user participant
+          user = participant.user
+          unless user_owners.include?(user)
+            user_owners << user
+          end
+        end
+
         response.categories.each do |category|
           unless categories.include?(category)
             categories << category
@@ -97,9 +112,6 @@ namespace :db do
               questions << question
             end
 
-            # scores for this question
-            scores_for_question = RakeTaskHelper.score_for(response, question)
-            scores = scores + scores_for_question
           end
         end
       end
@@ -110,8 +122,6 @@ namespace :db do
         end
       end
     end
-
-
     # Exporting data to CSV
     export_model(user_owners, { valid_columns: valid_user_columns, filename: user_owners_filename })
     export_model(assessments, { valid_columns: valid_assessments_columns, filename: assessments_filename})
