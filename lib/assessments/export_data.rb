@@ -28,8 +28,12 @@ module Assessments
         json.array! assessments do |assessment|
           # Building Json structure
 
-          json.id       assessment.id
-          json.name     assessment.name
+          json.id             assessment.id
+          json.name           assessment.name
+          json.rubric_id      assessment.rubric_id
+          json.rubric_version assessment.rubric.version.to_s
+          json.district_name  assessment.district.name
+          json.district_id    assessment.district_id
 
           json.facilitators do
             assessment.facilitators.each do |facilitator|
