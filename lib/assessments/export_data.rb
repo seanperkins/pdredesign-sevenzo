@@ -34,6 +34,23 @@ module Assessments
           json.rubric_version assessment.rubric.version.to_s
           json.district_name  assessment.district.name
           json.district_id    assessment.district_id
+          json.due_date       assessment.due_date.to_s
+          json.assigned_at    assessment.assigned_at.to_s
+
+          generate_user_template(json, assessment.user)
+
+          json.consensus do
+            json.submitted_at assessment.response.submitted_at.to_s
+          end
+
+          json.participants do
+            json.array! assessment.participants do |participant|
+              json.participant_id   participant.id
+              json.invited_at       participant.invited_at
+
+              generate_user_template(json, participant.user)
+            end
+          end
 
           json.facilitators do
             assessment.facilitators.each do |facilitator|
