@@ -43,6 +43,10 @@ module Assessments
       participants.each do |participant_data|
         participant_user = User.find_by(email: participant_data[:user][:email])
 
+        if participant_user.nil?
+          participant_user = create_user_with(participant_data[:user])
+        end
+
         participant = Participant.find_or_create_by(
           assessment_id: assessment.id, user_id: participant_user.id
         )
@@ -95,6 +99,19 @@ module Assessments
         end
 
       end
+    end
+
+    def create_user_with(user_data)
+      new_user = User.new(
+        email: user_data[:email],
+        first_name: user_data[:first_name],
+        role: user_data[:role],
+        last_name: user_data[:last_name],
+        encrypted_password: user_data[:encrypted_password],
+        avatar: user_data[:avatar]
+      )
+      new_user.save(validate: false)
+      new_user
     end
 
   end
