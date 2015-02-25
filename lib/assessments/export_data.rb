@@ -39,8 +39,10 @@ module Assessments
 
           generate_user_template(json, assessment.user)
 
-          json.consensus do
-            json.submitted_at assessment.response.submitted_at.to_s
+          if assessment.response
+            json.consensus do
+              json.submitted_at assessment.response.submitted_at.to_s
+            end
           end
 
           json.participants do

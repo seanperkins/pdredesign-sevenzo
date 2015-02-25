@@ -82,12 +82,16 @@ module Assessments
           assessment.update_attribute(:assigned_at, Time.zone.parse(assessment_data[:assigned_at]))
         end
 
-        if assessment_data[:consensus][:submitted_at]
-          consensus.update_attribute(:submitted_at, Time.zone.parse(assessment_data[:consensus][:submitted_at]))
+        if assessment_data[:consensus]
+          if assessment_data[:consensus][:submitted_at]
+            consensus.update_attribute(:submitted_at, Time.zone.parse(assessment_data[:consensus][:submitted_at]))
+          end
         end
 
-        unless assessment_data[:scores].empty?
-          add_scores_from_participants(assessment, consensus, assessment_data[:scores])
+        if assessment_data[:scores]
+          unless assessment_data[:scores].empty?
+            add_scores_from_participants(assessment, consensus, assessment_data[:scores])
+          end
         end
 
       end
