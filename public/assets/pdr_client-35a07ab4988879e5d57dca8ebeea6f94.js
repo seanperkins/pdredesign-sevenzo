@@ -9248,10 +9248,10 @@ return jQuery;
  **/
 
 var _rollbarConfig = {
-    accessToken: "",
+    accessToken: "978fab70a3bc46dc9c7759dad7e2903b",
     captureUncaught: true,
     payload: {
-      environment: ""
+      environment: "production"
     }
 };
 (function(window, document){
@@ -9494,14 +9494,14 @@ for (var i = 0; i < _methods.length; ++i) {
   Rollbar.prototype[_methods[i]] = stub(_methods[i]);
 }
 
-var defaultRollbarJsUrl = '//d37gvrvc0wt4s1.cloudfront.net/js/v1.1/rollbar.min.js';
+var defaultRollbarJsUrl = '//d37gvrvc0wt4s1.cloudfront.net/js/v1.2/rollbar.min.js';
 _rollbarConfig.rollbarJsUrl = _rollbarConfig.rollbarJsUrl || defaultRollbarJsUrl;
 var r = Rollbar.init(window, _rollbarConfig);
 r.loadFull(window, document, false, _rollbarConfig);
 })(window, document);
-//     Underscore.js 1.7.0
+//     Underscore.js 1.8.2
 //     http://underscorejs.org
-//     (c) 2009-2014 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+//     (c) 2009-2015 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
 //     Underscore may be freely distributed under the MIT license.
 
 (function() {
@@ -9522,7 +9522,6 @@ r.loadFull(window, document, false, _rollbarConfig);
   var
     push             = ArrayProto.push,
     slice            = ArrayProto.slice,
-    concat           = ArrayProto.concat,
     toString         = ObjProto.toString,
     hasOwnProperty   = ObjProto.hasOwnProperty;
 
@@ -9531,7 +9530,11 @@ r.loadFull(window, document, false, _rollbarConfig);
   var
     nativeIsArray      = Array.isArray,
     nativeKeys         = Object.keys,
-    nativeBind         = FuncProto.bind;
+    nativeBind         = FuncProto.bind,
+    nativeCreate       = Object.create;
+
+  // Naked function reference for surrogate-prototype-swapping.
+  var Ctor = function(){};
 
   // Create a safe reference to the Underscore object for use below.
   var _ = function(obj) {
@@ -9553,12 +9556,12 @@ r.loadFull(window, document, false, _rollbarConfig);
   }
 
   // Current version.
-  _.VERSION = '1.7.0';
+  _.VERSION = '1.8.2';
 
   // Internal function that returns an efficient (for current engines) version
   // of the passed-in callback, to be repeatedly applied in other Underscore
   // functions.
-  var createCallback = function(func, context, argCount) {
+  var optimizeCb = function(func, context, argCount) {
     if (context === void 0) return func;
     switch (argCount == null ? 3 : argCount) {
       case 1: return function(value) {
@@ -9582,11 +9585,51 @@ r.loadFull(window, document, false, _rollbarConfig);
   // A mostly-internal function to generate callbacks that can be applied
   // to each element in a collection, returning the desired result — either
   // identity, an arbitrary callback, a property matcher, or a property accessor.
-  _.iteratee = function(value, context, argCount) {
+  var cb = function(value, context, argCount) {
     if (value == null) return _.identity;
-    if (_.isFunction(value)) return createCallback(value, context, argCount);
-    if (_.isObject(value)) return _.matches(value);
+    if (_.isFunction(value)) return optimizeCb(value, context, argCount);
+    if (_.isObject(value)) return _.matcher(value);
     return _.property(value);
+  };
+  _.iteratee = function(value, context) {
+    return cb(value, context, Infinity);
+  };
+
+  // An internal function for creating assigner functions.
+  var createAssigner = function(keysFunc, undefinedOnly) {
+    return function(obj) {
+      var length = arguments.length;
+      if (length < 2 || obj == null) return obj;
+      for (var index = 1; index < length; index++) {
+        var source = arguments[index],
+            keys = keysFunc(source),
+            l = keys.length;
+        for (var i = 0; i < l; i++) {
+          var key = keys[i];
+          if (!undefinedOnly || obj[key] === void 0) obj[key] = source[key];
+        }
+      }
+      return obj;
+    };
+  };
+
+  // An internal function for creating a new object that inherits from another.
+  var baseCreate = function(prototype) {
+    if (!_.isObject(prototype)) return {};
+    if (nativeCreate) return nativeCreate(prototype);
+    Ctor.prototype = prototype;
+    var result = new Ctor;
+    Ctor.prototype = null;
+    return result;
+  };
+
+  // Helper for collection methods to determine whether a collection
+  // should be iterated as an array or as an object
+  // Related: http://people.mozilla.org/~jorendorff/es6-draft.html#sec-tolength
+  var MAX_ARRAY_INDEX = Math.pow(2, 53) - 1;
+  var isArrayLike = function(collection) {
+    var length = collection && collection.length;
+    return typeof length == 'number' && length >= 0 && length <= MAX_ARRAY_INDEX;
   };
 
   // Collection Functions
@@ -9596,11 +9639,10 @@ r.loadFull(window, document, false, _rollbarConfig);
   // Handles raw objects in addition to array-likes. Treats all
   // sparse array-likes as if they were dense.
   _.each = _.forEach = function(obj, iteratee, context) {
-    if (obj == null) return obj;
-    iteratee = createCallback(iteratee, context);
-    var i, length = obj.length;
-    if (length === +length) {
-      for (i = 0; i < length; i++) {
+    iteratee = optimizeCb(iteratee, context);
+    var i, length;
+    if (isArrayLike(obj)) {
+      for (i = 0, length = obj.length; i < length; i++) {
         iteratee(obj[i], i, obj);
       }
     } else {
@@ -9614,77 +9656,66 @@ r.loadFull(window, document, false, _rollbarConfig);
 
   // Return the results of applying the iteratee to each element.
   _.map = _.collect = function(obj, iteratee, context) {
-    if (obj == null) return [];
-    iteratee = _.iteratee(iteratee, context);
-    var keys = obj.length !== +obj.length && _.keys(obj),
+    iteratee = cb(iteratee, context);
+    var keys = !isArrayLike(obj) && _.keys(obj),
         length = (keys || obj).length,
-        results = Array(length),
-        currentKey;
+        results = Array(length);
     for (var index = 0; index < length; index++) {
-      currentKey = keys ? keys[index] : index;
+      var currentKey = keys ? keys[index] : index;
       results[index] = iteratee(obj[currentKey], currentKey, obj);
     }
     return results;
   };
 
-  var reduceError = 'Reduce of empty array with no initial value';
+  // Create a reducing function iterating left or right.
+  function createReduce(dir) {
+    // Optimized iterator function as using arguments.length
+    // in the main function will deoptimize the, see #1991.
+    function iterator(obj, iteratee, memo, keys, index, length) {
+      for (; index >= 0 && index < length; index += dir) {
+        var currentKey = keys ? keys[index] : index;
+        memo = iteratee(memo, obj[currentKey], currentKey, obj);
+      }
+      return memo;
+    }
+
+    return function(obj, iteratee, memo, context) {
+      iteratee = optimizeCb(iteratee, context, 4);
+      var keys = !isArrayLike(obj) && _.keys(obj),
+          length = (keys || obj).length,
+          index = dir > 0 ? 0 : length - 1;
+      // Determine the initial value if none is provided.
+      if (arguments.length < 3) {
+        memo = obj[keys ? keys[index] : index];
+        index += dir;
+      }
+      return iterator(obj, iteratee, memo, keys, index, length);
+    };
+  }
 
   // **Reduce** builds up a single result from a list of values, aka `inject`,
   // or `foldl`.
-  _.reduce = _.foldl = _.inject = function(obj, iteratee, memo, context) {
-    if (obj == null) obj = [];
-    iteratee = createCallback(iteratee, context, 4);
-    var keys = obj.length !== +obj.length && _.keys(obj),
-        length = (keys || obj).length,
-        index = 0, currentKey;
-    if (arguments.length < 3) {
-      if (!length) throw new TypeError(reduceError);
-      memo = obj[keys ? keys[index++] : index++];
-    }
-    for (; index < length; index++) {
-      currentKey = keys ? keys[index] : index;
-      memo = iteratee(memo, obj[currentKey], currentKey, obj);
-    }
-    return memo;
-  };
+  _.reduce = _.foldl = _.inject = createReduce(1);
 
   // The right-associative version of reduce, also known as `foldr`.
-  _.reduceRight = _.foldr = function(obj, iteratee, memo, context) {
-    if (obj == null) obj = [];
-    iteratee = createCallback(iteratee, context, 4);
-    var keys = obj.length !== + obj.length && _.keys(obj),
-        index = (keys || obj).length,
-        currentKey;
-    if (arguments.length < 3) {
-      if (!index) throw new TypeError(reduceError);
-      memo = obj[keys ? keys[--index] : --index];
-    }
-    while (index--) {
-      currentKey = keys ? keys[index] : index;
-      memo = iteratee(memo, obj[currentKey], currentKey, obj);
-    }
-    return memo;
-  };
+  _.reduceRight = _.foldr = createReduce(-1);
 
   // Return the first value which passes a truth test. Aliased as `detect`.
   _.find = _.detect = function(obj, predicate, context) {
-    var result;
-    predicate = _.iteratee(predicate, context);
-    _.some(obj, function(value, index, list) {
-      if (predicate(value, index, list)) {
-        result = value;
-        return true;
-      }
-    });
-    return result;
+    var key;
+    if (isArrayLike(obj)) {
+      key = _.findIndex(obj, predicate, context);
+    } else {
+      key = _.findKey(obj, predicate, context);
+    }
+    if (key !== void 0 && key !== -1) return obj[key];
   };
 
   // Return all the elements that pass a truth test.
   // Aliased as `select`.
   _.filter = _.select = function(obj, predicate, context) {
     var results = [];
-    if (obj == null) return results;
-    predicate = _.iteratee(predicate, context);
+    predicate = cb(predicate, context);
     _.each(obj, function(value, index, list) {
       if (predicate(value, index, list)) results.push(value);
     });
@@ -9693,19 +9724,17 @@ r.loadFull(window, document, false, _rollbarConfig);
 
   // Return all the elements for which a truth test fails.
   _.reject = function(obj, predicate, context) {
-    return _.filter(obj, _.negate(_.iteratee(predicate)), context);
+    return _.filter(obj, _.negate(cb(predicate)), context);
   };
 
   // Determine whether all of the elements match a truth test.
   // Aliased as `all`.
   _.every = _.all = function(obj, predicate, context) {
-    if (obj == null) return true;
-    predicate = _.iteratee(predicate, context);
-    var keys = obj.length !== +obj.length && _.keys(obj),
-        length = (keys || obj).length,
-        index, currentKey;
-    for (index = 0; index < length; index++) {
-      currentKey = keys ? keys[index] : index;
+    predicate = cb(predicate, context);
+    var keys = !isArrayLike(obj) && _.keys(obj),
+        length = (keys || obj).length;
+    for (var index = 0; index < length; index++) {
+      var currentKey = keys ? keys[index] : index;
       if (!predicate(obj[currentKey], currentKey, obj)) return false;
     }
     return true;
@@ -9714,24 +9743,21 @@ r.loadFull(window, document, false, _rollbarConfig);
   // Determine if at least one element in the object matches a truth test.
   // Aliased as `any`.
   _.some = _.any = function(obj, predicate, context) {
-    if (obj == null) return false;
-    predicate = _.iteratee(predicate, context);
-    var keys = obj.length !== +obj.length && _.keys(obj),
-        length = (keys || obj).length,
-        index, currentKey;
-    for (index = 0; index < length; index++) {
-      currentKey = keys ? keys[index] : index;
+    predicate = cb(predicate, context);
+    var keys = !isArrayLike(obj) && _.keys(obj),
+        length = (keys || obj).length;
+    for (var index = 0; index < length; index++) {
+      var currentKey = keys ? keys[index] : index;
       if (predicate(obj[currentKey], currentKey, obj)) return true;
     }
     return false;
   };
 
   // Determine if the array or object contains a given value (using `===`).
-  // Aliased as `include`.
-  _.contains = _.include = function(obj, target) {
-    if (obj == null) return false;
-    if (obj.length !== +obj.length) obj = _.values(obj);
-    return _.indexOf(obj, target) >= 0;
+  // Aliased as `includes` and `include`.
+  _.contains = _.includes = _.include = function(obj, target, fromIndex) {
+    if (!isArrayLike(obj)) obj = _.values(obj);
+    return _.indexOf(obj, target, typeof fromIndex == 'number' && fromIndex) >= 0;
   };
 
   // Invoke a method (with arguments) on every item in a collection.
@@ -9739,7 +9765,8 @@ r.loadFull(window, document, false, _rollbarConfig);
     var args = slice.call(arguments, 2);
     var isFunc = _.isFunction(method);
     return _.map(obj, function(value) {
-      return (isFunc ? method : value[method]).apply(value, args);
+      var func = isFunc ? method : value[method];
+      return func == null ? func : func.apply(value, args);
     });
   };
 
@@ -9751,13 +9778,13 @@ r.loadFull(window, document, false, _rollbarConfig);
   // Convenience version of a common use case of `filter`: selecting only objects
   // containing specific `key:value` pairs.
   _.where = function(obj, attrs) {
-    return _.filter(obj, _.matches(attrs));
+    return _.filter(obj, _.matcher(attrs));
   };
 
   // Convenience version of a common use case of `find`: getting the first object
   // containing specific `key:value` pairs.
   _.findWhere = function(obj, attrs) {
-    return _.find(obj, _.matches(attrs));
+    return _.find(obj, _.matcher(attrs));
   };
 
   // Return the maximum element (or element-based computation).
@@ -9765,7 +9792,7 @@ r.loadFull(window, document, false, _rollbarConfig);
     var result = -Infinity, lastComputed = -Infinity,
         value, computed;
     if (iteratee == null && obj != null) {
-      obj = obj.length === +obj.length ? obj : _.values(obj);
+      obj = isArrayLike(obj) ? obj : _.values(obj);
       for (var i = 0, length = obj.length; i < length; i++) {
         value = obj[i];
         if (value > result) {
@@ -9773,7 +9800,7 @@ r.loadFull(window, document, false, _rollbarConfig);
         }
       }
     } else {
-      iteratee = _.iteratee(iteratee, context);
+      iteratee = cb(iteratee, context);
       _.each(obj, function(value, index, list) {
         computed = iteratee(value, index, list);
         if (computed > lastComputed || computed === -Infinity && result === -Infinity) {
@@ -9790,7 +9817,7 @@ r.loadFull(window, document, false, _rollbarConfig);
     var result = Infinity, lastComputed = Infinity,
         value, computed;
     if (iteratee == null && obj != null) {
-      obj = obj.length === +obj.length ? obj : _.values(obj);
+      obj = isArrayLike(obj) ? obj : _.values(obj);
       for (var i = 0, length = obj.length; i < length; i++) {
         value = obj[i];
         if (value < result) {
@@ -9798,7 +9825,7 @@ r.loadFull(window, document, false, _rollbarConfig);
         }
       }
     } else {
-      iteratee = _.iteratee(iteratee, context);
+      iteratee = cb(iteratee, context);
       _.each(obj, function(value, index, list) {
         computed = iteratee(value, index, list);
         if (computed < lastComputed || computed === Infinity && result === Infinity) {
@@ -9813,7 +9840,7 @@ r.loadFull(window, document, false, _rollbarConfig);
   // Shuffle a collection, using the modern version of the
   // [Fisher-Yates shuffle](http://en.wikipedia.org/wiki/Fisher–Yates_shuffle).
   _.shuffle = function(obj) {
-    var set = obj && obj.length === +obj.length ? obj : _.values(obj);
+    var set = isArrayLike(obj) ? obj : _.values(obj);
     var length = set.length;
     var shuffled = Array(length);
     for (var index = 0, rand; index < length; index++) {
@@ -9829,7 +9856,7 @@ r.loadFull(window, document, false, _rollbarConfig);
   // The internal `guard` argument allows it to work with `map`.
   _.sample = function(obj, n, guard) {
     if (n == null || guard) {
-      if (obj.length !== +obj.length) obj = _.values(obj);
+      if (!isArrayLike(obj)) obj = _.values(obj);
       return obj[_.random(obj.length - 1)];
     }
     return _.shuffle(obj).slice(0, Math.max(0, n));
@@ -9837,7 +9864,7 @@ r.loadFull(window, document, false, _rollbarConfig);
 
   // Sort the object's values by a criterion produced by an iteratee.
   _.sortBy = function(obj, iteratee, context) {
-    iteratee = _.iteratee(iteratee, context);
+    iteratee = cb(iteratee, context);
     return _.pluck(_.map(obj, function(value, index, list) {
       return {
         value: value,
@@ -9859,7 +9886,7 @@ r.loadFull(window, document, false, _rollbarConfig);
   var group = function(behavior) {
     return function(obj, iteratee, context) {
       var result = {};
-      iteratee = _.iteratee(iteratee, context);
+      iteratee = cb(iteratee, context);
       _.each(obj, function(value, index) {
         var key = iteratee(value, index, obj);
         behavior(result, value, key);
@@ -9887,37 +9914,24 @@ r.loadFull(window, document, false, _rollbarConfig);
     if (_.has(result, key)) result[key]++; else result[key] = 1;
   });
 
-  // Use a comparator function to figure out the smallest index at which
-  // an object should be inserted so as to maintain order. Uses binary search.
-  _.sortedIndex = function(array, obj, iteratee, context) {
-    iteratee = _.iteratee(iteratee, context, 1);
-    var value = iteratee(obj);
-    var low = 0, high = array.length;
-    while (low < high) {
-      var mid = low + high >>> 1;
-      if (iteratee(array[mid]) < value) low = mid + 1; else high = mid;
-    }
-    return low;
-  };
-
   // Safely create a real, live array from anything iterable.
   _.toArray = function(obj) {
     if (!obj) return [];
     if (_.isArray(obj)) return slice.call(obj);
-    if (obj.length === +obj.length) return _.map(obj, _.identity);
+    if (isArrayLike(obj)) return _.map(obj, _.identity);
     return _.values(obj);
   };
 
   // Return the number of elements in an object.
   _.size = function(obj) {
     if (obj == null) return 0;
-    return obj.length === +obj.length ? obj.length : _.keys(obj).length;
+    return isArrayLike(obj) ? obj.length : _.keys(obj).length;
   };
 
   // Split a collection into two arrays: one whose elements all satisfy the given
   // predicate, and one whose elements all do not satisfy the predicate.
   _.partition = function(obj, predicate, context) {
-    predicate = _.iteratee(predicate, context);
+    predicate = cb(predicate, context);
     var pass = [], fail = [];
     _.each(obj, function(value, key, obj) {
       (predicate(value, key, obj) ? pass : fail).push(value);
@@ -9934,30 +9948,27 @@ r.loadFull(window, document, false, _rollbarConfig);
   _.first = _.head = _.take = function(array, n, guard) {
     if (array == null) return void 0;
     if (n == null || guard) return array[0];
-    if (n < 0) return [];
-    return slice.call(array, 0, n);
+    return _.initial(array, array.length - n);
   };
 
   // Returns everything but the last entry of the array. Especially useful on
   // the arguments object. Passing **n** will return all the values in
-  // the array, excluding the last N. The **guard** check allows it to work with
-  // `_.map`.
+  // the array, excluding the last N.
   _.initial = function(array, n, guard) {
     return slice.call(array, 0, Math.max(0, array.length - (n == null || guard ? 1 : n)));
   };
 
   // Get the last element of an array. Passing **n** will return the last N
-  // values in the array. The **guard** check allows it to work with `_.map`.
+  // values in the array.
   _.last = function(array, n, guard) {
     if (array == null) return void 0;
     if (n == null || guard) return array[array.length - 1];
-    return slice.call(array, Math.max(array.length - n, 0));
+    return _.rest(array, Math.max(0, array.length - n));
   };
 
   // Returns everything but the first entry of the array. Aliased as `tail` and `drop`.
   // Especially useful on the arguments object. Passing an **n** will return
-  // the rest N values in the array. The **guard**
-  // check allows it to work with `_.map`.
+  // the rest N values in the array.
   _.rest = _.tail = _.drop = function(array, n, guard) {
     return slice.call(array, n == null || guard ? 1 : n);
   };
@@ -9968,18 +9979,20 @@ r.loadFull(window, document, false, _rollbarConfig);
   };
 
   // Internal implementation of a recursive `flatten` function.
-  var flatten = function(input, shallow, strict, output) {
-    if (shallow && _.every(input, _.isArray)) {
-      return concat.apply(output, input);
-    }
-    for (var i = 0, length = input.length; i < length; i++) {
+  var flatten = function(input, shallow, strict, startIndex) {
+    var output = [], idx = 0;
+    for (var i = startIndex || 0, length = input && input.length; i < length; i++) {
       var value = input[i];
-      if (!_.isArray(value) && !_.isArguments(value)) {
-        if (!strict) output.push(value);
-      } else if (shallow) {
-        push.apply(output, value);
-      } else {
-        flatten(value, shallow, strict, output);
+      if (isArrayLike(value) && (_.isArray(value) || _.isArguments(value))) {
+        //flatten current level of array or arguments object
+        if (!shallow) value = flatten(value, shallow, strict);
+        var j = 0, len = value.length;
+        output.length += len;
+        while (j < len) {
+          output[idx++] = value[j++];
+        }
+      } else if (!strict) {
+        output[idx++] = value;
       }
     }
     return output;
@@ -9987,7 +10000,7 @@ r.loadFull(window, document, false, _rollbarConfig);
 
   // Flatten out an array, either recursively (by default), or just one level.
   _.flatten = function(array, shallow) {
-    return flatten(array, shallow, false, []);
+    return flatten(array, shallow, false);
   };
 
   // Return a version of the array that does not contain the specified value(s).
@@ -10005,21 +10018,21 @@ r.loadFull(window, document, false, _rollbarConfig);
       iteratee = isSorted;
       isSorted = false;
     }
-    if (iteratee != null) iteratee = _.iteratee(iteratee, context);
+    if (iteratee != null) iteratee = cb(iteratee, context);
     var result = [];
     var seen = [];
     for (var i = 0, length = array.length; i < length; i++) {
-      var value = array[i];
+      var value = array[i],
+          computed = iteratee ? iteratee(value, i, array) : value;
       if (isSorted) {
-        if (!i || seen !== value) result.push(value);
-        seen = value;
+        if (!i || seen !== computed) result.push(value);
+        seen = computed;
       } else if (iteratee) {
-        var computed = iteratee(value, i, array);
-        if (_.indexOf(seen, computed) < 0) {
+        if (!_.contains(seen, computed)) {
           seen.push(computed);
           result.push(value);
         }
-      } else if (_.indexOf(result, value) < 0) {
+      } else if (!_.contains(result, value)) {
         result.push(value);
       }
     }
@@ -10029,7 +10042,7 @@ r.loadFull(window, document, false, _rollbarConfig);
   // Produce an array that contains the union: each distinct element from all of
   // the passed-in arrays.
   _.union = function() {
-    return _.uniq(flatten(arguments, true, true, []));
+    return _.uniq(flatten(arguments, true, true));
   };
 
   // Produce an array that contains every item shared between all the
@@ -10052,7 +10065,7 @@ r.loadFull(window, document, false, _rollbarConfig);
   // Take the difference between one array and a number of other arrays.
   // Only the elements present in just the first array will remain.
   _.difference = function(array) {
-    var rest = flatten(slice.call(arguments, 1), true, true, []);
+    var rest = flatten(arguments, true, true, 1);
     return _.filter(array, function(value){
       return !_.contains(rest, value);
     });
@@ -10060,23 +10073,28 @@ r.loadFull(window, document, false, _rollbarConfig);
 
   // Zip together multiple lists into a single array -- elements that share
   // an index go together.
-  _.zip = function(array) {
-    if (array == null) return [];
-    var length = _.max(arguments, 'length').length;
-    var results = Array(length);
-    for (var i = 0; i < length; i++) {
-      results[i] = _.pluck(arguments, i);
+  _.zip = function() {
+    return _.unzip(arguments);
+  };
+
+  // Complement of _.zip. Unzip accepts an array of arrays and groups
+  // each array's elements on shared indices
+  _.unzip = function(array) {
+    var length = array && _.max(array, 'length').length || 0;
+    var result = Array(length);
+
+    for (var index = 0; index < length; index++) {
+      result[index] = _.pluck(array, index);
     }
-    return results;
+    return result;
   };
 
   // Converts lists into objects. Pass either a single array of `[key, value]`
   // pairs, or two parallel arrays of the same length -- one of keys, and one of
   // the corresponding values.
   _.object = function(list, values) {
-    if (list == null) return {};
     var result = {};
-    for (var i = 0, length = list.length; i < length; i++) {
+    for (var i = 0, length = list && list.length; i < length; i++) {
       if (values) {
         result[list[i]] = values[i];
       } else {
@@ -10091,28 +10109,61 @@ r.loadFull(window, document, false, _rollbarConfig);
   // If the array is large and already in sort order, pass `true`
   // for **isSorted** to use binary search.
   _.indexOf = function(array, item, isSorted) {
-    if (array == null) return -1;
-    var i = 0, length = array.length;
-    if (isSorted) {
-      if (typeof isSorted == 'number') {
-        i = isSorted < 0 ? Math.max(0, length + isSorted) : isSorted;
-      } else {
-        i = _.sortedIndex(array, item);
-        return array[i] === item ? i : -1;
-      }
+    var i = 0, length = array && array.length;
+    if (typeof isSorted == 'number') {
+      i = isSorted < 0 ? Math.max(0, length + isSorted) : isSorted;
+    } else if (isSorted && length) {
+      i = _.sortedIndex(array, item);
+      return array[i] === item ? i : -1;
+    }
+    if (item !== item) {
+      return _.findIndex(slice.call(array, i), _.isNaN);
     }
     for (; i < length; i++) if (array[i] === item) return i;
     return -1;
   };
 
   _.lastIndexOf = function(array, item, from) {
-    if (array == null) return -1;
-    var idx = array.length;
+    var idx = array ? array.length : 0;
     if (typeof from == 'number') {
       idx = from < 0 ? idx + from + 1 : Math.min(idx, from + 1);
     }
+    if (item !== item) {
+      return _.findLastIndex(slice.call(array, 0, idx), _.isNaN);
+    }
     while (--idx >= 0) if (array[idx] === item) return idx;
     return -1;
+  };
+
+  // Generator function to create the findIndex and findLastIndex functions
+  function createIndexFinder(dir) {
+    return function(array, predicate, context) {
+      predicate = cb(predicate, context);
+      var length = array != null && array.length;
+      var index = dir > 0 ? 0 : length - 1;
+      for (; index >= 0 && index < length; index += dir) {
+        if (predicate(array[index], index, array)) return index;
+      }
+      return -1;
+    };
+  }
+
+  // Returns the first index on an array-like that passes a predicate test
+  _.findIndex = createIndexFinder(1);
+
+  _.findLastIndex = createIndexFinder(-1);
+
+  // Use a comparator function to figure out the smallest index at which
+  // an object should be inserted so as to maintain order. Uses binary search.
+  _.sortedIndex = function(array, obj, iteratee, context) {
+    iteratee = cb(iteratee, context, 1);
+    var value = iteratee(obj);
+    var low = 0, high = array.length;
+    while (low < high) {
+      var mid = Math.floor((low + high) / 2);
+      if (iteratee(array[mid]) < value) low = mid + 1; else high = mid;
+    }
+    return low;
   };
 
   // Generate an integer Array containing an arithmetic progression. A port of
@@ -10138,25 +10189,25 @@ r.loadFull(window, document, false, _rollbarConfig);
   // Function (ahem) Functions
   // ------------------
 
-  // Reusable constructor function for prototype setting.
-  var Ctor = function(){};
+  // Determines whether to execute a function as a constructor
+  // or a normal function with the provided arguments
+  var executeBound = function(sourceFunc, boundFunc, context, callingContext, args) {
+    if (!(callingContext instanceof boundFunc)) return sourceFunc.apply(context, args);
+    var self = baseCreate(sourceFunc.prototype);
+    var result = sourceFunc.apply(self, args);
+    if (_.isObject(result)) return result;
+    return self;
+  };
 
   // Create a function bound to a given object (assigning `this`, and arguments,
   // optionally). Delegates to **ECMAScript 5**'s native `Function.bind` if
   // available.
   _.bind = function(func, context) {
-    var args, bound;
     if (nativeBind && func.bind === nativeBind) return nativeBind.apply(func, slice.call(arguments, 1));
     if (!_.isFunction(func)) throw new TypeError('Bind must be called on a function');
-    args = slice.call(arguments, 2);
-    bound = function() {
-      if (!(this instanceof bound)) return func.apply(context, args.concat(slice.call(arguments)));
-      Ctor.prototype = func.prototype;
-      var self = new Ctor;
-      Ctor.prototype = null;
-      var result = func.apply(self, args.concat(slice.call(arguments)));
-      if (_.isObject(result)) return result;
-      return self;
+    var args = slice.call(arguments, 2);
+    var bound = function() {
+      return executeBound(func, bound, context, this, args.concat(slice.call(arguments)));
     };
     return bound;
   };
@@ -10166,15 +10217,16 @@ r.loadFull(window, document, false, _rollbarConfig);
   // as a placeholder, allowing any combination of arguments to be pre-filled.
   _.partial = function(func) {
     var boundArgs = slice.call(arguments, 1);
-    return function() {
-      var position = 0;
-      var args = boundArgs.slice();
-      for (var i = 0, length = args.length; i < length; i++) {
-        if (args[i] === _) args[i] = arguments[position++];
+    var bound = function() {
+      var position = 0, length = boundArgs.length;
+      var args = Array(length);
+      for (var i = 0; i < length; i++) {
+        args[i] = boundArgs[i] === _ ? arguments[position++] : boundArgs[i];
       }
       while (position < arguments.length) args.push(arguments[position++]);
-      return func.apply(this, args);
+      return executeBound(func, bound, this, this, args);
     };
+    return bound;
   };
 
   // Bind a number of an object's methods to that object. Remaining arguments
@@ -10194,7 +10246,7 @@ r.loadFull(window, document, false, _rollbarConfig);
   _.memoize = function(func, hasher) {
     var memoize = function(key) {
       var cache = memoize.cache;
-      var address = hasher ? hasher.apply(this, arguments) : key;
+      var address = '' + (hasher ? hasher.apply(this, arguments) : key);
       if (!_.has(cache, address)) cache[address] = func.apply(this, arguments);
       return cache[address];
     };
@@ -10213,9 +10265,7 @@ r.loadFull(window, document, false, _rollbarConfig);
 
   // Defers a function, scheduling it to run after the current call stack has
   // cleared.
-  _.defer = function(func) {
-    return _.delay.apply(_, [func, 1].concat(slice.call(arguments, 1)));
-  };
+  _.defer = _.partial(_.delay, _, 1);
 
   // Returns a function, that, when invoked, will only be triggered at most once
   // during a given window of time. Normally, the throttled function will run
@@ -10240,8 +10290,10 @@ r.loadFull(window, document, false, _rollbarConfig);
       context = this;
       args = arguments;
       if (remaining <= 0 || remaining > wait) {
-        clearTimeout(timeout);
-        timeout = null;
+        if (timeout) {
+          clearTimeout(timeout);
+          timeout = null;
+        }
         previous = now;
         result = func.apply(context, args);
         if (!timeout) context = args = null;
@@ -10262,7 +10314,7 @@ r.loadFull(window, document, false, _rollbarConfig);
     var later = function() {
       var last = _.now() - timestamp;
 
-      if (last < wait && last > 0) {
+      if (last < wait && last >= 0) {
         timeout = setTimeout(later, wait - last);
       } else {
         timeout = null;
@@ -10315,7 +10367,7 @@ r.loadFull(window, document, false, _rollbarConfig);
     };
   };
 
-  // Returns a function that will only be executed after being called N times.
+  // Returns a function that will only be executed on and after the Nth call.
   _.after = function(times, func) {
     return function() {
       if (--times < 1) {
@@ -10324,15 +10376,14 @@ r.loadFull(window, document, false, _rollbarConfig);
     };
   };
 
-  // Returns a function that will only be executed before being called N times.
+  // Returns a function that will only be executed up to (but not including) the Nth call.
   _.before = function(times, func) {
     var memo;
     return function() {
       if (--times > 0) {
         memo = func.apply(this, arguments);
-      } else {
-        func = null;
       }
+      if (times <= 1) func = null;
       return memo;
     };
   };
@@ -10344,13 +10395,47 @@ r.loadFull(window, document, false, _rollbarConfig);
   // Object Functions
   // ----------------
 
-  // Retrieve the names of an object's properties.
+  // Keys in IE < 9 that won't be iterated by `for key in ...` and thus missed.
+  var hasEnumBug = !{toString: null}.propertyIsEnumerable('toString');
+  var nonEnumerableProps = ['valueOf', 'isPrototypeOf', 'toString',
+                      'propertyIsEnumerable', 'hasOwnProperty', 'toLocaleString'];
+
+  function collectNonEnumProps(obj, keys) {
+    var nonEnumIdx = nonEnumerableProps.length;
+    var constructor = obj.constructor;
+    var proto = (_.isFunction(constructor) && constructor.prototype) || ObjProto;
+
+    // Constructor is a special case.
+    var prop = 'constructor';
+    if (_.has(obj, prop) && !_.contains(keys, prop)) keys.push(prop);
+
+    while (nonEnumIdx--) {
+      prop = nonEnumerableProps[nonEnumIdx];
+      if (prop in obj && obj[prop] !== proto[prop] && !_.contains(keys, prop)) {
+        keys.push(prop);
+      }
+    }
+  }
+
+  // Retrieve the names of an object's own properties.
   // Delegates to **ECMAScript 5**'s native `Object.keys`
   _.keys = function(obj) {
     if (!_.isObject(obj)) return [];
     if (nativeKeys) return nativeKeys(obj);
     var keys = [];
     for (var key in obj) if (_.has(obj, key)) keys.push(key);
+    // Ahem, IE < 9.
+    if (hasEnumBug) collectNonEnumProps(obj, keys);
+    return keys;
+  };
+
+  // Retrieve all the property names of an object.
+  _.allKeys = function(obj) {
+    if (!_.isObject(obj)) return [];
+    var keys = [];
+    for (var key in obj) keys.push(key);
+    // Ahem, IE < 9.
+    if (hasEnumBug) collectNonEnumProps(obj, keys);
     return keys;
   };
 
@@ -10363,6 +10448,21 @@ r.loadFull(window, document, false, _rollbarConfig);
       values[i] = obj[keys[i]];
     }
     return values;
+  };
+
+  // Returns the results of applying the iteratee to each element of the object
+  // In contrast to _.map it returns an object
+  _.mapObject = function(obj, iteratee, context) {
+    iteratee = cb(iteratee, context);
+    var keys =  _.keys(obj),
+          length = keys.length,
+          results = {},
+          currentKey;
+      for (var index = 0; index < length; index++) {
+        currentKey = keys[index];
+        results[currentKey] = iteratee(obj[currentKey], currentKey, obj);
+      }
+      return results;
   };
 
   // Convert an object into a list of `[key, value]` pairs.
@@ -10397,37 +10497,38 @@ r.loadFull(window, document, false, _rollbarConfig);
   };
 
   // Extend a given object with all the properties in passed-in object(s).
-  _.extend = function(obj) {
-    if (!_.isObject(obj)) return obj;
-    var source, prop;
-    for (var i = 1, length = arguments.length; i < length; i++) {
-      source = arguments[i];
-      for (prop in source) {
-        if (hasOwnProperty.call(source, prop)) {
-            obj[prop] = source[prop];
-        }
-      }
+  _.extend = createAssigner(_.allKeys);
+
+  // Assigns a given object with all the own properties in the passed-in object(s)
+  // (https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object/assign)
+  _.extendOwn = _.assign = createAssigner(_.keys);
+
+  // Returns the first key on an object that passes a predicate test
+  _.findKey = function(obj, predicate, context) {
+    predicate = cb(predicate, context);
+    var keys = _.keys(obj), key;
+    for (var i = 0, length = keys.length; i < length; i++) {
+      key = keys[i];
+      if (predicate(obj[key], key, obj)) return key;
     }
-    return obj;
   };
 
   // Return a copy of the object only containing the whitelisted properties.
-  _.pick = function(obj, iteratee, context) {
-    var result = {}, key;
+  _.pick = function(object, oiteratee, context) {
+    var result = {}, obj = object, iteratee, keys;
     if (obj == null) return result;
-    if (_.isFunction(iteratee)) {
-      iteratee = createCallback(iteratee, context);
-      for (key in obj) {
-        var value = obj[key];
-        if (iteratee(value, key, obj)) result[key] = value;
-      }
+    if (_.isFunction(oiteratee)) {
+      keys = _.allKeys(obj);
+      iteratee = optimizeCb(oiteratee, context);
     } else {
-      var keys = concat.apply([], slice.call(arguments, 1));
-      obj = new Object(obj);
-      for (var i = 0, length = keys.length; i < length; i++) {
-        key = keys[i];
-        if (key in obj) result[key] = obj[key];
-      }
+      keys = flatten(arguments, false, false, 1);
+      iteratee = function(value, key, obj) { return key in obj; };
+      obj = Object(obj);
+    }
+    for (var i = 0, length = keys.length; i < length; i++) {
+      var key = keys[i];
+      var value = obj[key];
+      if (iteratee(value, key, obj)) result[key] = value;
     }
     return result;
   };
@@ -10437,7 +10538,7 @@ r.loadFull(window, document, false, _rollbarConfig);
     if (_.isFunction(iteratee)) {
       iteratee = _.negate(iteratee);
     } else {
-      var keys = _.map(concat.apply([], slice.call(arguments, 1)), String);
+      var keys = _.map(flatten(arguments, false, false, 1), String);
       iteratee = function(value, key) {
         return !_.contains(keys, key);
       };
@@ -10446,16 +10547,7 @@ r.loadFull(window, document, false, _rollbarConfig);
   };
 
   // Fill in a given object with default properties.
-  _.defaults = function(obj) {
-    if (!_.isObject(obj)) return obj;
-    for (var i = 1, length = arguments.length; i < length; i++) {
-      var source = arguments[i];
-      for (var prop in source) {
-        if (obj[prop] === void 0) obj[prop] = source[prop];
-      }
-    }
-    return obj;
-  };
+  _.defaults = createAssigner(_.allKeys, true);
 
   // Create a (shallow-cloned) duplicate of an object.
   _.clone = function(obj) {
@@ -10470,6 +10562,19 @@ r.loadFull(window, document, false, _rollbarConfig);
     interceptor(obj);
     return obj;
   };
+
+  // Returns whether an object has a given set of `key:value` pairs.
+  _.isMatch = function(object, attrs) {
+    var keys = _.keys(attrs), length = keys.length;
+    if (object == null) return !length;
+    var obj = Object(object);
+    for (var i = 0; i < length; i++) {
+      var key = keys[i];
+      if (attrs[key] !== obj[key] || !(key in obj)) return false;
+    }
+    return true;
+  };
+
 
   // Internal recursive comparison function for `isEqual`.
   var eq = function(a, b, aStack, bStack) {
@@ -10505,74 +10610,76 @@ r.loadFull(window, document, false, _rollbarConfig);
         // of `NaN` are not equivalent.
         return +a === +b;
     }
-    if (typeof a != 'object' || typeof b != 'object') return false;
+
+    var areArrays = className === '[object Array]';
+    if (!areArrays) {
+      if (typeof a != 'object' || typeof b != 'object') return false;
+
+      // Objects with different constructors are not equivalent, but `Object`s or `Array`s
+      // from different frames are.
+      var aCtor = a.constructor, bCtor = b.constructor;
+      if (aCtor !== bCtor && !(_.isFunction(aCtor) && aCtor instanceof aCtor &&
+                               _.isFunction(bCtor) && bCtor instanceof bCtor)
+                          && ('constructor' in a && 'constructor' in b)) {
+        return false;
+      }
+    }
     // Assume equality for cyclic structures. The algorithm for detecting cyclic
     // structures is adapted from ES 5.1 section 15.12.3, abstract operation `JO`.
+    
+    // Initializing stack of traversed objects.
+    // It's done here since we only need them for objects and arrays comparison.
+    aStack = aStack || [];
+    bStack = bStack || [];
     var length = aStack.length;
     while (length--) {
       // Linear search. Performance is inversely proportional to the number of
       // unique nested structures.
       if (aStack[length] === a) return bStack[length] === b;
     }
-    // Objects with different constructors are not equivalent, but `Object`s
-    // from different frames are.
-    var aCtor = a.constructor, bCtor = b.constructor;
-    if (
-      aCtor !== bCtor &&
-      // Handle Object.create(x) cases
-      'constructor' in a && 'constructor' in b &&
-      !(_.isFunction(aCtor) && aCtor instanceof aCtor &&
-        _.isFunction(bCtor) && bCtor instanceof bCtor)
-    ) {
-      return false;
-    }
+
     // Add the first object to the stack of traversed objects.
     aStack.push(a);
     bStack.push(b);
-    var size, result;
+
     // Recursively compare objects and arrays.
-    if (className === '[object Array]') {
+    if (areArrays) {
       // Compare array lengths to determine if a deep comparison is necessary.
-      size = a.length;
-      result = size === b.length;
-      if (result) {
-        // Deep compare the contents, ignoring non-numeric properties.
-        while (size--) {
-          if (!(result = eq(a[size], b[size], aStack, bStack))) break;
-        }
+      length = a.length;
+      if (length !== b.length) return false;
+      // Deep compare the contents, ignoring non-numeric properties.
+      while (length--) {
+        if (!eq(a[length], b[length], aStack, bStack)) return false;
       }
     } else {
       // Deep compare objects.
       var keys = _.keys(a), key;
-      size = keys.length;
+      length = keys.length;
       // Ensure that both objects contain the same number of properties before comparing deep equality.
-      result = _.keys(b).length === size;
-      if (result) {
-        while (size--) {
-          // Deep compare each member
-          key = keys[size];
-          if (!(result = _.has(b, key) && eq(a[key], b[key], aStack, bStack))) break;
-        }
+      if (_.keys(b).length !== length) return false;
+      while (length--) {
+        // Deep compare each member
+        key = keys[length];
+        if (!(_.has(b, key) && eq(a[key], b[key], aStack, bStack))) return false;
       }
     }
     // Remove the first object from the stack of traversed objects.
     aStack.pop();
     bStack.pop();
-    return result;
+    return true;
   };
 
   // Perform a deep comparison to check if two objects are equal.
   _.isEqual = function(a, b) {
-    return eq(a, b, [], []);
+    return eq(a, b);
   };
 
   // Is a given array, string, or object empty?
   // An "empty" object has no enumerable own-properties.
   _.isEmpty = function(obj) {
     if (obj == null) return true;
-    if (_.isArray(obj) || _.isString(obj) || _.isArguments(obj)) return obj.length === 0;
-    for (var key in obj) if (_.has(obj, key)) return false;
-    return true;
+    if (isArrayLike(obj) && (_.isArray(obj) || _.isString(obj) || _.isArguments(obj))) return obj.length === 0;
+    return _.keys(obj).length === 0;
   };
 
   // Is a given value a DOM element?
@@ -10592,14 +10699,14 @@ r.loadFull(window, document, false, _rollbarConfig);
     return type === 'function' || type === 'object' && !!obj;
   };
 
-  // Add some isType methods: isArguments, isFunction, isString, isNumber, isDate, isRegExp.
-  _.each(['Arguments', 'Function', 'String', 'Number', 'Date', 'RegExp'], function(name) {
+  // Add some isType methods: isArguments, isFunction, isString, isNumber, isDate, isRegExp, isError.
+  _.each(['Arguments', 'Function', 'String', 'Number', 'Date', 'RegExp', 'Error'], function(name) {
     _['is' + name] = function(obj) {
       return toString.call(obj) === '[object ' + name + ']';
     };
   });
 
-  // Define a fallback version of the method in browsers (ahem, IE), where
+  // Define a fallback version of the method in browsers (ahem, IE < 9), where
   // there isn't any inspectable "Arguments" type.
   if (!_.isArguments(arguments)) {
     _.isArguments = function(obj) {
@@ -10607,8 +10714,9 @@ r.loadFull(window, document, false, _rollbarConfig);
     };
   }
 
-  // Optimize `isFunction` if appropriate. Work around an IE 11 bug.
-  if (typeof /./ !== 'function') {
+  // Optimize `isFunction` if appropriate. Work around some typeof bugs in old v8,
+  // IE 11 (#1621), and in Safari 8 (#1929).
+  if (typeof /./ != 'function' && typeof Int8Array != 'object') {
     _.isFunction = function(obj) {
       return typeof obj == 'function' || false;
     };
@@ -10660,6 +10768,7 @@ r.loadFull(window, document, false, _rollbarConfig);
     return value;
   };
 
+  // Predicate-generating functions. Often useful outside of Underscore.
   _.constant = function(value) {
     return function() {
       return value;
@@ -10670,28 +10779,30 @@ r.loadFull(window, document, false, _rollbarConfig);
 
   _.property = function(key) {
     return function(obj) {
+      return obj == null ? void 0 : obj[key];
+    };
+  };
+
+  // Generates a function for a given object that returns a given property.
+  _.propertyOf = function(obj) {
+    return obj == null ? function(){} : function(key) {
       return obj[key];
     };
   };
 
-  // Returns a predicate for checking whether an object has a given set of `key:value` pairs.
-  _.matches = function(attrs) {
-    var pairs = _.pairs(attrs), length = pairs.length;
+  // Returns a predicate for checking whether an object has a given set of 
+  // `key:value` pairs.
+  _.matcher = _.matches = function(attrs) {
+    attrs = _.extendOwn({}, attrs);
     return function(obj) {
-      if (obj == null) return !length;
-      obj = new Object(obj);
-      for (var i = 0; i < length; i++) {
-        var pair = pairs[i], key = pair[0];
-        if (pair[1] !== obj[key] || !(key in obj)) return false;
-      }
-      return true;
+      return _.isMatch(obj, attrs);
     };
   };
 
   // Run a function **n** times.
   _.times = function(n, iteratee, context) {
     var accum = Array(Math.max(0, n));
-    iteratee = createCallback(iteratee, context, 1);
+    iteratee = optimizeCb(iteratee, context, 1);
     for (var i = 0; i < n; i++) accum[i] = iteratee(i);
     return accum;
   };
@@ -10740,10 +10851,12 @@ r.loadFull(window, document, false, _rollbarConfig);
 
   // If the value of the named `property` is a function then invoke it with the
   // `object` as context; otherwise, return it.
-  _.result = function(object, property) {
-    if (object == null) return void 0;
-    var value = object[property];
-    return _.isFunction(value) ? object[property]() : value;
+  _.result = function(object, property, fallback) {
+    var value = object == null ? void 0 : object[property];
+    if (value === void 0) {
+      value = fallback;
+    }
+    return _.isFunction(value) ? value.call(object) : value;
   };
 
   // Generate a unique integer id (unique within the entire client session).
@@ -10858,8 +10971,8 @@ r.loadFull(window, document, false, _rollbarConfig);
   // underscore functions. Wrapped objects may be chained.
 
   // Helper function to continue chaining intermediate results.
-  var result = function(obj) {
-    return this._chain ? _(obj).chain() : obj;
+  var result = function(instance, obj) {
+    return instance._chain ? _(obj).chain() : obj;
   };
 
   // Add your own custom functions to the Underscore object.
@@ -10869,7 +10982,7 @@ r.loadFull(window, document, false, _rollbarConfig);
       _.prototype[name] = function() {
         var args = [this._wrapped];
         push.apply(args, arguments);
-        return result.call(this, func.apply(_, args));
+        return result(this, func.apply(_, args));
       };
     });
   };
@@ -10884,7 +10997,7 @@ r.loadFull(window, document, false, _rollbarConfig);
       var obj = this._wrapped;
       method.apply(obj, arguments);
       if ((name === 'shift' || name === 'splice') && obj.length === 0) delete obj[0];
-      return result.call(this, obj);
+      return result(this, obj);
     };
   });
 
@@ -10892,13 +11005,21 @@ r.loadFull(window, document, false, _rollbarConfig);
   _.each(['concat', 'join', 'slice'], function(name) {
     var method = ArrayProto[name];
     _.prototype[name] = function() {
-      return result.call(this, method.apply(this._wrapped, arguments));
+      return result(this, method.apply(this._wrapped, arguments));
     };
   });
 
   // Extracts the result from a wrapped and chained object.
   _.prototype.value = function() {
     return this._wrapped;
+  };
+
+  // Provide unwrapping proxy for some methods used in engine operations
+  // such as arithmetic and JSON stringification.
+  _.prototype.valueOf = _.prototype.toJSON = _.prototype.value;
+  
+  _.prototype.toString = function() {
+    return '' + this._wrapped;
   };
 
   // AMD registration happens at the end for compatibility with AMD loaders
@@ -38336,7 +38457,7 @@ angular.module('ngResource', ['ng']).
 
 })(window, window.angular);
 /**
- * @license AngularJS v1.3.11
+ * @license AngularJS v1.3.12
  * (c) 2010-2014 Google, Inc. http://angularjs.org
  * License: MIT
  */
@@ -38614,14 +38735,14 @@ function htmlParser(html, handler) {
     }
   }
   var index, chars, match, stack = [], last = html, text;
-  stack.last = function() { return stack[ stack.length - 1 ]; };
+  stack.last = function() { return stack[stack.length - 1]; };
 
   while (html) {
     text = '';
     chars = true;
 
     // Make sure we're not in a script or style element
-    if (!stack.last() || !specialElements[ stack.last() ]) {
+    if (!stack.last() || !specialElements[stack.last()]) {
 
       // Comment
       if (html.indexOf("<!--") === 0) {
@@ -38703,17 +38824,17 @@ function htmlParser(html, handler) {
 
   function parseStartTag(tag, tagName, rest, unary) {
     tagName = angular.lowercase(tagName);
-    if (blockElements[ tagName ]) {
-      while (stack.last() && inlineElements[ stack.last() ]) {
+    if (blockElements[tagName]) {
+      while (stack.last() && inlineElements[stack.last()]) {
         parseEndTag("", stack.last());
       }
     }
 
-    if (optionalEndTagElements[ tagName ] && stack.last() == tagName) {
+    if (optionalEndTagElements[tagName] && stack.last() == tagName) {
       parseEndTag("", tagName);
     }
 
-    unary = voidElements[ tagName ] || !!unary;
+    unary = voidElements[tagName] || !!unary;
 
     if (!unary)
       stack.push(tagName);
@@ -38738,13 +38859,13 @@ function htmlParser(html, handler) {
     if (tagName)
       // Find the closest opened tag of the same type
       for (pos = stack.length - 1; pos >= 0; pos--)
-        if (stack[ pos ] == tagName)
+        if (stack[pos] == tagName)
           break;
 
     if (pos >= 0) {
       // Close all the open elements, up the stack
       for (i = stack.length - 1; i >= pos; i--)
-        if (handler.end) handler.end(stack[ i ]);
+        if (handler.end) handler.end(stack[i]);
 
       // Remove the open elements from the stack
       stack.length = pos;
@@ -44173,7 +44294,7 @@ angular.module('ui.router.state')
 })(window, window.angular);
 /**
  * angular-ui-utils - Swiss-Army-Knife of AngularJS tools (with no external dependencies!)
- * @version v0.2.1 - 2015-01-02
+ * @version v0.2.2 - 2015-02-18
  * @link http://angular-ui.github.com
  * @license MIT License, http://www.opensource.org/licenses/MIT
  */
@@ -44464,17 +44585,6 @@ angular.module('ui.jq',[]).
 
       return function uiJqLinkingFunction(scope, elm, attrs) {
 
-        var linkOptions = [];
-
-        // If ui-options are passed, merge (or override) them onto global defaults and pass to the jQuery method
-        if (attrs.uiOptions) {
-          linkOptions = scope.$eval('[' + attrs.uiOptions + ']');
-          if (angular.isObject(options) && angular.isObject(linkOptions[0])) {
-            linkOptions[0] = angular.extend({}, options, linkOptions[0]);
-          }
-        } else if (options) {
-          linkOptions = [options];
-        }
         // If change compatibility is enabled, the form input's "change" event will trigger an "input" event
         if (attrs.ngModel && elm.is('select,input,textarea')) {
           elm.bind('change', function() {
@@ -44482,10 +44592,25 @@ angular.module('ui.jq',[]).
           });
         }
 
+        function createLinkOptions(){
+          var linkOptions = [];
+
+          // If ui-options are passed, merge (or override) them onto global defaults and pass to the jQuery method
+          if (attrs.uiOptions) {
+            linkOptions = scope.$eval('[' + attrs.uiOptions + ']');
+            if (angular.isObject(options) && angular.isObject(linkOptions[0])) {
+              linkOptions[0] = angular.extend({}, options, linkOptions[0]);
+            }
+          } else if (options) {
+            linkOptions = [options];
+          }
+          return linkOptions;
+        }
+
         // Call jQuery method and pass relevant options
         function callPlugin() {
           $timeout(function() {
-            elm[attrs.uiJq].apply(elm, linkOptions);
+            elm[attrs.uiJq].apply(elm, createLinkOptions());
           }, 0, false);
         }
 
@@ -44774,7 +44899,7 @@ angular.module('ui.mask', [])
           }
 
           function initializeElement(){
-            value = oldValueUnmasked = unmaskValue(controller.$modelValue || '');
+            value = oldValueUnmasked = unmaskValue(controller.$viewValue || '');
             valueMasked = oldValue = maskValue(value);
             isValid = validateValue(value);
             var viewValue = isValid && value.length ? valueMasked : '';
@@ -44919,15 +45044,13 @@ angular.module('ui.mask', [])
             if (linkOptions.clearOnBlur) {
               oldCaretPosition = 0;
               oldSelectionLength = 0;
-            }
-            if (!isValid || value.length === 0) {
-              if (linkOptions.clearOnBlur) {
+              if (!isValid || value.length === 0) {
                 valueMasked = '';
                 iElement.val('');
+                scope.$apply(function () {
+                  controller.$setViewValue('');
+                });
               }
-              scope.$apply(function (){
-                controller.$setViewValue('');
-              });
             }
           }
 
@@ -46099,26 +46222,36 @@ angular.module('ui.scrollfix',[]).directive('uiScrollfix', ['$window', function 
   return {
     require: '^?uiScrollfixTarget',
     link: function (scope, elm, attrs, uiScrollfixTarget) {
-      var top = elm[0].offsetTop,
+      var absolute = true,
+          shift = 0,
+          fixLimit,
           $target = uiScrollfixTarget && uiScrollfixTarget.$element || angular.element($window);
 
       if (!attrs.uiScrollfix) {
-        attrs.uiScrollfix = top;
+          absolute = false;
       } else if (typeof(attrs.uiScrollfix) === 'string') {
         // charAt is generally faster than indexOf: http://jsperf.com/indexof-vs-charat
         if (attrs.uiScrollfix.charAt(0) === '-') {
-          attrs.uiScrollfix = top - parseFloat(attrs.uiScrollfix.substr(1));
+          absolute = false;
+          shift = - parseFloat(attrs.uiScrollfix.substr(1));
         } else if (attrs.uiScrollfix.charAt(0) === '+') {
-          attrs.uiScrollfix = top + parseFloat(attrs.uiScrollfix.substr(1));
+          absolute = false;
+          shift = parseFloat(attrs.uiScrollfix.substr(1));
         }
       }
 
+      fixLimit = absolute ? attrs.uiScrollfix : elm[0].offsetTop + shift;
+
       function onScroll() {
+
+        var limit = absolute ? attrs.uiScrollfix : elm[0].offsetTop + shift;
+
         // if pageYOffset is defined use it, otherwise use other crap for IE
         var offset = uiScrollfixTarget ? $target[0].scrollTop : getWindowScrollTop();
-        if (!elm.hasClass('ui-scrollfix') && offset > attrs.uiScrollfix) {
+        if (!elm.hasClass('ui-scrollfix') && offset > limit) {
           elm.addClass('ui-scrollfix');
-        } else if (elm.hasClass('ui-scrollfix') && offset < attrs.uiScrollfix) {
+          fixLimit = limit;
+        } else if (elm.hasClass('ui-scrollfix') && offset < fixLimit) {
           elm.removeClass('ui-scrollfix');
         }
       }
@@ -46348,7 +46481,7 @@ function uiUploader($log) {
         xhr.onload = function() {
             self.activeUploads -= 1;
             startUpload(self.options);
-            self.options.onCompleted(file);
+            self.options.onCompleted(file, xhr.responseText);
         };
 
         // Triggered when upload fails:
@@ -53902,7 +54035,7 @@ $(window).bind('page:change', window.init_redactor);
  * angular-ui-bootstrap
  * http://angular-ui.github.io/bootstrap/
 
- * Version: 0.12.0 - 2014-11-16
+ * Version: 0.12.1 - 2015-02-20
  * License: MIT
  */
 
@@ -56513,14 +56646,7 @@ angular.module( 'ui.bootstrap.tooltip', [ 'ui.bootstrap.position', 'ui.bootstrap
 
               // Set the initial positioning.
               tooltip.css({ top: 0, left: 0, display: 'block' });
-
-              // Now we add it to the DOM because need some info about it. But it's not
-              // visible yet anyway.
-              if ( appendToBody ) {
-                  $document.find( 'body' ).append( tooltip );
-              } else {
-                element.after( tooltip );
-              }
+              ttScope.$digest();
 
               positionTooltip();
 
@@ -56560,7 +56686,13 @@ angular.module( 'ui.bootstrap.tooltip', [ 'ui.bootstrap.position', 'ui.bootstrap
                 removeTooltip();
               }
               tooltipLinkedScope = ttScope.$new();
-              tooltip = tooltipLinker(tooltipLinkedScope, angular.noop);
+              tooltip = tooltipLinker(tooltipLinkedScope, function (tooltip) {
+                if ( appendToBody ) {
+                  $document.find( 'body' ).append( tooltip );
+                } else {
+                  element.after( tooltip );
+                }
+              });
             }
 
             function removeTooltip() {
@@ -66460,700 +66592,700 @@ PDRClient.config(['$stateProvider', '$urlRouterProvider',
   }
 ]);
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/access/grant.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/access/grant.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/access/grant.html", '<div class="invite-redeem">\n  <div class=\'row row-bg row-header\'>\n    <div class="col-md-offset-1 col-md-9">\n      <div class="col-md-12">\n        <h1>Access Request</h1>\n        <span></span>\n      </div>\n    </div>\n  </div>\n\n</div>\n\n')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/assessments/assessment-list.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/assessments/assessment-list.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/assessments/assessment-list.html", '<div class=\'assessments\'>\n\n  <div ng-repeat="assessment in assessments\n     | filter:{district_name: selectedDistrict}\n     | filter: permissionsFilter(selectedPermission)\n     | filter:{status: selectedStatus}">\n\n    <div class=\'row assessment\'>\n      <div class=\'col-md-1 col-xs-2 overview assessment-background-color disable-assessment\'>\n        <div class="type">\n          {{assessment.status}}\n        </div>\n\n        <div class="status" ng-switch on="assessment.status">\n          <div ng-switch-when="consensus">\n            <i class="fa {{consensusReportIcon(assessment)}}"></i>\n          </div>\n          <div ng-switch-when="assessment">\n            {{roundNumber(assessment.percent_completed)}}%\n          </div>\n          <div ng-switch-default>\n            <i class="fa {{draftStatusIcon(assessment)}}"></i>\n          </div>\n        </div>\n\n      </div>\n\n      <div class=\'col-md-9 col-xs-9 disable-assessment details\'\n        ng-class="activeAssessmentLink(assessment)"\n        ng-click="gotoLocation(responseLink(assessment))">\n        <div class=\'row no-gutters\'>\n          <div class=\'col-md-12 col-xs-12 \'>\n            <h2 class=\'name\'>{{assessment.name}}\n              <i ng-hide="assessment.has_access" class="fa fa-lock"></i>\n            </h2>\n          </div>\n        </div>\n        <div class=\'row stat-row\'>\n          <div class=\'col-md-3 col-sm-3 col-xs-3 no-gutter-left\'>\n            <p class=\'assessment-stat\'>\n              <span class=\'category\'>Participants</span>\n              <span class=\'stat\'>{{assessment.participant_count}}</span>\n            </p>\n          </div>\n          <div class=\'col-md-4 col-sm-3 col-xs-3 no-gutter-left\'>\n            <p class=\'assessment-stat\'>\n            <span class=\'category\'>Completed</span>\n            <span class=\'stat\'>{{assessment.completed_responses}}</span>\n            </p>\n          </div>\n          <div class=\'col-md-5 col-sm-6 col-xs-4 no-gutter-left\'>\n            <p class=\'assessment-stat\'>\n            <span class=\'category\'>Meeting</span>\n            <span class=\'stat\'>{{meetingTime(assessment.meeting_date)}}</span>\n            </p>\n          </div>\n        </div>\n      </div>\n\n      <div class=\'col-md-2 col-xs-1 links\'>\n        <div class="repeat" ng-repeat="link in orderLinks(assessment.links)">\n          <assessment-links\n          data-title="{{link.title}}"\n          data-active="{{link.active}}"\n          data-type="{{link.type}}"\n          data-id="{{assessment.id}}"\n          data-consensus-id="{{assessment.consensus.id}}"\n          data-role="{{role}}">\n          </assessment-links>\n        </div>\n      </div>\n\n    </div>\n    <!-- I added bootstraps center-block class here to center the avatar img and it\'s parent. Shouldn\'t cause any problems though.  -->\n    <div class=\'row assessment-footer\'>\n      <div class=\'avatar col-md-1 col-xs-2 center-block assessment-background-color disable-assessment\'>\n        <avatar\n        data-imgclass="media-object img-circle center-block"\n        data-width="28"\n        data-has-tooltip="true"\n        data-name="{{assessment.facilitator.full_name}}"\n        data-avatar="{{assessment.facilitator.avatar}}"\n        data-role="{{assessment.facilitator.team_role}}">\n        </avatar>\n      </div>\n\n      <div class=\'col-md-7 col-xs-7 disable-assessment\'>\n        <div class="media">\n          <p class="pull-left subheading-text">{{assessment.subheading.text}}</p>\n          <div class="participants-details">\n            <div ng-repeat="p in assessment.subheading.participants">\n              <avatar\n                data-has-tooltip="true"\n                data-style="margin-right:0.375em;"\n                data-name="{{p.full_name}}"\n                data-avatar="{{p.avatar}}"\n                data-role="{{p.team_role}}"\n                data-width="28"\n                data-toolplacement="bottom"\n                data-imgclass="pull-left media-object img-circle">\n              </avatar>\n            </div>\n          </div>\n        </div>\n      </div>\n\n      <div ng-show="isNetworkPartner()" class=\'col-md-4 col-xs-3 district-name disable-assessment\'>\n        {{assessment.district_name}}\n      </div>\n    </div>\n\n  </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/assessments/assign/assign.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/assessments/assign/assign.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
-  $templateCache.put("client/views/assessments/assign/assign.html", "<div class=\"assign-assessment\">\n  <div class='row row-messages'>\n    <div class='col-md-12'>\n      <alert ng-repeat=\"alert in alerts\" type=\"{{alert.type}}\" close=\"closeAlert($index)\">{{alert.msg}}</alert>\n   </div>\n  </div>\n\n    <div class='row row-wizard'>\n        <div class='col-md-2'>\n          <p class='wizard-step'>Step <span class=\"fa-stack fa-lg\"><i class=\"fa fa-circle fa-stack-2x\"></i><i class=\"fa fa-text fa-stack-1x\">1</i></span></p>\n          <p class='wizard-instruction'> This is the name others will see for this assessment.</p>\n        </div>\n        <div class='col-md-10'>\n          <h1>\n            {{assessment.name}}\n          </h1>\n          <p class='byline'>\n            organized by: {{assessment.facilitator.full_name}} on {{formattedDate(assessment.created_at)}}\n          </p>\n\n          <div class='row row--0-settings'>\n            <div class='col-md-3 col-sm-3'>\n              <div class='control-group'>\n                <label for=\"assessment_name\">Assessment Name</label>\n                <input class=\"form-control\" ng-model=\"assessment.name\" type=\"text\">\n              </div>\n            </div>\n\n            <div class='col-md-3 col-sm-3'>\n              <label for=\"district\">District</label>\n              <select\n                required\n                class=\"form-control\"\n                ng-model=\"district\"\n                ng-options=\"district.text for district in user.districts\">\n              </select>\n            </div>\n\n            <div class='col-md-3 col-sm-3'>\n              <div class=\"control-group\">\n                <label for=\"assessment_Due Date\">Due date</label>\n                <div class=\"input-group date datetime\">\n                  <input\n                    class=\"form-control\"\n                    ng-model=\"due_date\"\n                    data-defaultDate=\"{{due_date}}\"\n                    data-format=\"dd/MM/yyyy\"\n                    id=\"due-date\"\n                    name=\"due-date\">\n                  <span class=\"input-group-addon\"><i class=\"fa fa-calendar\"></i></span>\n                </div>\n              </div>\n            </div>\n\n            <div class='col-md-2 col-sm-2 update-holder'>\n              <div class='control-group'>\n                <label>&nbsp;</label>\n                 <div class='btn btn-primary form-control' ng-click=\"save(assessment)\">\n                  <i class='fa fa-spinner fa-spin' ng-show=\"saving\"></i>\n                  Update\n                 </div>\n              </div>\n            </div>\n          </div>\n        </div>\n    </div>\n\n    <div class='row row-wizard'>\n      <div class='col-md-2'>\n        <p class='wizard-step'>Step <span class=\"fa-stack fa-lg\"><i class=\"fa fa-circle fa-stack-2x\"></i><i class=\"fa fa-text fa-stack-1x\">2</i></span></p>\n        <p class='wizard-instruction'>\n          These are the individuals from the district who will receive an invite to participate in the assessment.</p>\n      </div>\n      <div class='col-md-10'>\n        <h2>Participants</h2>\n        <p ng-if=\"isNetworkPartner()\" class='section-subheader'>Recommend the Readiness Assessment to district staff. We recommend inviting 1-2 representatives from different roles and functions involved with PD, including: Teaching & Learning, Human Resources, Curriculum & Instruction, Data & Accountability, Finance, IT, teachers, and principals. You may add participants later on from the dashboard.</p>\n\n        <p ng-if=\"!isNetworkPartner()\" class='section-subheader'>Invite a team of colleagues from your district to participate in the assessment. We recommend inviting 1-2 representatives from different roles and functions involved with PD, including: Teaching & Learning, Human Resources, Curriculum & Instruction, Data & Accountability, Finance, IT, teachers, and principals. You may add participants later on from the dashboard.</p>\n\n        <div class='row row-participant-headers'>\n          <div class='col-md-1 col-sm-1'>&nbsp;</div>\n          <div class='col-md-2 col-sm-2'>Name</div>\n          <div class='col-md-4 col-sm-4'>Email Address</div>\n          <div class='col-md-1 col-sm-3'>Team Role</div>\n        </div>\n\n        <div ng-repeat=\"user in participants\">\n          <div class='row row-participant'>\n            <div class='col-md-1 col-sm-1 '>\n              <avatar data-avatar=\"{{user.avatar}}\" data-width=\"57\"></avatar>\n\n            </div>\n            <div class='col-md-2 col-sm-2'>\n              <p class='name'>{{ user.full_name}}</p>\n            </div>\n            <div class='col-md-4 col-sm-4'>\n              <p class='info'>{{ user.email }}</p>\n            </div>\n            <div class='col-md-2 col-sm-3'>\n              <p class='info'>{{ user.team_role || \"N/A\" }}</p>\n            </div>\n            <div class='col-md-1 col-sm-1 text-center'>\n              <div class=\"btn btn-primary remove_user_button\" ng-click=\"removeParticipant(user)\">Remove</div>\n            </div>\n          </div>\n        </div>\n\n        <manage-participants data-assessment-id=\"{{assessment.id}}\"></manage-participants>\n        <invite-user data-assessment-id=\"{{assessment.id}}\"></invite-user>\n\n      </div>\n    </div>\n    <div class='row row-wizard'>\n      <div class='col-md-2'>\n        <p class='wizard-step'>Step <span class=\"fa-stack fa-lg\"><i class=\"fa fa-circle fa-stack-2x\"></i><i class=\"fa fa-text fa-stack-1x\">3</i></span></p>\n        <p class='wizard-instruction'> Each participant will receive an email invite. You can customize the email message here.</p>\n      </div>\n      <div class='col-md-10'>\n        <h2>Invite Message</h2>\n        <p class='section-subheader'>You can customize the message to all participants. This is the initial invite they'll receive. You can send additional reminders later.</p>\n\n        <div class='row'>\n          <div class='col-md-12 col-sm-12 message'>\n\n            <div class='row'>\n              <div class='col-md-12 col-sm-12'>\n                <h3>Hello (Participant Name),</h3>\n\n                <div class='media'>\n                 <avatar\n                    data-imgclass=\"pull-left media-object img-circle\"\n                    data-width=\"57\"\n                    data-has-tooltip=\"true\"\n                    data-name=\"{{assessment.facilitator.full_name}}\"\n                    data-role=\"{{assessment.facilitator.team_role}}\">\n                 </avatar>\n\n                  <div class='media-body'>\n                    <p class='media-heading'>\n                      <span class='name'>{{assessment.user_name}}</span>\n                      <b>{{user.full_name}}</b> has invited you to participate in {{assessment.name}} for {{assessment.district_name}}.\n                    </p>\n                    <customalert  ng-show='alertError' data-message=\"{{messageError}}\" data-type='error'>\n\n                    </customalert>\n                  </div>\n                </div>\n\n                <div class='form-group'>\n                  <textarea redactor ng-model=\"assessment.message\"></textarea>\n                </div>\n\n                <h3>Please complete this assessment by {{formattedDate(assessment.due_date)}}.</h3>\n                <button class=\"btn btn-primary\" name=\"commit\" type=\"submit\" id='assign_assessment' ng-click='assignAndSave(assessment)'>\n                  <i class='fa fa-spinner fa-spin' ng-show=\"saving\"></i>\n                  <i class='fa fa-envelope-o'></i> Send\n                </button>\n                <button class=\"btn right\" name=\"commit\" type=\"submit\" ng-click='save(assessment)'>\n                  <i class='fa fa-spinner fa-spin' ng-show=\"saving\"></i>\n                  <i class='fa fa-save'></i> Save\n                </button>\n             </div>\n            </div>\n\n          </div>\n        </div>\n\n      </div>\n    </div>\n</div>")
+  $templateCache.put("client/views/assessments/assign/assign.html", "<div class=\"assign-assessment\">\n  <div class='row row-messages'>\n    <div class='col-md-12'>\n      <alert ng-repeat=\"alert in alerts\" type=\"{{alert.type}}\" close=\"closeAlert($index)\">{{alert.msg}}</alert>\n   </div>\n  </div>\n\n    <div class='row row-wizard'>\n        <div class='col-md-2'>\n          <p class='wizard-step'>Step <span class=\"fa-stack fa-lg\"><i class=\"fa fa-circle fa-stack-2x\"></i><i class=\"fa fa-text fa-stack-1x\">1</i></span></p>\n          <p class='wizard-instruction'> This is the name others will see for this assessment.</p>\n        </div>\n        <div class='col-md-10'>\n          <h1>\n            {{assessment.name}}\n          </h1>\n          <p class='byline'>\n            organized by: {{assessment.facilitator.full_name}} on {{formattedDate(assessment.created_at)}}\n          </p>\n\n          <div class='row row--0-settings'>\n            <div class='col-md-3 col-sm-3'>\n              <div class='control-group'>\n                <label for=\"assessment_name\">Assessment Name</label>\n                <input class=\"form-control\" ng-model=\"assessment.name\" type=\"text\">\n              </div>\n            </div>\n\n            <div class='col-md-3 col-sm-3'>\n              <label for=\"district\">District</label>\n              <select\n                required\n                class=\"form-control\"\n                ng-model=\"district\"\n                ng-options=\"district.text for district in user.districts\">\n              </select>\n            </div>\n\n            <div class='col-md-3 col-sm-3'>\n              <div class=\"control-group\">\n                <label for=\"assessment_Due Date\">Due date</label>\n                <div class=\"input-group date datetime\">\n                  <input\n                    class=\"form-control\"\n                    ng-model=\"due_date\"\n                    data-defaultDate=\"{{due_date}}\"\n                    data-format=\"dd/MM/yyyy\"\n                    id=\"due-date\"\n                    name=\"due-date\">\n                  <span class=\"input-group-addon\"><i class=\"fa fa-calendar\"></i></span>\n                </div>\n              </div>\n            </div>\n\n            <div class='col-md-2 col-sm-2 update-holder'>\n              <div class='control-group'>\n                <label>&nbsp;</label>\n                 <div class='btn btn-primary form-control' ng-click=\"save(assessment)\">\n                  <i class='fa fa-spinner fa-spin' ng-show=\"saving\"></i>\n                  Update\n                 </div>\n              </div>\n            </div>\n          </div>\n        </div>\n    </div>\n\n    <div class='row row-wizard'>\n      <div class='col-md-2'>\n        <p class='wizard-step'>Step <span class=\"fa-stack fa-lg\"><i class=\"fa fa-circle fa-stack-2x\"></i><i class=\"fa fa-text fa-stack-1x\">2</i></span></p>\n        <p class='wizard-instruction'>\n          These are the individuals from the district who will receive an invite to participate in the assessment.</p>\n      </div>\n      <div class='col-md-10'>\n        <h2>Participants</h2>\n        <p ng-if=\"isNetworkPartner()\" class='section-subheader'>Recommend the Readiness Assessment to district staff. We recommend inviting 1-2 representatives from different roles and functions involved with PD, including: Teaching & Learning, Human Resources, Curriculum & Instruction, Data & Accountability, Finance, IT, teachers, and principals. You may add participants later on from the dashboard.</p>\n\n        <p ng-if=\"!isNetworkPartner()\" class='section-subheader'>Invite a team of colleagues from your district to participate in the assessment. We recommend inviting 1-2 representatives from different roles and functions involved with PD, including: Teaching & Learning, Human Resources, Curriculum & Instruction, Data & Accountability, Finance, IT, teachers, and principals. You may add participants later on from the dashboard.</p>\n\n        <div class='row row-participant-headers'>\n          <div class='col-md-1 col-sm-1'>&nbsp;</div>\n          <div class='col-md-2 col-sm-2'>Name</div>\n          <div class='col-md-4 col-sm-4'>Email Address</div>\n          <div class='col-md-1 col-sm-3'>Team Role</div>\n        </div>\n\n        <div ng-repeat=\"user in participants\">\n          <div class='row row-participant'>\n            <div class='col-md-1 col-sm-1 '>\n              <avatar data-avatar=\"{{user.avatar}}\" data-width=\"57\"></avatar>\n\n            </div>\n            <div class='col-md-2 col-sm-2'>\n              <p class='name'>{{ user.full_name}}</p>\n            </div>\n            <div class='col-md-4 col-sm-4'>\n              <p class='info'>{{ user.email }}</p>\n            </div>\n            <div class='col-md-2 col-sm-3'>\n              <p class='info'>{{ user.team_role || \"N/A\" }}</p>\n            </div>\n            <div class='col-md-1 col-sm-1 text-center'>\n              <div class=\"btn btn-primary remove_user_button\" ng-click=\"removeParticipant(user)\">Remove</div>\n            </div>\n          </div>\n        </div>\n\n        <manage-participants data-assessment-id=\"{{assessment.id}}\"></manage-participants>\n        <invite-user data-assessment-id=\"{{assessment.id}}\"></invite-user>\n\n      </div>\n    </div>\n    <div class='row row-wizard'>\n      <div class='col-md-2'>\n        <p class='wizard-step'>Step <span class=\"fa-stack fa-lg\"><i class=\"fa fa-circle fa-stack-2x\"></i><i class=\"fa fa-text fa-stack-1x\">3</i></span></p>\n        <p class='wizard-instruction'> Each participant will receive an email invite. You can customize the email message here.</p>\n      </div>\n      <div class='col-md-10'>\n        <h2>Invite Message</h2>\n        <p class='section-subheader'>You can customize the message to all participants. This is the initial invite they'll receive. You can send additional reminders later.</p>\n\n        <div class='row'>\n          <div class='col-md-12 col-sm-12 message'>\n\n            <div class='row'>\n              <div class='col-md-12 col-sm-12'>\n                <h3>Hello (Participant Name),</h3>\n\n                <div class='media'>\n                 <avatar\n                    data-imgclass=\"pull-left media-object img-circle\"\n                    data-width=\"57\"\n                    data-has-tooltip=\"true\"\n                    data-name=\"{{assessment.facilitator.full_name}}\"\n                    data-role=\"{{assessment.facilitator.team_role}}\">\n                 </avatar>\n\n                  <div class='media-body'>\n                    <p class='media-heading'>\n                      <span class='name'>{{assessment.user_name}}</span>\n                      <b>{{user.full_name}}</b> has invited you to participate in {{assessment.name}} for {{assessment.district_name}}.\n                    </p>\n                    <customalert  ng-show='alertError' data-message=\"{{messageError}}\" data-type='error'>\n\n                    </customalert>\n                  </div>\n                </div>\n\n                <div class='form-group'>\n                  <textarea placeholder=\"Add a note (optional)\" redactor ng-model=\"assessment.message\"></textarea>\n                </div>\n\n                <h3>Please complete this assessment by {{formattedDate(assessment.due_date)}}.</h3>\n                <p>\n                  PDredesign is a community of educators and designers committed to continuously improving professional development systems to better support teachers. Alongside leaders from classrooms, schools, charters, districts, and partner organizations across the country, we are building an open digital toolkit and community of practice to support districts to redesign systems that meet the needs of educators and students.\n                </p>\n                <button class=\"btn btn-primary\" name=\"commit\" type=\"submit\" id='assign_assessment' ng-click='assignAndSave(assessment)'>\n                  <i class='fa fa-spinner fa-spin' ng-show=\"saving\"></i>\n                  <i class='fa fa-envelope-o'></i> Send\n                </button>\n                <button class=\"btn right\" name=\"commit\" type=\"submit\" ng-click='save(assessment)'>\n                  <i class='fa fa-spinner fa-spin' ng-show=\"saving\"></i>\n                  <i class='fa fa-save'></i> Save\n                </button>\n             </div>\n            </div>\n\n          </div>\n        </div>\n\n      </div>\n    </div>\n</div>")
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/assessments/dashboard.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/assessments/dashboard.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/assessments/dashboard.html", '<div class=\'dashboard\'>\n  <div class=\'row row-bg row-header\'>\n    <div class="col-md-12">\n      <h1  class="greeting">{{assessment.name}}</h1>\n      <h4 class="byline">organized by: <a href="#">{{assessment.facilitator.full_name}} </a>\n      on {{assessment.created_at | amDateFormat:\'MMMM Do, YYYY\'}}\n      </h4>\n\n      <p id="report-header">\n        {{assessment.overview.text}}\n        <a  ng-if="assessment.overview.link == \'view_consensus\' " href="#/assessments/{{assessment.id}}/consensus/{{assessment.consensus.id}}">View Consensus</a>\n        <a  ng-if="assessment.overview.link == \'edit_consensus\' " href="#/assessments/{{assessment.id}}/consensus/{{assessment.consensus.id}}">Edit Consensus</a>\n      </p>\n      <assessment-priority\n        data-editable="false"\n        data-assessment-id="{{assessment.id}}">\n      </assessment-priority>\n    </div>\n  </div>\n\n  <div class=\'row\'>\n        <div id=\'participants\' ng-show="assessment.is_facilitator">\n          <div class=\'row\'>\n              <div class=\'col-md-12 header\'>\n                <h2>\n                  <span class=\'stat\'>{{assessment.participant_count}} </span>\n                  Participants\n                </h2>\n              </div>\n              <div class=\'col-md-6 col-sm-6\' ng-repeat="user in assessment.participants">\n                <div class=\'row row-participant\' >\n                  <div class=\'col-md-2 col-sm-2 col-xs-2\'>\n                    <avatar data-avatar="{{user.avatar}}"  data-width="100%" ></avatar>\n                  </div>\n                  <div class=\'col-md-6 col-sm-6 col-xs-6\'>\n                    <p class=\'name\'>{{user.full_name}}</p>\n                    <p class=\'email\'>{{user.email}}</p>\n                  </div>\n                  <div class=\'col-md-4 col-sm-4 col-xs-4\'>\n                    <div class=\'status\'>\n                      <response-status data-user="user"></response-status>\n                      <p class="date">{{user.status_date | amDateFormat:\'MMMM Do, YYYY\'}}</p>\n                    </div>\n                  </div>\n                </div>\n              </div>\n          </div>\n        </div>\n        <div class=\'col-md-12 header\'>\n          <manage-participants data-send-invite="true" data-assessment-id="{{assessment.id}}">\n          </manage-participants>\n          \n          <invite-user data-send-invite="true" data-assessment-id="{{assessment.id}}">\n          </invite-user>\n        </div>\n\n        <div id=\'messages\' ng-show="assessment.messages">\n          <div class=\'col-md-12 header\'>\n            <h2>\n              <span class=\'stat\'>{{assessment.messages.length}}</span> Sent Messages\n            </h2>\n          </div>\n\n          <div ng-repeat="message in assessment.messages">\n            <div class=\'row\'>\n              <div class="col-md-12 col-sm-12">\n                <div class="row row-message">\n                  <a href="">\n                    <div class="col-md-1 col-sm-1 col-xs-2">\n                      <i class="fa {{messageIcon(message.category)}}"></i>\n                    </div>\n                    <div class="col-md-11 col-sm-11 col-xs-10 message-content">\n                      <h4 class="subject">\n                        {{messageTitle(message.category)}}\n                        <small class="date">- {{message.sent_at| amDateFormat:\'MMMM Do, YYYY\'}}</small>\n                      </h4>\n                      <p class="content">{{message.teaser}}</p>\n                    </div>\n                  </a>\n                </div>\n\n              </div>\n            </div>\n\n          </div>\n        </div>\n    </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/assessments/dashboard/consensus_modal.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/assessments/dashboard/consensus_modal.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/assessments/dashboard/consensus_modal.html", ' <div id="createConsensus" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="min-height: 570px;"  data-backdrop="false">\n  <div class="modal-dialog">\n    <div class="modal-content">\n      <div class="modal-header">\n        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>\n        <h3 class="modal-title" id="createConsensusLabel">Create Consensus Response</h3>\n      </div>\n      <div class="modal-body">\n        <h3>Creating a consensus response will show all participants\' responses and allow you to facilitate the consensus meeting.</h3>\n        <h3>Keep in mind, however, that this will prevent participants from leaving additional feedback in their own individual responses.</h3>\n      </div>\n      <div class=\'modal-footer\'>\n        <a class="btn btn-primary" href="">Create Consensus Response</a>\n\n      </div>\n    </div><!-- /.modal-content -->\n  </div><!-- /.modal-dialog -->\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/assessments/dashboard/new_reminder_modal.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/assessments/dashboard/new_reminder_modal.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/assessments/dashboard/new_reminder_modal.html", '<div id=\'newReminder\' class="modal fade" tabindex="-1" role="dialog" aria-labelledby="newReminderLabel" aria-hidden="true" style="display: none;"  data-backdrop="false">\n  <div class="modal-dialog">\n    <div class="modal-content"  ng-controller="AssessmentAssignCtrl">\n      <div class="modal-header">\n        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>\n        <h3 class="modal-title" id="newReminderLabel">Send Reminder</h3>\n      </div>\n      <div class="modal-body">\n        <form accept-charset="UTF-8" class="new_message" id="new_message" method="post">\n          <input id="message_category" name="message[category]" type="hidden" value="reminder">\n          <div class="form-group">\n            <label for="message_Message*">Message*</label>\n            <textarea class="form-control" id="message_content" name="message[content]" rows="4">\n              {{assessment.message}}\n            </textarea>\n          </div>\n\n          <div class="form-group">\n            <button class="btn btn-primary pull-left" name="commit" type="submit"><i class="fa fa-envelope-o"></i> Send</button>\n          </div>\n          <div class="clearfix"></div>\n          </form>\n      </div>\n\n    </div><!-- /.modal-content -->\n  </div><!-- /.modal-dialog -->\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/assessments/filters/district-filter.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/assessments/filters/district-filter.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/assessments/filters/district-filter.html", '<div class="form-group">\n  <label for="selected-district" class="control-label">Districts</label>\n    <select class="form-control" id="selected-district" ng-model="selectedDistrict">\n      <option value="" selected>All Districts</option>\n      <option value="{{district}}" ng-repeat="district in districts">\n        {{district}}\n      </option>\n    </select>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/assessments/filters/permission-filter.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/assessments/filters/permission-filter.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/assessments/filters/permission-filter.html", '<div class="form-group">\n  <label for="permission" class="control-label">Permission Level</label>\n    <select class="form-control" id="permission" ng-model="selectedPermission">\n      <option value="" selected>All Permissions</option>\n      <option value="{{permission}}" ng-repeat="permission in types">\n        {{permission}}\n      </option>\n    </select>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/assessments/filters/status-filter.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/assessments/filters/status-filter.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/assessments/filters/status-filter.html", '<div class="form-group">\n  <label for="status" class="control-label">Status</label>\n  <select class="form-control text-capitalize" id="status" ng-model="selectedStatus">\n    <option value="" selected>All</option>\n    <option value="{{status}}" ng-repeat="status in statuses">\n      {{status}}\n    </option>\n  </select>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/assessments/index.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/assessments/index.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/assessments/index.html", '<div class="row secondary user-header">\n    <div class="col-md-12">\n      <h1>Hi {{user.first_name}}</h1>\n      <p>This is your Readiness Assessment dashboard. Create a new assessment or check the status of an existing one to proceed.</p>\n    </div>\n  </div>\n  <div class="col-md-12">\n    <div ng-show="isNetworkPartner()">\n      <div id="assessments-filter">\n        <div class="col-md-4">\n          <district-filter\n            districts="districts"\n            selected-district="selectedDistrict">\n          </district-filter>\n        </div>\n        <div class="col-md-4">\n          <permission-filter\n            types="permissionTypes"\n            selected-permission="selectedPermission">\n          </permission-filter>\n        </div>\n\n        <div class="col-md-4">\n          <status-filter\n            statuses="statuses"\n            selected-status="selectedStatus">\n          </status-filter>\n        </div>\n      </div>\n    </div>\n    <!-- <start-assessment></start-assessment> -->\n    <div ng-include src="\'client/views/assessments/assessment-list.html\'" scope="this"></div>\n  </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/assessments/report.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/assessments/report.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/assessments/report.html", '<div class=\'report\'>\n  <div class=\'row-bg row-header\'>\n      <div class=\'row\'>\n        <div class="col-md-12">\n          <h1 class="greeting">{{assessment.name}}</h1>\n          <h4 class="byline">organized by:\n            <a href="#">{{assessment.facilitator.full_name}} </a>\n            on {{assessment.created_at | amDateFormat:\'MMMM Do, YYYY\'}}\n          </h4>\n\n          <p id="report-header">\n            {{assessment.overview.text}}\n            <a ng-if="assessment.overview.link == \'view_consensus\' " href="#/assessments/{{assessment.id}}/consensus/{{assessment.consensus.id}}">View Consensus</a>\n          </p>\n          <assessment-priority\n          data-editable="{{canEditPriorities()}}"\n          data-assessment-id="{{assessment.id}}"></assessment-priority>\n        </div>\n      </div>\n  </div>\n  <div class=\'row-bg row-body\'>\n      <div class=\'row\'>\n        <div class=\'col-md-12\'>\n          <h2>Report Detail</h2>\n          <div class=\'axis col-md-4\' ng-repeat=\'axis in report.axes\'>\n            <h4>{{axis.name}}</h4>\n            <div class=\'question col-md-12\' ng-repeat=\'question in axis.questions\'>\n              <div class=\'col-md-7\'>\n                {{question.headline}}\n              </div>\n              <div class=\'col-md-5\'>\n                <div class=\'answer col-md-2\' ng-repeat=\'answer in question.answers\'>\n                  <i ng-class="{selected: answer.value == question.score.value}"\n                  class="fa fa-circle scored-{{answer.value}}"></i>\n                </div>\n              </div>\n            </div>\n            <div class=\'question col-md-12\'>\n              <div class=\'average col-md-7\'>\n                Average\n              </div>\n              <div class=\'average col-md-5\'>\n                <div class=\'answer col-md-2\' ng-repeat=\'answer in [1, 2, 3, 4]\'>\n                  <i ng-class="{selected: axis.average == answer}"\n                    class="fa fa-circle scored-{{answer}}"></i>\n                </div>\n              </div>\n            </div>\n\n            <div class=\'question col-md-12\'>\n              <div class=\'col-md-7\'></div>\n              <div class=\'col-md-5\'>\n                <div class=\'answer col-md-2\' ng-repeat=\'answer in [1, 2, 3, 4]\'>\n                  {{answer}}\n                </div>\n              </div>\n            </div>\n          </div>\n        </div>\n      </div>\n  </div>\n  <div class="row">\n    <take-away assessment-id="{{id}}"></take-away>\n  </div>\n    <div class="row">\n      <div class="col-md-12 col-sm-12">\n        <div id="next-steps">\n          <h2>Next Steps</h2>\n\n          <div class="row">\n            <div class="col-md-12 col-sm-12">\n              <div class="row row-step">\n                <div class="col-md-1 col-sm-1 col-xs-2">\n                  <i class="fa fa-check"></i>\n                </div>\n                <div class="col-md-11 col-sm-11 col-xs-10">\n                  <h4 class="subject">Root Cause</h4>\n                  <p class="content">\n                  Engage in a "root cause" discussion to answer potential follow up questions like:\n                  </p><ul class="content">\n                    <li>Are there any common problems connecting low scored categories?</li>\n                    <li>Why is _____________ category weaker than others?</li>\n                    <li>Which category is most important to improve?</li>\n                  </ul>\n                  <p></p>\n                </div>\n              </div>\n            </div>\n          </div>\n\n\n          <div class="row">\n            <div class="col-md-12 col-sm-12">\n              <div class="row row-step">\n                <div class="col-md-1 col-sm-1 col-xs-2">\n                  <i class="fa fa-check"></i>\n                </div>\n                <div class="col-md-11 col-sm-11 col-xs-10">\n                  <h4 class="subject">Review</h4>\n                  <p class="content">Review this report with others in your organization to clarify, review, gather more evidence, etc. You can start by <a href="mailto:?body=Check%20out%20the%20report%20here%3A%20http%3A%2F%2Fstaging.pdredesign.org%2Fassessments%2F37%2Freport&amp;subject=PD%20Redesign%3A%20Report%20from%20Michael%20Test%20School%20County%20" target="_blank">sharing this report</a> with specific colleagues.</p>\n                </div>\n              </div>\n            </div>\n          </div>\n\n          <div class="row">\n            <div class="col-md-12 col-sm-12">\n              <div class="row row-step">\n                <div class="col-md-1 col-sm-1 col-xs-2">\n                  <i class="fa fa-check"></i>\n                </div>\n                <div class="col-md-11 col-sm-11 col-xs-10">\n                  <h4 class="subject">Prioritize</h4>\n                  <p class="content">Prioritize your PD strategy based on the strengths and weaknesses identified in the Readiness Assessment. Clarify how your organization will build upon strengths and improve upon weaknesses.</p>\n                </div>\n              </div>\n            </div>\n          </div>\n\n\n          <div class="row">\n            <div class="col-md-12 col-sm-12">\n              <div class="row row-step">\n                <div class="col-md-1 col-sm-1 col-xs-2">\n                  <i class="fa fa-check"></i>\n                </div>\n                <div class="col-md-11 col-sm-11 col-xs-10">\n                  <h4 class="subject">Find Out More Information</h4>\n                  <p class="content">Identify areas where you need to learn more detailed information, or conduct a "deep dive diagnostic". For example, if your Data Infrastructure category scored low, perhaps doing a more exhaustive analysis of your Data Infrastructure will help prioritize your PD strategic plan.</p>\n                </div>\n              </div>\n            </div>\n          </div>\n\n          <div class="row">\n            <div class="col-md-12 col-sm-12">\n              <div class="row row-step">\n                <div class="col-md-1 col-sm-1 col-xs-2">\n                  <i class="fa fa-check"></i>\n                </div>\n                <div class="col-md-11 col-sm-11 col-xs-10">\n                  <h4 class="subject">Future Vision</h4>\n                  <p class="content">This should include a roadmap of the first 100 days of PDredesign.</p>\n                </div>\n              </div>\n            </div>\n          </div>\n\n        </div>\n      </div>\n    </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/consensus/header.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/consensus/header.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/consensus/header.html", '<div class=\'row secondary user-header\'>\n  <div class="col-md-12">\n    <div class="media">\n      <div class="media-body">\n        <h1>{{assessment.name}}</h1>\n        <p class=\'byline\'>organized by:\n          <a href=""> {{assessment.facilitator.full_name}}</a>\n          on {{assessment.created_at  | amDateFormat:\'MMMM Do, YYYY\'}}\n        </p>\n        <h2 class=\'instructions-header\'>Instructions</h2>\n\n        <div class=\'col-md-12\'>\n          <p class=\'instructions-content\'>\n            The Readiness Assessment consists of questions across the 8 categories of the <readiness-assessment-modal title="PD System Map"></readiness-assessment-modal>. As the assessment facilitator, use this page to guide and document the conversation during the in-person consensus meeting.\n          </p>\n          <p class=\'instructions-content\'>\n            For each question, discuss the individual responses as a group to collectively decide a consensus score, including notes for reference. You may sort or skip questions to support a targeted discussion. Save each completed response as you move through the consensus meeting.\n          </p>\n        </div>\n      </div>\n\n    </div>\n  </div>\n</div>\n\n<div class="row">\n  <div class="export-buttons col-md-12 text-right">\n    <button class="btn btn-primary" ng-click="exportToPDF()">Export to PDF</button>\n    <button class="btn btn-primary" ng-click="exportToCSV()">Export to CSV</button>\n  </div>\n</div>\n')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/consensus/show.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/consensus/show.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/consensus/show.html", '<ng-include src="\'client/views/consensus/header.html\'"></ng-include>\n\n  <div class="col-md-12 col-sm-12">\n    <consensus data-assessment-id="{{assessmentId}}" data-response-id="{{responseId}}">\n    </consensus>\n  </div>\n')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/directives/add_tool.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/directives/add_tool.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/directives/add_tool.html", '<a href="">\n  <div ng-click="showAddToolModal()" class="row add-tool">\n    <div class="col-sm-1 col-md-1 icon">\n      <i class="fa fa-plus"></i>\n    </div>\n    <div class="col-sm-9 col-md-9 heading">\n      <p>\n        Add Tool\n      </p>\n    </div>\n  </div>\n</a>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/directives/assessment_chart.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/directives/assessment_chart.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/directives/assessment_chart.html", '<div id="chart" class="col-md-5 col-sm-5">\n  <p class="title">Readiness Assessment Profile</p>\n  <div id="assessment-chart"></div>\n</div>\n')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/directives/assessment_dashboard_link.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/directives/assessment_dashboard_link.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/directives/assessment_dashboard_link.html", '<div class="col-md-2 col-sm-2">\n  <a class="active" href="#"><i class="fa fa-dashboard"></i>Dashboard</a>\n  <a class="active" href="#"><i class="fa fa-group"></i> Consensus</a>\n  <a href="#"><i class="fa fa-file-text-o"></i> Report</a>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/directives/assessment_index_links.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/directives/assessment_index_links.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/directives/assessment_index_links.html", '<div\n  ng-show="title"\n  class="link"\n  ng-click="gotoLocation(assessmentLink(type))">\n    <div class="btn btn-primary pull-right link-button">\n      <i class="fa fa-{{linkIcon(type)}}"></i>\n      {{title}}\n    </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/directives/assessment_priority.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/directives/assessment_priority.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/directives/assessment_priority.html", '<div class="assessment-priority" class="col-md-9">\n  <div class="header row">\n    <div class="priority col-md-7 col-sm-7">\n      <table class="table table-diagnostic" ng-hide="loading">\n        <thead>\n          <tr>\n            <td class="category-header">Priority</td>\n            <td>PD Category</td>\n            <td>Consensus Score</td>\n            <td>Diagnostic Min</td>\n            <td>Diagnostic Suggested</td>\n          </tr>\n        </thead>\n        <tbody>\n        <tr ng-repeat="category in categories"\n          class="category scored-{{scoredAverage(category)}}"\n          id="{{category.id}}">\n          <td class="centered">{{$index + 1}}</td>\n          <td>{{category.name}}</td>\n          <td>{{roundedAverage(category.average)}}</td>\n          <td>{{category.diagnostic_min}}</td>\n          <td ng-show="category.diagnostic_suggested">Yes</td>\n          <td ng-hide="category.diagnostic_suggested">No</td>\n        </tr>\n        </tbody>\n      </table>\n      <div ng-show="editable">\n        <button\n          class="btn btn-primary"\n          ng-click="savePriority()">\n          <i ng-hide="loading" class="fa fa-save"></i>\n          <i ng-show="loading" class="fa fa-spinner fa-spin"></i>\n          Save Priority\n        </button>\n      </div>\n\n    </div>\n    <assessment-chart data-assessment-id="{{assessmentId}}">></assessment-chart>\n  </div>\n</div>\n')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/directives/avatar.html.erb
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/directives/avatar.html.erb
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/directives/avatar.html", '<div class="avatar">\n    <img ng-hide="avatar == \'\'"\n      ng-style="ngWidth"\n      ng-src="{{avatar}}"\n      class="{{imgclass}}"\n      style="{{style}}"\n      data-html="true"\n      data-placement="{{toolplacement}}"\n      data-title="{{title}}"\n      data-toggle="tooltip"\n      data-original-title="">\n\n      <img ng-show="avatar == \'\'"\n      ng-src="/assets/fallback/default-f0ad424476beb31d1d8c2e830a05ff70.png"\n      ng-style="ngWidth"\n      class="{{imgclass}}"\n      style="{{style}}"\n      data-html="true"\n      data-placement="{{toolplacement}}"\n      data-title="{{title}}"\n      data-toggle="tooltip"\n      data-original-title="">\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/directives/consensus.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/directives/consensus.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/directives/consensus.html", '<div class="categories">\n  <div class="category" ng-repeat="category in categories">\n    <div class="row">\n      <div class="row">\n        <div class="col-sm-12 col-md-12">\n          <p class="category-label">{{category.name}}</p>\n        </div>\n        <div class="row question-container question-{{question.id}}" ng-repeat="question in category.questions">\n\n          <div class="col-md-12 col-sm-12 question-row" ng-click="toggleAnswers(question)">\n            <div class="col-md-1 col-sm-1 question">\n              <p class="question-id scored-{{question.score.value}}" ng-show="question.loading">\n                <i class="fa fa-spinner fa-spin"></i>\n              </p>\n              <p class="question-id scored-{{question.score.value}}" ng-hide="question.loading">\n                <a href="#question-{{question.id}}"></a>\n                {{question.number}}\n              </p>\n            </div>\n            <div class="row question-content">\n              <div class="col-md-11">\n                <p class="question">{{question.headline}}</p>\n              </div>\n              <div class="col-md-11">\n                <p class="content">{{question.content}}</p>\n              </div>\n            </div>\n          </div>\n          <div class="col-md-12 col-sm-12 answers" ng-show="question.answersVisible">\n            <div class="answer" ng-repeat="answer in question.answers">\n              <div class="col-md-1 col-sm-1"></div>\n              <div class="col-md-11 col-sm-11 answer-row value-color-{{answer.value}}" ng-class="{scored{{answer.value}}: question.score.value == answer.value}">\n                <div class="answer-info-row">\n                  <div class="col-md-1 col-sm-1 scored-{{answer.value}} answer-value">\n                    <span>{{answer.value}}</span>\n                  </div>\n                  <div class="col-md-3 col-sm-3 answer-title title-{{answer.value}}">\n                    {{answerTitle(answer.value)}}\n                  </div>\n                  <div class="col-md-8 col-sm-8 answer-description">\n                    {{answer.content}}\n                  </div>\n                </div>\n              </div>\n            </div>\n          </div>\n\n        </div>\n      </div>\n    </div>\n  </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/directives/consensus_scoring.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/directives/consensus_scoring.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/directives/consensus_scoring.html", '<div>\n  <div class="evidence-discussion col-md-12">\n    <span>Consensus Scoring</span>\n  </div>\n  <div class="col-md-12 evidence-holder">\n    <span class="consensus-header">Notes</span>\n    <div class="consensus-notes">\n      <textarea class="col-md-12" ng-model="question.score.evidence"></textarea>\n    </div>\n      <div class="consensus-header">Score</div>\n    <div class=\'col-md-10\'>\n       <div class=\'row row-values\'>\n        <div ng-repeat="answer in question.answers">\n          <div class="col-md-3">\n            <button class=\'btn btn-block btn-value-{{answer.value}}\' ng-click="\n            assignAnswerToQuestion(answer, question)" ng-class="">\n              {{answer.value}}\n            </button>\n          </div>\n        </div>\n       </div>\n\n    </div>\n    <div class="col-md-2">\n      <button class="btn btn-block"><i class="fa fa-save"></i>Save</button>\n    </div>\n  </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/directives/district_message.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/directives/district_message.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/directives/district_message.html", '<div>\n  <ng-include src="\'client/views/shared/errors.html\'"> </ng-include>\n  <input\n    ng-model="message.name"\n    class="form-group form-control"\n    placeholder="Their Name*"\n    type="text">\n\n  <input\n    ng-model="message.address"\n    class="form-group form-control"\n    placeholder="Their Address*"\n    type="text">\n\n  <input\n    ng-model="message.sender_name"\n    class="form-group form-control"\n    placeholder="Your Name*"\n    type="text">\n\n  <input\n    ng-model="message.sender_email"\n    class="form-group form-control"\n    placeholder="Your Email Address*"\n    type="text">\n\n  <button ng-click="sendMessage(message)" class="btn btn-primary btn-lg send-message">Send a Message</button>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/directives/district_select.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/directives/district_select.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/directives/district_select.html", '<div class="districts-selector">\n  <input placeholder="Select a district" id="districts" ng-model="districts"/>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/directives/evidence_discussion.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/directives/evidence_discussion.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/directives/evidence_discussion.html", '<div>\n  <div class="evidence-discussion col-md-12">\n      <span>Evidence Discussion</span>\n  </div>\n\n  <div class="col-md-12 evidence-holder">\n    <div class="col-md-1"></div>\n    <div class="col-md-11">\n      <div class="evidence-list box-scroll">\n        <div ng-repeat="answer in question.answers">\n          <table class="table table-evidence">\n            <tbody>\n              <tr>\n                <!-- TODOO MOCH RESPONSE USER   -->\n                <td class="response-value scored-{{question.score.value}}">4</td>\n                <td><p>This is my evidence for this question.</p></td>\n              </tr>\n              <tr>\n                <td>\n                  <!-- TODOO MOCH RESPONSE USER   -->\n                  <avatar  data-avatar="https://avatars1.githubusercontent.com/u/221008?s=140"   data-width="37">\n                  </avatar>\n                </td>\n                <td>by: <a href="#">Sean Perkins</a> on: Apr 01, 2014</td>\n              </tr>\n            </tbody>\n          </table>\n\n        </div>\n      </div>\n    </div>\n  </div>\n\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/directives/faqs.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/directives/faqs.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/directives/faqs.html", '<div class="faq-container">\n  <div class="row faq filters">\n      <div class="col-sm-12">\n        <b>Filter By:</b>\n          <div class="row filter-container">\n            <div class="col-sm-12 col-md-4">\n              <span><h4>Role:</h4></span>\n              <select id="role-filter" class="form-control" ng-model="selectedRole" ng-change="updatedSelection()">\n                <option value="">All Roles</option>\n                <option value="{{role}}" ng-selected="selectedRole == role" ng-repeat="role in roles()">\n                  {{role}}\n                </option>\n\n              </select>\n            </div>\n            <div class="col-sm-12 col-md-4">\n              <span><h4>Topic:</h4></span>\n              <select id="topic-filter" class="form-control" ng-model="selectedTopic" ng-change="updatedSelection()">\n                <option value="">All Topics</option>\n                <option value="{{topic}}" ng-selected="selectedTopic == topic" ng-repeat="topic in topics()">\n                  {{topic}}\n                </option>\n\n              </select>\n            </div>\n\n          </div>\n    </div>\n  </div>\n\n  <div class="row faq category" ng-repeat="category in categories">\n    <div class="col-sm-12">\n      <h2>{{category.heading}}</h2>\n      <div class="panel-group" id="accordion">\n        <div class="panel"  ng-repeat="question in category.questions | propertyFilter:\'role\':selectedRole | propertyFilter:\'topic\':selectedTopic">\n          <div class="panel-heading" ng-click="toggleQuestion(question)">\n            <h3 class="panel-title">\n              <a href="">\n                {{question.content}}\n              </a>\n            </h3>\n          </div>\n          <div id="question-{{question.id}}">\n            <div \n              class="panel-body"\n              collapse="!question.visible"\n              ng-bind-html="question.answer">\n            </div>\n          </div>\n        </div>\n      </div>\n    </div>\n  </div>\n\n  <div class="row">\n    <div class="col-sm-12 text-center">\n      <h3>Is your question not listed here?</h3> \n      <a href="mailto:support@mail.pdredesign.org?subject=I%20have%20a%20question"\n         class="btn btn-primary">Ask Us a Question</a>\n    </div>\n  </div>\n\n</div>\n')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/directives/invite_user.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/directives/invite_user.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/directives/invite_user.html", '<div class="row manage manage-participants plus-button" ng-click="showInviteUserModal()">\n  <a href="">\n    <div class="col-sm-1 col-md-1">\n      <i class="fa fa-plus"></i>\n    </div>\n    <div class="col-sm-11 col-md-11 heading">\n      <h1>Add New Participants</h1>\n    </div>\n  </a>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/directives/manage_participants.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/directives/manage_participants.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/directives/manage_participants.html", '<div class="row manage manage-participants plus-button" ng-click="showAddParticipants()">\n  <a href="">\n    <div class="col-sm-1 col-md-1">\n      <i class="fa fa-plus"></i>\n    </div>\n    <div class="col-sm-11 col-md-11 heading">\n      <h1>Add Participants</h1>\n    </div>\n  </a>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/directives/mode_answer.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/directives/mode_answer.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/directives/mode_answer.html", '<span class="label label-mode">\n  <i ng-if="question.score.value == answer.value" class="fa fa-heart"></i>\n  <!-- TODOO MOCK SCORE AND RESPONSES -->\n  <span class="score_count">{{scores}}</span><span class="response_count">/{{responses}}</span\n</span>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/directives/organization_select.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/directives/organization_select.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/directives/organization_select.html", '<div class="row organization-selector">\n  <div class="col-md-12">\n    <label for="organization">Organization</label>\n  </div>\n\n  <div class=\'col-md-8 selector\'>\n    <input placeholder="Select or create organization" id="organization"/>\n  </div>\n\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/directives/readiness_assessment_link.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/directives/readiness_assessment_link.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/directives/readiness_assessment_link.html", '<a ng-click="pdrOverview()" class="normal-cursor-hover">{{title}}</a>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/directives/response_questions.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/directives/response_questions.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
-  $templateCache.put("client/views/directives/response_questions.html", '<div class="categories">\n  <ng-include\n    ng-show="isConsensus"\n    src="\'client/views/shared/responses/sort_by.html\'" >\n  </ng-include>\n\n  <ng-include\n    ng-show="isConsensus"\n    src="\'client/views/shared/responses/filter_by_role.html\'" >\n  </ng-include>\n\n  <div class="category" ng-repeat="category in categories">\n    <div class="row">\n      <div class="row">\n        <div class="col-md-12">\n          <p class="category-label" ng-click="toggleCategoryAnswers(category)">\n            <i class="fa fa-chevron-right" ng-class="{\'fa-chevron-down\' : category.toggled == true}"></i>\n            {{category.name}}\n          </p>\n        </div>\n        <div class="row question-container question-{{question.id}}" ng-repeat="question in category.questions">\n          <div class="col-md-12 question-row" ng-click="toggleAnswers(question)">\n            <div class="col-md-1 question">\n              <p class="question-id scored-{{question.score.value}}" ng-show="question.loading">\n                <i class="fa fa-spinner fa-spin"></i>\n              </p>\n              <p id="question-{{question.number}}" class="question-id {{questionColor(question, isConsensus)}}" ng-hide="question.loading">\n                <a href="#question-{{question.id}}"></a>\n                {{question.number}}\n              </p>\n            </div>\n            <div class="row question-content">\n              <div class="col-md-9">\n                <p class="question">\n                  {{question.headline}}\n                </p>\n                <p class="content">{{question.content}}</p>\n              </div>\n\n              <div class="col-md-1" ng-hide="isConsensus">\n                <sample-evidence ng-hide="!question.key_question" key-question="question.key_question"></sample-evidence>\n              </div>\n\n              <div class="col-md-2">\n                <div class="consensus-percentage-bar" ng-show="isConsensus">\n                  <div\n                    class="scored-{{answer.value}} bar bar-{{answer.value}}"\n                    ng-repeat="answer in question.answers | orderBy:value"\n                    ng-style="{height: \'{{percentageByResponse(scores, question.id, answer.value, question.answers.length)}}\'}">\n                  </div>\n                  <div\n                    class="scored-skipped bar skipped"\n                    ng-style="{height: \'{{percentageByResponse(scores, question.id, answer.value, question.answers.length)}}\'}">\n                  </div>\n                </div>\n              </div>\n\n            </div>\n          </div>\n          <div class="col-md-12 answers" ng-show="question.answersVisible">\n            <div class="answer" ng-repeat="answer in question.answers" ng-click="assignAnswerToQuestion(answer, question)">\n              <div class="left-score col-md-1">\n                <ng-include\n                  ng-show="isConsensus"\n                  src="\'client/views/shared/responses/score_count.html\'">\n                </ng-include>\n              </div>\n\n              <div\n                class="col-md-11 answer-row value-color-{{answer.value}}"\n                ng-class="{scored{{answer.value}}: question.score.value == answer.value}">\n\n                <div class="answer-info-row">\n                  <div class="col-md-1 scored-{{answer.value}} answer-value">\n                    <span>{{answer.value}}</span>\n                  </div>\n                  <div class="col-md-3 answer-title title-{{answer.value}}">\n                    {{answerTitle(answer.value)}}\n                  </div>\n                  <div class="col-md-8 answer-description" ng-bind-html="answer.content">\n                  </div>\n                </div>\n\n                <ng-include\n                  ng-hide="isConsensus"\n                  src="\'client/views/shared/responses/member_question.html\'" >\n                </ng-include>\n\n              </div>\n            </div>\n            <div class="left-score col-md-1" ng-if="isConsensus">\n              <ng-include\n                src="\'client/views/shared/responses/score_count.html\'">\n              </ng-include>\n            </div>\n\n            <skip-question\n              editable="!isConsensus"\n              question="question"\n              response-id="{{responseId}}"\n              assessment-id="{{assessmentId}}">\n            </skip-question>\n\n            <ng-include\n              ng-show="isConsensus"\n              src="\'client/views/shared/responses/evidence.html\'" >\n            </ng-include>\n\n            <ng-include\n              ng-show="isConsensus"\n              src="\'client/views/shared/responses/consensus_score_entry.html\'" >\n            </ng-include>\n\n          </div>\n        </div>\n      </div>\n    </div>\n  </div>\n</div>')
+  $templateCache.put("client/views/directives/response_questions.html", '<div class="categories">\n  <ng-include\n    ng-show="isConsensus"\n    src="\'client/views/shared/responses/sort_by.html\'" >\n  </ng-include>\n\n  <ng-include\n    ng-show="isConsensus"\n    src="\'client/views/shared/responses/filter_by_role.html\'" >\n  </ng-include>\n\n  <div class="category" ng-repeat="category in categories">\n    <div class="row">\n      <div class="row">\n        <div class="col-md-12">\n          <p class="category-label" ng-click="toggleCategoryAnswers(category)">\n            <i class="fa fa-chevron-right" ng-class="{\'fa-chevron-down\' : category.toggled == true}"></i>\n            {{category.name}}\n          </p>\n        </div>\n        <div class="row question-container question-{{question.id}}" ng-repeat="question in category.questions">\n          <div class="col-md-12 question-row" ng-click="toggleAnswers(question)">\n            <div class="col-md-1 question">\n              <p class="question-id scored-{{question.score.value}}" ng-show="question.loading">\n                <i class="fa fa-spinner fa-spin"></i>\n              </p>\n              <p id="question-{{question.number}}" class="question-id {{questionColor(question, isConsensus)}}" ng-hide="question.loading">\n                <a href="#question-{{question.id}}"></a>\n                {{question.number}}\n              </p>\n            </div>\n            <div class="row question-content">\n              <div class="col-md-9">\n                <p class="question">\n                  {{question.headline}}\n                </p>\n                <p class="content">{{question.content}}</p>\n              </div>\n\n              <div class="col-md-1" ng-hide="isConsensus">\n                <sample-evidence ng-hide="!question.key_question" key-question="question.key_question"></sample-evidence>\n              </div>\n\n              <div class="col-md-2">\n                <div class="consensus-percentage-bar" ng-show="isConsensus">\n                  <div\n                    class="scored-{{answer.value}} bar bar-{{answer.value}}"\n                    ng-repeat="answer in question.answers | orderBy:value"\n                    ng-style="{height: \'{{percentageByResponse(scores, question.id, answer.value, participantCount)}}\'}">\n                  </div>\n                  <div\n                    class="scored-skipped bar skipped"\n                    ng-style="{height: \'{{percentageByResponse(scores, question.id, answer.value, participantCount)}}\'}">\n                  </div>\n                </div>\n              </div>\n\n            </div>\n          </div>\n          <div class="col-md-12 answers" ng-show="question.answersVisible">\n            <div class="answer" ng-repeat="answer in question.answers" ng-click="assignAnswerToQuestion(answer, question)">\n              <div class="left-score col-md-1">\n                <ng-include\n                  ng-show="isConsensus"\n                  src="\'client/views/shared/responses/score_count.html\'">\n                </ng-include>\n              </div>\n\n              <div\n                class="col-md-11 answer-row value-color-{{answer.value}}"\n                ng-class="{scored{{answer.value}}: question.score.value == answer.value}">\n\n                <div class="answer-info-row">\n                  <div class="col-md-1 scored-{{answer.value}} answer-value">\n                    <span>{{answer.value}}</span>\n                  </div>\n                  <div class="col-md-3 answer-title title-{{answer.value}}">\n                    {{answerTitle(answer.value)}}\n                  </div>\n                  <div class="col-md-8 answer-description" ng-bind-html="answer.content">\n                  </div>\n                </div>\n\n                <ng-include\n                  ng-hide="isConsensus"\n                  src="\'client/views/shared/responses/member_question.html\'" >\n                </ng-include>\n\n              </div>\n            </div>\n            <div class="left-score col-md-1" ng-if="isConsensus">\n              <ng-include\n                src="\'client/views/shared/responses/score_count.html\'">\n              </ng-include>\n            </div>\n\n            <skip-question\n              editable="!isConsensus"\n              question="question"\n              response-id="{{responseId}}"\n              assessment-id="{{assessmentId}}">\n            </skip-question>\n\n            <ng-include\n              ng-show="isConsensus"\n              src="\'client/views/shared/responses/evidence.html\'" >\n            </ng-include>\n\n            <ng-include\n              ng-show="isConsensus"\n              src="\'client/views/shared/responses/consensus_score_entry.html\'" >\n            </ng-include>\n\n          </div>\n        </div>\n      </div>\n    </div>\n  </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/directives/response_status.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/directives/response_status.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/directives/response_status.html", '<div>\n  <div class=\'invite-email\' ng-show="showMailLink()">\n    <i class="fa fa-fa {{statusMessageIcon(user.status)}}"></i>\n    <a href="" ng-click="sendEmail()">{{user.status_human}}</a>\n  </div>\n  <div class=\'user-status\' ng-hide="showMailLink()">\n    <i class="fa fa-fa {{statusMessageIcon(user.status)}}"></i>\n      {{user.status_human}}\n  </div>\n\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/directives/sample_evidence.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/directives/sample_evidence.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/directives/sample_evidence.html", '<span class="sample-evidence">\n  <i class="fa fa-question"\n    data-toggle="sampleEvidence"\n    data-content="{{content}}">\n  </i>\n</span>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/directives/signup.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/directives/signup.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/directives/signup.html", '<div class="signup-directive">\n  <form name="signup">\n  <ng-include src="\'client/views/shared/errors.html\'"> </ng-include>\n    <input\n    required\n    ng-model="user.first_name"\n    class="form-group form-control"\n    placeholder="First Name*"\n    type="text">\n\n    <input\n    required\n    ng-model="user.last_name"\n    class="form-group form-control"\n    placeholder="Last Name*"\n    type="text">\n\n    <input\n    required\n    ng-model="user.email"\n    class="form-group form-control"\n    placeholder="Email Address*"\n    type="text">\n\n    <input\n    required\n    ng-model="user.password"\n    class="form-group form-control"\n    placeholder="Password*"\n    type="password">\n\n    <organization-select\n\n      ng-show="isNetworkPartner"\n      messages="errors"\n      update-user-record="false"\n      organization-id="user.organization_ids">\n    </organization-select>\n\n    <district-select\n      ng-hide="isNetworkPartner"\n      multiple="false"\n      districts="user.district_ids">\n    </district-select>\n\n    </form>\n\n    <button ng-disabled="signup.$invalid" ng-click="createUser(user)" class="btn btn-primary btn-lg create-user">Create my account</button>\n\n    <p ng-show="isNetworkPartner || isAdministrator">\n      If you are having trouble creating an account, contact us at support@mail.pdredesign.org\n    </p>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/directives/start_assessment.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/directives/start_assessment.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/directives/start_assessment.html", '<div>\n  <div class="row start-assessment plus-button">\n      <a href="" data-toggle="modal" data-target="#startAssessment">\n        <div class="col-sm-1 col-md-1">\n          <i class="fa fa-plus"></i>\n        </div>\n        <div class="col-sm-11 col-md-11 heading">\n          <h1>{{text()}}</h1>\n        </div>\n      </a>\n  </div>\n  <div class="modal fade" id="startAssessment" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">\n    <div class="modal-dialog">\n      <div class="modal-content">\n        <div class="modal-header">\n          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>\n          <h4 class="modal-title">{{text()}}</h4>\n        </div>\n        <div class="modal-body">\n          <p ng-hide="isNetworkPartner()">Facilitate the Readiness Assessment process for your district by creating a new assessment.<a ng-click="hideModal()"\n            href="#/assessments"> Click here</a> to view current assessments for your district or to participate in an existing assessment.</p>\n          <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>\n          <form name="startAssessment">\n            <div class="row">\n              <div class="col-md-12">\n                <input class="form-control" type="text" ng-model="assessment.name" placeholder="Name*" required>\n              </div>\n            </div>\n\n            <div class="row">\n              <div class="col-md-6">\n                <select\n                  required\n                  ng-hide="noDistrict()"\n                  class="form-control"\n                  ng-model="district"\n                  ng-options="district.text for district in user.districts">\n                </select>\n                <div ng-show="noDistrict()" class="col-md-12">\n                  <p>\n                    You have not selected districts that you work with. Please update your profile\n                    <a href="#/settings" ng-click="hideModal()" >here</a>\n                  </p>\n                </div>\n              </div>\n              <div class="col-md-6">\n                <div class="input-group date datetime">\n                  <input\n                    id="due-date"\n                    name="due-date"\n                    required\n                    ng-model="due_date"\n                    type="text"\n                    placeholder="Due Date*"\n                    class="form-control"\n                    data-format="dd/MM/yyyy hh:mm:ss">\n                  <span class="input-group-addon"><i class="fa fa-calendar"></i></span>\n                </div>\n              </div>\n            </div>\n\n          </div>\n          <div class="modal-footer">\n            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>\n            <button type="submit"\n              ng-disabled="startAssessment.$invalid"\n              ng-click="create(assessment)"\n              class="btn btn-primary">\n              Create\n            </button>\n        </div>\n      </form>\n      </div>\n    </div>\n  </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/directives/take_away.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/directives/take_away.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/directives/take_away.html", '<div class="col-md-12" id=\'takeaway\'>\n    <div ng-hide="isFacilitator()">\n      <h2>High Level Takeaways</h2>\n      <p>{{assessment.report_takeaway}}</p>\n    </div>\n\n    <div ng-show="isFacilitator()">\n      <h2>High Level Takeaways</h2>\n      <div ng-show=\'editing\'>\n        <textarea ng-model="assessment.report_takeaway"\n                  placeholder="Briefly summarize the top 3-5 high level findings about the current state of the professional development system in the district (including common themes, trends, or areas where additional research is needed)">\n        </textarea>\n\n        <div class=\'text-center\'>\n          <button class=\'btn btn-sm btn-primary save\' ng-click="save(assessment)">\n            <i class=\'fa fa-spinner fa-spin\' ng-hide="!saving"></i>\n            <i class=\'fa fa-save\' ng-hide="saving"></i> SAVE\n          </button>\n        </div>\n      </div>\n\n      <div class=\'evidence-read\' ng-hide="editing" ng-click="setEditing(true)">\n        <div>{{assessment.report_takeaway}}</div>\n\n        <div class=\'edit-button\'>\n          <button class=\'btn btn-sm btn-primary\' ng-click="setEditing(true)">\n            <i class=\'fa fa-edit\'></i> EDIT\n          </button>\n        </div>\n      </div>\n    </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/directives/user_header.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/directives/user_header.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/directives/user_header.html", '<div class="row secondary user-header">\n  <div class="col-md-12">\n    <h1>Hi {{firstName}}</h1>\n    <p>Welcome to PDredesign.</p>\n  </div>\n</div>\n')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/directives/user_login.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/directives/user_login.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/directives/user_login.html", '<div class="row">\n  <div class="col-md-12">\n    <h3 class="heading">Sign in to PDredesign</h3>\n\n    <div>\n      <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">\n        {{alert.msg}}\n      </alert>\n    </div>\n\n    <form ui-keypress="{13:\'authenticate(email, password)\'}">\n    <div class"row">\n      <div class="form-group">\n        <input autofocus\n               id="email"\n               class="form-control"\n               type="text"\n               placeholder="Email Address"\n               ng-model="email"/>\n      </div>\n      <div class="form-group">\n        <input class="form-control"\n               id="password"\n               type="password"\n               placeholder="Password"\n               ng-model="password"/>\n      </div>\n      <div class="checkbox">\n        <label>\n          <input\n            name="user[remember_me]"\n            type="hidden"\n            value="0">\n          <input\n            id="user_remember_me"\n            name="user[remember_me]"\n            type="checkbox" value="1">\n              Remember Me\n          <div class="row">\n            <a href="#/reset">Forgot Password?</a>\n          </div>\n        </label>\n      </div>\n      <div class="input col-md-12">\n        <input class="btn btn-devise btn-info btn-block"\n               id="authenticate"\n               name="commit"\n               type="submit"\n               value="Sign In"\n               ng-click="authenticate(email, password)"/>\n      </div>\n    </div>\n    </form>\n  </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/faqs/faqs.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/faqs/faqs.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/faqs/faqs.html", '<div class="row secondary">\n  <div class="col-sm-12">\n    <h1>Frequently Asked Questions</h1>\n  </div>\n</div>\n\n<faqs topic="{{topic}}" role="{{role}}"></faqs>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/home/home_anon.html.erb
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/home/home_anon.html.erb
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/home/home_anon.html", "<section class='hero'>\n  <div class='row'>\n    <div class='col-sm-12 text-center'>\n      <h1>PDredesign</h1>\n    </div> \n  </div> \n\n  <div class='row'>\n    <div class='col-sm-12 text-center'>\n      <p>A digital toolkit and community of practice</br>\n      dedicated to improving professional</br>\n      development for teachers.</p>\n    </div> \n  </div> \n\n  <div class='row'>\n    <div class='col-sm-12 text-center'>\n      <button choose-role-modal type='button' class='btn btn-default' >Sign Up</button>\n    </div>     \n  </div> \n\n</section>\n\n<section class='body'>\n  <div class='row'>\n    <div class='col-sm-12 text-center'>\n      <h2 class=\"secondary-color\">Why Redesign PD?</h2>\n    </div> \n  </div> \n\n  <div class='row'>\n    <div class='col-sm-12 text-center'>\n      <p class=\"primary-color\">Teachers, more than ever, are looking for relevant, flexible,</br>\n      collaborative PD to meet the needs of students in their</br>\n      classrooms.</p>\n    </div> \n  </div> \n</section>\n\n<section class='stats'>\n  <div class='row'>\n    <div class='col-sm-12 text-center'>\n      <img src=\"/assets/landing-page-graph-80451eeec4083bf0b4343b42bbc2a4ca.png\" alt=\"Landing page graph\" />\n    </div>\n  </div> \n\n  <div class='row'>\n    <div class='col-sm-12 text-center legal dark-primary-color'>\n      Teachers surveyed were asked \"in the past 12 months, to what extent have\n      the following factors limited the effectiveness of your PD?\" 936 teachers responded<br/>\n      Source: PD teacher survey, February 2014<br/>\n    </div> \n  </div> \n</section>\n\n<section class='path'>\n  <div class='row'>\n    <div class='col-sm-12 text-center'>\n      <h2 class=\"secondary-color\">Redesign for continous improvement and sustainable change</h2>\n    </div>\n  </div>\n\n  <div class='row'>\n    <div class='col-sm-12 col-md-4 col-md-offset-2 text-center'>\n      <div class=\"points\">\n        <h3 class=\"primary-color\">Where are we now?</h3>\n        <p>Understand your strengths across the district and identify priorities for growth.</p>\n        <img class=\"visible-xs-inline\" src=\"/assets/landpage-icons-mappin-5cd630d322baadecf7a104af32926067.png\" alt=\"Landpage icons mappin\" />\n      </div>\n      <div class=\"points\">\n        <h3 class=\"primary-color\">Where do we need to grow?</h3>\n        <p>Analyze resources and gaps in priority areas.</p>\n        <img class=\"visible-xs-inline\" src=\"/assets/landpage-icons-tools-9c5ad4d0f017bfa1be8341171701ec46.png\" alt=\"Landpage icons tools\" />\n      </div>\n      <div class=\"points\">\n        <h3 class=\"primary-color\">How do we reach our goals?</h3>\n        <p>Leverage best practices and tools to make your plan come to life.</p>\n        <img class=\"visible-xs-inline\" src=\"/assets/landpage-icons-playbook-3120d3163044ac84723939964c3756aa.png\" alt=\"Landpage icons playbook\" />\n      </div>\n      <div class=\"points\">\n        <h3 class=\"primary-color\">Who can help us get there?</h3>\n        <p>Find districts and partners working on solutions.</p>\n        <img class=\"visible-xs-inline\" src=\"/assets/landpage-icons-community-aa4f989d0b24c6b12231ac97d6ea75bd.png\" alt=\"Landpage icons community\" />\n      </div>\n\n    </div>\n    <div class='col-sm-12 col-md-3 col-md-offset-1 icons hidden-sm hidden-xs'>\n      <img src=\"/assets/path-f500b3d43ad00ff4a6930423cd8ceed2.png\" alt=\"Path\" />\n    </div>\n\n  </div>\n\n</section>\n\n<section class='action'>\n  <div class='row'>\n    <div class='col-sm-12 text-center'>\n      <h2 class=\"secondary-color\">Join PD redesign</h2>\n    </div>\n  </div>\n\n  <div class='row'>\n    <div class='col-sm-12 text-center'>\n      A digital toolkit and community of practice dedicated to<br/>\n      improving professional development for teachers.\n    </div>\n\n    <div class='row'>\n      <div class='col-sm-12 text-center'>\n        <button choose-role-modal type='button' class='btn btn-default'>Sign Up</button>\n      </div> \n    </div> \n\n\n  </div>\n\n</section>")
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/home/home_user.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/home/home_user.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/home/home_user.html", '<div class="home-controller">\n  <user-header></user-header>\n    <div class="row">\n      <div class="col-md-12">\n        <h1>Where to start?</h1>\n        You can use any of the tools or resources in the process. We recommend you start with the Readiness Assessment.\n        <start-assessment></start-assessment>\n        <div ng-if="isNetworkPartner()">\n          <div class="row add-district plus-button">\n            <a href="#/settings">\n              <div class="col-sm-1 col-md-1">\n                <i class="fa fa-plus"></i>\n              </div>\n              <div class="col-sm-11 col-md-11 heading">\n                <h1>Add Districts</h1>\n              </div>\n            </a>\n          </div>\n        </div>\n\n      </div>\n    </div>\n\n    <div class="row">\n      <div class="col-md-12">\n        <h1>PD System Redesign Tool Kit</h1>\n        Learn more about the tools currently under development as part of the PDredesign process.\n\n        <div class="row toolkits">\n          <div class="col-md-4 toolkit" ng-repeat="phase in tools">\n            <div class="row title title-{{$index}}">\n              {{phase.title}}\n              <div class="triangle-right"></div>\n            </div>\n            <div class="goal">Goal: {{phase.description}}</div>\n\n            <div class="categories" ng-repeat="category in phase.categories">\n              <div class="title">{{category.name}}</div>\n              <span class="subcategories" ng-repeat="subcategory in category.subcategories">\n                {{subcategory.name}}\n                <ul class="tool" ng-repeat="tool in subcategory.tools">\n                  <li\n                    data-html="true"\n                    data-placement="right"\n                    data-content="{{popoverContent(tool)}}"\n                    data-toggle="tooltip">\n                    <span class="tool-check">\n                      <i class="fa fa-check" ng-class="{active: tool.url, inactive: !tool.url}"></i>\n                    </span>\n                    <span class="tool-title">{{tool.title}}</span>\n                  </li>\n                </ul>\n              </span>\n              <span>\n               <ul class="tool extra-tool" ng-repeat="tool in category.tools">\n                  <li\n                    data-html="true"\n                    data-placement="right"\n                    data-content="{{popoverContent(tool)}}"\n                    data-toggle="tooltip">\n                    <i class="fa fa-check" ng-class="{active: tool.url, inactive: !tool.url}"></i>\n                    {{tool.title}}\n                  </li>\n               </ul>\n              </span>\n              <div class="tool">\n                <add-tool category="category"></add-tool>\n              </div>\n          </div>\n\n          </div>\n        </div>\n\n      </div>\n    </div>\n\n    <div class="design-principles">\n      <h1>Design Principles</h1>\n      <div class="icons">\n        <span class="fa-stack"><i class="fa fa-circle fa-stack-2x"></i><i class="fa fa-font fa-stack-1x"></i></span> Common Language &amp; Frameworks\n        <span class="fa-stack"><i class="fa fa-circle fa-stack-2x"></i><i class="fa fa-group fa-stack-1x"></i></span> Cross-Team Collaboration\n        <span class="fa-stack"><i class="fa fa-circle fa-stack-2x"></i><i class="fa fa-user fa-stack-1x"></i></span> Teacher Centered Design\n        <span class="fa-stack"><i class="fa fa-circle fa-stack-2x"></i><i class="fa fa-comments fa-stack-1x"></i></span> Actionable Feedback\n        <span class="fa-stack"><i class="fa fa-circle fa-stack-2x"></i><i class="fa fa-refresh fa-stack-1x"></i></span> Continuous Improvement\n      </div>\n\n    </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/invitation/redeem.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/invitation/redeem.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/invitation/redeem.html", '<div class=\'row row-bg row-header\'>\n  <div class="col-md-12">\n    <div class="col-md-12">\n      <h1>Create Password</h1>\n      <span>Please confirm the information below and set your password</span>\n    </div>\n  </div>\n</div>\n\n\n<div class="row">\n  <div class="col-md-12">\n    <div class="invite-redeem">\n\n      <form name="invitation">\n        <div class="row">\n          <div class="col-md-12">\n            <div class="alert">\n              <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>\n            </div>\n          </div>\n        </div>\n\n        <div class="row">\n          <div class="col-md-5">\n            <label for="user_first_name">First Name*</label>\n            <input\n              class="form-control ng-pristine ng-valid"\n              placeholder="First Name*"\n              type="text"\n              required\n              ng-model="invitedUser.first_name">\n          </div>\n          <div class="col-md-offset-1 col-md-6">\n            <label for="user_last_name">Last Name*</label>\n            <input\n              class="form-control ng-pristine ng-valid"\n              placeholder="Last Name*"\n              type="text"\n              required\n              ng-model="invitedUser.last_name">\n          </div>\n        </div>\n\n          <div class="row">\n            <div class="col-md-12">\n              <label for="team_role">Team Role</label>\n              <input\n                class="form-control ng-pristine ng-valid"\n                placeholder="Team Role"\n                type="text"\n                ng-model="invitedUser.team_role">\n            </div>\n          </div>\n\n          <div class="row">\n            <div class="col-md-12">\n              <label for="user_email">Email*</label>\n              <input\n              class="form-control ng-pristine ng-valid"\n              placeholder="Email*"\n              type="text"\n              required\n              ng-model="invitedUser.email">\n            </div>\n          </div>\n\n          <div class="row">\n            <div class="col-md-6">\n              <label for="user_password">Password*</label>\n              <input\n              class="form-control ng-pristine ng-valid"\n              placeholder="Password*"\n              type="password"\n              required\n              ng-model="invitedUser.password">\n            </div>\n            <div class="col-md-6">\n              <label for="user_password_confirmation">Confirm Password*</label>\n              <input\n              ui-validate="\'$value==invitedUser.password\'"\n              ui-validate-watch="\'invitedUser.password\'"\n              class="form-control ng-pristine ng-valid"\n              placeholder="Password Confirm*"\n              type="password"\n              required\n              ng-model="invitedUser.password_confirm">\n            </div>\n          </div>\n\n          <div class="row">\n            <div class="col-md-12">\n              <button\n                ng-disabled="invitation.$invalid"\n                ng-click="redeemInvite()"\n                class="btn btn-primary pull-right">\n                  Continue\n              </button>\n            </div>\n          </div>\n        </div>\n      </form>\n    </div>\n  </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/login/login.html.erb
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/login/login.html.erb
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/login/login.html", '<div class="login">\n  <div class="row secondary">\n    <div class="col-md-12">\n      <h1>Welcome back to PDredesign!</h1>\n    </div>\n\n    <div class="col-md-12 hidden-md hidden-lg">\n      <user-login></user-login>\n    </div>\n  </div>\n\n  <div class="row">\n    <div class="col-md-12 intro">\n      <img src="/assets/sign-in-image-517bca9a62fcaf8c5f01deaf77031025.png" alt="Sign in image" />\n    </div>\n  </div>\n\n  <div class="row">\n    <div class="col-md-12 intro">\n      <h3>About PDredesign</h3>\n      <p>\n        PDredesign is the place for meaningful collaboration to reimagine teacher professional development.\n      </p>\n      <p>\n       Join our community of educators and designers committed to continuously improving professional development systems to better support teachers. Alongside leaders from classrooms, schools, charters, districts, and partner organizations across the country, we are building an open digital toolkit and community of practice to support districts to redesign systems that meet the needs of educators and students.\n      </p>\n      <p>\n        Improving professional development for teachers will take all of us working together.\n      </p>\n    </div>\n  </div>\n</div>\n\n')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/modals/add_tool.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/modals/add_tool.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/modals/add_tool.html", '<div class="modal-header">\n  <h3 class="modal-title">Add Tool to {{category.name}}</h3>\n  <p>The PDredesign toolkit is the place for tools that support your district to collaborate across departments and roles to strategically implement redesigned PD systems. Recommend a tool for colleagues in your district  to use as part of the redesign process.</p>\n</div>\n\n<form ng-submit="create(tool)">\n  <div class="modal-body" id="modal-invite-participant">\n    <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>\n\n    <div class="form-group">\n      <input class="form-control" type="text" ng-model="tool.title" placeholder="Tool Name" required>\n    </div>\n\n    <div class="form-group">\n      <input class="form-control" type="text" ng-model="tool.url" placeholder="Url" type="url" http-prefix required>\n    </div>\n\n    <div class="form-group">\n      <textarea class="form-control" type="text" ng-model="tool.description" placeholder="Description 250 max characters" required></textarea>\n    </div>\n\n  </div>\n  <div class="modal-footer">\n    <button type="button" class="btn btn-default" ng-click="hideModal()">Close</button>\n\n    <input type="submit" class="btn btn-primary" value="Create">\n  </div>\n</form>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/modals/choose_role.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/modals/choose_role.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/modals/choose_role.html", '<div id="choose-role">\n  <div class="modal-content">\n    <div class="modal-header">\n      <button ng-click="close()" type="button" class="close">×</button>\n      <h3 class="modal-title" id="createConsensusLabel">Get Started</h3>\n    </div>\n    <div class="modal-body">\n      <div class="row">\n        <div class="col-md-6">\n          <div class="panel panel-default">\n            <div class="panel-body">\n              <p>I am part of a school district or charter management organization.</p>\n              <br class="hidden-sm hidden-xs">\n              <a  ng-click="close()" href="#/administrators" class="btn btn-primary btn-lg">District</a>\n            </div>\n          </div>\n        </div>\n        <div class="col-md-6">\n          <div class="panel panel-default">\n            <div class="panel-body">\n              <p>I work with an organization that partners with districts to provide support.</p>\n              <a ng-click="close()" href="#/networks"  class="btn btn-primary btn-lg">Partner</a>\n            </div>\n          </div>\n        </div>\n      </div>\n    </div>\n  </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/modals/create_consensus.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/modals/create_consensus.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/modals/create_consensus.html", '<div id="createConsensus">\n  <div class="modal-content">\n    <div class="modal-header">\n      <button ng-click="close()" type="button" class="close">×</button>\n      <h3 class="modal-title" id="createConsensusLabel">Create Consensus Response</h3>\n    </div>\n    <div class="modal-body">\n      <h3>Creating a consensus response will show all participants\' responses and allow you to facilitate the consensus meeting.</h3>\n      <h3>Keep in mind, however, that this will prevent participants from leaving additional feedback in their own individual responses.</h3>\n    </div>\n    <div class=\'modal-footer\'>\n      <a\n        ng-click="redirectToCreateConsensus()"\n        class="btn btn-primary"\n        href="">\n          Create Consensus Response\n      </a>\n    </div>\n  </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/modals/invite_user.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/modals/invite_user.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/modals/invite_user.html", '<div class="modal-header">\n  <h3 class="modal-title">Add New Participant</h3>\n</div>\n<div class="modal-body" id="modal-invite-participant">\n\n  <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>\n  <form  name="formInviteParticipant"  novalidate>\n    <div class=\'row\'>\n      <div class=\'flush-left col-md-4 col-sm-4\'>\n        <div class="form-group">\n          <input placeholder="First Name" type="text" class="form-control" ng-model="inviteUser.first_name" required>\n        </div>\n      </div>\n\n      <div class=\'flush-right col-md-8 col-sm-8\'>\n        <div class="form-group">\n          <input placeholder="Last Name" type="text" class="form-control" ng-model="inviteUser.last_name" required>\n        </div>\n      </div>\n    </div>\n\n    <div class="form-group">\n      <input placeholder="Email Address" type="email" name="input" ng-model="inviteUser.email" class="form-control" required>\n    </div>\n\n    <div class="form-group">\n      <input placeholder="Team Role (e.g. Finance, HR)" class="form-control" type="text" ng-model="inviteUser.team_role">\n    </div>\n\n    <div class="form-group">\n      <div\n        class="btn btn-primary pull-left"\n        ng-disabled="formInviteParticipant.$invalid"\n        ng-click="createInvitation(inviteUser)"\n        data-dismiss="modal">\n          Add to District\n      </div>\n    </div>\n    <div class=\'clearfix\'>\n    </div>\n  </form>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/modals/login.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/modals/login.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/modals/login.html", '<div id="login-modal">\n  <div class="modal-content">\n    <div class="modal-header">\n      <button ng-click="close()" type="button" class="close">×</button>\n      <h3 class="modal-title" id="createConsensusLabel">Sign in to PDredesign</h3>\n    </div>\n    <div class="modal-body">\n      <user-login></user-login>\n    </div>\n  </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/modals/manage_participants.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/modals/manage_participants.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/modals/manage_participants.html", '<div class="modal-header">\n  <h3 class="modal-title">Add to Assessment</h3>\n</div>\n\n<div class=\'row row-participant-headers-modal edit_modal_table_head\'>\n  <div class=\'col-md-1 col-sm-1\' style="margin-left: 9px;">&nbsp;</div>\n  <div class=\'col-md-4 col-sm-4\'>Name</div>\n  <div class=\'col-md-4 col-sm-4\'>Email Address</div>\n</div>\n<div id="participantModalholder">\n  <div class="participantholder">\n    <div ng-repeat="user in participants">\n      <div ng-class="{addParticipantAnimation: user.hide == \'yes\' }" class=\'row row-participant-add\'>\n        <div class=\'col-md-1 col-sm-1\'>\n          <img alt="" class="img-polaroid pull-right" ng-src="{{user.avatar}}" width="47"></div>\n          <div class=\'col-md-4 col-sm-4\'>\n            <p class=\'name\'>{{user.full_name}}</p>\n          </div>\n          <div class=\'col-md-4 col-sm-4\'>\n            <p class=\'info\'>{{user.email }}</p>\n          </div>\n          <div class=\'col-md-3 col-sm-3 text-center\'>\n            <div class="btn btn-primary pull-right add_to_assessment_button" ng-click="addParticipant(user)">Add to Assessment</div>\n          </div>\n        </div>\n      </div>\n    </div>\n  </div>\n</div>\n')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/modals/modify_schedule.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/modals/modify_schedule.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/modals/modify_schedule.html", '<div id="modify-schedule" ng-controller="ModifyScheduleCtrl">\n  <button ng-click="close()" type="button" class="close" aria-hidden="true">×</button>\n  <div class="control-group">\n    <label for="assessment_Due Date">Response due date</label>\n    <div class="due-date input-group date datetime">\n      <input\n        class="form-control"\n        data-date-format="MM/DD/YYYY"\n        ng-model="modal_due_date"\n        id="due-date">\n      <span class="input-group-addon">\n        <i class="fa fa-calendar"></i>\n      </span>\n    </div>\n  </div>\n\n  <div class="control-group">\n    <label for="assessment_Due Date">Consensus meeting date</label>\n    <div class="meeting-date input-group date datetime">\n      <input\n        ng-model="modal_meeting_date"\n        data-date-format="MM/DD/YYYY"\n        class="form-control"\n        id="meeting-date">\n      <span class="input-group-addon">\n        <i class="fa fa-calendar"></i>\n      </span>\n    </div>\n  </div>\n  <button\n    ng-click="updateAssessment()"\n    class="btn btn-primary">\n    Submit\n  </button>\n</div>\n')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/modals/new_reminder.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/modals/new_reminder.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/modals/new_reminder.html", '<div id=\'newReminder\'>\n  <div class="modal-header">\n    <button ng-click="close()" type="button" class="close" >×</button>\n    <h3 class="modal-title" id="newReminderLabel">Send Reminder</h3>\n  </div>\n  <div class="modal-body">\n    <form ng-submit="sendReminder(reminderMessage)" accept-charset="UTF-8" class="new_message" id="reminder" method="post">\n      <input id="message_category" name="message[category]" type="hidden" value="reminder">\n      <div class="form-group">\n        <label for="message_Message*">Message*</label>\n        <textarea\n          required\n          ng-model="reminderMessage"\n          class="form-control"\n          id="message_content"\n          name="message[content]" rows="4">\n          Your participation is a critical step in the process. Once you and your colleagues have finished their assessments, the team can meet to reach consensus. Please answer these questions today if you have not done so already.\n        </textarea>\n      </div>\n\n      <div class="form-group">\n        <button\n          ng-disabled="reminder.$invalid"\n          class="btn btn-primary pull-left"\n          name="commit"\n          type="submit">\n          <i class="fa fa-envelope-o"></i> Send\n        </button>\n      </div>\n      <div class="clearfix"></div>\n      </form>\n  </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/modals/pdr_overview.html.erb
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/modals/pdr_overview.html.erb
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/modals/pdr_overview.html", '<div id="pd-overview">\n  <div class="overview-holder">\n    <div class="modal-header">\n      <button ng-click="close()" type="button" class="close" aria-hidden="true">&times;</button>\n      <h4 class="modal-title">\n        PDredesign: Readiness Assessment\n      </h4>\n    </div>\n    <div class="holder">\n      <div class="row">\n       <div class="col-md-6">\n          <p class=\'sidebar-question\'>What is it?</p>\n          <div class=\'overview\'>\n            The PDredesign Readiness Assessment Tool is designed to help districts and LEAs:\n            <ol>\n              <li>Engage in a candid, cross-functional discussion about innovative Professional Development using a common language anchored to key program elements from the Gates Foundation\'s PD System Map (below).</li>\n              <li>Gain a high level understanding of the organization\'s current strengths and weaknesses and overall readiness, aid in the PD strategy design, and support the associated whole system change.</li>\n            </ol>\n          </div>\n\n          <p class=\'sidebar-question\'>How is it used?</p>\n          <div class=\'overview\'>\n            Ideally, the process for using the PD Readiness Assessment consists of:\n            <ul>\n              <li>Gathering a cross-functional team</li>\n              <li>Having each team member review and fill out the assessment</li>\n              <li>Discussing the questions one by one as a group, coming to a consensus on a score for each question, and providing evidence and bright spots to support the consensus score</li>\n              <li>Creating the report: After filing out the scoring rubric, a printable version of the assessment report will be generated</li>\n            </ul>\n          </div>\n\n        </div>\n        <div class="col-md-6">\n          <img style="width: 100%" src="/assets/diagram-7fb1e2b3161b2370eb87bf38c1e2f16c.png" alt="Diagram" />\n        </div>\n      </div>\n    </div>\n  </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/modals/request_access.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/modals/request_access.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/modals/request_access.html", '<div class="request-access-modal">\n  <div class="modal-header">\n    <button ng-click="close()" type="button" class="close" aria-hidden="true">×</button>\n    <h2>Request Access</h2>\n  </div>\n  <div class="modal-body">\n\n    <span class="question-holder">Select the role you would like to request in this assessment.\n      <i data-toggle="requestPopover"\n        data-content="{{popoverContent()}}" class="fa fa-question question-tip">\n      </i>\n    </span>\n\n    <div ng-show="isNetworkPartner()" class="btn-group">\n      <span class="btn btn-xs btn-primary" ng-model="accessLevel" btn-radio="\'facilitator\'">\n        <i class="fa fa-bullhorn"></i><span>Organizer</span>\n      </span>\n      <span class="btn btn-xs btn-primary" ng-model="accessLevel" btn-radio="\'viewer\'">\n        <i class="fa fa-eye"></i><span>Observer</span>\n      </span>\n    </div>\n\n    <div ng-show="!isNetworkPartner()" class="btn-group">\n      <span class="btn btn-xs btn-primary" ng-model="accessLevel" btn-radio="\'facilitator\'">\n        <i class="fa fa-bullhorn"></i><span>Facilitator</span>\n      </span>\n      <span class="btn btn-xs btn-primary" ng-model="accessLevel" btn-radio="\'participant\'">\n        <i class="fa fa-edit"></i><span>Participant</span>\n      </span>\n      <span class="btn btn-xs btn-primary" ng-model="accessLevel" btn-radio="\'viewer\'">\n        <i class="fa fa-eye"></i><span>Viewer</span>\n      </span>\n    </div>\n  </div>\n\n  <div class=\'modal-footer\'>\n    <button ng-click=\'submitAccessRequest(accessLevel)\' class=\'btn btn-success\'>\n      <span>Done</span>\n    </button>\n  </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/modals/response_submit_modal.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/modals/response_submit_modal.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/modals/response_submit_modal.html", '<div class="response_submit_modal">\n  <div class="modal-header">\n    <button ng-click="cancel()" type="button" class="close" aria-hidden="true">×</button>\n    <h2>Submit {{responseTitle()}}</h2>\n  </div>\n  <div class="modal-body">\n    <h2>You are submitting your response to {{assessment.name}}!</h2>\n    <div ng-hide=\'unansweredQuestions() == 0\'>\n      <h2>You have left<span class=\'badge\'>{{unansweredQuestions()}}</span>questions unanswered.</h2>\n      <h3>Even though you can submit your response without answering all questions, we encourage you to try to answer as many as you can.</h3>\n    </div>\n\n    <p ng-if="!isResponse()">After you submit, a report will be generated based on the consensus scores. You will not be able to edit scores or notes after this point. If you are not ready to submit, you may save your responses and return to the consensus at a later time.\n    </p>\n\n    <p ng-if="isResponse()">After you submit your response, an email notification will be sent to your facilitator. You can still update your response to the assessment at any time before the consensus meeting.</p>\n  </div>\n\n  <div class=\'modal-footer\'>\n    <button ng-click="redirectToAssessmentsIndex(); cancel()" ng-if="!isResponse()" class=\'btn btn-primary btn-lg\'>\n      Save for Later\n    </button>\n\n    <button ng-click=\'submitResponse()\' class=\'btn btn-primary btn-lg\'>Submit {{responseTitle()}}</button>\n  </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/modals/save_retry.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/modals/save_retry.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/modals/save_retry.html", '<div>\n  <div class="modal-header">\n    <button ng-click="cancel()" type="button" class="close">×</button>\n    <h3 class="modal-title">Your Answer was not saved!</h3>\n  </div>\n\n  <div class="modal-body">\n      <p>Click below to resubmit. If the problem consists, please check your internet connection</p>\n  </div>\n  <div class="modal-footer">\n    <button ng-click="retryScorePost()" class="btn btn-primary btn-lg">Resubmit Answer</button>\n  </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/navigation/navigation_anon.html.erb
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/navigation/navigation_anon.html.erb
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/navigation/navigation_anon.html", '<nav class="navbar navbar-default" role="navigation">\n  <div class="container">\n    <div class="navbar-header">\n      <a href="#">\n        <img src="/assets/pdlogo-f94bfd18ff00dd482dae6d24b85e51b5.png" alt="Pdlogo" />\n      </a>\n    </div>\n\n   <button type="button" class="navbar-right navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">\n      <span class="sr-only">Toggle navigation</span>\n      <span class="icon-bar"></span>  \n      <span class="icon-bar"></span>\n    </button>\n\n    <div class="collapse navbar-collapse" id="menu">\n      <ul class="nav navbar-nav navbar-right">\n        <li class="navbar-form">\n          <button choose-role-modal type="button" class="btn btn-primary btn-sm">Sign Up</button>\n        </li>\n\n        <li>\n          <a href="#/login">Log In</a> \n        </li>\n       </ul>\n    </div>\n\n  </div>\n</nav>\n')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/navigation/navigation_user.html.erb
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/navigation/navigation_user.html.erb
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/navigation/navigation_user.html", "<nav class=\"navbar navbar-default\" role=\"navigation\">\n  <div class=\"container\">\n    <div class='navbar-header'>\n      <button type=\"button\" class=\"navbar-toggle collapsed\" data-toggle=\"collapse\" data-target=\"#pdredesign-navbar\">\n        <span class=\"sr-only\">Toggle navigation</span>\n        <span class=\"icon-bar\"></span>\n        <span class=\"icon-bar\"></span>\n        <span class=\"icon-bar\"></span>\n      </button>\n      <a class='navbar-brand logo' href=\"#\">\n        <img src=\"/assets/pdlogo-f94bfd18ff00dd482dae6d24b85e51b5.png\" alt=\"Pdlogo\" />\n      </a>\n    </div>\n    \n    <div class=\"collapse navbar-collapse\" id=\"pdredesign-navbar\">\n      <ul class='nav navbar-nav'>\n        <li ng-class=\"activeClassFor('home')\">\n          <a href='#/home'>Home</a>\n        </li>\n        <li ng-class=\"activeClassFor('current_state')\" class=\"cursor\">\n          <a class='data-toggle' data-toggle='dropdown'>Current State</a>\n          <ul class='dropdown-menu'>\n            <li>\n              <a href='#/assessments'>Readiness Assessment</a>\n            </li>\n          </ul>\n\n        </li>\n        <li class='disabled'>\n          <a href='#'>Future State</a>\n        </li>\n        <li class='disabled'>\n          <a href='#'>Planning</a>\n        </li>\n        <li class='disabled'>\n          <a href='#'>Procurement</a>\n        </li>\n        <li class='disabled'>\n          <a href='#'>Implementation</a>\n        </li>\n        <li class='disabled'>\n          <a href='#'>Rollout</a>\n        </li>\n      </ul>\n      <ul class='nav navbar-nav navbar-right user-menu cursor'>\n        <li class='hidden-xs hidden-sm'>\n          <img alt=\"{{user.name}}\" class=\"polaroid\" height=\"40\" ng-src=\"{{user.avatar}}\">\n        </li>\n        <li>\n          <a class='data-toggle' data-toggle='dropdown'>\n            <i class='fa fa-caret-down'></i>\n            {{user.first_name}}\n          </a>\n\n          <ul class='dropdown-menu'>\n            <li>\n              <a href='#/settings'>\n                <i class='fa fa-gears'></i>\n                Settings\n              </a>\n            </li>\n            <li>\n              <a href='#/logout'>\n                <i class='fa fa-sign-out'></i>\n                Sign Out\n              </a>\n            </li>\n          </ul>\n        </li>\n\n      </ul>\n    </div>\n\n  </div>\n</nav>\n")
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/prospective_user/prospective_user.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/prospective_user/prospective_user.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/prospective_user/prospective_user.html", '          <div class="row" >\n            <div class="col-md-6 col-md-offset-3">\n              <ng-include src="\'client/views/shared/errors.html\'"> </ng-include>\n              <form accept-charset="UTF-8" class="new_prospective_user ng-pristine ng-valid" data-remote="true" id="new_prospective_user" method="post" role="form"><div style="display:none"><input name="utf8" type="hidden" value="✓"></div>\n                <input id="prospective_user_ip_address" name="prospective_user[ip_address]" type="hidden" value="50.246.91.65">\n                <div class="row">\n                  <div class="col-md-8 col-md-offset-1 col-sm-8 col-sm-offset-1 col-xs-8 col-xs-offset-1">\n                    <div class="form-group">\n                      <label class="sr-only" for="email">Email address</label>\n                      <input ng-model="prospectiveUser.email" class="form-control" id="prospective_user_email" name="prospective_user[email]" placeholder="Email Address" type="email" value="">\n                    </div>\n                  </div>\n                  <div class="col-md-3 col-sm-3 col-xs-3" >\n                    <input class="btn btn-primary" name="commit" ng-click="submit(prospectiveUser)" value="Stay in Touch">\n                  </div>\n                </div>\n              </form>\n            </div>\n          </div>\n')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/reset_password/request_reset.html.erb
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/reset_password/request_reset.html.erb
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/reset_password/request_reset.html", '<div class="login signup">\n  <div class="row secondary">\n    <div class="container">\n      <div class="col-md-4">\n        <h1>Forgot your password?</h1>\n        <h3 class="subheading" >We\'ll email you instructions to reset your password.</h3>\n        <p class="resetpass-help-text">Need help? Contact us at support@mail.pdredesign.org.</p>\n      </div>\n\n      <div class="col-md-8 form">\n        <div class="row">\n          <div class="col-md-7 col-sm-6">\n            <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>\n          </div>\n        </div>\n\n        <form id="resetForm">\n        <div class="row">\n          <div class="col-md-7 col-sm-6">\n            <input\n              required\n              ng-model="email"\n              class="form-group form-control"\n              placeholder="Email Address*"\n              type="text">\n            <input\n              ng-disabled="resetForm.$invalid"\n              type="button"\n              ng-click="requestReset(email)"\n              class="btn btn-devise btn-danger pull-right"\n              name="commit"\n              value="Request Reset Email">\n          </div>\n        </div>\n        </form>\n      </div>\n    </div>\n  </div>\n\n  <div class="container">\n    <div class="row">\n      <div class="col-md-9 intro">\n        <img src="/assets/sign-in-image-517bca9a62fcaf8c5f01deaf77031025.png" alt="Sign in image" />\n      </div>\n    </div>\n  </div>\n\n  <div class="container">\n    <div class="row">\n      <div class="col-md-9 intro">\n        <h3>With this tool you will...</h3>\n        <p>\n          Engage in a candid, cross-functional discussion about innovative\n          Professional Development using a common language anchored to key\n          elements of a high-quality, multi-modal professional development system.\n          You\'ll gain a comprehensive understanding of the current state of multiple\n          aspects of PD in your district. You\'ll have the opportunity to contribute\n          to the PD strategy design at the district level to better support teachers\n          to improve student success in their classrooms.\n        </p>\n      </div>\n    </div>\n  </div>\n\n\n\n</div>\n')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/reset_password/reset.html.erb
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/reset_password/reset.html.erb
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/reset_password/reset.html", '<div class="login signup">\n  <div class="row secondary">\n    <div class="container">\n      <div class="col-md-4">\n        <h1>Password Reset</h1>\n        <h2 class="subheading" >PD Readiness Assessment Tool</h2>\n      </div>\n\n      <div class="col-md-8 form">\n        <div class="row">\n          <div class="col-md-7 col-sm-6">\n            <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>\n          </div>\n        </div>\n\n        <form id="resetForm">\n        <div class="row">\n          <div class="col-md-7 col-sm-6">\n            <input\n              required\n              ng-model="password"\n              class="form-group form-control"\n              placeholder="Password"\n              type="password">\n            <input\n              required\n              ng-model="password_confirm"\n              class="form-group form-control"\n              placeholder="Password Confirm*"\n              type="password">\n\n            <input\n              type="button"\n              ng-disabled="resetForm.$invalid"\n              ng-click="resetPassword(password, password_confirm)"\n              class="btn btn-devise btn-danger pull-right"\n              name="commit"\n              value="Reset Password">\n          </div>\n        </div>\n        </form>\n      </div>\n    </div>\n  </div>\n\n  <div class="container">\n    <div class="row">\n      <div class="col-md-9 intro">\n        <img src="/assets/sign-in-image-517bca9a62fcaf8c5f01deaf77031025.png" alt="Sign in image" />\n      </div>\n    </div>\n  </div>\n\n  <div class="container">\n    <div class="row">\n      <div class="col-md-9 intro">\n        <h3>With this tool you will...</h3>\n        <p>\n          Engage in a candid, cross-functional discussion about innovative\n          Professional Development using a common language anchored to key\n          elements of a high-quality, multi-modal professional development system.\n          You\'ll gain a comprehensive understanding of the current state of multiple\n          aspects of PD in your district. You\'ll have the opportunity to contribute\n          to the PD strategy design at the district level to better support teachers\n          to improve student success in their classrooms.\n        </p>\n      </div>\n    </div>\n  </div>\n\n\n\n</div>\n')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/responses/edit.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/responses/edit.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/responses/edit.html", '<ng-include src="\'client/views/responses/header.html\'"></ng-include>\n    <div class="row">\n      <div class="col-md-12">\n        <response-questions data-assessment-id="{{assessmentId}}" data-response-id="{{responseId}}">\n        </response-questions>\n      </div>\n    </div>\n')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/responses/header.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/responses/header.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/responses/header.html", "<div class='row secondary user-header'>\n  <div class=\"col-md-12\">\n    <div class=\"media\">\n      <div class=\"media-body\">\n        <h1>{{assessment.name}}</h1>\n        <p class='byline'>organized by:\n          <a href=\"\"> {{assessment.facilitator.full_name}}</a>\n          on {{assessment.created_at  | amDateFormat:'MMMM Do, YYYY'}}\n        </p>\n        <h2 class='instructions-header'>Instructions</h2>\n\n        <div class='col-md-12'>\n          <p class='instructions-content'>\n            The Readiness Assessment consists of questions across the 8 categories from the <readiness-assessment-modal title=\"PD System Map\"></readiness-assessment-modal>. Following this individual survey, you will have the opportunity to discuss your responses with your colleagues in a consensus meeting.\n          </p>\n          <p class='instructions-content'>\n            For each question, answer carefully based on your experience and include evidence such as notes, links, or files to support your response. You may skip a question if you are not sure how to respond. Save each completed response as you move through the assessment\n          </p>\n        </div>\n      </div>\n\n    </div>\n  </div>\n</div>")
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/responses/show.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/responses/show.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/responses/show.html", '<ng-include src="\'client/views/responses/header.html\'"></ng-include>\n  <div class="col-md-12">\n    <consensus\n      data-assessment-id="{{assessmentId}}"\n      data-response-id="{{responseId}}">\n    </consensus>\n  </div>\n\n\n')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/settings/category_select.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/settings/category_select.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/settings/category_select.html", '<div class="row organization-specialize">\n  <div class=" col-md-12">\n    Which areas does your organization specialize in?\n    <div ng-repeat="category in categories">\n      <input\n        name="category-check-{{category.id}}"\n        id="category-check-{{category.id}}"\n        type="checkbox"\n        ng-model="category.selected">\n      <label for="category-check-{{category.id}}" value="">{{category.name}}</label>\n    </div>\n        <button\n        id="save-categories"\n        class="btn btn-success" ng-click="pushCategories(categories)">\n          <i class="fa fa-spinner fa-spin" ng-show="loading"/>\n          Update Categories\n        </button>\n  </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/settings/logo_uploader.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/settings/logo_uploader.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/settings/logo_uploader.html", '<div class="row flush logo-uploader">\n  <div ng-show="uploading" class="spinner">\n    <div class=\'col-md-12\'>\n      <i class="fa fa-spinner fa-spin"></i>\n    </div>\n  </div>\n\n  <div ng-hide="uploading">\n    <div class="col-md-3">\n      <img ng-src="{{logo}}" class="image">\n    </div>\n\n    <div class="col-md-9">\n      <h4>Upload an image to represent your organization</h4>\n      <input \n        ng-hide="uploader.queue"\n        type="file"\n        nv-file-select\n        uploader="uploader"/>\n      <span class=\'required\'>*</span>.GIF, .JPG, .JPEG, and .PNG filetypes only\n    </div>\n  </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/settings/organization_section.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/settings/organization_section.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/settings/organization_section.html", '<div class="row organization-settings">\n  <form name="organizationForm" role="form">\n    <div class="row">\n      <div class="col-md-5">\n        <h3>Organization Settings</h3>\n      </div>\n      <div class="col-md-7">\n        <alert ng-show="alertorganization.type == \'success\'" type="success"\n          >{{alertorganization.msg}}</alert>\n      </div>\n    </div>\n\n    <div class="form-group">\n      <organization-select messages="alertorganization" organization-id="organizationId">\n      </organization-select>\n    </div>\n\n    <div class="form-group" ng-show="organizationId">\n      <logo-uploader messages="alertorganization" organization-id="organizationId"></logo-uploader>\n    </div>\n\n    <div class="form-group" ng-show="organizationId">\n      <category-select messages="alertorganization" organization-id="organizationId"></category-select>\n    </div>\n\n\n  </form>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/settings/settings.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/settings/settings.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/settings/settings.html", '<user-header></user-header>\n\n<div class="settings">\n  <form ng-submit="updateUser(user)">\n    <div class="row">\n      <div id="form-top" class="col-md-12">\n        <ng-include src="\'client/views/shared/errors.html\'"></ng-include>\n        <h3>Account Settings</h3>\n        <div class="row">\n          <div class="flush col-md-5">\n            <label for="user_first_name">First name</label>\n            <input class="form-control"\n                   placeholder="First Name"\n                   type="text"\n                   ng-model="user.first_name"\n                   required>\n          </div>\n\n          <div class="col-md-7">\n            <label for="user_last_name">Last name</label>\n            <input class="form-control"\n                   placeholder="Last Name"\n                   type="text"\n                   ng-model="user.last_name"\n                   required>\n          </div>\n        </div>\n\n        <div class="row">\n          <div class="form-group">\n            <label for="user_email">E-mail address</label>\n            <input class="form-control"\n                   placeholder="Email"\n                   ng-model="user.email"\n                   type="email"\n                   required>\n          </div>\n\n          <div class="form-group">\n            <label for="district">District</label>\n              <district-select multiple="{{isNetworkPartner()}}"\n                               preselected="user.districts"\n                               districts="user.district_ids">\n            </district-select>\n          </div>\n\n          <div class="form-group">\n            <label for="user_team_role">Team role</label>\n            <input class="form-control" id="user_team_role" type="text" ng-model="user.team_role">\n          </div>\n\n          <div class="form-group">\n            <label for="user_twitter">Twitter</label>\n            <div class="input-group">\n              <span class="input-group-addon">@</span>\n              <input class="form-control" id="user_twitter" type="text" ng-model="user.twitter">\n            </div>\n          </div>\n\n          <h3>Change Password</h3>\n\n          <div class="form-group">\n            <label for="user_password">Password</label>\n            <input autocomplete="off"\n                   class="form-control"\n                   id="user_password"\n                   type="password"\n                   ng-model="user.password">\n          </div>\n\n          <div class="form-group">\n            <label for="user_password_confirmation">Password confirmation</label>\n            <input class="form-control"\n                   id="user_password_confirmation"\n                   type="password"\n                   ng-model="user.password_confirmation"\n                   ng-required="user.password.length > 0">\n          </div>\n          <div ng-if="user">\n            <organization-section\n              ng-if="isNetworkPartner()" organization-id="user.organization_ids">\n            </organization-section>\n          </div>\n\n          <input ng-click="scrollTop()" class="btn btn-success" name="commit" type="submit" value="Update ">\n        </div>\n      </div>\n    </div>\n  </form>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/shared/customalert.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/shared/customalert.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/shared/customalert.html", "<div>\n  <div class='customalert' ng-class=\"{error: isError, success: isSuccess}\">\n    <p>{{message}}</p>\n  </div>\n</div>")
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/shared/errors.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/shared/errors.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/shared/errors.html", '<div ng-show="success" id="ajax_message" class="alert alert-dismissable alert-success" style="display: block;">\n  {{success}}\n  <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>\n</div>\n<div ng-show="errors" id="ajax_message" class="alert alert-dismissable alert-danger" style="display: block;">\n  <div ng-repeat="(field, errorList) in errors">\n    <div ng-repeat="error in errorList">\n      <span>\n        {{field}}: {{error}}\n      </span>\n    </div>\n  </div>\n  <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>\n</div>\n')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/shared/include_template.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/shared/include_template.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/shared/include_template.html", '<ng-include src="template">\n</ng-include>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/shared/notification_modal.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/shared/notification_modal.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/shared/notification_modal.html", '<div class="notification-modal" ng-class="{error: isError, success: isSuccess}">\n  <div class="modal-body">\n    <div>\n      <p>{{notification}}</p>\n    </div>\n  </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/shared/responses/consensus_score_entry.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/shared/responses/consensus_score_entry.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/shared/responses/consensus_score_entry.html", '<div class="consensus-score-entry">\n  <h3>Consensus Discussion</h3>\n\n  <div class="entry">\n    <div class="row">\n      <div class="col-md-offset-1 col-md-11 secondary">\n        <h4>Notes</h4>\n          <alert class="alert" ng-show="question.isAlert" type="danger"> <p>Add evidence before saving.</p></alert>\n        <div ng-show="isReadOnly" ng-bind-html="question.score.evidence">\n        </div>\n\n        <div ng-hide="isReadOnly">\n          <textarea\n            class="col-md-12 col-sm-12"\n            ng-hide="isReadOnly"\n            ng-model="question.score.evidence"\n            placeholder="Write notes from the discussion, including evidence to support the consensus score and any follow up items.">\n          </textarea>\n        </div>\n      </div>\n\n      <div class="row">\n        <div class="col-md-offset-1 col-md-11 secondary">\n          <h4>Score</h4>\n\n          <div class="row">\n            <div class="answer col-md-3"\n              ng-repeat="answer in question.answers">\n\n                <p\n                  ng-class="{\'inactive\': answer.value != question.score.value}"\n                  class="scored-{{$index+1}}"\n                  ng-click="assignAnswerToQuestion(answer, question)">\n                  {{$index+1}}\n                </p>\n            </div>\n          </div>\n\n        </div>\n      </div>\n    </div>\n\n  </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/shared/responses/evidence.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/shared/responses/evidence.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/shared/responses/evidence.html", '<div class="evidence-discussion">\n  <h3>Individual Evidence</h3>\n  <div class="evidence-container">\n    <div class="evidence" ng-repeat="score in scores | scoreFilter:question.id">\n      <div class="row">\n        <div class="col-md-1 score {{scoreClass(score.value)}}">\n          <span class="ng-binding">{{scoreValue(score.value)}}</span>\n        </div>\n        <div class="col-md-11" ng-bind-html="score.evidence"></div>\n      </div>\n\n      <div class="row">\n        <div class="col-md-1">\n          <avatar\n          data-width="100%"\n          data-avatar="{{score.participant.avatar}}"\n          />\n        </div>\n\n        <div class="col-md-11 secondary">\n          by: <a href="">{{score.participant.full_name}}</a>\n          on: {{score.participant.updated_at | amDateFormat:\'MMMM Do, YYYY\'}}\n        </div>\n      </div>\n\n    </div>\n  </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/shared/responses/filter_by_role.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/shared/responses/filter_by_role.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/shared/responses/filter_by_role.html", '<div class="row sort-by">\n  <div class="col-md-3 label">\n    Filter by Team Role:\n  </div>\n  <div class="col-md-3">\n    <select \n      class="form-control text-capitalize" \n      id="status" \n      ng-change="updateTeamRole(teamRole)"\n      ng-model="teamRole">\n      <option value="" selected>All</option>\n      <option value="{{role}}" ng-repeat="role in teamRoles">\n        {{role}}\n      </option>\n    </select>\n\n  </div>\n  <div class="col-md-1">\n    <i class="fa fa-spinner fa-spin" ng-show="isLoading()"></i>\n  </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/shared/responses/member_question.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/shared/responses/member_question.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/shared/responses/member_question.html", '<div class="row score-evidence" ng-show="question.score.value == answer.value">\n  <div class="col-md-2"></div>\n  <div class="col-md-9">\n    <div ng-hide="question.score.editMode">\n      <textarea \n        class="col-md-12 col-sm-12"\n        ng-model="question.score.evidence"\n        placeholder="Write evidence of why you believe this is the correct score for this question. Skip to next question if you\'re not sure.">\n      </textarea>\n      <div class="save-holder">\n        <button\n          ng-disabled="invalidEvidence(question)"\n          class=\'btn btn-primary\'\n          ng-click="saveEvidence(question.score)">\n          <i class=\'fa fa-save\'></i>SAVE\n        </button>\n      </div>\n    </div>\n    <div ng-show="question.score.editMode ">\n      <div class="evidence-read">\n        <div ng-bind-html="question.score.evidence"></div>\n        <div class="edit-holder">\n\n          <button class=\'btn btn-primary edit-button\'\n            ng-click="editAnswer(question.score)">\n            <i class=\'fa fa-save\'></i>Edit\n          </button>\n        </div>\n      </div>\n    </div>\n  </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/shared/responses/score_count.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/shared/responses/score_count.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/shared/responses/score_count.html", '<span class="score-count scored-{{answer.value}}"\n  ng-class="{\'transparent\': answer.value != question.score.value}" >\n  <i class="fa fa-heart" ng-show="answer.value == question.mode && isReadOnly"></i>\n  <span class="value">\n    {{answerCount(scores, question.id, answer.value)}}\n  </span>\n\n  <span>/{{participantCount}}</span>\n</span>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/shared/responses/skip_question.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/shared/responses/skip_question.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/shared/responses/skip_question.html", '<div class="col-md-11 answer-row value-color-skipped"\n  ng-click="skipQuestion(question, question.score)"\n  ng-class="{skipped: skipped(question), \'col-md-offset-1\': editable}">\n  <div class="answer-info-row">\n    <div class="col-md-1 skipped answer-value">\n      <span>S</span>\n    </div>\n    <div class="col-md-3 answer-title title-{{answer.value}}">\n      Skip This Question\n    </div>\n    <div class="col-md-8 answer-description">\n      <p ng-show="question.score.value == null && editable">\n        Saved Evidence:\n        <p ng-show="question.score.value == null && editable"\n           ng-bind-html="question.score.evidence"></p>\n      </p>\n    </div>\n  </div>\n  <div class="row score-evidence" ng-show="skipped(question) && editable">\n    <div class="col-md-2"></div>\n    <div class="col-md-9">\n      <div ng-hide="question.score.editMode">\n        <textarea\n          class="col-md-12 col-sm-12"\n          ng-model="question.score.evidence"\n          placeholder="Write a note to explain why you skipped this question (optional).">\n        </textarea>\n        <div class="save-holder">\n          <button class=\'btn btn-primary\'\n            ng-click="skipQuestionSaveEvidence(question.score)">\n            <i class=\'fa fa-save\'></i>SAVE\n          </button>\n        </div>\n      </div>\n      <div ng-show="question.score.editMode ">\n        <div class="evidence-read">\n          <div ng-bind-html="question.score.evidence"></div>\n          <div class="edit-holder">\n            <button class=\'btn btn-primary edit-button\'\n              ng-click="editAnswer(question.score)">\n              <i class=\'fa fa-save\'></i>Edit\n            </button>\n          </div>\n        </div>\n      </div>\n    </div>\n  </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/shared/responses/sort_by.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/shared/responses/sort_by.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/shared/responses/sort_by.html", '<div class="row sort-by">\n  <div class="col-md-3 label">\n    Sort By:\n  </div>\n  <div class="col-md-5">\n    <div class="btn-group">\n      <button type="button" class="btn btn-default">\n        <i class="fa fa-fire"></i>\n        Popularity\n      </button>\n      <button type="button" class="btn btn-default" ng-click="changeViewMode(\'category\')">\n        <i class="fa fa-sort-numeric-asc"></i>\n        Numeric\n      </button>\n      <button type="button" class="btn btn-default" ng-click="changeViewMode(\'variance\')" ng-model="viewMode">\n        <i class="fa fa-bar-chart-o"></i>\n        Variance\n      </button>\n    </div>\n  </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/sidebar/assessment_dashboard.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/sidebar/assessment_dashboard.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/sidebar/assessment_dashboard.html", '<div class="sidebar">\n  <div id="assessment_dashboard_consensus_sidebar" ng-controller="AssessmentDashboardSidebarCtrl">\n    <div class=\'consensus\'>\n      <p ng-show="noMeetingDate()" class=\'header\'>Consensus Meeting not yet scheduled</p>\n      <p ng-show="preMeetingDate()" class=\'header\'>Consensus Meeting for</p>\n      <p ng-show="postMeetingDate()" class=\'header\'>Consensus Meeting was held</p>\n      <div class=\'outer\'>\n        <div class=\'inner\'>\n          <div ng-show="postMeetingDate()">\n            <p class=\'date\'>{{meetingDateDaysAgo()}}</p>\n            <p class=\'month\'>days ago</p>\n          </div>\n\n          <div ng-show="preMeetingDate()">\n            <p class=\'day\'>{{meetingDayName()}}</p>\n            <p class=\'date\'>{{meetingDayNumber()}}</p>\n            <p class=\'month\'>{{meetingMonthName()}}</p>\n          </div>\n\n          <div ng-show="noMeetingDate()">\n            <p class=\'date\'>?</p>\n          </div>\n        </div>\n      </div>\n    </div>\n    <div class="links">\n      <a\n        ng-class="{ active: $state.includes(\'assessment_dashboard\') }"\n        href="#/assessments/{{assessment.id}}/dashboard">Dashboard\n      </a>\n      <span ng-show="noMeetingDate()">\n        <a ng-click="modifySchedule()" href="">Schedule Consensus Meeting</a>\n        <a ng-click="newReminder()" href="">Send Reminder</a>\n      </span>\n\n      <span ng-show="preMeetingDate()">\n        <a ng-click="modifySchedule()" href="">Modify Schedule</a>\n        <a ng-click="createConsensus()" href="" >Create Consensus</a>\n        <a ng-click="newReminder()" href="">Send Reminder</a>\n      </span>\n      <span ng-show="postMeetingDate()">\n        <a ng-show="consensusStarted()" href="#/assessments/{{assessment.id}}/consensus/{{assessment.consensus.id}}">View Consensus</a>\n        <a ng-hide="consensusStarted()" ng-click="createConsensus()" href="" >Create Consensus</a>\n      </span>\n\n      <span ng-show="reportPresent()">\n        <a\n          ng-class="{ active: $state.includes(\'assessment_report\') }"\n          href="#/assessments/{{assessment.id}}/report">Report\n        </a>\n      </span>\n    </div>\n  </div>\n\n  <div class="content">\n    <ng-include src="\'client/views/sidebar/why_pd_redesign.html\'"></ng-include>\n  </div>\n\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/sidebar/educator.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/sidebar/educator.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/sidebar/educator.html", '<div class="row sidebar">\n  <div class="col-md-12 register-sidebar">\n    <h3 class="heading">Tell your district about PDredesign</h3>\n    <district-message></district-message>\n  </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/sidebar/facilitator_pdf.html.erb
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/sidebar/facilitator_pdf.html.erb
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/sidebar/facilitator_pdf.html", '<div class="padding facilitation-guide">\n  <p class="title">\n  <i class="fa fa-star"></i> For Facilitators\n  </p>\n\n  <p>\n  For detailed instructions and question guides,\n  <a target="_blank" href="assets/PDRedesign RA Facilitation Guide.pdf">download the Facilitation Guide PDF</a>\n  </p>\n  <ng-include src="\'client/views/sidebar/facilitator_video.html\'" ng-hide="role == member"></ng-include>\n</div>\n')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/sidebar/facilitator_video.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/sidebar/facilitator_video.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/sidebar/facilitator_video.html", '<iframe width="100%" src="//www.youtube.com/embed/v-ueg3RL1VI?rel=0&showinfo=0&autohide=1" frameborder="0" allowfullscreen></iframe>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/sidebar/faqs.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/sidebar/faqs.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/sidebar/faqs.html", '<div class="why-pd">\n  <div class="row">\n    <div class="col-md-12">\n    <p class="title">\n      <i class="fa fa-question-circle"></i> <a ui-sref="faqs">Frequently Asked Questions</a>\n    </p> \n    </div>\n  </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/sidebar/member_video.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/sidebar/member_video.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/sidebar/member_video.html", '<iframe width="100%" src="//www.youtube.com/embed/5IxrUHAHdG4?rel=0&showinfo=0&autohide=1" frameborder="0" allowfullscreen></iframe>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/sidebar/minimal.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/sidebar/minimal.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/sidebar/minimal.html", '<div class="why-pd">\n  <div class="col-md-12">\n    <ng-include src="\'client/views/sidebar/facilitator_pdf.html\'">\n    </ng-include> \n    <ng-include src="\'client/views/sidebar/modal.html\'">\n    </ng-include> \n  </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/sidebar/modal.html.erb
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/sidebar/modal.html.erb
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/sidebar/modal.html", '<div class="what-is-pd">\n  <p class="title">\n    <i class="fa fa-info-circle"></i> Why Readiness Assessment?\n  </p>\n\n  <p>\n    <readiness-assessment-modal title="Learn more about PDredesign"></readiness-assessment-modal>\n    process and how this Readiness Assessment fits into the larger picture.\n  </p>\n\n  <ng-include src="\'client/views/sidebar/facilitator_pdf.html\'" ng-hide="role == member"></ng-include>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/sidebar/profile.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/sidebar/profile.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/sidebar/profile.html", '<div class="sidebar">\n  <div class="user">\n    <div class="col-md-3">\n      <span class="avatar">\n        <img ng-src="{{avatar}}">\n      </span>\n    </div>\n\n    <div class="col-md-6">\n      <div class="information">\n        <p id="name">\n        {{name}}\n      </span>\n      <p id="role">\n      {{role}}\n    </span>\n  </div>\n</div>\n\n<div class="row">\n  <div class="col-md-12">\n    <ul class="links">\n      <li>\n      <a href="#/settings">Edit profile</a>\n      </li>\n    </ul>\n  </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/sidebar/register.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/sidebar/register.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/sidebar/register.html", '<div class="row sidebar">\n  <div class="col-md-12 register-sidebar">\n    <h3 class="heading">Register now</h3>\n    <signup is-network-partner="{{$state.current.is_network_partner}}" is-administrator="{{$state.current.is_administrator}}"></signup>\n  </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/sidebar/response_card.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/sidebar/response_card.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/sidebar/response_card.html", '<div id=\'response-sidebar\'>\n  <div class=\'punchcard\'>\n    <div class="col-md-12">\n      <h1>{{responseTitle()}}</h1>\n      <h3 class="sidebar-title">\n        Saved Answers\n        <span class=\'score-count\'>\n          ({{answeredQuestions()}}/{{questions.length}})\n        </span>\n      </h3>\n    </div>\n    <div class=\'col-md-12 card\'>\n      <span>\n        <a href="" ng-click="scrollTo($index+1)" ng-repeat="question in questions" >\n          <span class="fa-stack fa-md">\n            <i class="fa fa-circle fa-stack-2x scored-{{questionScoreValue(question)}}"></i>\n            <i class="fa fa-text fa-stack-1x fa-inverse">{{$index+1}}</i>\n          </span>\n        </a>\n      </span>\n    </div>\n    <div class=\'col-md-12 flush\'>\n      <button\n        ng-show="canSubmit()"\n        class="submit btn btn-primary btn-block btn-lg"\n        data-toggle="modal"\n        data-target="#assessmentReview"\n        ng-click="submitResponseModal()">\n          <span ng-show=\'isResponseCompleted()\'>Update {{responseTitle()}}</span>\n          <span ng-hide=\'isResponseCompleted()\'>Submit {{responseTitle()}}</span>\n      </button>\n    </div>\n  </div>\n\n  <ng-include src="\'client/views/sidebar/minimal.html\'"></ng-include>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/sidebar/sidebar.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/sidebar/sidebar.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/sidebar/sidebar.html", '<div class="sidebar">\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/sidebar/sidebar_generic.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/sidebar/sidebar_generic.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/sidebar/sidebar_generic.html", '<div class="row" ng-show="visible">\n  <div class="sidebar">\n    <div class="user">\n      <div class="col-md-3">\n        <span class="avatar">\n          <img ng-src="{{avatar}}">\n        </span>\n      </div>\n\n      <div class="col-md-6">\n        <div class="information">\n          <p id="name">\n          {{name}}\n          </p>\n        <p id="role">\n        {{role}}\n         </p>\n    </div>\n  </div>\n\n  <div class="row">\n    <div class="col-md-12 no-padding">\n      <ul class="links">\n        <li>\n        <a href="#/settings">Edit profile</a>\n        </li>\n      </ul>\n    </div>\n  </div>\n\n</div>\n\n<div class="content">\n  <ng-include src="\'client/views/sidebar/faqs.html\'"></ng-include>\n  <ng-include src="\'client/views/sidebar/why_pd_redesign.html\'"></ng-include>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/sidebar/sidebar_login.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/sidebar/sidebar_login.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/sidebar/sidebar_login.html", '<div class="sidebar">\n  <div class="content">\n    <user-login></user-login>\n  </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/sidebar/why_pd_redesign.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/sidebar/why_pd_redesign.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/sidebar/why_pd_redesign.html", '<div class="why-pd">\n  <div class="row">\n    <div class="col-md-12">\n      <h5 class="title"></h5>\n    </div>\n  </div>\n\n  <div class="row">\n    <div class="col-md-12">\n      <ng-include src="\'client/views/sidebar/member_video.html\'" ng-show="role == member"></ng-include>\n      <ng-include src="\'client/views/sidebar/modal.html\'"></ng-include>\n    </div>\n  </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/signup/administrator.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/signup/administrator.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/signup/administrator.html", '<div class="partner-signup">\n  <div class="row">\n    <div class="col-md-12">\n      <h3>PDredesign for Districts</h3>\n      <p>We\'re here to help your district build capacity to reach professional development goals.</p>\n      <p>Access our toolkit to gather data from leaders and teachers about the current state of your professional development system, design a plan to reach local goals, and implement system changes that support teachers in the classroom.</p>\n      <p>Connect with a community of peers and partners to share solutions.</p>\n      <br></br>\n      <h4>What does PDredesign allow you to do?</h4>\n      <ul>\n        <li>Develop goals with colleagues from multiple roles and departments</li>\n        <li>Build consensus around high priority areas for growth</li>\n        <li>Find ideas and supports for change planning, implementation and course adjustment in one place</li>\n        <li>Learn about innovative strategies from districts around the country</li>\n      </ul>\n      <div class=\'hidden-md hidden-lg mobile-signup\'>\n        <h4>Register now</h4>\n        <signup is-administrator="{{$state.current.is_administrator}}"></signup>\n      </div>\n    </div>\n  </div>\n\n  <ng-include src="\'client/views/shared/footers/landing_footer.html\'"></ng-include>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/signup/educator.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/signup/educator.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/signup/educator.html", '<div class="partner-signup">\n  <div class="row">\n    <div class="col-md-12">\n      <h3>PDredesign for Educators</h3>\n      <p>We want you to have a voice in redesigning professional development to better meet the needs of teachers and students.</p>\n\n      <p>Share your ideas for improving the professional learning experience for teachers in your district and across the country.</p>\n\n      <br></br>\n      <h4>What does PDredesign allow you to do?</h4>\n      <ul>\n        <li>Collaborate with leaders in your district to improve your PD experience</li>\n        <li>Have a voice in redefining how PD can meet teacher needs</li>\n      </ul>\n      <div class="hidden-md hidden-lg mobile-signup">\n        <h4 class="heading">Tell your district about PDredesign</h4>\n        <district-message></district-message>\n      </div>\n    </div>\n  </div>\n\n\n  <ng-include src="\'client/views/shared/footers/landing_footer.html\'"></ng-include>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/signup/member.html.erb
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/signup/member.html.erb
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/signup/member.html", '<div class="login signup">\n  <div class="row secondary">\n    <div class="container">\n      <div class="col-md-4">\n        <h1>Register to use</h1>\n        <h2 class="subheading" >PD Readiness Assessment Tool</h2>\n      </div>\n\n      <div class="col-md-4">\n        <br>\n        <signup></signup>\n      </div>\n\n    </div>\n  </div>\n\n  <div class="container">\n    <div class="row">\n      <div class="col-md-9 intro">\n        <img src="/assets/sign-in-image-517bca9a62fcaf8c5f01deaf77031025.png" alt="Sign in image" />\n      </div>\n    </div>\n  </div>\n\n  <div class="container">\n    <div class="row">\n      <div class="col-md-9 intro">\n        <h3>With this tool you will...</h3>\n        <p>\n          Engage in a candid, cross-functional discussion about innovative\n          Professional Development using a common language anchored to key\n          elements of a high-quality, multi-modal professional development system.\n          You\'ll gain a comprehensive understanding of the current state of multiple\n          aspects of PD in your district. You\'ll have the opportunity to contribute\n          to the PD strategy design at the district level to better support teachers\n          to improve student success in their classrooms.\n        </p>\n      </div>\n    </div>\n  </div>\n\n\n\n</div>\n\n')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/signup/network_partner.html.erb
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/signup/network_partner.html.erb
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/signup/network_partner.html", '<div class="login signup">\n  <div class="row secondary">\n    <div class="container">\n      <div class="col-md-4">\n        <h1>Welcome to the </h1>\n        <h2 class="subheading" >PD Readiness Assessment Tool</h2>\n        <p></p>\n      </div>\n\n      <div class="col-md-8 form">\n        <div class="row">\n          <div class="col-md-6 col-sm-6">\n            <ng-include src="\'client/views/shared/errors.html\'"> </ng-include>\n          </div>\n        </div>\n      </div>\n    </div>\n  </div>\n\n  <div class="container">\n    <div class="row">\n      <div class="col-md-6 col-sm-6">\n        <p>\n          Please tell us a little bit about yourself.  This information helps\n          us better understand the teachers that we are serving.\n        </p>\n\n        <h3>Contact and Login Information</h3>\n        <div class="row name">\n          <div class="flush col-md-6">\n            <input\n            ng-model="user.first_name"\n            class="form-group form-control"\n            placeholder="First Name*"\n            type="text">\n          </div>\n          <div class="flush col-md-6">\n            <input\n            ng-model="user.last_name"\n            class="form-group form-control"\n            placeholder="Last Name*"\n            type="text">\n          </div>\n\n        </div>\n\n\n        <input\n        ng-model="user.email"\n        class="form-group form-control"\n        placeholder="E-Mail*"\n        type="text">\n\n        <input\n        ng-model="user.password"\n        class="form-group form-control"\n        placeholder="Password *"\n        type="password">\n\n\n        <h3>Network Partner Profile</h3>\n\n        <em>What product of services do you provide?</em>\n        <textarea\n        ng-model="user.services"\n        class="form-group form-control"\n        placeholder=""\n        type="text"></textarea>\n\n\n        <em>What is your district?</em>\n        <district-select multiple="true"></district-select>\n\n        <input\n        type="button"\n        ng-click="createUser(user, true)"\n        class="btn btn-devise btn-danger"\n        name="commit"\n        value="Create PD Account">\n\n        <input\n          style="display: none;"\n          ng-model="user.role"\n          value="facilitator">\n\n        </form>\n\n      </div>\n\n    </div>\n  </div>\n</div>\n\n')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/signup/partner.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/signup/partner.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/signup/partner.html", '<div class="partner-signup">\n  <div class="row">\n    <div class="col-md-12">\n      <h3>PDredesign for Partners</h3>\n\n      <p>We\'re bringing together high quality tools and resources from the field to build a comprehensive toolkit for districts redesigning their professional development systems.</p>\n      <p>Partner with us to digitize your tools and expand your reach.</p>\n      <p>Use our toolkit with your district partners to plan and implement system change with teachers at the center.</p>\n      <p>Create communities of practice among the districts in your network to share solutions.</p>\n      <h4>What does PDredesign allow you to do?</h4>\n      <ul>\n        <li>Integrate with tools you already use</li>\n        <li>Connect with a community of educators, districts, and partners</li>\n        <li>Build on collective insights from the community about professional development redesign</li>\n      </ul>\n      <div class=\'hidden-md hidden-lg mobile-signup\'>\n        <h4>Register now</h4>\n        <signup is-network-partner="{{$state.current.is_network_partner}}"></signup>\n      </div>\n    </div>\n  </div>\n\n  <ng-include src="\'client/views/shared/footers/landing_footer.html\'"></ng-include>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/static/privacy.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/static/privacy.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/static/privacy.html", '<div class="row">\n  <div class="col-md-6 col-md-offset-3">\n    <article class="articleWrapper">\n      <h1>Privacy Policy</h1>\n\n      <strong>Gatesfoundation.org Privacy and Information Security Policy ("Privacy Policy" or "Policy")</strong></p>\n      <p>Effective Date: February 23, 2013</p>\n      <p>Welcome. This Policy is designed to help you understand generally how Gatesfoundation.org and other Foundation Web properties (the "Site") collect personally identifying information about you and how the Foundation uses and discloses that personal information. Gatesfoundation.org is a Web site of the Bill &amp; Melinda Gates Foundation (the "Foundation," "we," "us" etc.), a charitable trust existing under the laws of the State of Washington, U.S.A. You may contact us at our Address For Legal Notices below. This Policy applies to information that personally identifies you (other than publicly available information) ("personal information") collected on Gatesfoundation.org or any additional Foundation Web properties or third-party sites managed by the Bill &amp; Melinda Gates Foundation or, where indicated, other information you provide to us.<br>\n      <strong>USE OF OUR SITE OR PROVISION OF ANY PERSONAL INFORMATION CONSTITUTES AGREEMENT TO THIS POLICY. DO NOT USE THE SITE OR PROVIDE INFORMATION (OR ALLOW OTHERS TO DO SO ON YOUR BEHALF) IF YOU (AND YOUR PRINCIPAL IF YOU ARE ACTING AS AGENT) DO NOT AGREE WITH ALL OF THE TERMS OF USE INCLUDING THIS POLICY AND ANY APPLICABLE SUPPLEMENTAL PRIVACY POLICY.</strong></p>\n      <p><strong>Table of Contents</strong></p>\n      <ol>\n        <li>How Does This Policy Relate to Use of the Site?</li>\n        <li>Information We Collect That You Do Not Provide</li>\n        <li>Information We Collect That You Do Provide</li>\n        <li>Information You Provide About Others</li>\n        <li>What We Generally Do with Personal Information Collected</li>\n        <li>Your Ability to Update Personal Information</li>\n        <li>Information Security</li>\n        <li>Your Particular Consents</li>\n        <li>Children</li>\n        <li>Identity Theft</li>\n        <li>Amendments</li>\n        <li>Information About Enforcement of Our Policy</li>\n        <li>Supplemental Privacy Policy—Jobs</li>\n      </ol>\n      <p><strong>1. How Does This Policy Relate to Use of the Site?</strong> <br>\n      This Policy is part of and incorporated into the Gatesfoundation.org Terms of Use ("Terms of Use"), which is the contract between you and the foundation governing use of the Site. Parts of the Terms of Use affect this Policy, so, unless you have already done so, please review them prior to using the Site. Terms used but not defined in this Policy have the definitions in the Terms of Use.</p>\n      <p>This Policy is supplemented by additional policies relevant to particular activities, and each of the supplemental policies is incorporated into this Policy. Here are examples of areas in which you will encounter supplemental privacy policies but this list is not complete: if a supplemental policy is included on the Site with respect to a particular activity, or if one is included on a Third Party site relating to the mission of the Foundation, those supplemental policies will also apply and are also incorporated.</p>\n      <p><strong>2. Information We Collect That You Do Not Provide<br>\n      </strong>Sometimes we collect personal information without you having to enter any information on the Site. For example, we may receive personal information from public sources or from third parties (which we may combine with other information from other sources).</p>\n      <p>In addition, we collect some information automatically from visitors to the Site, for example through the use of "cookies", "web beacons", and other tracking mechanisms. We collect at least the following: your domain name and host for Internet access; the Internet address of the site from which you came; the date and time of your access; your computer\'s IP address and information about its operating system, browser and host; the date and time you access the Site and the pages you visit. If you do not want to receive cookies, you may set your browser to reject them. However, if you turn cookies off, you may not have access to some of the Site\'s services and features. Unless you have adjusted your browser setting so that it will refuse cookies, our system will issues cookies when you access the Site. We also may employ Web beacons from third parties to help us compile aggregated statistics regarding the operations of our site. We prohibit Web beacons on our site from being used by third parties to collect or access your personal information.</p>\n      <p><strong>3. Information We Collect That You Do Provide</strong><br>\n      It is always your choice, or the choice of anyone acting for you, whether to provide personal information. However, some must be provided to participate in certain programs or activities (such as to apply for a job), so the decision not to provide information might limit or eliminate certain functions of the Site or the ability to participate. Other information is up to your good judgment, e.g., do not provide personal information about yourself that could be misused by others in a chat room, bulletin board, blog or similar forum and do not provide personal information about others without their permission. The kinds of personal information we tend to request about you or others include but are not limited to your name, email address, native language, organization name, job title, city, state / province, region, age, locations for internet access and devices used. Additional information about what we collect is available in any supplemental privacy policies for particular activities.</p>\n      <p><strong>4. Information You Provide About Others</strong><br>\n      Do not supply personal information about others unless you are authorized or required to do so by applicable law or contract and you consent to the Terms of Use (including this Policy and supplemental policies) on behalf of yourself and the "data subject" (the person about whom you supply personal information). Before supplying personal information about others (except as otherwise allowed by law or contract), you must make available for the data subject\'s review, and obtain their written consent to, said Terms of Use and policies. By submitting any personal information about others, you represent and warrant that you are authorized to do so and that you did all of the foregoing before submitting the information. If applicable law allows you to supply the information without doing the foregoing, you represent and warrant that you have abided by that law and that it allows us to receive and Disclose the information under this Policy without any further action on our part. You agree to indemnify, defend and hold us harmless against any failure by you to comply with this paragraph.</p>\n      <p>The Foundation works with Third Parties on certain programs, and often those Third Parties own and/or are responsible for that program’s Web site. In those cases, if you provide personal information, you will be giving it to a third party and their privacy policy will apply. You agree that if they provide it to us then we may apply our Policy to what we receive.</p>\n      <p><strong>5. What We Generally Do with Personal Information Collected</strong> <br>\n      In general, we use personal information we collect to pursue our mission and operations and to engage in the activity (and related activities) for which we collect it.&nbsp; Specifically, we may use your personal information to:</p>\n      <ul>\n        <li>to fulfill our obligations to you and to respond to any questions or requests;</li>\n        <li>to contact you about material changes in our site terms or policies;</li>\n        <li>to comply with the law or in good faith belief that such action is necessary to conform with the requirements of law or to comply with legal process served on us; </li>\n        <li>to provide to third parties as a result of any reorganization process; </li>\n        <li>if you sign up for a blog, feed or newsletter, we may put you on our mailing list or even the list of a Third Party who we think has a similar mission.</li>\n        <li>if you apply for a job, we\'ll use the information to find out about you and share it with service providers and others we view as relevant to the employment process.</li>\n      </ul>\n      <p>Further information is available in the supplemental policies for some activities, but you should assume that we will use all information for all lawful purposes. Subject to applicable law, we reserve the right to make all lawful, worldwide uses of personal information, including without limitation, to: collect, use, access (or bar access), process, fulfill, disclose, display, share, respond to legal process or otherwise exercise our rights under applicable law, transfer, store, verify,&nbsp; enforce, delete, and otherwise deal with personal information, and information other than personal information (collectively "Disclose").</p>\n      <p><strong>6. Your Ability to Update Personal Information</strong><br>\n      To the extent our systems require your personal information, in general, they provide the ability for you to update your information.&nbsp; If you have any questions about what personal information about you the Foundation retains, please contact us at <a href="mailto:info@gatesfoundation.org">info@gatesfoundation.org</a>. The foundation endeavors to keep your personal information accurate and up to date.&nbsp;&nbsp; If your personal information has changed, you may submit your new information there as well. Some activities allow some updating, e.g., you may update your "Jobs" profile by using the functionality in that section of the Site.&nbsp;</p>\n      <p>We keep personal information for as long as we think is necessary or advisable and we reserve the right to retain it to the full extent not prohibited by law. We may discard personal information in our discretion, so you should retain your own records, and not rely upon our storage of any personal information or other data.</p>\n      <p><strong>7. Information Security</strong><br>\n      We use reasonable technical and organizational measures to protect the personal information received from our users from unauthorized use or disclosure.</p>\n      <p><strong>8. Your Particular Consents</strong> <br>\n      In addition to consenting to the Terms of Use, including this Policy (and any relevant supplemental policies), the Foundation is interested in letting you know about, and receiving your particular consent to, a few activities relating to personal information that will help us to deal with personal information that is Disclosed in furtherance of our mission, operations and programs. These are described immediately below.</p>\n      <ul>\n        <li><strong>Consent to International Transfer and Disclosure of Personal Information.</strong> We are involved in programs and activities in a variety of countries. You agree that the Foundation and those with whom we share personal information ("Recipients") may Disclose and transfer your personal information worldwide (including outside the European Economic Area, if you are based in the European Economic Area) for any purpose relating to our or their mission, operations, programs, or otherwise that is not allowed or prohibited by this Policy.</li>\n        <li><strong>Consent to Electronic Notice If There is a Security Breach:</strong> If we or a Recipient is required to provide notice of unauthorized access or other invasion of certain security systems, you agree that we (or they) may do so when required (or voluntarily) by posting notice on our Site or sending notice to any email address we have for you, in our (or their) good faith discretion. You agree that notice to you will count as notice to others for whom you are acting, and agree to pass the notice on to them.</li>\n      </ul>\n      <p><strong>9. Children<br>\n      </strong>We do not want to collect information from children. Do not provide any personal information unless you are at least 13 years of age, and please caution your children not to provide any. If a child under 13 has provided personal information, a parent or guardian may so inform us by writing us at Our Address for Legal Notices (see below) and we will use commercially reasonable efforts to delete it from our database, subject to applicable law and this Policy.</p>\n      <p><strong>10. Identity Theft</strong><br>\n      If anyone believes they\'re a victim of identity theft entitled by law to request information from us, write us at Our Address For Legal Notices and we\'ll explain what information we require in order to respond. After receiving that information, we’ll supply (without charge) information we then have that we are legally required to provide (subject to applicable law and reserving all rights and defenses).</p>\n      <p><strong>11. Amendments<br>\n      </strong>We will be changing what we do and how and why we Disclose data periodically—this Policy describes what we currently envision, but that will change as we change. You agree that this Policy amends and replaces any previous privacy polic(ies). We may further amend all or part of this Policy in the same way that we make amendments to our Terms of Use and such amended versions will be posted on this page.</p>\n      <p><strong>12. Information About Enforcement of Our Policy</strong><br>\n      This Policy is part of and supplemented by our Terms of Use, which together with any supplemental privacy policy form a contract. If there is a conflict between the Terms of Use and this Policy, the latest version of this Policy will control. We and you are bound by the Terms of Use, including this Policy. If you think we are in default, you may contact us by writing to Our Address For Legal Notices. There are no third party beneficiaries of this Policy.</p>\n      <p>Our Address for Legal Notices: </p>\n      <p>Bill &amp; Melinda Gates Foundation<br>\n      P.O. Box 23350<br>\n      Seattle, WA 98102<br>\n      Attn: Legal</p>\n      <p><strong>Supplemental Privacy Policy—Jobs</strong></p>\n      <p>Welcome. This Supplemental Privacy Policy—Jobs ("Jobs Policy") supplements the Privacy Policy for Gatesfoundation.org ("Site"). It applies if you use the “Jobs” section of the Site or if you allow or cause someone else to use it for you. If an applicant has a disability and needs assistance using our online systems, completing a profile, an application for employment, or any other aspect of the application process, please notify our Disability Coordinator (at <a href="mailto:disability.accomodations@gatesfoundation.org">disability.accomodations@gatesfoundation.org</a>) and we will make appropriate arrangements. We are an equal opportunity employer.</p>\n      <p>This Jobs Policy is part of our Privacy and Information Security Policy ("Privacy Policy") which is part of our Terms of Use; terms used but not defined in this Jobs Policy are defined in those documents. CREATING A PROFILE, SUBMITTING ANY INFORMATION RELATING TO A POSSIBLE JOB OPPORTUNITY, MAKING ANY APPLICATION(S), OR ALLOWING SOMEONE ELSE (SUCH AS A RECRUITER) TO DO THAT FOR YOU, WILL BE YOUR CONSENT TO OUR TERMS OF USE, INCLUDING OUR PRIVACY POLICY AND THIS SUPPLEMENTAL POLICY.</p>\n      <p>If you are a recruiter, friend or someone other than job applicant ("Applicant"), you represent and warrant to the Foundation that you have shown the Applicant the Terms of Use (including the Privacy Policy and Jobs Policy) and that you have obtained written consent from the Applicant to those terms and policies or that you are otherwise authorized to do so and to submit personal information about Applicant.</p>\n      <p><strong>Information That We Collect in Jobs.</strong> In addition to the personal information that we collect on the Site generally, in the Jobs section you may set up a "profile" which will require you to supply your email address and create a password and secret question to allow you to access your profile later. When you create a profile, submit an application, or authorize us to obtain a "consumer report" (such as a background check), we tend to collect this kind of information: name, address, telephone number, resume\', employment, compensation and educational history, previous grants from us, social security number (or national insurance number for an Applicant based in the UK or other local equivalent) and so on. We keep track of when applications are submitted and persons using your password can see several months of that history by clicking on "My Jobs" if you have a profile.</p>\n      <p>The information submitted about an Applicant online tends to be preliminary information. If we think there might be a good fit for a position, we often will ask the Applicant to complete a more formal application and also to authorize us to obtain a "consumer report" or "consumer investigative report." Under U.S. law, a "consumer report" is a report bearing on credit worthiness, credit standing, credit capacity, character, general reputation, personal characteristics, or mode of living which is expected to be used or collected to serve as a factor in establishing Applicant\'s eligibility for employment. An "investigative consumer report" tends to be the same thing but the information is obtained through personal interviews with neighbors, friends, associates or acquaintances etc. of the Applicant. Both kinds of reports (or other information we collect) can include information from court, administrative and criminal records.</p>\n      <p><strong>Access to Information.</strong> You may update your profile personal information by using that Site functionality in the Jobs section. The foundation retains profiles in accordance with our records retention policy. We reserve the right to delete them and other information stored by or for you, so don’t store, for example, the only copy of a resume with us (and sometimes information will need to be re-entered). Profiles may be deleted at any time upon request by contacting <a href="mailto:info@gatesfoundation.org">info@gatesfoundation.org</a>. Neither changes to or deletion of a profile will alter information already submitted or relied upon. </p>\n      <p><strong>How We Use Information Collected in Jobs.</strong> In addition to the uses of personal information allowed in the Privacy Policy, we make these kinds of uses of personal information submitted for a job. We Disclose it:</p>\n      <ul>\n        <li>to recruiters and other third parties who help us authenticate Applicants or review qualifications and credentials or to contact references;</li>\n        <li>to our affiliates and other Third Parties or persons with whom Applicant might work if Applicant gets the job;</li>\n        <li>when we are looking for someone who might fit a job need of ours or a Third Party, and to contact a previous Applicant to see if he or she might be interested in a job for which the Applicant did not apply. However, we do this in our discretion and without any obligation to do so; </li>\n        <li>to communicate about receiving the application or about the job for which application was made, or to deliver legal or other notices; and</li>\n        <li>to comply with applicable laws such as checking names against anti-terrorism lists or complying with immigration restrictions. </li>\n      </ul>\n      <p>If Applicant gets a job with us, we store the application and other information upon which we relied in Applicant’s personnel file and we may base post-employment decisions on it (including disciplinary actions).</p>\n      <p><strong>Passwords; Redact Your Resume.</strong> The Terms of Use require you to keep secret your password and other access credentials confidential. That\'s especially important if you don\'t want persons obtaining your password to be able to see any resume or a profile or to see other information available (e.g., positions for which applications have been made). Also, take steps to create a safe resume: before uploading a resume, remove any sensitive information such as social security numbers, identification numbers (e.g., driver\'s license), financial information, dates of birth etc. – we don\'t need or want that information in a resume.</p>\n      <p><strong>Security.</strong></p>\n      <ul>\n        <li>We store data associated with your application on a site provided by a service provider. The data is not encrypted but the service provider has agreed to provide a commercially reasonable level of security. Your resume and other data will also circulate through our offices and relevant Third Parties, and as explained in the Terms of Use, we do not guarantee security; also, we do not control Third Parties.&nbsp;</li>\n        <li>You should assume the Site, storage and use generally is not encrypted and you should take steps to promote security (e.g., see the "Passwords; Redact Your Resume" section above).</li>\n        <li>Please be wary of email "phishing" or other scams by persons pretending to be us or a Third Party working with us – if you are contacted and asked for sensitive personal information such as financial information or your social security number etc., you should assume that someone is trying to defraud you. We will already have that information if you provided it to us on one of our documents and so will anyone with whom we share personal information: generally we don’t need to ask for it again. If you\'d like to check with us to help determine if the person communicating with you is really us or someone we shared with, please contact <a href="mailto:info@gatesfoundation.org">info@gatesfoundation.org</a>.</li>\n      </ul>\n\n    </article>\n  </div>\n</div>')
 }]);
 
 // Angular Rails Template
-// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-8e2e009f813e/app/assets/javascripts/client/views/static/terms_of_use.html
+// source: /Users/luismanotas/.rvm/gems/ruby-2.2.0/bundler/gems/pdr-client-60cee279c011/app/assets/javascripts/client/views/static/terms_of_use.html
 
 angular.module("templates").run(["$templateCache", function($templateCache) {
   $templateCache.put("client/views/static/terms_of_use.html", '<div class="row">\n  <div class="col-md-6 col-md-offset-3">\n    <article class="articleWrapper">\n      <h1>Terms of Use</h1>\n        <p><strong>YOUR USE OF OUR SITE, YOUR REGISTRATION ON OUR SITE or any other Foundation Web properties or third-party sites managed by the Bill &amp; Melinda Gates Foundation, OR YOUR PROVISION TO US OF ANY CONTENT OR PERSONAL INFORMATION CONSTITUTES YOUR AGREEMENT TO THESE TERMS, INCLUDING BUT NOT LIMITED TO THE PRIVACY AND INFORMATION SECURITY POLICY (THE "PRIVACY POLICY") all as amended from time to time. DO NOT USE THE SITE OR PROVIDE CONTENT OR PERSONAL INFORMATION IF YOU DO NOT AGREE TO THE TERMS OR IF YOUR JURISDICTION WILL NOT HONOR THEM. </strong></p>\n        <p><strong>Table of Contents</strong></p>\n        <ol>\n            <li>Restrictions on Use of Content </li>\n            <li>Registration and Creating Profiles etc.; Attribution of Electronic Acts to You </li>\n            <li>User Generated Content &amp; Site Activities <br>\n            A. User Generated Content --Your Responsibility and License to Others <br>\n            B. Site Activities <br>\n            C. No Commissions\n            </li>\n            <li>Privacy and Information Security,<strong> INCLUDING CONSENT TO INTERNATIONAL DATA TRANSFERS &amp; DISCLOSURE </strong></li>\n            <li>Infringement of Our Rights or the Rights of Others; Your Warranty </li>\n            <li>Feedback; Your License to Us </li>\n            <li>Indemnification&nbsp; </li>\n            <li>NO WARRANTIES, CONDITIONS OR OTHER DUTIES </li>\n            <li>NO INCIDENTAL, CONSEQUENTIAL OR CERTAIN OTHER DAMAGES </li>\n            <li>EXCLUSIVE REMEDY; DAMAGE LIMITATION </li>\n            <li>Linked Sites </li>\n            <li>Amendments </li>\n            <li>GOVERNING LAW AND EXCLUSIVE JURISDICTION </li>\n            <li>Legal &amp; Other Notices &amp; Disclosures </li>\n            <li>Termination or Cancellation; No Continuing Rights </li>\n            <li>Entire Agreement; Miscellaneous</li>\n            <li>Electronic Transactions </li>\n            <li>Additional or Required Notices </li>\n        </ol>\n        <p>Gatesfoundation.org is a web site associated with the Bill &amp; Melinda Gates Foundation, a charitable trust existing under the laws of the State of Washington. U.S.A. ("Foundation," "we," "us" etc.). These Terms are an agreement between the Foundation and you and govern your use of the Site and all information on or submitted through it.</p>\n        <p>Most users of this Site are employees or other agents of entities, so references to "you" means both: (1) any entity or individual that is your employer or for whom you act as agent, and (2) the "user" individually unless otherwise stated on the Site or in these Terms. Persons under 18 years of age are not authorized to use the Site.</p>\n        <p><strong>1.</strong> &nbsp;<strong>Restrictions on Use of Content</strong> <br>\n        The Site contains a variety of information, including (without limitation) information, data, text, software, music, sound, photographs, graphics, video, messages or other materials, that you upload, post or otherwise provide in connection with the Site ("<strong>Content</strong>"). Much of the Content on the Site is not available for downloading, such as our copyrighted works that we do not distribute or works of others that we are not permitted to distribute. However, we also may have Content that if so designated may be downloaded by you pursuant to these Terms ("<strong>Available Content</strong>"). YOU MAY REVIEW, DOWNLOAD, COPY, DISTRIBUTE AND USE THE AVAILABLE CONTENT SOLELY FOR THE PURPOSE OF FURTHERING YOUR MISSION IN THE ORDINARY COURSE OF YOUR GOVERNMENTAL OR CHARITABLE PURPOSE AND ATTENDANT OPERATIONS. YOU MAY NOT SELL THE AVAILABLE CONTENT OR OTHERWISE DISTRIBUTE IT FOR A FEE. YOU WILL NOT USE OR DISCLOSE IT OR THE SITE TO ANY THIRD PARTIES EXCEPT AS EXPRESSLY PERMITTED BY THESE TERMS.</p>\n        <p>This Site is controlled by us from our offices within the United States of America. If you choose to access this Site from locations outside the U.S. you do so at your own risk and you are responsible for compliance with any local laws. You may not use or export anything (including information) from the Site in violation of U.S. export laws, regulations or the Terms. </p>\n        <p><strong>2.</strong> &nbsp;<strong>Registration and Creating Profiles etc.; Attribution of Electronic Acts to You</strong><br>\n        For some areas of the Site, you may have to complete a registration process or create a profile for use in applying for something (e.g., a job or a grant). Completion of the process will usually create an account with a user name and password or other identifier which you agree to guard as confidential information—if you are careless with it, others may be able to access the information. You agree to provide accurate, current and complete information at all times. You also agree that you will review, maintain, correct, and update such information in a timely manner to maintain its accuracy and completeness by using the means allowed for the relevant information or, when appropriate, by contacting us. If you provide (or the Foundation has reasonable grounds to believe that you provided) any information that is inaccurate, not current, or incomplete, the Foundation may suspend or terminate your access, application, grant or participation in a program, in addition to exercising all rights and remedies allowed by law.</p>\n        <p>You agree that all uses of the identifier established for you during a registration or similar process will be attributed to and legally bind you and may be relied upon by us and our agents, affiliates, and other third parties with whom we work in order to provide the Site, Content, services or pursue our mission (including but not limited to our and their respective affiliates, officers, employees and agents) (collectively "Third Parties"), as being a use made by you, even if someone else used your identifier.</p>\n        <p><strong>3.&nbsp;User Generated Content and Site Activities</strong></p>\n        <p><strong>A. User Generated Content</strong> -- Your Responsibility and License to Others.&nbsp; Sometimes you may wish to provide Content, such as by uploading a video or information, or submitting comments in a chat room.&nbsp; When you provide Content, you:</p>\n        <ul>\n            <li>represent and warrant that the Content is (a) wholly your original work, or (b) that you have all necessary right, title, interest and licenses to upload it and make it available to the Foundation and other users for download, distribution and use under these Terms without (i) violation (by you, us, Third Parties, users or anyone else) of any applicable license, restriction or law, or (ii) a potentially adverse consequence to us, Third Parties, users or anyone else that you have not conspicuously disclosed in the Content.&nbsp; As used here, "adverse consequence," means a restriction governing the Content which could be triggered if we or others exercise a right under the license you grant below and which imposes an obligation, liability or impairment of rights on us or others that was not conspicuously disclosed by you before exercise of a right. To disclose an adverse action, you agree to conspicuously place on or in the Content notice that adverse actions can result and that you may be contacted at the email address and telephone number in the notice to obtain your full disclosure of applicable licenses and restrictions applicable to the Content; </li>\n            <li>grant the Foundation, its affiliates, Third Parties sub-licensees and successors and assigns, and each Site user who downloads the Content under these Terms, a perpetual, nonexclusive, worldwide, royalty-free, fully paid up, irrevocable license to (i) use, copy, distribute, modify and create derivative works from the Content; (ii) publicly perform or display, license and distribute copies of the Content, modified Content and derivative works of the Content; and (iii) sublicense to third parties the foregoing rights, including the right to sublicense to further third parties, as necessary or advisable (as determine by the Foundation or other licensed person in its sole discretion) to allow the Foundation or other licensed person to fulfill its charitable or governmental mission, to further its related operations, and to create, advertise, operate and manage the Site. </li>\n        </ul>\n        <p>In addition to the rights above, you acknowledge and agree that we may keep Content indefinitely and disclose it for any purpose, including but not limited to:&nbsp; (a) comply with legal process; (b) enforce these Terms; (c) respond to claims that any Content violates the rights of third-parties; or (d) without undertaking a duty to do so, protect the rights, property, or personal safety of the Foundation, its users and the public.</p>\n        <p>You agree not to upload, post or otherwise transmit through the Site any Content or any other materials whatsoever that are or could appear to:</p>\n        <p>(i) be defamatory, obscene, invasive to another person\'s privacy or protected data, or tortious; (ii) be infringing upon anyone\'s intellectual property rights, including any patent, trademark, trade secret, copyright, or right of publicity; (iii) contain any software viruses or any other harmful computer code, files, or programs, including any designed to interrupt, destroy, or limit the functionality of any computer software or hardware or telecommunications equipment; and (iv) in violation of any applicable license, law or contractual or fiduciary duty or provision (including by exercise of the rights you grant to the Foundation above).</p>\n        <p>The Foundation anticipates that substantial Content or even assistance will be made available to you and others through the Site or otherwise.&nbsp; Content may be outdated or contain typographical errors, inaccuracies, omissions, or problematic or defective functionality, and assistance (such as Foundation help with a report you are obligated to make) will need your review. YOU AGREE NOT TO RELY ON CONTENT OR ASSISTANCE AND TO DETERMINE ALL RELEVANT FACTORS ON YOUR OWN, INCLUDING (WITHOUT LIMITATION) ACCURACY, FUNCTIONALITY, QUALITY, RELIABILITY AND OTHER RELEVANT FACTORS. We reserve the right to monitor and exercise all other rights of ours, and also to modify or remove any Content or assistance at any time, but do not undertake any duty to do so.</p>\n        <p>Any opinions, advice, statements, assistance, services, offers, or information expressed or made available by third parties, including users, are those of the respective author(s) or distributor(s) and not of the Foundation.</p>\n        <p><strong>B. Site Activities.</strong> The Site is provided as is and when available, and we may change all Content, functionality and services in our discretion at any time.&nbsp; We may also do this for particular activities even if you have started to participate. For example, we can change a job or grant description at any time even if you have already applied, and not all jobs or grants may be posted at all or on the Site – we use various methods for pursuing our mission and they are not limited to the Site. Also, we or Third Parties might make a mistake and we reserve the right to correct anything, including but not limited to Content or assistance on the Site. For example, we may correct, change, withdraw or do anything else with a job or grant description even if you have already taken action based on it.&nbsp;</p>\n        <p><strong>C. No Commissions.</strong> We do not want to deal with persons desiring to be paid for something unless we intentionally enter into an express contract to do so. This means, for example, that we do not pay commissions or other sums to anyone who helps arrange a job, grant or anything else unless we have expressly contracted to do so in writing prior to any such arrangement. For example, if you submit an application for someone else without entering into such a contract with us, we will not pay you (or anyone else) a commission or other amount even if we accept the application, hire the person or make the grant etc. We may also use, delete or ignore any information you provided without paying you anything and without undertaking any duties to you or anyone else. If you do not want that result then do not submit any information without entering into a written contract with us first.</p>\n        <p><strong>4.</strong>&nbsp; <strong>Privacy and Information Security Policy, INCLUDING CONSENT TO INTERNATIONAL DATA TRANSFERS &amp; DISCLOSURE (“Privacy Policy”).</strong>&nbsp; Our Privacy Policy is part of these Terms and is incorporated herein. DO NOT PROVIDE, OR ALLOW OTHERS TO PROVIDE, PERSONAL INFORMATION ABOUT ANYONE UNLESS YOU, ON YOUR OWN BEHALF AND ON BEHALF OF ANYONE WHOSE INFORMATION YOU PROVIDE: (A) HAVE REVIEWED AND AGREE WITH THE PRIVACY POLICY, AND (B) ARE AUTHORIZED TO, AND DO, CONSENT TO HAVE ALL DATA USED AND TRANSFERRED INTERNATIONALLY.</p>\n        <p><strong>5.&nbsp; Infringement of Our Rights or the Rights of Others; Your Warranty.</strong>&nbsp; Our Site, including the Content, is protected by intellectual property laws and you agree to respect them. See the "Additional or Required Notices" section of these Terms for more information about our trademarks and copyrights. All rights not expressly granted to you are reserved. As for intellectual property rights of others, anyone who believes that their work has been infringed, may provide a notice to our copyright agent—see the Additional or Required Notices section of thee Terms. It is our policy to terminate in appropriate circumstances any (if any) account or right of access for repeated infringement, and we also reserve the right to terminate for even one infringement.</p>\n        <p><strong>6.&nbsp; Feedback; Your License to Us.</strong>&nbsp; We hope that you will provide your Feedback (as defined below) so that we may better support, improve and pursue our charitable mission. However, you agree that you will not supply Feedback that infringes or violates the rights of others, and you hereby grant a License to the Foundation (as defined below) in your Feedback. You agree that we have no obligation to pay you or anyone else for Feedback or for the License to the Foundation. "Feedback" means all remarks, data, suggestions, methods, surveys, reports, processes and ideas (including patentable ideas) and other Content that you provide by using the Site or provide about it, Content or any aspect of our mission or operations, whether provided to us or persons working with us or the Feedback, and whether provided through the Site or media such as a chat room, survey, report, grant, software tool, bulletin board or otherwise.</p>\n        <p>As used above, "License to the Foundation" means a non-exclusive, perpetual, irrevocable, royalty-free, transferable, sub-licensable, worldwide license to the Foundation to exercise all now or later existing intellectual property rights or other rights of yours or others in the Feedback, for purposes of supporting the Foundation\'s charitable purposes (as determined by us in our discretion from time to time) in full or in part and in all possible media (now known or later developed). The foregoing rights include (but are not limited to), the right to display, perform, read (on air or otherwise), and publish in public or private sites, newspapers or other media, brochures, reports and so on, all or part of the Feedback and any other information that you provide through or relating to our Site or the Content. The License to the Foundation is in addition to any (if any) that you may be required to provide under any separate agreement between us and you (including grants or other agreements).</p>\n        <p><strong>7.&nbsp; Indemnification.</strong>&nbsp; You agree to indemnify, defend and hold harmless the Foundation and Third Parties, from and against any and all losses, damage, liability and costs of every nature incurred by any of them in connection with any claim, damage or loss related to or arising out of: the Content, use of the Site or related sites, any assistance or services provided by us or Third Parties,&nbsp; any alleged unauthorized use of the Site, or any breach or alleged breach by you of these Terms. You agree to cooperate fully in the defense of any of the foregoing. We reserve the right, at our own expense, to control exclusively the defense of any matter otherwise subject to indemnification by you and you will not settle any matter without our consent in a non-electronic record.&nbsp; Your obligation to indemnify, defend and hold harmless shall be limited to the extent that you are afforded sovereign immunity under applicable federal, state or local laws.&nbsp; In such cases where your obligation to indemnify may be limited due to the requirements of federal, state or local laws, you shall be responsible for the ordinary negligent acts and omissions of your agents and employees causing harm to persons not a party to this agreement.</p>\n        <p><strong>8.&nbsp; NO WARRANTIES, CONDITIONS OR OTHER DUTIES.</strong>&nbsp; THE SITE&nbsp; AND ALL CONTENT (regardless of who generates it), SITE FUNCTIONALITY, ASSISTANCE AND SERVICES PROVIDED BY SITE, THE FOUNDATION OR THIRD PARTIES&nbsp; (collectively, "COMPLETE SITE") ARE SUBJECT TO CHANGE AND PROVIDED BY US OR THIRD PARTIES "AS IS" WITHOUT ANY WARRANTY OR CONDITION, AND WITHOUT THE UNDERTAKING OF ANY DUTY, OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, ANY (IF ANY) WARRANTIES OR CONDITIONS OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE, AND ANY DUTY (IF ANY) OF WORKMANLIKE EFFORT OR LACK OF NEGLIGENCE. THE COMPLETE SITE IS PROVIDED: (1) WITH ALL FAULTS AND THE ENTIRE RISK AS TO SATISFACTORY QUALITY, PERFORMANCE, ACCURACY AND EFFORT IS WITH YOU; AND (2) WITHOUT ANY ASSURANCE, OR WARRANTY, CONDITION OR DUTY OF OR REGARDING: FUNCTIONALITY; PRIVACY; SECURITY; ACCURACY; AVAILABILITY; LACK OF: NEGLIGENCE, INTERRUPTION, VIRUSES OR OF OTHER HARMFUL CODE, COMPONENTS OR TRANSMISSIONS; OR THE NATURE OR CONSEQUENCES OF AVAILABLE CONTENT SUCH AS (WITHOUT LIMITATION) WHETHER SOFTWARE OR OTHER CONTENT IS SUBJECT TO ANY PARTICULAR LICENSE, OR WHETHER IT IS SUBJECT TO ANY RESTRICTIONS OR CONSEQUENCES THAT MIGHT BE TRIGGERED BY ANY EXERCISE OF A RIGHT GRANTED UNDER THESE TERMS. ALSO, THERE IS NO WARRANTY BY US OR THIRD PARTIES OF TITLE OR AGAINST INFRINGEMENT OR INTERFERENCE WITH ENJOYMENT OF ANY ASPECT OF THE COMPLETE SITE. YOU AGREE THAT YOU WILL OBTAIN (INCLUDING THROUGH DOWNLOAD) ANY CONTENT ENTIRELY AT YOUR OWN RISK, AND YOU WILL BE SOLELY RESPONSIBLE FOR ANY RESULTING INFRINGEMENT, BREACH OF CONTRACT, CONSEQUENCE OR DAMAGE, INCLUDING (WITHOUT LIMITATION) TO YOUR COMPUTER SYSTEM OR LOSS OF DATA.</p>\n        <p><strong>9.&nbsp; NO INCIDENTAL, CONSEQUENTIAL OR CERTAIN OTHER DAMAGES.</strong>&nbsp; TO THE FULL EXTENT ALLOWED BY LAW, YOU AGREE THAT NEITHER THE FOUNDATION NOR ANY OF THE THIRD PARTIES, WILL BE LIABLE TO YOU OR ANYONE ELSE FOR ANY SPECIAL, CONSEQUENTIAL, INCIDENTAL OR PUNITIVE DAMAGES, DAMAGES FOR LOST PROFITS, FOR LOSS OF PRIVACY OR SECURITY, FOR LOSS OF REPUTATION, FOR FAILURE TO MEET ANY DUTY (INCLUDING WITHOUT LIMITATION ANY DUTY OF GOOD FAITH OR LACK OF NEGLIGENCE OR OF WORKMANLIKE EFFORT), OR FOR ANY OTHER SIMILAR DAMAGES WHATSOEVER THAT ARISE OUT OF OR ARE RELATED TO ANY ASPECT OF THE COMPLETE SITE OR TO ANY BREACH OF THESE TERMS (INCLUDING WITHOUT LIMITATION, THE PRIVACY POLICY), EVEN IF WE OR A THIRD PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES AND EVEN IN THE EVENT OF FAULT, TORT (INCLUDING NEGLIGENCE) OR STRICT OR PRODUCTS LIABILITY OR MISREPRESENTATION.</p>\n        <p><strong>10.&nbsp; EXCLUSIVE REMEDY; DAMAGE LIMITATION.</strong>&nbsp; YOU AGREE THAT YOUR EXCLUSIVE REMEDY FOR ANY BREACH OF THESE TERMS (INCLUDING WITHOUT LIMITATION, THE PRIVACY POLICY) AND FOR ANY AGGREGATE DAMAGES DUE YOU (OR OTHERS RELATED TO YOU) BY THE FOUNDATION OR ANY OF THE THIRD PARTIES FOR ANY REASON RELATING TO ANY PART OF THE COMPLETE SITE, WILL BE AT OUR OPTION: (A) SUBSTITUTION, CORRECTION OR REPLACEMENT OF ALL OR PART OF THE CONTENT OR SERVICE CAUSING YOUR DAMAGE (IF ANY); OR (B) THE AMOUNT OF YOUR DAMAGES THAT ARE NOT EXCLUDED IN THE PRECEDING SECTION AND WHICH YOU ACTUALLY INCUR IN REASONABLE RELIANCE, WHICH AMOUNT WILL BE THE LESSER OF THE AMOUNT YOU ACTUALLY PAID US FOR THE ITEM CAUSING THE DAMAGE (IF ANY) OR THE AMOUNT OF SAID DAMAGES SO INCURRED. The damage exclusions and limitations in these Terms are independent and will apply even if any remedy fails of its essential purpose.</p>\n        <p><strong>11.&nbsp; Linked Sites.</strong>&nbsp; Our Links to Other Sites: Our Site may contain links to Web sites of third parties. We provide these links as a convenience, but do not endorse the linked site or anything on it. While their information, products, services and information may be helpful to you, they are independent entities and we do not control or endorse them. You agree that any visits to linked sites are at your own risk and governed by their privacy policies (if any).</p>\n        <p><em>Your Links to Our Site</em> You are not permitted to link or shortcut to our Site from your Web site, blog or similar application, without obtaining prior written permission from us. </p>\n        <p><strong>12.&nbsp; Amendments.</strong>&nbsp; You agree that from time to time we may alter (including adding or eliminating all or parts of provisions) these Terms, including but not limited to the Privacy Policy ("Amendments"). Amended versions of these Terms will take effect on the date specified for the amended version ("Effective Date") and will apply to all information that was collected before or after the Effective Date, including information in databases. You have no continuing right to use the Site – it is like a store and each time you visit you will be subject to the version of the Terms in effect on your visit. Like terms on the door to a store, those terms will change from time to time and the changes will be effective when they appear in a replacement version of these Terms as posted by us on the Site. No other Amendments will be valid unless they are in a paper writing signed by us and by you.</p>\n        <p>Each time you return to the Site, you are responsible for checking the effective date of the then posted version of these Terms—if it is later than the date of the version last reviewed, the Terms have been changed and the new version should be reviewed before using the Site. USE OF THE SITE AFTER THE EFFECTIVE DATE WILL CONSTITUTE YOUR CONSENT TO THE AMENDMENTS, SO IF YOU DO NOT WANT TO BE BOUND BY AN AMENDED VERSION, DO NOT USE THE SITE AND CEASE ALL USE OF THE CONTENT OR SERVICES.</p>\n        <p><strong>13.&nbsp; GOVERNING LAW AND EXCLUSIVE JURISDICTION.</strong>&nbsp; These Terms and your use of the Site are governed by the laws of the State of Washington, U.S.A., without regard to its choice of law provisions, except where you are required by published governmental law, ordinance, regulation, directive, order, or the like (collectively, "Mandate") to contract for application of the law of your local jurisdiction. You hereby consent to exclusive jurisdiction of a state or federal court of general jurisdiction sitting in King County, Washington, U.S.A. except to the extent you are prohibited from doing so by a Mandate. </p>\n        <p><strong>14.&nbsp; Legal and Other Notices or Disclosures.</strong>&nbsp; <strong>Notice to You:</strong> You agree that we may give all notices we are required to give you by posting notice on the Site or, if we have your email address, by sending notice by email at our discretion, including (without limitation), disclosures that we are required to give you, legal notices, notice of subpoenas or other legal process (if any), and all other communications. When we communicate by email, we may use any email address you provide when communicating with us or that we otherwise have in our records, so only supply to us an email address at which you are willing to receive all communications, including “legal” or potentially sensitive communications such as information about a job or grant application. You agree to check for notices posted on the Site.</p>\n        <p><strong>Notice to Us (Our Legal Notices Address):</strong> We receive many emails and not all employees are trained to deal with every kind of communication. Accordingly, you agree to send us notice by mailing it to the following ("Our Legal Notice Address"):</p>\n        <p>Bill &amp; Melinda Gates Foundation<br>\n        P.O. Box 23350<br>\n        Seattle, WA 98102<br>\n        Attn: Legal</p>\n        <p><strong>15.&nbsp; Termination or Cancellation; No Continuing Rights.</strong>&nbsp; You have no continuing right to use the Site and we may deny or suspend access, or terminate or cancel this agreement with or without cause and at any time and without prior notice. This is so even if you elect to store documents on this site such as your resume for use in a job application or a draft of a grant application, so make your own copies of anything to which you want to ensure access. We may give notice of termination or cancellation in the same way that we may provide other notices.</p>\n        <p>Termination or cancellation will not eliminate the surviving provisions of these Terms (see "Entire Agreement; Miscellaneous") and you will still be liable for obligations incurred before the agreement or access ended.</p>\n        <p><strong>16.&nbsp; Entire Agreement; Miscellaneous.</strong>&nbsp; These Terms, including the Privacy Policy (including any of the supplemental privacy policies), Amendments and any:&nbsp; (a) notices, terms and items incorporated into any of them; (b) additional terms and conditions contained on the Site for particular activities or Content; and (c) our disclosures and your consents provided on or in connection with the Site or any Content, service or other activity; constitute the entire agreement between you and the Foundation regarding the Complete Site or the subject matter of the foregoing (collectively, "Entire Agreement").&nbsp; If any provision of the Entire Agreement is found by a court of competent jurisdiction to be invalid, its remaining provisions will remain in full force and effect, provided that the allocation of risks described herein is given effect to the fullest extent possible.&nbsp; The foregoing does not impair the enforceability of additional agreements you enter into such as an agreement for a grant.</p>\n        <p>Our failure to act with respect to a breach by you does not waive our right to act with respect to subsequent or similar breaches. Time is of the essence of the Entire Agreement and there are no third party beneficiaries of it. The terms of this Section 16, Sections 3 and 4, 6 through 10, and 13 through 16, and our rights under the Privacy Policy will survive termination or cancellation of this Agreement. You may print or make an electronic copy of the Entire Agreement for your official records; to the extent required by law, we hereby instruct you to do so. You may not assign these Terms or any of your rights or obligations under these Terms without our prior written consent.</p>\n        <p><strong>17.&nbsp; Electronic Transactions.</strong>&nbsp; We and each of the Third Parties may deal with you electronically now and in the future in their respective discretion during the entire course of activities pursued with you (e.g., applying for, obtaining, implementing, terminating and enforcing a grant or anything else), including but not limited to having you electronically sign documents and receive electronic notices.&nbsp; We and each of the Third Parties also reserves the right to deal non-electronically and to require you to do so.</p>\n        <p><strong>18.&nbsp; Additional or Required Notices.</strong>&nbsp; Various laws require or allow us to give users certain notices and each of them is incorporated into these Terms. Users may review the notices by clicking on their link:</p>\n        <ol>\n            <li>Notice: No Harvesting or Dictionary Attacks Allowed (this provides information about conduct that is unlawful under the U.S. CAN SPAM Act of 2003). </li>\n            <li>Notice Re Trademarks (this provides notice regarding who owns the trademarks used on our Site and cautions against infringement). </li>\n            <li>Notice Re Copyright Ownership (this provides notice regarding who owns the copyrights in the Site and its contents and cautions against infringement). </li>\n            <li>Notice of Copyright Agent (this provides contact and other information regarding the Site\'s copyright agent who may be notified of claimed infringement). </li>\n            <li>Notice of Availability of Filtering Software (this provides a notice under the U.S. Communications Decency Act). </li>\n        </ol>\n        <p><strong>Notice: No Harvesting or Dictionary Attacks Allowed.</strong>&nbsp; The Foundation will not give, sell, or otherwise transfer addresses maintained by it to any other party for the purposes of initiating, or enabling others to initiate, electronic mail messages except as authorized by law or appropriate Foundation personnel or policies. Except for parties authorized to have such addresses, persons may violate federal law if they: (1) initiate the transmission to our computers or devices of a commercial electronic mail message (as defined in the U.S. "CAN-SPAM Act of 2003") that does not meet the message transmission requirements of that act; or (2) assist in the origination of such messages through the provision or selection of addresses to which the messages will be transmitted.</p>\n        <p><strong>Notice Regarding Trademarks.</strong>&nbsp; The trademarks used in the Site are owned by (1) the Foundation or (2) their respective trademark owners, and are either trademarks or registered trademarks of the Foundation. The names of actual companies and products mentioned in the Site may be the trademarks of their respective owners. You may not use any of the above or other trademarks displayed on this Site or in any Content. All rights are reserved.</p>\n        <p><strong>Notice Regarding Copyright ownership:</strong> Copyright 2006 The Bill & Melinda Gates Foundation and/or its affiliates and suppliers. All rights reserved.</p>\n        <p>All Services provided on the Site and any services or Content provided on any related site owned, operated, licensed or controlled by the Foundation or any of its units or affiliated entities (collectively, "Group"), are subject to intellectual property rights, contractual and other protections. The intellectual property rights are owned by the Foundation or others in the Group or their licensors (which may include you). Except for Available Content or Content that you own, no Content may be copied, distributed, republished, uploaded, posted or transmitted in any way except pursuant to the express provisions of the Terms or with the prior non-electronic consent of the Foundation or its designee. Modification or use of the Available Content for any other purpose may violate intellectual property rights. No title to copies or to intellectual property rights are transferred to users—all title and rights remain with the Foundation or others in the Group.</p>\n        <p><strong>Notice Regarding Copyright Agent.</strong>&nbsp; The Foundation respects the intellectual property rights of others and requests that Site users do the same. Anyone who believes that their work has been infringed under copyright law may provide a notice to the designated Copyright Agent for the Site containing the following:</p>\n        <ul>\n            <li>An electronic or physical signature of a person authorized to act on behalf of the owner of the copyright interest; </li>\n            <li>Identification of the copyrighted work claimed to have been infringed; </li>\n            <li>Identification of the material that is claimed to be infringing and information reasonably sufficient to permit the Foundation to locate the material; </li>\n            <li>The address, telephone number, and, if available, an e-mail address at which the complaining party may be contacted; </li>\n            <li>A representation that the complaining party has a good faith belief that use of the material in the manner complained of is not authorized by the copyright owner, its agent, or the law; </li>\n            <li>A representation that the information in the notice is accurate, and under penalty of perjury, that the complaining party is authorized to act on behalf of the owner of an exclusive right that is allegedly infringed. </li>\n        </ul>\n        <p>Copyright infringement claims and notices should be sent in the following manner to: </p>\n        <p>Bill &amp; Melinda Gates Foundation&nbsp; <br>\n        Attn: Connie Collingsworth, Legal<br>\n        P.O. Box 23350<br>\n        Seattle, WA 98102</p>\n        <p><strong>Notice of Availability of Filtering Software.</strong>&nbsp; We do not believe that the Site contains materials that would typically be the subject of filtering software and minors are not authorized to visit our Site. Nevertheless, all users are hereby informed that parental control protections (such as computer hardware, software, or filtering services) are commercially available that may assist in limiting access to material that is harmful to minors. A report detailing some of those protections can be found at <strong>Children\'s Internet Protection Act: Report on the Effectiveness of Internet Protection Measures and Safety Policies.</strong></p>\n\n        </article>\n    </div>\n  </div>')
@@ -70533,11 +70665,10 @@ PDRClient.service('ResponseHelper',
       return 'scored-' + question.score.value;
     };
 
-    this.percentageByResponse = function(scores, questionId, answerValue, totalAnswersInQuestion){
+    this.percentageByResponse = function(scores, questionId, answerValue, totalParticipants){
       var numberOfAnswers = scope.answerCount(scores, questionId, answerValue);
-      return ((numberOfAnswers*100)/totalAnswersInQuestion) + '%';
+      return ((numberOfAnswers*100)/totalParticipants) + '%';
     };
-
 
 }]);
 PDRClient.service('SessionService',
