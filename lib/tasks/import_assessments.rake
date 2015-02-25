@@ -7,9 +7,9 @@ namespace :db do
   task :import_assessments, [:email] => :environment do |t,args|
 
     email = args[:email]
-    migration_dir = "public/exported_assessments/#{email}"
+    migrated_filename = "#{email}/assessments.json"
 
-    json_data = File.read("#{migration_dir}/assessments.json")
+    json_data = S3Wrapper.read(filename: migrated_filename)
 
     assessments = JSON.parse(json_data)
 

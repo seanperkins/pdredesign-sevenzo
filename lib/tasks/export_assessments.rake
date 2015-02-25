@@ -1,4 +1,4 @@
-require 'fileutils'
+require 'aws/s3'
 
 namespace :db do
 
@@ -7,21 +7,17 @@ namespace :db do
   task :export_assessments, [:email] => :environment do |t,args|
 
     email = args[:email]
-    migration_dir = "public/exported_assessments/#{email}"
-
-    # Creating the directories
-    FileUtils::mkdir_p(migration_dir)
+    migrate_filename = "#{email}/assessments.json"
 
     # Getting User
     user = User.find_by(email: email)
 
     assessments = Assessment.assessments_for_user(user)
     
-    export_data = Assessments::ExportData.new(user, assessments)
+    export_data = Assessments::ExportData.new(user, assessments).in_json!
 
-    File.open("#{migration_dir}/assessments.json","w") do |f|
-      f.write(export_data.in_json!)
-    end
+    S3Wrapper.store( filename: migrate_filename, content: export_data, content_type: "application/json" )
+
   end
 
 end
