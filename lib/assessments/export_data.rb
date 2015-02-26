@@ -36,12 +36,19 @@ module Assessments
           json.district_id    assessment.district_id
           json.due_date       assessment.due_date.to_s
           json.assigned_at    assessment.assigned_at.to_s
+          json.meeting_date   assessment.meeting_date
 
           generate_user_template(json, assessment.user)
 
           if assessment.response
             json.consensus do
               json.submitted_at assessment.response.submitted_at.to_s
+
+              json.scores do
+                json.array! assessment.response.scores do |score|
+                  generate_score_template(json, score)
+                end
+              end
             end
           end
 
@@ -51,6 +58,23 @@ module Assessments
               json.invited_at       participant.invited_at
 
               generate_user_template(json, participant.user)
+
+              if participant.response
+                json.response do
+
+                  json.submitted_at participant.response.submitted_at.to_s
+
+                  json.scores do
+                    json.array! participant.response.scores do |score|
+                      generate_score_template(json, score)
+                    end
+                  end
+
+                end
+
+                
+              end
+
             end
           end
 
@@ -72,50 +96,14 @@ module Assessments
             end
           end
 
-          generate_consensus_template(json, assessment.response)
-
         end
       end
     end
 
-    def generate_consensus_template(json, consensus)
-      if consensus
-        json.scores scores_for_assessment(consensus.responder) do |score|
-          json.id          score.id
-          json.value       score.value
-          json.evidence    score.evidence
-          json.response_id score.response_id
-          json.question_id score.question_id
-
-          generate_questions_template(json, score)
-          generate_participant_template(json, score)
-
-        end
-      end
-    end
-
-    def generate_questions_template(json, score)
-      json.question do
-        question = score.question
-
-        json.id           question.id
-        json.headline     question.headline
-        json.content      question.content
-        json.order        question.order
-        json.category_id  question.category_id
-        json.help_text    question.help_text
-      end
-    end
-
-    def generate_participant_template(json, score)
-      json.participant do
-        participant = score.response.responder
-        participant_user = participant.user
-
-        json.participant_id   participant.id
-        # User information
-        generate_user_template(json, participant_user)
-      end
+    def generate_score_template(json, score)
+      json.question_headline      score.question.headline
+      json.value                  score.value
+      json.evidence               score.evidence
     end
 
     def generate_user_template(json, user)

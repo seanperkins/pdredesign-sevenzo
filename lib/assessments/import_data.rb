@@ -16,27 +16,76 @@ module Assessments
 
     protected
 
-    def create_consensus(assessment, rubric)
-      Response.create!(responder_type: 'Assessment', responder_id: assessment.id, rubric_id: rubric.id)
+    def create_assessments_with_data
+      @assessments.each do |assessment_data|
+        district   = District.find_by(name: assessment_data[:district_name])
+        rubric     = Rubric.find_by(version: BigDecimal.new(assessment_data[:rubric_version]))
+        owner      = User.find_by(email: assessment_data[:user][:email])
+
+        assessment_params = {
+          name: assessment_data[:name], 
+          due_date: Time.zone.parse(assessment_data[:due_date]),
+          district: district,
+          rubric: rubric,
+          user: owner
+        }
+
+        if assessment_data[:meeting_date]
+          assessment_params.merge!(
+            meeting_date: Time.zone.parse(assessment_data[:meeting_date])
+          )
+        end
+
+        assessment = Assessment.create(assessment_params)
+
+        if assessment.persisted?
+          puts "Assessment: #{assessment.name}"
+          puts "Saved: true"
+
+          #Adds the owner os a participant
+          owner_participant = Participant.create!(assessment: assessment, user: owner)
+          assessment.participants << owner_participant
+
+          add_participants(assessment, assessment_data[:participants])
+        end
+
+        if assessment_data[:assigned_at]
+          assessment.update_attribute(:assigned_at, Time.zone.parse(assessment_data[:assigned_at]))
+        end
+
+        if assessment_data[:consensus]
+          consensus = create_consensus(assessment, rubric)
+          if assessment_data[:consensus][:submitted_at]
+            consensus.update_attribute(:submitted_at, Time.zone.parse(assessment_data[:consensus][:submitted_at]))
+          end
+
+          if assessment_data[:consensus][:scores]
+            assessment_data[:consensus][:scores].each do |score_data|
+              question = consensus.questions.find_by(headline: score_data[:question_headline]) 
+
+              score     = Score.create(
+                question_id: question.id,
+                response_id: consensus.id,
+                value: score_data[:value],
+                evidence: score_data[:evidence]
+              )
+
+              if score.persisted?
+                puts "score for consensus was persisted"
+                consensus.scores << score
+                consensus.save
+              else
+                puts "failed when saving score for consensus: #{score.errors.full_messages}"
+              end
+            end
+          end
+        end
+
+      end
     end
 
-    def add_scores_from_participants(assessment, consensus, scores)
-      scores.each do |score_data|
-        participant_user = User.find_by(email: score_data[:participant][:user][:email])
-        responder = Participant.find_by(user_id: participant_user.id, assessment_id: assessment.id)
-        question  = consensus.questions.find_by(headline: score_data[:question][:headline])
-
-        participant_response = Response.find_or_create_by(
-          responder_type: 'Participant', responder_id: responder.id
-        )
-        participant_response.update_attribute(:rubric_id, assessment.rubric_id)
-
-        score = Score.find_or_create_by(question_id: question.id, response_id: participant_response.id)
-        score.update_attributes(evidence: score_data[:evidence], value: score_data[:value])
-        
-        question.scores << score
-        question.save
-      end
+    def create_consensus(assessment, rubric)
+      Response.create!(responder_type: 'Assessment', responder_id: assessment.id, rubric_id: rubric.id)
     end
 
     def add_participants(assessment, participants)
@@ -55,49 +104,52 @@ module Assessments
         end
 
         assessment.participants << participant
+
+        create_participant_scores(
+          participant, 
+          assessment, 
+          participant_data[:response]
+        )
       end
     end
 
-    def create_assessments_with_data
-      @assessments.each do |assessment_data|
-        district   = District.find_by(name: assessment_data[:district_name])
-        rubric     = Rubric.find_by(version: BigDecimal.new(assessment_data[:rubric_version]))
-        owner      = User.find_by(email: assessment_data[:user][:email])
+    def create_participant_scores(participant, assessment, participant_response)
+      if participant_response
+        scores = participant_response[:scores]
 
-        assessment = Assessment.new(
-          name: assessment_data[:name], due_date: Time.zone.parse(assessment_data[:due_date])
+        response = Response.create(
+          responder_id: participant.id, 
+          responder_type: 'Participant',
+          rubric: assessment.rubric,
+          submitted_at: Time.zone.parse(participant_response[:submitted_at])
         )
-        assessment.district = district
-        assessment.rubric = rubric
-        assessment.user = owner
-        puts "Assessment: #{assessment.name}"
-        puts "Saved: #{assessment.save}"
 
-        #Adds the owner os a participant
-        owner_participant = Participant.create!(assessment: assessment, user: owner)
-        assessment.participants << owner_participant
+        if response.persisted?
+          puts "Response persisted"
 
-        if assessment.persisted?
-          consensus = create_consensus(assessment, rubric)
-          add_participants(assessment, assessment_data[:participants])
-        end
+          scores.each do |score_data|
+            question  = assessment.rubric.questions.find_by(headline: score_data[:question_headline])
+            score     = Score.create(
+              question_id: question.id, 
+              response_id: response.id, 
+              value: score_data[:value],
+              evidence: score_data[:evidence]
+            )
 
-        if assessment_data[:assigned_at]
-          assessment.update_attribute(:assigned_at, Time.zone.parse(assessment_data[:assigned_at]))
-        end
+            if score.persisted?
+              puts "Score persisted"
 
-        if assessment_data[:consensus]
-          if assessment_data[:consensus][:submitted_at]
-            consensus.update_attribute(:submitted_at, Time.zone.parse(assessment_data[:consensus][:submitted_at]))
+              question.scores << score
+              question.save
+
+            else
+              puts "Some errors at Score, #{score.errors.full_messages}"
+            end
           end
-        end
 
-        if assessment_data[:scores]
-          unless assessment_data[:scores].empty?
-            add_scores_from_participants(assessment, consensus, assessment_data[:scores])
-          end
+        else
+          puts "Erors at response: #{response.errors.full_messages}"
         end
-
       end
     end
 
