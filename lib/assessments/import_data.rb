@@ -47,6 +47,7 @@ module Assessments
           assessment.participants << owner_participant
 
           add_participants(assessment, assessment_data[:participants])
+          add_viewrs_facilitators_partners(assessment, assessment_data)
         end
 
         if assessment_data[:assigned_at]
@@ -113,6 +114,31 @@ module Assessments
       end
     end
 
+    def add_viewrs_facilitators_partners(assessment, assessment_data)
+      [:viewers, :facilitators, :partners].each do |user_added_type|
+        assessment_data[user_added_type].each do |viewers_data|
+          user = User.find_by(email: viewers_data[:user][:email])
+
+          if user.nil?
+            user = create_user_with(viewers_data[:user])
+          else
+            include_user_on_districts(user, viewers_data[:user][:districts])
+          end
+
+          case user_added_type
+          when :viewers
+            assessment.viewers << user
+          when :facilitators
+            assessment.facilitators << user
+          when :partners
+            assessment.network_partners << user
+          end
+
+          assessment.save(validate: false)
+        end
+      end
+    end
+
     def create_participant_scores(participant, assessment, participant_response)
       if participant_response
         scores = participant_response[:scores]
@@ -163,7 +189,26 @@ module Assessments
         avatar: user_data[:avatar]
       )
       new_user.save(validate: false)
-      new_user
+      include_user_on_districts(new_user, user_data[:districts])
+      return new_user
+    end
+
+    def include_user_on_districts(user, districts)
+      districts.each do |district_data|
+        district = District.find_by(lea_id: district_data[:lea_id])
+        if district
+          unless user.district_ids.include?(district.id)
+            user.districts << district
+            if user.save
+              puts "User #{user.email} added to #{district.name}"
+            else
+              puts "Unable to add #{district.name} district to User #{user.email}"
+            end
+          end
+        else
+          puts "District with Lea id: #{district_data[:lea_id]} Was not found."
+        end
+      end
     end
 
   end
