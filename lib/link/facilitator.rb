@@ -3,6 +3,7 @@ module Link
 
     attr_reader :assessment
     delegate :fully_complete?, to: :assessment
+    delegate :completed?, to: :assessment
 
     def initialize(assessment, *args)
       @assessment = assessment
@@ -17,6 +18,8 @@ module Link
         {consensus: consensus, dashboard: dashboard }
       elsif participant?
         { response: response, consensus: consensus, dashboard: dashboard}
+      elsif completed?
+        { response: response, report: report, dashboard: dashboard }
       else
         {consensus: consensus, dashboard: dashboard }
       end

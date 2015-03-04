@@ -19,7 +19,10 @@ class V1::ResponsesController < ApplicationController
     @response   = Response.find(params[:id])
     authorize_action_for @response
 
-    submit_response(@response) if response_params[:submit]
+    if response_params[:submit]
+      submit_response(@response)
+      assessment.flush_cached_version
+    end
     render nothing: true
   end
  
