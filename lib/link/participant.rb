@@ -3,6 +3,7 @@ module Link
 
     attr_reader :assessment
     delegate :fully_complete?, to: :assessment
+    delegate :completed?, to: :assessment
 
     def initialize(assessment, *args)
       @assessment = assessment
@@ -10,8 +11,9 @@ module Link
 
     def execute
       return nil if draft?
+      completed_condition = consensus? ? fully_complete? : completed?
 
-      if fully_complete?
+      if completed_condition
         { report: report, action: action }
       else
         { action: action }

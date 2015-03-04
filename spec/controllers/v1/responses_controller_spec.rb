@@ -125,6 +125,11 @@ describe V1::ResponsesController do
       expect(response.submitted_at).not_to be_nil
     end
 
+    it "submits the response and touch the assessment to crear up the flush the cached version" do
+      sign_in @user
+      expect{put :update, assessment_id: assessment.id, id: 42, submit: true; assessment.reload}.to change{assessment.updated_at}
+    end
+
     it 'queues up email for a completed response' do
       sign_in @user
 
