@@ -10,14 +10,22 @@ module Link
     end
 
     def execute
+      links = generate_links
+      if completed?
+        links.merge!( {report: report} ) unless links.has_key?(:report)
+        links.delete(:response)
+      end
+      return links
+    end
+
+    private
+    def generate_links
       if draft?
         {finish: finish }
       elsif fully_complete?
         {consensus: consensus, report: report, dashboard: dashboard }
       elsif consensus?
         {consensus: consensus, dashboard: dashboard }
-      elsif completed?
-        { response: response, report: report, dashboard: dashboard }
       elsif participant?
         { response: response, consensus: consensus, dashboard: dashboard}
       else
@@ -25,7 +33,6 @@ module Link
       end
     end
 
-    private
     def finish
       {title: 'Finish & Assign', active: true, type: :finish}
     end
