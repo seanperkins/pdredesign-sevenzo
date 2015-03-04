@@ -16,10 +16,10 @@ module Link
         {consensus: consensus, report: report, dashboard: dashboard }
       elsif consensus?
         {consensus: consensus, dashboard: dashboard }
-      elsif participant?
-        { response: response, consensus: consensus, dashboard: dashboard}
       elsif completed?
         { response: response, report: report, dashboard: dashboard }
+      elsif participant?
+        { response: response, consensus: consensus, dashboard: dashboard}
       else
         {consensus: consensus, dashboard: dashboard }
       end
