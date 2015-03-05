@@ -6,6 +6,10 @@ describe Link::Participant do
   let(:assessment) { @assessment_with_participants }
   let(:subject)    { Link::Participant }
 
+  before do
+    allow(assessment).to receive(:completed?).and_return(false)
+  end
+
   def links
     subject.new(assessment).execute
   end
@@ -31,6 +35,13 @@ describe Link::Participant do
       allow(assessment).to receive(:status).and_return(:consensus)
 
       expect(links[:report][:active]).to eq(true)
+    end
+
+    it 'returns report link when assessment is completed and no consensus' do
+      allow(assessment).to receive(:completed?).and_return(true)
+      allow(assessment).to receive(:status).and_return(:assessment)
+
+      expect(links[:report]).not_to eq(nil)
     end
   end
 

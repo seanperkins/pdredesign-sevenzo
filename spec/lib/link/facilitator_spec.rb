@@ -8,6 +8,7 @@ describe Link::Facilitator do
 
   before do
     allow(assessment).to receive(:status).and_return(:consensus)
+    allow(assessment).to receive(:completed?).and_return(false)
   end
 
   def links
@@ -62,10 +63,17 @@ describe Link::Facilitator do
   end
 
   describe 'report' do
-    it 'returns no report link when is assessment' do
+    it 'returns no report link when assessment is not completed' do
       allow(assessment).to receive(:status).and_return(:assessment)
 
       expect(links[:report]).to  eq(nil)
+    end
+
+    it 'returns report link when assessment is completed' do
+      allow(assessment).to receive(:status).and_return(:assessment)
+      allow(assessment).to receive(:completed?).and_return(true)
+
+      expect(links[:report]).not_to  eq(nil)
     end
 
     it 'returns no report link when is draft' do

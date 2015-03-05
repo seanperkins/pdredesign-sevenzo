@@ -3,12 +3,23 @@ module Link
 
     attr_reader :assessment
     delegate :fully_complete?, to: :assessment
+    delegate :completed?, to: :assessment
 
     def initialize(assessment, *args)
       @assessment = assessment
     end
 
     def execute
+      links = generate_links
+      if completed?
+        links.merge!( {report: report} ) unless links.has_key?(:report)
+        links.delete(:response)
+      end
+      return links
+    end
+
+    private
+    def generate_links
       if draft?
         {finish: finish }
       elsif fully_complete?
@@ -22,7 +33,6 @@ module Link
       end
     end
 
-    private
     def finish
       {title: 'Finish & Assign', active: true, type: :finish}
     end
