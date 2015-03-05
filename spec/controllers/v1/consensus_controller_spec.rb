@@ -79,6 +79,11 @@ describe V1::ConsensusController do
         assert_response :success
         expect(response.submitted_at).not_to be_nil
       end
+
+      it "submits consensus and the assessment chached version should be flushed" do
+        sign_in @facilitator2
+        expect{put :update, assessment_id: assessment.id, id: assessment.consensus.id, submit: true; assessment.reload}.to change{assessment.updated_at}
+      end
     end
   end
 
