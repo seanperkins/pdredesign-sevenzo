@@ -28,6 +28,8 @@ class Response < ActiveRecord::Base
 
 	accepts_nested_attributes_for :scores
 	accepts_nested_attributes_for :feedbacks
+
+  after_update :flush_cached_assessment
   
 
   before_save do |response| 
@@ -49,6 +51,14 @@ class Response < ActiveRecord::Base
 	end
 
   private
+  def flush_cached_assessment
+    if is_consensus?
+      responder.flush_cached_version
+    else
+      responder.assessment.flush_cached_version
+    end
+  end
+
   def questions_count
     questions
       .count
