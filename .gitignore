@@ -24,3 +24,4 @@ stdout
 public/exported_*
 
 .DS_Store
+.env
