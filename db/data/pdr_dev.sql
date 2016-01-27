@@ -4706,8 +4706,6 @@ CREATE UNIQUE INDEX unique_schema_migrations ON schema_migrations USING btree (v
 --
 
 REVOKE ALL ON SCHEMA public FROM PUBLIC;
-REVOKE ALL ON SCHEMA public FROM ortuna;
-GRANT ALL ON SCHEMA public TO ortuna;
 GRANT ALL ON SCHEMA public TO PUBLIC;
 
 
