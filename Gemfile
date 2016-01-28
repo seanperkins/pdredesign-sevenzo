@@ -62,7 +62,6 @@ group :production do
   gem 'rails_12factor'
 end
 
-
 gem 'sass-rails', '5.0.3'
 gem 'uglifier', '>= 1.3.0'
 gem 'font-awesome-rails', '4.3.0'
@@ -97,7 +96,6 @@ gem 'pdfkit', '0.6.2'
 
 group :development, :test do 
   gem "jasmine", '2.3.0'
-  gem 'combustion', '0.5.3'
   gem 'rails-assets-angular-mocks', '1.2.28'
   gem "pry", '0.10.1'
   gem "rake", '10.5.0'

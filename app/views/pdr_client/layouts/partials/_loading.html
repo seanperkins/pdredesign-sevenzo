@@ -1,0 +1,17 @@
+    <div class='loading-state' ng-controller="LoadingCtrl" ng-show="loading">
+      <div class='load-holder'>
+        <i class="fa fa-spinner fa-spin"></i>
+        Loading...
+      </div>
+    </div>
+
+    <div class='loading-state' ng-controller="LoadingCtrl" ng-show='loadingPdfCsv'>
+      <div class='load-pdf-csv-message'>
+        <i class="fa fa-spinner fa-spin"></i>
+        <h3>This may take a few moments</h3>
+        <h4>Thank you for your patience.</h4> 
+        <span class="help-text">
+          If the {{format}} does not download, please contact us at <a href="mailito:support@mail.pdredesign.org">support@mail.pdredesign.org</a>.
+        </span>
+      </div>
+    </div>

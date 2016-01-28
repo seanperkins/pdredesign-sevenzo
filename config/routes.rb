@@ -1,8 +1,9 @@
 PdrServer::Application.routes.draw do
+  mount RailsAdmin::Engine, at: '/admin', as: 'rails_admin'
   scope module: 'pdr_client' do 
     root to: 'pdr_client#index'
+    post 'v1/assessments/:assessment_id/reports/consensus_report', to: 'reports#consensus_report'
   end
-  mount RailsAdmin::Engine, at: '/admin', as: 'rails_admin'
 
   if Rails.env.development?
     mount LetterOpenerWeb::Engine, at: "/letter_opener"

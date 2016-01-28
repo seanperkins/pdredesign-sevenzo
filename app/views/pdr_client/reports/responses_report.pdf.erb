@@ -1,0 +1,60 @@
+<div class="header">
+  <h1>Assessment Name</h1>
+  <div>
+    <h4>Organized By:</h4>
+    <span>Sean Perkins</span>
+    <h4>Organize Date:</h4>
+    <span>April 24th 2014</span>
+  </div>
+  <div>
+    <h4>Participant Name:</h4>
+    <span>Rick Metzger</span>
+    <h4>Completition Date:</h4>
+    <span>August 24th 2014</span>
+  </div>  
+</div>
+
+<div>
+  <div class="answer_overview">
+    <table>
+      <% iterator = 0 %>
+      <% 1..5.times do |row| %>
+        <tr>
+          <% 1..6.times do |column| %>
+            <td><%= "#{@questions[iterator][:order]} [#{@questions[iterator][:value]}]" if @questions[iterator] %></td>
+            <% iterator+=1 %>
+          <% end %>
+        </tr>
+      <% end %>
+    </table>
+  </div>
+  <div class="answer_key">
+    <ul>
+      <li>[1] Non Existent</li>
+      <li>[2] Initial</li>
+      <li>[3] Defined & Managed</li>
+      <li>[4] Optimazing</li>
+      <li>[5] Skipped</li>
+    </ul>  
+  </div>
+</div>
+
+<div class="row question-container question-1">
+
+  <% @questions.each do |question| %>
+    <div class="col-md-12 question-row">
+      <div class="col-md-1 question">
+        <p class="question-id">
+          <a href="#"><%= question[:order] %></a>
+        </p>
+      </div>
+      <div class="row question-content">
+        <div class="col-md-9">
+          <p class="question ng-binding"><%= question[:header] %></p>
+          <p class="content ng-binding"><%= question[:description] %></p>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+</div>
