@@ -1,0 +1,179 @@
+.row-bg
+  background-color: $header-background-color
+  // color: $header-font-color
+
+  .byline
+    margin-top: 0em
+    font-style: italic
+      
+
+#participants
+  margin-top: 2.1em
+
+  i
+    font-size: 1em
+    color: white
+  .header
+    font-size: 1.875em
+    font-weight: bold
+    .stat
+      color: #248b9e
+
+  .row.row-participant
+    margin: 0em 0em 0.625em 0em
+    background-color: #f7f8fa
+    border-bottom: 0.2em solid #dcdbd4
+
+    div
+      padding: 0em
+    .col-md-2
+      margin-bottom: -0.0625em
+    .name
+      font-size: 0.9em
+      font-style: italic
+      color: #8a1d30
+      margin-top: 1em
+      margin-bottom: 0
+    .email
+      font-size: 0.65em
+      font-style: italic
+      margin-bottom: 0
+    .status
+      font-size: 0.85em
+      margin-top: 1em
+      padding-left: 1.3em
+      i
+        color: #515c5e
+        margin-right: 0.2em
+        margin-bottom: 0.3em
+      p.state
+        color: #515c5e
+        margin-bottom: 0.1875em
+
+      p.date
+        color: #979998
+        margin-bottom: 0em
+        font-size: 0.625em
+        font-style: italic
+
+  .row.row-participant-action
+    margin: 0em 0em  0.625em 0em
+    background-color: #f7f8fa
+    border-bottom: 0.125em solid #dcdbd4
+    div
+      padding: 0em
+    .col-md-2
+      background-color:  #1c8b9e
+      color: #fbf7f8
+      text-align: center
+      font-size: 2em
+      padding: .3em
+
+    .col-md-10
+      font-size:  2em
+      line-height:  2em
+      padding-left:  0.625em
+      &:hover
+        box-shadow:  0em 0.125em 0em #d4d2c8
+        background-color: #e5f1f5
+        cursor: pointer
+
+#report-header
+  margin-bottom: 0.3125em
+  font-size: 1.25em
+  font-weight: 300
+  a
+    font-size: 1.25em
+    &:hover
+      text-decoration: none
+
+#report
+  margin: 0.3125em 0em 1.25em
+
+  .col-md-4
+    min-height: 14.375em
+    padding: 0.625em
+    &#strengths,&#limits
+      p
+        color: #fffbf8
+        &.title
+          font-weight: 300
+          margin-bottom: 0.3125em
+        &.area
+          font-weight: bold
+          font-size: 1.375em
+          margin-bottom: 0.1875em
+          a
+            color: #fffbf8
+            &:hover
+              text-decoration: underline
+
+    &#profile
+
+      background-color: #f2f1ed
+      p.title
+        color: #7a7e7f
+        font-weight: 300
+      i
+        color: #7a7e7f
+
+#messages
+  i
+    font-size: 1em
+    color: white
+
+  margin-top: 1.875em
+  .header
+    font-size: 1.875em
+    font-weight: bold
+    .stat
+      color: #248b9e
+
+  .row.row-message
+    margin: 0em 0em 0.625em 0em
+    background-color: #f7f8fa
+    border-bottom: 0.125em solid #dcdbd4
+
+    .message-content
+      padding-left: 0.6em
+
+    &:hover
+      box-shadow:  0em 0.125em 0em #d4d2c8
+      background-color: #e5f1f5
+      cursor: pointer
+    div
+      padding: 0em
+    h4.subject
+      text-transform: capitalize
+      margin-bottom: 0.125em
+      font-size:  1.375em
+      font-weight:  bold
+      .date
+        font-size:  0.875em
+        font-weight:  normal
+        font-style:  italic
+
+    p.content
+      font-size:  1em
+      font-weight:  lighter
+      margin-bottom: 0.3125em
+
+    .col-md-1
+      background-color:  #1c8b9e
+      color: #fbf7f8
+      text-align:  center
+      font-size:  2em
+      padding:  1.25em 0em
+
+.label-as-badge
+  font-size: .75em
+  color: white
+  background-color: rgb(35, 123, 174)
+  border-radius: 15em
+  padding: 0px 11px
+
+#permissions-modal
+  section
+    margin-bottom: 3em
+  h4
+    border-bottom: 1px solid #eeeeee

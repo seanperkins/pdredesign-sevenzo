@@ -1,0 +1,28 @@
+<div class="modal-header">
+  <h3 class="modal-title">Add Tool to {{category.name}}</h3>
+  <p>The PDredesign toolkit is the place for tools that support your district to collaborate across departments and roles to strategically implement redesigned PD systems. Recommend a tool for colleagues in your district  to use as part of the redesign process.</p>
+</div>
+
+<form ng-submit="create(tool)">
+  <div class="modal-body" id="modal-invite-participant">
+    <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
+
+    <div class="form-group">
+      <input class="form-control" type="text" ng-model="tool.title" placeholder="Tool Name" required>
+    </div>
+
+    <div class="form-group">
+      <input class="form-control" type="text" ng-model="tool.url" placeholder="Url" type="url" http-prefix required>
+    </div>
+
+    <div class="form-group">
+      <textarea class="form-control" type="text" ng-model="tool.description" placeholder="Description 250 max characters" required></textarea>
+    </div>
+
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-default" ng-click="hideModal()">Close</button>
+
+    <input type="submit" class="btn btn-primary" value="Create">
+  </div>
+</form>

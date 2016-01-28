@@ -1,0 +1,11 @@
+<div>
+  <div class='invite-email' ng-show="showMailLink()">
+    <i class="fa fa-fa {{statusMessageIcon(user.status)}}"></i>
+    <a href="" ng-click="sendEmail()">{{user.status_human}}</a>
+  </div>
+  <div class='user-status' ng-hide="showMailLink()">
+    <i class="fa fa-fa {{statusMessageIcon(user.status)}}"></i>
+      {{user.status_human}}
+  </div>
+
+</div>

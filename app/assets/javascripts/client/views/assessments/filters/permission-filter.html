@@ -1,0 +1,9 @@
+<div class="form-group">
+  <label for="permission" class="control-label">Permission Level</label>
+    <select class="form-control" id="permission" ng-model="selectedPermission">
+      <option value="" selected>All Permissions</option>
+      <option value="{{permission}}" ng-repeat="permission in types">
+        {{permission}}
+      </option>
+    </select>
+</div>

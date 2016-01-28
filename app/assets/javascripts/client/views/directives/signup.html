@@ -1,0 +1,53 @@
+<div class="signup-directive">
+  <form name="signup">
+  <ng-include src="'client/views/shared/errors.html'"> </ng-include>
+    <input
+    required
+    ng-model="user.first_name"
+    class="form-group form-control"
+    placeholder="First Name*"
+    type="text">
+
+    <input
+    required
+    ng-model="user.last_name"
+    class="form-group form-control"
+    placeholder="Last Name*"
+    type="text">
+
+    <input
+    required
+    ng-model="user.email"
+    class="form-group form-control"
+    placeholder="Email Address*"
+    type="text">
+
+    <input
+    required
+    ng-model="user.password"
+    class="form-group form-control"
+    placeholder="Password*"
+    type="password">
+
+    <organization-select
+
+      ng-show="isNetworkPartner"
+      messages="errors"
+      update-user-record="false"
+      organization-id="user.organization_ids">
+    </organization-select>
+
+    <district-select
+      ng-hide="isNetworkPartner"
+      multiple="false"
+      districts="user.district_ids">
+    </district-select>
+
+    </form>
+
+    <button ng-disabled="signup.$invalid" ng-click="createUser(user)" class="btn btn-primary btn-lg create-user">Create my account</button>
+
+    <p ng-show="isNetworkPartner || isAdministrator">
+      If you are having trouble creating an account, contact us at support@mail.pdredesign.org
+    </p>
+</div>

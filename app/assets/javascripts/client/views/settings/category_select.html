@@ -1,0 +1,19 @@
+<div class="row organization-specialize">
+  <div class=" col-md-12">
+    Which areas does your organization specialize in?
+    <div ng-repeat="category in categories">
+      <input
+        name="category-check-{{category.id}}"
+        id="category-check-{{category.id}}"
+        type="checkbox"
+        ng-model="category.selected">
+      <label for="category-check-{{category.id}}" value="">{{category.name}}</label>
+    </div>
+        <button
+        id="save-categories"
+        class="btn btn-success" ng-click="pushCategories(categories)">
+          <i class="fa fa-spinner fa-spin" ng-show="loading"/>
+          Update Categories
+        </button>
+  </div>
+</div>

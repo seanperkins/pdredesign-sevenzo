@@ -1,5 +1,7 @@
 PdrServer::Application.routes.draw do
-  mount PdrClient::Engine, at: "/", as: :pdr_client
+  scope module: 'pdr_client' do 
+    root to: 'pdr_client#index'
+  end
   mount RailsAdmin::Engine, at: '/admin', as: 'rails_admin'
 
   if Rails.env.development?

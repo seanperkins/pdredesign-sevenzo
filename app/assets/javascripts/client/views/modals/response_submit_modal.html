@@ -1,0 +1,26 @@
+<div class="response_submit_modal">
+  <div class="modal-header">
+    <button ng-click="cancel()" type="button" class="close" aria-hidden="true">×</button>
+    <h2>Submit {{responseTitle()}}</h2>
+  </div>
+  <div class="modal-body">
+    <h2>You are submitting your response to {{assessment.name}}!</h2>
+    <div ng-hide='unansweredQuestions() == 0'>
+      <h2>You have left<span class='badge'>{{unansweredQuestions()}}</span>questions unanswered.</h2>
+      <h3>Even though you can submit your response without answering all questions, we encourage you to try to answer as many as you can.</h3>
+    </div>
+
+    <p ng-if="!isResponse()">After you submit, a report will be generated based on the consensus scores. You will not be able to edit scores or notes after this point. If you are not ready to submit, you may save your responses and return to the consensus at a later time.
+    </p>
+
+    <p ng-if="isResponse()">After you submit your response, an email notification will be sent to your facilitator. You can still update your response to the assessment at any time before the consensus meeting.</p>
+  </div>
+
+  <div class='modal-footer'>
+    <button ng-click="redirectToAssessmentsIndex(); cancel()" ng-if="!isResponse()" class='btn btn-primary btn-lg'>
+      Save for Later
+    </button>
+
+    <button ng-click='submitResponse()' class='btn btn-primary btn-lg'>Submit {{responseTitle()}}</button>
+  </div>
+</div>

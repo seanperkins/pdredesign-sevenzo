@@ -1,0 +1,9 @@
+<div class="form-group">
+  <label for="status" class="control-label">Status</label>
+  <select class="form-control text-capitalize" id="status" ng-model="selectedStatus">
+    <option value="" selected>All</option>
+    <option value="{{status}}" ng-repeat="status in statuses">
+      {{status}}
+    </option>
+  </select>
+</div>
