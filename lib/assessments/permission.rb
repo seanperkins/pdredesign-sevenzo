@@ -1,7 +1,7 @@
 module Assessments
   class Permission
 
-    PERMISSIONS = [:facilitator, :viewer, :participant]
+    PERMISSIONS = [:facilitator, :participant]
 
     attr_reader :assessment
 
@@ -22,12 +22,16 @@ module Assessments
     end
 
     def get_level(user)
-      return case
-        when assessment.facilitator?(user); :facilitator
-        when assessment.network_partner?(user); :network_partner
-        when assessment.viewer?(user); :viewer
-        when assessment.participant?(user); :participant
-        end
+      case
+        when assessment.facilitator?(user)
+          :facilitator
+        when assessment.network_partner?(user)
+          :network_partner
+        when assessment.viewer?(user)
+          :viewer
+        when assessment.participant?(user)
+          :participant
+      end
     end
 
     def add_level(user, level)
