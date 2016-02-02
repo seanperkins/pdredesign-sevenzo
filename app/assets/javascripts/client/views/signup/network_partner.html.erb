@@ -1,0 +1,94 @@
+<div class="login signup">
+  <div class="row secondary">
+    <div class="container">
+      <div class="col-md-4">
+        <h1>Welcome to the </h1>
+        <h2 class="subheading" >PD Readiness Assessment Tool</h2>
+        <p></p>
+      </div>
+
+      <div class="col-md-8 form">
+        <div class="row">
+          <div class="col-md-6 col-sm-6">
+            <ng-include src="'client/views/shared/errors.html'"> </ng-include>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="row">
+      <div class="col-md-6 col-sm-6">
+        <p>
+          Please tell us a little bit about yourself.  This information helps
+          us better understand the teachers that we are serving.
+        </p>
+
+        <h3>Contact and Login Information</h3>
+        <div class="row name">
+          <div class="flush col-md-6">
+            <input
+            ng-model="user.first_name"
+            class="form-group form-control"
+            placeholder="First Name*"
+            type="text">
+          </div>
+          <div class="flush col-md-6">
+            <input
+            ng-model="user.last_name"
+            class="form-group form-control"
+            placeholder="Last Name*"
+            type="text">
+          </div>
+
+        </div>
+
+
+        <input
+        ng-model="user.email"
+        class="form-group form-control"
+        placeholder="E-Mail*"
+        type="text">
+
+        <input
+        ng-model="user.password"
+        class="form-group form-control"
+        placeholder="Password *"
+        type="password">
+
+
+        <h3>Network Partner Profile</h3>
+
+        <em>What product of services do you provide?</em>
+        <textarea
+        ng-model="user.services"
+        class="form-group form-control"
+        placeholder=""
+        type="text"></textarea>
+
+
+        <em>What is your district?</em>
+        <district-select multiple="true"></district-select>
+
+        <input
+        type="button"
+        ng-click="createUser(user, true)"
+        class="btn btn-devise btn-danger"
+        name="commit"
+        value="Create PD Account">
+
+        <input
+          style="display: none;"
+          ng-model="user.role"
+          value="facilitator">
+
+        </form>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
+

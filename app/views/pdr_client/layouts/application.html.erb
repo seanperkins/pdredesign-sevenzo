@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html ng-app="PDRClient">
+  <head>
+    <title>PDredesign</title>
+    <%= stylesheet_link_tag    "pdr_client", media: "all" %>
+    <%= javascript_include_tag "pdr_client" %>
+    <%= favicon_link_tag "favicon.png" %>
+    <%= csrf_meta_tags %>
+  </head>
+  <body>
+    <%= render 'pdr_client/layouts/partials/top_nav' %>
+
+    <div class="home-container container-fluid" ng-show="showFluid">
+      <div class="row">
+        <div class="col-md-12 view" ui-view="full-width">
+        </div>
+      </div>
+    </div>
+
+    <div class="main-container container" ng-hide="showFluid">
+      <div class="row">
+        <div class="col-md-12 main-content" ui-view="full-width" ng-show="showFullWidth">
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xs-12 col-sm-9 main-content" ng-hide="showFullWidth">
+          <%= yield %>
+        </div>
+        <div class="col-xs-12 col-sm-3 pull-right">
+          <%= render 'pdr_client/layouts/partials/sidebar' %>
+        </div>
+      </div>
+    </div>
+
+    <%= render 'pdr_client/layouts/partials/footer' %>
+    <%= render 'pdr_client/layouts/partials/loading' %>
+    <%= render 'pdr_client/layouts/partials/ga' %>
+  </body>
+</html>

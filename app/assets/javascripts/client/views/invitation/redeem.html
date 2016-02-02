@@ -1,0 +1,105 @@
+<div class='row row-bg row-header'>
+  <div class="col-md-12">
+    <div class="col-md-12">
+      <h1>Create Password</h1>
+      <span>Please confirm the information below and set your password</span>
+    </div>
+  </div>
+</div>
+
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="invite-redeem">
+
+      <form name="invitation">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="alert">
+              <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-5">
+            <label for="user_first_name">First Name*</label>
+            <input
+              class="form-control ng-pristine ng-valid"
+              placeholder="First Name*"
+              type="text"
+              required
+              ng-model="invitedUser.first_name">
+          </div>
+          <div class="col-md-offset-1 col-md-6">
+            <label for="user_last_name">Last Name*</label>
+            <input
+              class="form-control ng-pristine ng-valid"
+              placeholder="Last Name*"
+              type="text"
+              required
+              ng-model="invitedUser.last_name">
+          </div>
+        </div>
+
+          <div class="row">
+            <div class="col-md-12">
+              <label for="team_role">Team Role</label>
+              <input
+                class="form-control ng-pristine ng-valid"
+                placeholder="Team Role"
+                type="text"
+                ng-model="invitedUser.team_role">
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-12">
+              <label for="user_email">Email*</label>
+              <input
+              class="form-control ng-pristine ng-valid"
+              placeholder="Email*"
+              type="text"
+              required
+              ng-model="invitedUser.email">
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6">
+              <label for="user_password">Password*</label>
+              <input
+              class="form-control ng-pristine ng-valid"
+              placeholder="Password*"
+              type="password"
+              required
+              ng-model="invitedUser.password">
+            </div>
+            <div class="col-md-6">
+              <label for="user_password_confirmation">Confirm Password*</label>
+              <input
+              ui-validate="'$value==invitedUser.password'"
+              ui-validate-watch="'invitedUser.password'"
+              class="form-control ng-pristine ng-valid"
+              placeholder="Password Confirm*"
+              type="password"
+              required
+              ng-model="invitedUser.password_confirm">
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-12">
+              <button
+                ng-disabled="invitation.$invalid"
+                ng-click="redeemInvite()"
+                class="btn btn-primary pull-right">
+                  Continue
+              </button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

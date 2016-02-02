@@ -1,0 +1,296 @@
+.scored-1
+  background-color: $scored1
+.scored-2
+  background-color: $scored2
+.scored-3
+  background-color: $scored3
+.scored-4
+  background-color: $scored4
+.skipped
+  background-color: $skipped
+
+.value-color-1
+  background-color: #faf9f7
+  color: #333
+
+.value-color-2
+  background-color: #efeeea
+  color: #333
+
+.value-color-3
+  background-color: #eae9e4
+  color: #333
+
+.value-color-4
+  background-color: #e0ddd6
+  color: #333
+
+.value-color-skipped
+  background-color: #e0ddd6
+  color: #333
+
+
+.categories
+  margin-top: 1em
+  .label
+    color: #000
+    font-size: 1.3em
+.media-heading.headline
+  margin-bottom:  0em !important
+  font-weight:  600
+  font-size:  2em
+  color:  #2d3739
+.instructions-header
+  color:  #4b616f
+  font-size:  2em
+  font-weight:  bold
+  margin-bottom:  0em
+.instructions-content
+  color:  #4b616f
+  font-size:  1em
+  font-weight:  lighter
+  margin-bottom:  1.1em
+  margin-left: -1em
+
+.question-container
+  margin-bottom: 1.1em
+
+  .question-row
+    display: table
+    &:hover
+      cursor: pointer
+
+
+  .question
+    margin: 0
+    padding: 0
+
+  .question-id
+    background-color: $unscored
+    color:  white
+    text-align: center
+    vertical-align: middle
+    font-size: 3em
+    margin: 0em
+    min-height: 1.6em
+
+    i.fa
+      font-size: 1em
+      color: #fff
+
+    &.scored-1
+      background-color: $scored1
+    &.scored-2
+      background-color: $scored2
+    &.scored-3
+      background-color: $scored3
+    &.scored-4
+      background-color: $scored4
+    &.scored-skipped
+      background-color: $skipped
+    &.skipped
+      background-color: $skipped
+
+
+  .question-content
+    border-top: 0em
+    background-color: #f8f9fb
+    border-bottom:  1px solid #e2e1dc
+
+    .question
+      font-size: 1.3em
+      margin-bottom: 0em
+      font-weight: bold
+    .content
+      font-size: 1.0em
+      margin-bottom: 0em
+    &:hover
+      box-shadow:  0em 0.2em 0em #d4d2c8
+
+
+.category-label
+  font-size: 1em
+  font-weight: bold
+  letter-spacing: 0.05em
+  color: #9f1c2c
+  border-top: 0.1em solid #d3d3cb
+  padding-top: 0.1em
+  &:hover
+    cursor: pointer
+  &:first-child
+    margin-top: 1em
+  i
+    color: #9f1c2c
+    font-size: 0.8em
+.answer-row
+  display: table
+  padding-left: 0em
+  .answer-info-row
+    border-top: 0.1em solid #ddd
+    .answer-value
+      width: 2%
+      font-size: 1.2em
+      height: 3em
+      margin-left: -0.75em
+      float: none
+      display: table-cell
+      vertical-align: top
+      span
+        color: white
+        vertical-align: -0.75em
+        margin-left: -0.14em
+    .answer-value.skipped
+      width: 4%
+    .answer-title
+      float: none
+      display: table-cell
+      vertical-align: top
+      width: 22%
+      font-size: 1.0em
+      min-height: 3.01em
+      line-height: 2.8em
+    .answer-description
+      float: none
+      display: table-cell
+      vertical-align: top
+      font-size:  1em
+      font-weight: lighter
+
+  &.active
+    color: white
+  &.scored1
+    background-color: $scored1
+    > div > div
+      color: white
+  &.scored2
+    background-color: $scored2
+    color: white
+    > div > div
+      color: white
+  &.scored3
+    background-color: $scored3
+    > div > div
+      color: white
+  &.scored4
+    background-color: $scored4
+    > div > div
+      color: white
+  &.skipped
+    background-color: $skipped
+    > div > div
+      color: white
+  .title-1
+    &:hover
+      background-color: $scored1
+      color: white
+  .title-2
+    &:hover
+      background-color: $scored2
+      color: white
+  .title-3
+    &:hover
+      background-color: $scored3
+      color: white
+  .title-4
+    &:hover
+      background-color: $scored4
+      color: white
+  .title-skipped
+    &:hover
+      background-color: $skipped
+      color: white
+
+  .score-evidence
+    margin: 1em auto
+    textarea
+      color: #333 !important
+
+  .save-holder
+    text-align: center
+    .btn
+      margin-top: 1em
+    i
+      color: white
+
+  .evidence-read
+    position: relative
+
+    div,p
+      color: white
+      min-height: 3.75em
+      vertical-align: middle
+      text-align: center
+    &:hover
+      cursor: pointer
+      background: rgba(54, 25, 25, .5)
+
+    .edit-holder
+      text-align: center
+      i
+        color: white
+
+    .edit-button
+      vertical-align: middle
+      text-align: center
+
+.evidence-discussion
+  background-color: #F0F2F7
+  border-bottom: 0.15em solid #ddd
+  span
+    font-size: 1.5em
+
+.evidence-holder
+  background-color: white
+  min-height: 9em
+
+table.table-evidence
+  border: 0.125em solid #e9e8e3
+  tr
+    td:first-child
+      padding: 0em
+      margin: 0em
+      text-align: center
+      min-width: 2.3125em !important
+      width: 2.3125em !important
+      color: white
+      font-size: 1.125em
+  td.response-value
+    padding: 0em
+    margin: 0em
+    text-align: center
+    min-width: 2.3125em !important
+    width: 2.3125em !important
+    color: white
+    font-size: 1.125em
+
+
+.evidence-score-holder
+  border: 0.1em solid #e9e8e3
+  border-top: none
+
+.consensus-header
+  margin-left: 1em
+  font-size: 1.5em
+
+.consensus-notes
+  margin-left: 3em
+
+.btn-value-1
+  font-size: 1em
+  background-color: $scored1
+  color: #f6f3ec
+
+.btn-value-2
+  font-size: 1em
+  background-color: $scored2
+  color: #f6f3ec
+
+.btn-value-3
+  font-size: 1em
+  background-color: $scored3
+  color: #f6f3ec
+
+.btn-value-4
+  font-size: 1em
+  background-color: $scored4
+  color: #f6f3ec

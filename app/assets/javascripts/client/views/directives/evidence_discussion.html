@@ -1,0 +1,34 @@
+<div>
+  <div class="evidence-discussion col-md-12">
+      <span>Evidence Discussion</span>
+  </div>
+
+  <div class="col-md-12 evidence-holder">
+    <div class="col-md-1"></div>
+    <div class="col-md-11">
+      <div class="evidence-list box-scroll">
+        <div ng-repeat="answer in question.answers">
+          <table class="table table-evidence">
+            <tbody>
+              <tr>
+                <!-- TODOO MOCH RESPONSE USER   -->
+                <td class="response-value scored-{{question.score.value}}">4</td>
+                <td><p>This is my evidence for this question.</p></td>
+              </tr>
+              <tr>
+                <td>
+                  <!-- TODOO MOCH RESPONSE USER   -->
+                  <avatar  data-avatar="https://avatars1.githubusercontent.com/u/221008?s=140"   data-width="37">
+                  </avatar>
+                </td>
+                <td>by: <a href="#">Sean Perkins</a> on: Apr 01, 2014</td>
+              </tr>
+            </tbody>
+          </table>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

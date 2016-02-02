@@ -1,0 +1,90 @@
+<user-header></user-header>
+
+<div class="settings">
+  <form ng-submit="updateUser(user)">
+    <div class="row">
+      <div id="form-top" class="col-md-12">
+        <ng-include src="'client/views/shared/errors.html'"></ng-include>
+        <h3>Account Settings</h3>
+        <div class="row">
+          <div class="flush col-md-5">
+            <label for="user_first_name">First name</label>
+            <input class="form-control"
+                   placeholder="First Name"
+                   type="text"
+                   ng-model="user.first_name"
+                   required>
+          </div>
+
+          <div class="col-md-7">
+            <label for="user_last_name">Last name</label>
+            <input class="form-control"
+                   placeholder="Last Name"
+                   type="text"
+                   ng-model="user.last_name"
+                   required>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="form-group">
+            <label for="user_email">E-mail address</label>
+            <input class="form-control"
+                   placeholder="Email"
+                   ng-model="user.email"
+                   type="email"
+                   required>
+          </div>
+
+          <div class="form-group">
+            <label for="district">District</label>
+              <district-select multiple="{{isNetworkPartner()}}"
+                               preselected="user.districts"
+                               districts="user.district_ids">
+            </district-select>
+          </div>
+
+          <div class="form-group">
+            <label for="user_team_role">Team role</label>
+            <input class="form-control" id="user_team_role" type="text" ng-model="user.team_role">
+          </div>
+
+          <div class="form-group">
+            <label for="user_twitter">Twitter</label>
+            <div class="input-group">
+              <span class="input-group-addon">@</span>
+              <input class="form-control" id="user_twitter" type="text" ng-model="user.twitter">
+            </div>
+          </div>
+
+          <h3>Change Password</h3>
+
+          <div class="form-group">
+            <label for="user_password">Password</label>
+            <input autocomplete="off"
+                   class="form-control"
+                   id="user_password"
+                   type="password"
+                   ng-model="user.password">
+          </div>
+
+          <div class="form-group">
+            <label for="user_password_confirmation">Password confirmation</label>
+            <input class="form-control"
+                   id="user_password_confirmation"
+                   type="password"
+                   ng-model="user.password_confirmation"
+                   ng-required="user.password.length > 0">
+          </div>
+          <div ng-if="user">
+            <organization-section
+              ng-if="isNetworkPartner()" organization-id="user.organization_ids">
+            </organization-section>
+          </div>
+
+          <input ng-click="scrollTop()" class="btn btn-success" name="commit" type="submit" value="Update ">
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

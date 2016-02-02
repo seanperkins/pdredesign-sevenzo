@@ -1,0 +1,10 @@
+<div class="modal-header">
+  <ul class="nav nav-tabs">
+    <h3 class="modal-title pull-left">{{tabTitle}}</h3>
+    <li class="permissions-tab" ng-repeat="pane in panes" ng-class="{active:pane.selected}">
+      <a href="" ng-click="select(pane)">{{pane.title}} <span class="label-as-badge label label-primary" ng-if="pane.badge > 0">{{pane.badge}}</span>
+      </a>
+    </li>
+  </ul>
+  <div class="tab-content" ng-transclude></div>
+</div>

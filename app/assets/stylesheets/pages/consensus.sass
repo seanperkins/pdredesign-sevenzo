@@ -1,0 +1,119 @@
+.export-buttons
+  margin-top: 1em
+
+.left-score
+  padding: 0
+  text-align: center
+  margin-top: 1em
+  padding-right: .5em
+  *
+    color: #fff
+
+  .score-count
+    font-size: 0.88em
+    width: 100%
+    display: block
+    padding: .3em
+    color: #fff
+    border-radius: .8em
+    &.transparent
+      background-color: transparent
+      color: #000
+      p, *
+        color: #000
+.answer-row
+  padding-right: 0
+  padding-left: 0
+
+.consensus-score-entry, .evidence-discussion
+  background-color: #fff
+
+.consensus-score-entry
+  h3
+    background-color: #f5f6f8
+    height: 1em
+    line-height: 0em
+    margin-top: 0
+    padding: 1em 0 1em 1em
+    border-bottom: 0.125em solid #ddd
+    border-top: 0.0625em solid #ddd
+  .alert
+    height: 3em
+    p
+      color: #a94442
+      font-size: 1.2em
+      text-align: center
+      line-height: 1em
+  .answer
+    cursor: hand
+    cursor: pointer
+    p.inactive
+      background-color: #D6D6D6
+    p
+      padding: .5em
+      color: #fff
+      font-weight: bold
+      text-align: center
+      border-radius: .5em
+
+.evidence-discussion
+  clear: both
+  border-bottom: 0.15em solid #fff
+  h3
+    background-color: #f5f6f8
+    height: 1em
+    line-height: 0em
+    padding: 1em 0 1em 1em
+    border-bottom: 0.125em solid #ddd
+    border-top: 0.0625em solid #ddd
+    margin-top: 0em
+  .evidence-container
+    width: 100%
+    max-height: 20em
+    min-height: 1.8em
+    overflow-y: scroll
+    overflow-x: hidden
+  .evidence
+    margin: 1em
+    border: 0.125em solid #d4d2c8
+    .secondary
+      color: #9a9a98
+    .col-md-1
+      padding: 0
+      width: 5%
+    .score.col-md-1
+      text-align: center
+      padding: .5em
+      span
+        color: #fff
+
+.consensus-percentage-bar
+  border: solid 1px #B4B3AF
+  float: right
+  height: 4.0em
+  margin-top: 0.1em
+  padding: 0
+  position: relative
+  width:  4.0em
+
+  .bar
+    bottom: 0
+    display: block
+    min-height: 1px
+    position: absolute
+    width: 10px
+
+  .bar-1
+    left: 0px
+
+  .bar-2
+    left: .8em
+
+  .bar-3
+    left: 1.6em
+
+  .bar-4
+    left: 2.4em
+
+  .skipped
+    left: 3.2em

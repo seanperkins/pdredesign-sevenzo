@@ -1,0 +1,98 @@
+html.pdf, body.pdf
+  background-color: white !important
+
+body.pdf .report-header
+  margin-bottom: 20px
+
+body.pdf .question-row
+  padding-left: 15px
+  width: 100%
+
+body.pdf p
+  margin: 0 !important
+
+body.pdf .answer-overview-table
+  width: 60% !important
+  display: inline-block
+body.pdf .answer-overview-table table
+  float: left
+  width: 100%
+
+body.pdf .answer-overview-table table tbody tr:nth-child(even)
+  background-color: #ccc
+
+body.pdf table td.question-value
+  font-weight: bold
+
+body.pdf table caption
+  font-style: italic
+
+body.pdf .key-table
+  width: 35% !important
+  display: inline-block
+body.pdf .key-table table
+  float: right
+
+body.pdf .category-label
+  border: 0px !important
+
+body.pdf .left-score *, .answer-row .answer-info-row .answer-value span
+  color: black !important
+
+body.pdf .answer-row .answer-info-row .answer-value
+  padding-top: 15px !important
+
+body.pdf .question-table .number
+  background-color: #ccc
+  color: white
+  font-size: 40px
+  text-align: center
+  width: 75px
+
+body.pdf .question-table .description
+  padding-left: 15px
+
+body.pdf .answer
+  padding-top: 15px
+  page-break-inside: avoid
+
+body.pdf .answer-info-row
+  background-color: white !important
+  border-top: 0px
+
+body.pdf .question-table-container, .question-answers-container
+  margin-bottom: 15px
+
+body.pdf .question-answers-container
+  padding-left: 15px
+
+body.pdf .question-answers
+  font-size: 12px
+
+body.pdf .question-answers td
+  padding-bottom: 10px
+
+body.pdf .question-answers .score-sumary
+  width: 50px
+
+body.pdf .question-answers .value
+  width: 45px
+
+body.pdf .question-answers .value-words
+  font-weight: bold
+  width: 120px
+
+body.pdf .report-content
+  padding-left: 15px
+  padding-right: 15px
+
+@media print
+  body.pdf table, .question-answer-container
+    page-break-inside: avoid
+
+  body.pdf tr
+    page-break-inside: avoid
+    page-break-after: auto
+
+  body.pdf .question-table .number, body.pdf .answer-overview-table table tbody tr:nth-child(even)
+    background-color: #ccc

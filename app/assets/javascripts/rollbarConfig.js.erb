@@ -1,0 +1,11 @@
+/**
+ * no_asset_compression
+ *
+ **/
+var _rollbarConfig = {
+    accessToken: "<%= ENV['ROLLBAR_TOKEN'] %>",
+    captureUncaught: true,
+    payload: {
+      environment: "<%= ENV['ROLLBAR_ENV'] %>"
+    }
+};

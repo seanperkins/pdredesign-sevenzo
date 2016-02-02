@@ -1,0 +1,23 @@
+<div class="row flush logo-uploader">
+  <div ng-show="uploading" class="spinner">
+    <div class='col-md-12'>
+      <i class="fa fa-spinner fa-spin"></i>
+    </div>
+  </div>
+
+  <div ng-hide="uploading">
+    <div class="col-md-3">
+      <img ng-src="{{logo}}" class="image">
+    </div>
+
+    <div class="col-md-9">
+      <h4>Upload an image to represent your organization</h4>
+      <input 
+        ng-hide="uploader.queue"
+        type="file"
+        nv-file-select
+        uploader="uploader"/>
+      <span class='required'>*</span>.GIF, .JPG, .JPEG, and .PNG filetypes only
+    </div>
+  </div>
+</div>
