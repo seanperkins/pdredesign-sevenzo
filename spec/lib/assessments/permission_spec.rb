@@ -1,12 +1,21 @@
 require 'spec_helper'
 
 describe Assessments::Permission do
-  before { create_magic_assessments }
+  before {
+    create_magic_assessments
+  }
 
-  let(:subject) { Assessments::Permission }
+  let(:subject) {
+    Assessments::Permission
+  }
 
-  let(:assessment) { @assessment_with_participants }
-  let(:user) { Application.create_user }
+  let(:assessment) {
+    @assessment_with_participants
+  }
+
+  let(:user) {
+    Application.create_user
+  }
 
   it 'contains the correct available permissions' do
     expect(subject.available_permissions).to eq([:facilitator, :participant])
@@ -19,14 +28,17 @@ describe Assessments::Permission do
           roles: 'facilitator',
           assessment_id: assessment.id)
 
-      expect(
-          AccessRequest.find_by(assessment_id: assessment.id, user_id: user.id)
-      ).not_to be_nil
+      expect(AccessRequest.find_by(assessment_id: assessment.id, user_id: user.id)).not_to be_nil
     end
   end
 
   context 'when determining the possible levels for a user' do
-    before do
+
+    let(:assessment_permission) {
+      Assessments::Permission.new(assessment)
+    }
+
+    before(:each) do
       participant = Participant.new
       participant.user = user
       participant.assessment = assessment
@@ -34,13 +46,13 @@ describe Assessments::Permission do
     end
 
     it 'returns the correct permission levels for a user' do
-      @assessment_permission = Assessments::Permission.new(assessment)
-      expect(@assessment_permission.possible_roles_permissions(user)).to eq([:facilitator, :viewer])
+      assessment_permission = Assessments::Permission.new(assessment)
+      expect(assessment_permission.possible_roles_permissions(user)).to eq([:facilitator])
     end
   end
 
   context 'permission level' do
-    before do
+    before(:each) do
       @ra = Application.request_access_to_assessment(assessment: assessment, user: user, roles: ['facilitator'])
       @assessment_permission = Assessments::Permission.new(assessment)
     end
@@ -48,7 +60,7 @@ describe Assessments::Permission do
     it 'accept permission request' do
       expect(AccessGrantedNotificationWorker).to receive(:perform_async)
       @assessment_permission.accept_permission_requested(user)
-      expect(assessment.facilitator?(user)).to eq(true)
+      expect(assessment.facilitator?(user)).to be true
     end
 
     it 'accept a participant request' do
@@ -57,12 +69,12 @@ describe Assessments::Permission do
           assessment: assessment, user: new_user, roles: ['participant'])
 
       @assessment_permission.accept_permission_requested(new_user)
-      expect(assessment.participant?(new_user)).to eq(true)
+      expect(assessment.participant?(new_user)).to be true
     end
 
     it 'Add permission level to user' do
       @assessment_permission.add_level(user, 'network_partner')
-      expect(assessment.network_partner?(user)).to eq(true)
+      expect(assessment.network_partner?(user)).to be true
     end
 
     it 'should respond with the list of users requesting access' do
@@ -78,7 +90,7 @@ describe Assessments::Permission do
       assessment.facilitators << @facilitator
       @assessment_permission.update_level(@facilitator, 'viewer')
 
-      expect(assessment.facilitator?(@facilitator)).to eq(false)
+      expect(assessment.facilitator?(@facilitator)).to be false
       expect(@assessment_permission.get_level(@facilitator)).to eq(:viewer)
     end
 
@@ -95,13 +107,13 @@ describe Assessments::Permission do
 
       @assessment_permission.update_level(assessment.user, 'viewer')
 
-      expect(assessment.owner?(owner)).to eq(true)
-      expect(assessment.viewer?(owner)).to eq(false)
+      expect(assessment.owner?(owner)).to be true
+      expect(assessment.viewer?(owner)).to be false
     end
   end
 
   context 'deny permission request' do
-    before do
+    before(:each) do
       Application.request_access_to_assessment(assessment: assessment, user: user, roles: ['facilitator'])
       @assessment_permission = Assessments::Permission.new(assessment)
     end
@@ -109,9 +121,7 @@ describe Assessments::Permission do
     it 'should deny permission by deleting the request' do
       @assessment_permission.deny(user)
 
-      expect(
-          @assessment_permission.get_access_request(user)
-      ).to eq(nil)
+      expect( @assessment_permission.get_access_request(user)).to be_nil
     end
   end
 
@@ -126,7 +136,7 @@ describe Assessments::Permission do
   end
 
   context 'notification emails' do
-    before do
+    before(:each) do
       @ra = Application.request_access_to_assessment(assessment: assessment, user: user, roles: ['facilitator'])
       @assessment_permission = Assessments::Permission.new(assessment)
       expect(AccessGrantedNotificationWorker).to receive(:perform_async)

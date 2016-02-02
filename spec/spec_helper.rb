@@ -1,12 +1,11 @@
 # This file is copied to spec/ when you run 'rails generate rspec:install'
-ENV["RAILS_ENV"] ||= 'test'
-require File.expand_path("../../config/environment", __FILE__)
-require 'support/code_coverage'
+ENV['RAILS_ENV'] ||= 'test'
+require File.expand_path('../../config/environment', __FILE__)
 require 'rspec/rails'
 require 'shoulda/matchers'
 
 
-Dir[Rails.root.join("spec/support/**/*.rb")].each { |f| require f }
+Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }
 ActiveRecord::Migration.check_pending! if defined?(ActiveRecord::Migration)
 
 RSpec.configure do |config|
@@ -19,7 +18,7 @@ RSpec.configure do |config|
   config.include Requests::JsonHelpers, type: :controller
   config.include Devise::TestHelpers,   type: :controller
 
-  config.order = "random"
+  config.order = 'random'
 end
 
 RSpec::Matchers.define :include_only_one_of do |expected|
