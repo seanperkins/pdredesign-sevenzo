@@ -93,7 +93,7 @@ describe Assessments::Permission do
       end
     end
 
-    it 'Add permission level to user' do
+    it 'adds a permission level to user' do
       assessment_permission.add_level(user, 'network_partner')
       expect(assessment.network_partner?(user)).to be true
     end
@@ -125,16 +125,18 @@ describe Assessments::Permission do
     end
   end
 
-  context 'deny permission request' do
+  context 'when denying a permission request' do
+    let(:assessment_permission) {
+      Assessments::Permission.new(assessment)
+    }
+
     before(:each) do
       Application.request_access_to_assessment(assessment: assessment, user: user, roles: ['facilitator'])
-      @assessment_permission = Assessments::Permission.new(assessment)
+      assessment_permission.deny(user)
     end
 
-    it 'denies permission by deleting the request' do
-      @assessment_permission.deny(user)
-
-      expect(@assessment_permission.get_access_request(user)).to be_nil
+    it 'deletes the request' do
+      expect(assessment_permission.get_access_request(user)).to be_nil
     end
   end
 
@@ -149,18 +151,42 @@ describe Assessments::Permission do
   end
 
   context 'notification emails' do
-    before(:each) do
-      @ra = Application.request_access_to_assessment(assessment: assessment, user: user, roles: ['facilitator'])
-      @assessment_permission = Assessments::Permission.new(assessment)
-      expect(AccessGrantedNotificationWorker).to receive(:perform_async)
+
+    let(:assessment_permission) {
+      Assessments::Permission.new(assessment)
+    }
+
+    let(:access_granted_notification_worker) {
+      class_spy(AccessGrantedNotificationWorker)
+    }
+
+    context 'when the role is a facilitator' do
+      before(:each) do
+        Application.request_access_to_assessment(assessment: assessment, user: user, roles: ['facilitator'])
+        allow(AccessGrantedNotificationWorker).to receive(:perform_async)
+      end
+
+      it 'notifies the user by email' do
+        assessment_permission.accept_permission_requested(user)
+        expect(AccessGrantedNotificationWorker).to have_received(:perform_async)
+      end
+
+      it 'sends an email when the facilitator permission level is added' do
+        assessment_permission.add_level(user, 'facilitator')
+        expect(AccessGrantedNotificationWorker).to have_received(:perform_async)
+      end
     end
 
-    it 'notifies the user by email' do
-      @assessment_permission.accept_permission_requested(user)
-    end
+    context 'when the role is a participant' do
+      before(:each) do
+        Application.request_access_to_assessment(assessment: assessment, user: user, roles: [:participant])
+        allow(AccessGrantedNotificationWorker).to receive(:perform_async)
+      end
 
-    it 'sends an email when the permission level is added' do
-      @assessment_permission.add_level(user, 'facilitator')
+      it 'does not notify the user by email' do
+        assessment_permission.accept_permission_requested(user)
+        expect(AccessGrantedNotificationWorker).to_not have_received(:perform_async)
+      end
     end
   end
 end
