@@ -22,9 +22,9 @@ require 'spec_helper'
 
 describe Assessment do
   describe 'validations' do
-    it { should validate_presence_of :name }
-    it { should validate_presence_of :rubric_id }
-    it { should validate_presence_of :district_id }
+    it { is_expected.to validate_presence_of :name }
+    it { is_expected.to validate_presence_of :rubric_id }
+    it { is_expected.to validate_presence_of :district_id }
 
     context ':assigned_at' do
       before do
@@ -406,7 +406,7 @@ describe Assessment do
       before { create_magic_assessments }
       let(:assessment) { @assessment_with_participants }
 
-      it {should respond_to(:flush_cached_version)}
+      it {is_expected.to respond_to(:flush_cached_version)}
 
       it "should touch the assessment and change the updated_at for the assessment" do
         uab = assessment.updated_at

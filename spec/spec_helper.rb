@@ -19,6 +19,10 @@ RSpec.configure do |config|
   config.include Devise::TestHelpers,   type: :controller
 
   config.order = 'random'
+
+  config.expect_with :rspec do |c|
+    c.syntax = :expect
+  end
 end
 
 RSpec::Matchers.define :include_only_one_of do |expected|
