@@ -3,17 +3,22 @@ require  'spec_helper'
 describe V1::AccessController do
   render_views
 
-  before :each do
-    request.env["HTTP_ACCEPT"] = 'application/json'
+  let(:assessment) {
+    @assessment_with_participants
+  }
+
+  let(:user) {
+    FactoryGirl.create(:user, :with_district)
+  }
+
+  before(:each) do
+    request.env['HTTP_ACCEPT'] = 'application/json'
+    create_magic_assessments
+    sign_in @facilitator2
   end
 
-  before { create_magic_assessments }
-  before { sign_in @facilitator2 }
-  let(:assessment) { @assessment_with_participants }
-
   def create_token_chain(roles = [:facilitator])
-    @user   = Application::create_sample_user
-    @record = AccessRequest.create!(user: @user,
+    @record = AccessRequest.create!(user: user,
       assessment: assessment,
       roles: roles,
       token: 'expected_token')
@@ -27,7 +32,7 @@ describe V1::AccessController do
     end
 
     it 'requires a facilitator of the assessment' do
-      sign_in @user
+      sign_in user
       create_token_chain
 
       post :grant, token: @record.token
@@ -43,7 +48,7 @@ describe V1::AccessController do
       create_token_chain
 
       post :grant, token: @record.token
-      expect(assessment.facilitator?(@user)).to eq(true)
+      expect(assessment.facilitator?(user)).to eq(true)
     end
 
     context 'user permission is :participant' do
@@ -53,11 +58,11 @@ describe V1::AccessController do
       end
 
       it 'grants a user permission with :participant' do
-        expect(assessment.participant?(@user)).to eq(true)
+        expect(assessment.participant?(user)).to eq(true)
       end
 
       it 'sets participant param invited_at to not be nil ' do
-        participant = Participant.find_by_user_id(@user.id)
+        participant = Participant.find_by_user_id(user.id)
         expect(participant.invited_at).not_to eq(nil)
       end
     end
@@ -66,7 +71,7 @@ describe V1::AccessController do
       create_token_chain([:viewer])
 
       post :grant, token: @record.token
-      expect(assessment.viewer?(@user)).to eq(true)
+      expect(assessment.viewer?(user)).to eq(true)
     end
 
     it 'removes the request after granting' do

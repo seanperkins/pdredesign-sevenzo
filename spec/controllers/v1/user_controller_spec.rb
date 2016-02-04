@@ -2,18 +2,20 @@ require 'spec_helper'
 
 describe V1::UserController do
 
-  before do
-    request.env["HTTP_ACCEPT"] = 'application/json'
+  let(:user) {
+    FactoryGirl.create(:user, :with_district)
+  }
 
-    @user = Application::create_sample_user
-    sign_in @user
+  before do
+    request.env['HTTP_ACCEPT'] = 'application/json'
+    sign_in user
   end
 
   render_views
 
   context '#request_reset' do
     before { sign_out :user }
-    before { @user.update(email: 'some_user@gmail.com') }
+    before { user.update(email: 'some_user@gmail.com') }
 
     it 'sends the reset to a user' do
       post :request_reset, email: 'some_user@gmail.com'
@@ -34,19 +36,19 @@ describe V1::UserController do
       allow(controller).to receive(:hash).and_return('xyz')
 
       post :request_reset, email: 'some_user@gmail.com'
-      expect(User.find(@user.id).reset_password_token).to eq('xyz')
+      expect(User.find(user.id).reset_password_token).to eq('xyz')
     end
 
     it 'sets the reset_password_token' do
-      @user.update(reset_password_sent_at: nil)
+      user.update(reset_password_sent_at: nil)
 
       post :request_reset, email: 'some_user@gmail.com'
-      expect(User.find(@user.id).reset_password_sent_at).not_to be_nil
+      expect(User.find(user.id).reset_password_sent_at).not_to be_nil
     end
 
     it 'queues up an email to be sent to user' do
       expect(PasswordResetNotificationWorker).to receive(:perform_async)
-        .with(@user.id)
+        .with(user.id)
 
       post :request_reset, email: 'some_user@gmail.com'
     end
@@ -62,36 +64,36 @@ describe V1::UserController do
     before { sign_out :user }
 
     it 'returns unauthorized if the token is not found' do
-      @user.update(reset_password_token: 'expected_token')
+      user.update(reset_password_token: 'expected_token')
       post :reset, token: 'other_token', password: 'xyz'
 
       assert_response :unauthorized
     end
 
     it 'requires the right token to reset password' do
-      @user.update(reset_password_token: 'expected_token')
+      user.update(reset_password_token: 'expected_token')
 
       post :reset, token: 'expected_token', password: 'xyz1235'
       assert_response :success
 
-      expect(User.find(@user.id).valid_password?('xyz1235')).to eq(true)
+      expect(User.find(user.id).valid_password?('xyz1235')).to eq(true)
     end
 
     it 'resets the password token and sent_at' do
-      @user.update(reset_password_token: 'expected_token',
+      user.update(reset_password_token: 'expected_token',
                    reset_password_sent_at: Time.now)
 
       post :reset, token: 'expected_token', password: 'xyz1235'
       assert_response :success
 
-      user = User.find(@user.id)
-      expect(user.reset_password_token).to eq(nil)
-      expect(user.reset_password_sent_at).to eq(nil)
-      expect(subject.current_user).to eq(user)
+      expected_user = User.find(user.id)
+      expect(expected_user.reset_password_token).to eq(nil)
+      expect(expected_user.reset_password_sent_at).to eq(nil)
+      expect(subject.current_user).to eq(expected_user)
     end
 
     it 'returns errors when user cant be updated' do
-      @user.update(reset_password_token: 'expected_token')
+      user.update(reset_password_token: 'expected_token')
 
       post :reset, token: 'expected_token', password: 'xyz'
       assert_response 422
@@ -184,7 +186,7 @@ describe V1::UserController do
     end
     
     it 'can find and update an existing user' do
-      @user.update(email: 'kim@gov.nk')
+      user.update(email: 'kim@gov.nk')
 
       post_create_user
       assert_response 422
@@ -192,7 +194,7 @@ describe V1::UserController do
     
     it 'redeems an already existing invite and updates the user' do 
       create_magic_assessments
-      @user.update(email: 'kim@gov.nk')
+      user.update(email: 'kim@gov.nk')
       UserInvitation.create!(email: 'kim@gov.nk',
                             assessment: @assessment_with_participants,
                             first_name: 'Kim',
@@ -246,42 +248,42 @@ describe V1::UserController do
     context 'extract_ids' do
       it 'should not reset the district_ids' do
         district = District.create!
-        @user.update(districts: [district])
+        user.update(districts: [district])
 
         put :update, {email: 'some@user.com'} 
 
-        @user.reload
-        expect(@user.district_ids).to eq([district.id])
+        user.reload
+        expect(user.district_ids).to eq([district.id])
       end
 
       it 'should not reset the organization_ids' do
         org = Organization.create!(name: 'test')
-        @user.update(organizations: [org])
+        user.update(organizations: [org])
 
         put :update, {email: 'some@user.com'} 
 
-        @user.reload
-        expect(@user.organization_ids).to eq([org.id])
+        user.reload
+        expect(user.organization_ids).to eq([org.id])
       end
 
       it 'resets :district_ids when a key is explicitly set to nil' do
         district = District.create!
-        @user.update(districts: [district])
+        user.update(districts: [district])
 
         put :update, {email: 'some@user.com', district_ids: nil} 
 
-        @user.reload
-        expect(@user.district_ids).to be_empty
+        user.reload
+        expect(user.district_ids).to be_empty
       end
 
       it 'resets :organization_ids when a key is explicitly set to nil' do
         org = Organization.create!(name: 'test')
-        @user.update(organizations: [org])
+        user.update(organizations: [org])
 
         put :update, {email: 'some@user.com', organization_ids: nil} 
 
-        @user.reload
-        expect(@user.organization_ids).to be_empty
+        user.reload
+        expect(user.organization_ids).to be_empty
       end
     end
   end

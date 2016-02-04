@@ -3,16 +3,14 @@ require 'spec_helper'
 describe V1::ToolsController do
   render_views
 
-  before :each do
-    request.env["HTTP_ACCEPT"] = 'application/json'
-  end
+  let(:partner) {
+    FactoryGirl.create(:user, :with_district, :with_network_partner_role)
+  }
 
-  before do
-    @partner = Application::create_sample_user
-    @partner.update(role: :network_partner)
-    sign_in  @partner
+  before(:each) do
+    request.env['HTTP_ACCEPT'] = 'application/json'
+    sign_in partner
   end
-
 
   describe '#create' do
 
@@ -57,7 +55,7 @@ describe V1::ToolsController do
 
     it 'returns errors when tool cant be saved' do
       post :create
-      expect(json["errors"]).not_to be_empty
+      expect(json['errors']).not_to be_empty
     end
 
   end
@@ -79,12 +77,12 @@ describe V1::ToolsController do
       end
 
       get :index
-      expect(json.first["categories"].count).to eq(5)
+      expect(json.first['categories'].count).to eq(5)
     end
 
     it 'returns all subcategories' do
       phase    = ToolPhase.create(title: 'test', description: 'description') 
-      category = ToolCategory.create(title: "category", tool_phase: phase)
+      category = ToolCategory.create(title: 'category', tool_phase: phase)
       5.times do |i|
         ToolSubcategory.create(title: 'Expected Title',
                     tool_category: category)
@@ -92,13 +90,13 @@ describe V1::ToolsController do
 
 
       get :index
-      expect(json.first["categories"].first["subcategories"].count).to eq(5)
+      expect(json.first['categories'].first['subcategories'].count).to eq(5)
 
     end
 
     it 'returns all tools' do
       phase       = ToolPhase.create(title: 'test', description: 'description') 
-      category    = ToolCategory.create(title: "category 1", tool_phase: phase)
+      category    = ToolCategory.create(title: 'category 1', tool_phase: phase)
       subcategory = ToolSubcategory.create(title: 'Expected Title',
                       tool_category: category)
       5.times do |i|
@@ -111,10 +109,10 @@ describe V1::ToolsController do
 
       get :index
 
-      tools = json.first["categories"].first["subcategories"].first["tools"]
+      tools = json.first['categories'].first['subcategories'].first['tools']
       expect(tools.count).to eq(5)
 
-      tools.each { |t| expect(t["url"]).to eq('expected') }
+      tools.each { |t| expect(t['url']).to eq('expected') }
     end
 
     context 'with data' do
@@ -126,9 +124,9 @@ describe V1::ToolsController do
 
         district  = District.create!
         
-        @creating_user = Application::create_sample_user
-        @login_user    = Application::create_sample_user
-        @other_user    = Application::create_sample_user
+        @creating_user = FactoryGirl.create(:user, :with_district)
+        @login_user    = FactoryGirl.create(:user, :with_district)
+        @other_user    = FactoryGirl.create(:user, :with_district)
 
         @creating_user.update(district_ids: [district.id])
         @login_user.update(district_ids: [district.id])
@@ -146,7 +144,7 @@ describe V1::ToolsController do
       it 'returns user created tools for subcategory' do
         sign_in @login_user
         get :index
-        tools = json.first["categories"].first["subcategories"].first["tools"]
+        tools = json.first['categories'].first['subcategories'].first['tools']
         expect(tools.count).to eq(1)
       end
 
@@ -162,7 +160,7 @@ describe V1::ToolsController do
           sign_in @login_user
 
           get :index
-          tools = json.first["categories"].first["tools"]
+          tools = json.first['categories'].first['tools']
 
           expect(tools.count).to eq(1)
           expect(tools.first['title']).to eq('example tool')
@@ -172,7 +170,7 @@ describe V1::ToolsController do
            sign_in @other_user
 
           get :index
-          tools = json.first["categories"].first["tools"]
+          tools = json.first['categories'].first['tools']
           expect(tools.count).to eq(0)
         end
       end
@@ -184,7 +182,7 @@ describe V1::ToolsController do
 
         sign_in @login_user
         get :index
-        tools = json.first["categories"].first["subcategories"].first["tools"]
+        tools = json.first['categories'].first['subcategories'].first['tools']
         expect(tools.count).to eq(1)
 
       end
@@ -193,10 +191,10 @@ describe V1::ToolsController do
         sign_in @other_user
 
         get :index
-        tools = json.first["categories"].first["subcategories"].first["tools"]
+        tools = json.first['categories'].first['subcategories'].first['tools']
         expect(tools.count).to eq(0)
       end
     end
   end
-
 end
+FactoryGirl.create(:user, :with_district)

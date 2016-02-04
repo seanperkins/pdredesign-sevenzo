@@ -2,13 +2,18 @@ require 'spec_helper'
 
 describe PasswordResetMailer do
   context '#reset' do
-    before do
-      @user = Application::create_sample_user
-      @user.update(reset_password_token: 'expected_token',
+    let(:user) {
+      FactoryGirl.create(:user, :with_district)
+    }
+
+    let(:mail) {
+      PasswordResetMailer.reset(user)
+    }
+
+    before(:each) do
+      user.update(reset_password_token: 'expected_token',
                    email: 'some@user.com')
     end
-
-    let(:mail) { PasswordResetMailer.reset(@user) }
 
     it 'sends the invite mail to the user on invite' do
       expect(mail.to).to include('some@user.com')

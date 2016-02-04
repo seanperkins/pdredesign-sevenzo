@@ -4,14 +4,14 @@ describe Assessments::Subheading do
   let(:subject) { Assessments::Subheading }
 
   describe '#execute' do
-    before { create_magic_assessments }
+    before(:each) do
+      create_magic_assessments
+    end
 
     let(:assessment) { @assessment_with_participants }
+    let(:user) { FactoryGirl.create(:user, :with_district, :with_network_partner_role) }
 
-    it 'returns facilitators for a network partners assessment' do 
-      user = Application::create_sample_user
-      user.update(role: :network_partner)
-
+    it 'returns facilitators for a network partners assessment' do
       subheading = subject.new(assessment, user).execute
       expect(subheading[:message]).to eq('Facilitated by:')
       expect(subheading[:members].count).to eq(2)
@@ -27,7 +27,7 @@ describe Assessments::Subheading do
       before { create_struct }
 
       it 'returns not yet submitted if assessment is not a consensus' do
-        instance  = subject.new(assessment, @facilitator2)
+        instance = subject.new(assessment, @facilitator2)
         allow(instance).to receive(:consensus?).and_return(false)
 
         subheading = instance.execute
@@ -38,7 +38,7 @@ describe Assessments::Subheading do
       end
 
       it 'returns viewed report if assessment is a consensus' do
-        instance  = subject.new(assessment, @facilitator2)
+        instance = subject.new(assessment, @facilitator2)
         allow(instance).to receive(:consensus?).and_return(true)
 
         @participant.update(report_viewed_at: Time.now)
