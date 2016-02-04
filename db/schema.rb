@@ -11,11 +11,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141009150320) do
+ActiveRecord::Schema.define(version: 20160204224626) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-  enable_extension "pg_trgm"
 
   create_table "access_requests", force: :cascade do |t|
     t.integer  "assessment_id"
@@ -48,6 +47,7 @@ ActiveRecord::Schema.define(version: 20141009150320) do
     t.string   "mandrill_id",     limit: 255
     t.text     "mandrill_html"
     t.text     "report_takeaway"
+    t.string   "share_token"
   end
 
   create_table "assessments_facilitators", force: :cascade do |t|
@@ -334,7 +334,7 @@ ActiveRecord::Schema.define(version: 20141009150320) do
   add_index "scores", ["response_id", "question_id"], name: "index_scores_on_response_id_and_question_id", unique: true, using: :btree
 
   create_table "sessions", force: :cascade do |t|
-    t.string   "session_id", null: false
+    t.string   "session_id", limit: 255, null: false
     t.text     "data"
     t.datetime "created_at"
     t.datetime "updated_at"
