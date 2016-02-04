@@ -1,7 +1,7 @@
 module Assessments
   class Permission
 
-    PERMISSIONS = [:facilitator, :viewer, :participant]
+    PERMISSIONS = [:facilitator, :participant]
 
     attr_reader :assessment
 
@@ -22,12 +22,16 @@ module Assessments
     end
 
     def get_level(user)
-      return case
-        when assessment.facilitator?(user); :facilitator
-        when assessment.network_partner?(user); :network_partner
-        when assessment.viewer?(user); :viewer
-        when assessment.participant?(user); :participant
-        end
+      case
+        when assessment.facilitator?(user)
+          :facilitator
+        when assessment.network_partner?(user)
+          :network_partner
+        when assessment.viewer?(user)
+          :viewer
+        when assessment.participant?(user)
+          :participant
+      end
     end
 
     def add_level(user, level)
@@ -42,12 +46,12 @@ module Assessments
           return false
       end
       notify_user_for_access_granted(assessment, user, level)
-      return true
+      true
     end
 
     def update_level(user, level)
       unless assessment.owner?(user)
-        unless(get_level(user).to_s == level.to_s)
+        unless get_level(user).to_s == level.to_s
           revoke_level(user)
           add_level(user, level)
         end
@@ -73,23 +77,23 @@ module Assessments
           assessment.viewers.destroy(user)
         when :network_partner
           assessment.network_partners.destroy(user)
-        assessment.reload
+          assessment.reload
       end
 
     end
 
     def self.available_permissions
-      # this would be return the available and valid permissions for Assessments
       PERMISSIONS
     end
 
     def self.request_access(request_options)
       roles = request_options[:roles].class == String ? [request_options[:roles]] : request_options[:roles]
 
-      return AccessRequest.create({
-        roles: roles, token: SecureRandom.hex[0..9],
-        user: request_options[:user], assessment_id: request_options[:assessment_id]
-      })
+      return AccessRequest.create(
+          {
+              roles: roles, token: SecureRandom.hex[0..9],
+              user: request_options[:user], assessment_id: request_options[:assessment_id]
+          })
     end
 
     private
@@ -116,13 +120,13 @@ module Assessments
 
     def grant_participant(assessment, user)
       Participant.find_or_create_by(
-        assessment_id: assessment.id,
-        user_id:       user.id,
-        invited_at: Time.now)
+          assessment_id: assessment.id,
+          user_id: user.id,
+          invited_at: Time.now)
     end
 
     def notify_user_for_access_granted(assessment, user, role)
-      AccessGrantedNotificationWorker.perform_async(assessment.id, user.id, role) unless [:participant, "participant"].include? role
+      AccessGrantedNotificationWorker.perform_async(assessment.id, user.id, role) unless [:participant, 'participant'].include? role
     end
   end
 end
