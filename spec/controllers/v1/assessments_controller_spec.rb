@@ -19,7 +19,7 @@ describe V1::AssessmentsController do
 
     it 'updates the record' do
       time = Time.now
-      put :update, {id: assessment.id, 
+      put :update, {id: assessment.id,
                     rubric_id: 42,
                     name: 'some assessment',
                     due_date: time,
@@ -59,7 +59,7 @@ describe V1::AssessmentsController do
 
     it 'sends the invitation email to all participants' do
       expect(AllParticipantsNotificationWorker).to receive(:perform_async)
-        .with(assessment.id)
+                                                       .with(assessment.id)
 
       put :update, assign: true, id: assessment.id, rubric_id: 42, message: "some custom message here"
       assert_response :success
@@ -79,7 +79,9 @@ describe V1::AssessmentsController do
       assert_response :success
     end
 
-   context 'permissions' do
+    context 'permissions' do
+
+      let(:facilitator) { FactoryGirl.create(:user, :with_district) }
       it 'requires a logged in user' do
         sign_out :user
 
@@ -103,9 +105,8 @@ describe V1::AssessmentsController do
       end
 
       it 'allows a facilitator on the assessment' do
-        facilitator = Application::create_sample_user(districts: [@district2])
-        sign_in facilitator 
-        
+        sign_in facilitator
+
         assessment.update(facilitators: [facilitator])
 
         get :show, id: assessment.id
@@ -128,7 +129,7 @@ describe V1::AssessmentsController do
     it 'does not die on an empty user role' do
       @facilitator.update(role: nil)
       sign_in @facilitator
-  
+
       get :index
       assert_response :success
     end
@@ -161,9 +162,9 @@ describe V1::AssessmentsController do
     end
 
     it 'returns the current users responses' do
-      response = Response.create(responder_id:   @participant.id,
+      response = Response.create(responder_id: @participant.id,
                                  responder_type: 'Participant',
-                                 rubric: @rubric) 
+                                 rubric: @rubric)
       sign_in @user
       get :index
       json_response = json.first["responses"].first
@@ -180,10 +181,10 @@ describe V1::AssessmentsController do
 
     it 'returns a consensus_id and submitted_at if present' do
       time = Time.now
-      consensus = Response.create(responder_id:   @assessment_with_participants.id,
+      consensus = Response.create(responder_id: @assessment_with_participants.id,
                                   responder_type: 'Assessment',
                                   rubric: @rubric,
-                                  submitted_at: time) 
+                                  submitted_at: time)
       sign_in @user
       get :index
 
@@ -215,8 +216,8 @@ describe V1::AssessmentsController do
       messages = assigns(:messages)
 
       expect(messages.count).to eq(1)
-      expect(messages.first.category).to    eq("welcome")
-      expect(messages.first.teaser).to     eq("welcome content")
+      expect(messages.first.category).to eq("welcome")
+      expect(messages.first.teaser).to eq("welcome content")
       expect(messages.first.sent_at).not_to be_nil
     end
 
@@ -241,33 +242,33 @@ describe V1::AssessmentsController do
     before { sign_in @facilitator }
     let(:assessment) { @assessment_with_participants }
 
-    before do 
+    before do
       assessment.update(facilitators: [@facilitator])
     end
 
     it 'allows a facilitator to create an assessment' do
-      post :create, 
-        name: 'some assessment', 
-        rubric_id: @rubric.id,
-        due_date: Time.now
+      post :create,
+           name: 'some assessment',
+           rubric_id: @rubric.id,
+           due_date: Time.now
 
       assert_response :success
     end
 
     it 'sets the facilitator correctly' do
-      post :create, 
-        name: 'some assessment', 
-        rubric_id: @rubric.id,
-        due_date: Time.now
+      post :create,
+           name: 'some assessment',
+           rubric_id: @rubric.id,
+           due_date: Time.now
 
       expect(json["facilitator"]["id"]).to eq(@facilitator.id)
     end
 
     it 'district member is assigned as a participant automatically' do
-      post :create, 
-        name: 'some assessment', 
-        rubric_id: @rubric.id,
-        due_date: Time.now
+      post :create,
+           name: 'some assessment',
+           rubric_id: @rubric.id,
+           due_date: Time.now
 
       assessment = Assessment.find(json["id"])
 
@@ -277,10 +278,10 @@ describe V1::AssessmentsController do
     it 'district member is assigned as a participant automatically' do
       @facilitator.update(role: :network_partner)
 
-      post :create, 
-        name: 'some assessment', 
-        rubric_id: @rubric.id,
-        due_date: Time.now
+      post :create,
+           name: 'some assessment',
+           rubric_id: @rubric.id,
+           due_date: Time.now
 
       assessment = Assessment.find(json["id"])
 
@@ -289,10 +290,10 @@ describe V1::AssessmentsController do
 
 
     it 'creates a record' do
-      post :create, 
-        name: 'some assessment', 
-        rubric_id: @rubric.id,
-        due_date: Time.now
+      post :create,
+           name: 'some assessment',
+           rubric_id: @rubric.id,
+           due_date: Time.now
 
       expect(json["id"]).not_to be_nil
     end
@@ -300,12 +301,12 @@ describe V1::AssessmentsController do
     it 'sets the newest rubric if one is not provided' do
       @rubric = Rubric.create!(version: 99)
       Rubric.create!(version: 95)
-      
+
       create_struct
 
-      post :create, 
-        name: 'some assessment', 
-        due_date: Time.now
+      post :create,
+           name: 'some assessment',
+           due_date: Time.now
 
       expect(json["rubric_id"]).to eq(@rubric.id)
     end
@@ -315,18 +316,18 @@ describe V1::AssessmentsController do
       Rubric.create!(version: 95)
       create_struct
 
-      post :create, 
-        name: 'some assessment', 
-        due_date: Time.now,
-        district_id: district.id
+      post :create,
+           name: 'some assessment',
+           due_date: Time.now,
+           district_id: district.id
 
       expect(json["district_id"]).to eq(district.id)
     end
 
     it 'returns json errors when an assessment cant be created' do
-      post :create, 
-        rubric_id: @rubric.id,
-        due_date: Time.now
+      post :create,
+           rubric_id: @rubric.id,
+           due_date: Time.now
 
       expect(json["errors"]["name"]).to include("can't be blank")
     end

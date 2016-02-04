@@ -89,7 +89,7 @@ describe User do
 
   describe '#twitter' do
     context "when the user's Twitter handle is updated" do
-      let!(:user) { FactoryGirl.create(:user, :sample_user, twitter: 'foobar') }
+      let!(:user) { FactoryGirl.create(:user, :with_district, twitter: 'foobar') }
 
       before(:each) do
         TwitterAvatarWorker.jobs.clear
@@ -102,7 +102,7 @@ describe User do
     end
 
     context "when the user's Twitter handle is not updated" do
-      let(:user) { FactoryGirl.create(:user, :sample_user, twitter: 'foobar') }
+      let(:user) { FactoryGirl.create(:user, :with_district, twitter: 'foobar') }
 
       before(:each) do
         TwitterAvatarWorker.jobs.clear

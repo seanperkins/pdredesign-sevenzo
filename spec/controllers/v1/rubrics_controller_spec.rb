@@ -3,18 +3,12 @@ require 'spec_helper'
 describe V1::RubricsController do
   render_views
 
-  before :each do
-    request.env["HTTP_ACCEPT"] = 'application/json'
-    district = District.create!
-    @user     = Application::create_sample_user(districts: [district])
-  end
+  let(:user) { FactoryGirl.create(:user, :with_district) }
 
-  before do
-    3.times do |i| 
-      Rubric.create(name: "rubric #{i}", version: i, enabled: true)
-    end
-
-    sign_in @user
+  before(:each) do
+    request.env['HTTP_ACCEPT'] = 'application/json'
+    FactoryGirl.create_list(:rubric, 3)
+    sign_in user
   end
 
   context '#index' do 
@@ -37,6 +31,5 @@ describe V1::RubricsController do
       get :index
       expect(json.count).to eq(2)
     end
-
   end
 end

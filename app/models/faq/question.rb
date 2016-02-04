@@ -3,7 +3,8 @@
 # Table name: faq_questions
 #
 #  id          :integer          not null, primary key
-#  role        :string(255)
+#  role        :string
+#  topic       :string
 #  category_id :integer
 #  content     :text
 #  answer      :text
