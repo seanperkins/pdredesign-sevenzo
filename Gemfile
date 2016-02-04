@@ -80,6 +80,7 @@ group :test do
   gem 'faker', '~> 1.6.1'
   gem 'rspec-sidekiq', '~> 2.2.0'
   gem 'factory_girl_rails', '~> 4.6.0'
+  gem 'database_cleaner', '~>1.5.1'
 end
 
 group :production do
