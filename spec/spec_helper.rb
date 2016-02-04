@@ -33,4 +33,9 @@ Authority.configure do |config|
   config.logger = Logger.new('/dev/null')
 end
 
-
+Shoulda::Matchers.configure do |config|
+  config.integrate do |with|
+    with.test_framework :rspec
+    with.library :rails
+  end
+end
