@@ -37,7 +37,5 @@
 #
 
 FactoryGirl.define do
-  factory :district do
-    
-  end
+  factory :district
 end
