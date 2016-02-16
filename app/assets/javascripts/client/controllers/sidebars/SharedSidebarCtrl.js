@@ -1,5 +1,5 @@
-PDRClient.controller('SharedSidebarCtrl', ['$scope', '$modal', '$stateParams', 'SessionService',
-    function($scope, $modal, $stateParams, SessionService) {
+PDRClient.controller('SharedSidebarCtrl', ['$scope', '$stateParams',
+    function($scope, $stateParams) {
       $scope.redirect = $stateParams.redirect;
     }
 ]);
