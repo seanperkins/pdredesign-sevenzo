@@ -58,8 +58,8 @@ PDRClient.config(['$stateProvider', '$urlRouterProvider',
          templateUrl: 'client/views/assessments/shared_report.html'
        },
        'sidebar': {
-         controller: 'SidebarCtrl',
-         templateUrl: 'client/views/sidebar/assessment_dashboard.html'
+         controller: 'SharedSidebarCtrl',
+         templateUrl: 'client/views/sidebar/shared_assessment_dashboard.html'
        }
      }
    })

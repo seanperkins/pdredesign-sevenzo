@@ -1,0 +1,24 @@
+<div class="sidebar">
+  <div id="assessment_dashboard_consensus_sidebar" ng-controller="SharedAssessmentDashboardSidebarCtrl">
+    <div class='consensus'>
+      <p ng-show="postMeetingDate()" class='header'>Consensus Meeting was held</p>
+      <div class='outer'>
+        <div class='inner'>
+          <p class='date'>{{meetingDateDaysAgo()}}</p>
+          <p class='month'>days ago</p>
+        </div>
+      </div>
+    </div>
+    <div class="links">
+      <span>
+        <a
+          ng-class="{ active: $state.includes('assessment_report') }"
+          href="#/assessments/{{assessment.id}}/report">Report
+        </a>
+      </span>
+    </div>
+  </div>
+  <div class="content">
+    <ng-include src="'client/views/sidebar/why_pd_redesign.html'"></ng-include>
+  </div>
+</div>
