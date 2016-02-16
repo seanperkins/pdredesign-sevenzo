@@ -4,14 +4,13 @@ describe V1::OrganizationsController do
   render_views
 
   before :each do
-    request.env["HTTP_ACCEPT"] = 'application/json'
+    request.env['HTTP_ACCEPT'] = 'application/json'
   end
 
-  before do
-    @district = District.create!
-    @user     = Application::create_sample_user(districts: [@district], role: :network_partner)
+  let(:user) { FactoryGirl.create(:user, :with_district, :with_network_partner_role) }
 
-    sign_in @user
+  before do
+    sign_in user
   end 
 
   def create_org
@@ -32,7 +31,7 @@ describe V1::OrganizationsController do
     end
 
     it 'does not allow non-networkpartner to upload' do
-      @user.update(role: :district_member)
+      user.update(role: :district_member)
 
       file   = fixture_file_upload('files/logo.png', 'image/png')
 
@@ -121,7 +120,7 @@ describe V1::OrganizationsController do
       end
 
       it 'does not require a user' do
-        sign_out @user
+        sign_out user
 
         get :show, id: @org.id
         expect(assigns(:organization)).to eq(@org)

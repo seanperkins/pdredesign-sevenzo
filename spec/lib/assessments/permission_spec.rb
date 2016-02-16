@@ -7,7 +7,7 @@ describe Assessments::Permission do
   }
 
   let(:user) {
-    Application.create_user
+    FactoryGirl.create(:user)
   }
 
   before(:each) do
@@ -79,7 +79,7 @@ describe Assessments::Permission do
 
     context 'when requesting access as a participant' do
       let(:new_user) {
-        Application.create_user
+        FactoryGirl.create(:user)
       }
 
       before(:each) do

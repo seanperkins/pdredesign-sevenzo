@@ -11,8 +11,9 @@ describe V1::AssessmentsPermissionsController do
   let(:assessment) { @assessment_with_participants }
 
   describe '#index and GET#all_users' do
+    let(:user) { FactoryGirl.create(:user) }
     before do
-      Application.request_access_to_assessment(assessment: assessment, user: Application.create_user, roles: ["facilitator"])
+      Application.request_access_to_assessment(assessment: assessment, user: user, roles: ['facilitator'])
     end
 
     context 'respond to GET#index' do
@@ -77,8 +78,10 @@ describe V1::AssessmentsPermissionsController do
 
   describe '#show' do
     context 'respond to GET#show' do
+      let(:user) { FactoryGirl.create(:user) }
+      let(:brand_new_user) { FactoryGirl.create(:user) }
       it 'responds successfully to GET#show' do
-        ar = Application.request_access_to_assessment(assessment: assessment, user: Application.create_user, roles: ["facilitator"])
+        ar = Application.request_access_to_assessment(assessment: assessment, user: user, roles: ['facilitator'])
         sign_in @facilitator2
 
         get :show, assessment_id: assessment.id, id: ar.id, email: ar.user.email
@@ -99,7 +102,6 @@ describe V1::AssessmentsPermissionsController do
       end
 
       it 'security: regular user should not be allowed to update the permissions' do
-        brand_new_user = Application.create_user
         sign_in brand_new_user
 
         get :show, assessment_id: assessment.id, id: 1
@@ -110,7 +112,7 @@ describe V1::AssessmentsPermissionsController do
 
   describe '#update' do
     context 'respond to PUT#update' do
-      let(:brand_new_user) { Application.create_user }
+      let(:brand_new_user) { FactoryGirl.create(:user) }
 
       it 'responds successfully to PUT#update' do
         assessment.facilitators << @facilitator
@@ -163,7 +165,7 @@ describe V1::AssessmentsPermissionsController do
 
   describe "PUT#deny PUT#accept permission" do
 
-    let(:brand_new_user) { Application.create_user }
+    let(:brand_new_user) { FactoryGirl.create(:user) }
     let(:ra) { Application.request_access_to_assessment(assessment: assessment, user: brand_new_user, roles: ["facilitator"]) }
 
     context 'PUT#deny' do

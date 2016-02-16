@@ -1,15 +1,32 @@
 require 'spec_helper'
 
 describe AccessGrantedMailer do
-  before { create_magic_assessments }
-  let(:subject){ AccessGrantedMailer }
-  let(:assessment){ @assessment_with_participants }
-  let(:user){ Application.create_user } 
-  let(:role){ "facilitator" }
+  let(:subject) {
+    AccessGrantedMailer
 
-  it "#notify" do
-    mail = subject.notify(assessment, user, role)
-    expect(mail.to).to include(user.email)
-    expect(mail.body).to include(role)
+  }
+  let(:assessment) {
+    @assessment_with_participants
+
+  }
+
+  let(:user) {
+    FactoryGirl.create(:user)
+  }
+
+  before(:each) do
+    create_magic_assessments
+  end
+
+  describe '#notify' do
+    let(:mail) { subject.notify(assessment, user, 'facilitator') }
+
+    it "sets the mail address to the user's email address" do
+      expect(mail.to).to include(user.email)
+    end
+
+    it 'sets the body of the email to the specified role' do
+      expect(mail.body).to include('facilitator')
+    end
   end
 end

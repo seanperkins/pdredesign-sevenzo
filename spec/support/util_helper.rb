@@ -1,11 +1,3 @@
-def active_record_error(record, field, error)
-  expect(record.errors_on(field)).to include(error)
-end
-
-def no_active_record_error(record, field, error)
-  expect(record.errors_on(field)).not_to include(error)
-end
-
 def create_struct
   Response.find_by(id: 99).tap { |r| r.destroy if r }
 

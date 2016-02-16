@@ -28,101 +28,98 @@
 require 'spec_helper'
 
 describe User do
-  def new_user(opts = {})
-    User.new(opts)
-  end
+  it { is_expected.to validate_presence_of :first_name }
+  it { is_expected.to validate_presence_of :last_name }
 
-  context '#avatar' do
-    it 'returns a default user avatar' do
-      user = new_user() 
-      expect(user.avatar).to match('images/default.png')
-    end
-  end
+  describe '#email' do
+    let(:user) { FactoryGirl.create(:user, email: 'SomeEmail@stuff.com') }
 
-  context '#network_partner?' do
-    it 'returns true when a user is a network partner' do
-      user = new_user(role: :network_partner)
-      expect(user.network_partner?).to eq(true)
-
-      user.update(role: "network_partner")
-      expect(user.network_partner?).to eq(true)
-
-      user.update(role: :district_member)
-      expect(user.network_partner?).to eq(false)
-    end
-  end
-
-  context '#role' do
-    it 'returns network_partner when the user is a network_partner' do
-      user = new_user(role: :network_partner)
-      expect(user.role).to eq(:network_partner)
-    end
-
-    it 'returns district_member when the user is not a network_partner' do
-      user = new_user(role: :other)
-      expect(user.role).to eq(:district_member)
-    end
-  end
-
-  context '#district_member?' do
-    it 'returns true when a user is a district member' do
-      user = new_user(role: :district_member)
-      expect(user.district_member?).to eq(true)
-
-      user.update(role: "district_member")
-      expect(user.district_member?).to eq(true)
-
-      user.update(role: :network_partner)
-      expect(user.district_member?).to eq(false)
-    end
-
-  end
-
-  context 'simple validations' do
-    it 'requires :first_name' do
-      active_record_error(new_user, :first_name, "can't be blank")
-    end
-
-    it 'requires :last_name' do
-      active_record_error(new_user, :last_name, "can't be blank")
-    end
-  end
-
-  context 'downcase email' do
-    it 'downcases the users email' do
-      user = new_user(email: 'SomeEmail@stuff.com')
+    it 'retrieves the supplied email in lowercase' do
       expect(user.email).to eq('someemail@stuff.com')
       expect(user[:email]).to eq('someemail@stuff.com')
     end
   end
-  
-  context '#twitter' do
-    it 'queues twitter avatar update job when twitter changed' do
-      user = Application::create_sample_user(email: 'SomeEmail@stuff.com',
-        twitter: 'old_name')
 
-      TwitterAvatarWorker.jobs.clear
-      user.update(twitter: 'new_name')
-      expect(TwitterAvatarWorker.jobs.count).to eq(1)
-    end
-    
-    it 'does not queue job when twitter is not changed' do
-      user = Application::create_sample_user(email: 'SomeEmail@stuff.com',
-        twitter: 'old_name')
-
-      TwitterAvatarWorker.jobs.clear
-
-      expect(user.save).to eq(true)
-      expect(TwitterAvatarWorker.jobs.count).to eq(0)
-    end
-
-  end
-
-  context '#name' do
-    it 'returns the users fullname' do
-      user = new_user(first_name: 'John', last_name: 'Doe')
-      expect(user.name).to eq('John Doe')
+  describe '#avatar' do
+    let(:user) { FactoryGirl.create(:user) }
+    it 'returns a default user avatar' do
+      expect(user.avatar).to match('images/default.png')
     end
   end
 
+  describe '#network_partner?' do
+    context 'when the user is a network partner' do
+      let(:user) { FactoryGirl.create(:user, role: :network_partner) }
+      it 'returns true' do
+        expect(user.network_partner?).to be true
+      end
+    end
+
+    context 'when the user is not a network partner' do
+      let(:user) { FactoryGirl.create(:user, role: :district_member) }
+      it 'returns false' do
+        expect(user.network_partner?).to be false
+      end
+    end
+  end
+
+  describe '#district_member?' do
+    context 'when the user is a district member' do
+      let(:user) { FactoryGirl.create(:user, role: :district_member) }
+      it 'returns true' do
+        expect(user.district_member?).to be true
+      end
+    end
+
+    context 'when the user is a network partner' do
+      let(:user) { FactoryGirl.create(:user, role: :network_partner) }
+      it 'returns false' do
+        expect(user.district_member?).to be false
+      end
+    end
+  end
+
+  describe '#role' do
+    let(:user) { FactoryGirl.create(:user, role: :other) }
+
+    it 'returns district_member when the user is not a network_partner' do
+      expect(user.role).to eq(:district_member)
+    end
+  end
+
+  describe '#twitter' do
+    context "when the user's Twitter handle is updated" do
+      let!(:user) { FactoryGirl.create(:user, :with_district, twitter: 'foobar') }
+
+      before(:each) do
+        TwitterAvatarWorker.jobs.clear
+        user.update(twitter: 'new_name')
+      end
+
+      it 'enqueues the avatar update job' do
+        expect(TwitterAvatarWorker.jobs.count).to eq 1
+      end
+    end
+
+    context "when the user's Twitter handle is not updated" do
+      let(:user) { FactoryGirl.create(:user, :with_district, twitter: 'foobar') }
+
+      before(:each) do
+        TwitterAvatarWorker.jobs.clear
+      end
+
+      it 'does not enqueue the avatar update job ' do
+        expect(TwitterAvatarWorker.jobs.count).to eq 0
+      end
+    end
+  end
+
+  describe '#name' do
+    let(:user) { FactoryGirl.create(:user, first_name: 'John', last_name: 'Doe') }
+    context 'with both a first and last name' do
+      it 'returns a full name' do
+        expect(user.name).to eq('John Doe')
+      end
+    end
+  end
 end

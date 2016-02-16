@@ -1,14 +1,26 @@
 require 'spec_helper'
 
 describe Link::Response do
-  before           { create_magic_assessments }
-  before           { create_responses }
-  let(:assessment) { @assessment_with_participants }
-  let(:subject)    { Link::Response }
+  before(:each) do
+    create_magic_assessments
+    create_responses
+  end
+
+  let(:assessment) {
+    @assessment_with_participants
+  }
+
+  let(:subject) {
+    Link::Response
+  }
 
   describe '#assessment_link' do
 
-    before do
+    let(:new_user) {
+      FactoryGirl.create(:user, :with_district)
+    }
+
+    before(:each) do
       assessment.update(assigned_at: Time.now)
     end
 
@@ -31,8 +43,6 @@ describe Link::Response do
     it 'returns :none when a user is not a participant' do
       Response.first.update(submitted_at: Time.now)
       assessment.update(response: Response.first)
-
-      new_user = Application::create_sample_user
       expect(link_for(new_user)).to eq(:none)
     end
 
@@ -44,7 +54,5 @@ describe Link::Response do
       assessment.update(assigned_at: nil)
       expect(link_for(@participant.user)).to eq(:none)
     end
-
   end
-
 end
