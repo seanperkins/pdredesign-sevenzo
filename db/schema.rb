@@ -196,7 +196,7 @@ ActiveRecord::Schema.define(version: 20160216183526) do
     t.datetime "updated_at"
   end
 
-  create_table "learning_questions", id: false, force: :cascade do |t|
+  create_table "learning_questions", force: :cascade do |t|
     t.integer  "assessment_id"
     t.integer  "user_id"
     t.text     "body"
@@ -204,7 +204,7 @@ ActiveRecord::Schema.define(version: 20160216183526) do
     t.datetime "updated_at",    null: false
   end
 
-  add_index "learning_questions", ["assessment_id", "user_id"], name: "index_learning_questions_on_assessment_id_and_user_id", unique: true, using: :btree
+  add_index "learning_questions", ["assessment_id"], name: "index_learning_questions_on_assessment_id", using: :btree
   add_index "learning_questions", ["created_at"], name: "index_learning_questions_on_created_at", using: :btree
 
   create_table "messages", force: :cascade do |t|
