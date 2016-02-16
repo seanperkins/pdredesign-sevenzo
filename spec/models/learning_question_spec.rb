@@ -1,3 +1,14 @@
+# == Schema Information
+#
+# Table name: learning_questions
+#
+#  assessment_id :integer          primary key
+#  user_id       :integer          primary key
+#  body          :text
+#  created_at    :datetime         not null
+#  updated_at    :datetime         not null
+#
+
 require 'spec_helper'
 
 describe LearningQuestion do
