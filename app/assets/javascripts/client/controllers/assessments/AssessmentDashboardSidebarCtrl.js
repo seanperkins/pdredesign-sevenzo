@@ -8,9 +8,10 @@ PDRClient.controller('AssessmentDashboardSidebarCtrl', [
   '$stateParams',
   'Participant',
   'Reminder',
+  '$state',
     function($scope, $timeout, $modal, $location,
       SessionService, Assessment, $stateParams,
-      Participant, Reminder) {
+      Participant, Reminder, $state) {
 
       $scope.id         = $stateParams.id;
 
@@ -100,7 +101,7 @@ PDRClient.controller('AssessmentDashboardSidebarCtrl', [
       };
 
       $scope.showShareReport = function() {
-        $scope.shareReportUrl = "#/assessments/shared/" + $scope.assessment.share_token + "/report";
+        $scope.shareReportUrl = $state.href('shared_assessment_report', {token: $scope.assessment.share_token}, {absolute: true});
         $scope.shareModal = $modal.open({
           templateUrl: 'client/views/modals/share_report.html',
           scope: $scope
