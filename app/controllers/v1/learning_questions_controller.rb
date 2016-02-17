@@ -8,7 +8,7 @@ class V1::LearningQuestionsController < ApplicationController
       render 'v1/learning_questions/index'
     else
       @errors = 'You are not a part of this assessment, so you cannot see any learning questions.'
-      render 'v1/shared/errors', status: 400
+      render 'v1/shared/errors', status: :bad_request
     end
   end
 
@@ -21,11 +21,26 @@ class V1::LearningQuestionsController < ApplicationController
         render 'v1/learning_questions/show'
       else
         @errors = @learning_question.errors
-        render 'v1/shared/errors', status: 400
+        render 'v1/shared/errors', status: :bad_request
       end
     else
       @errors = 'User is not a part of this assessment'
-      render 'v1/shared/errors', status: 400
+      render 'v1/shared/errors', status: :bad_request
+    end
+  end
+
+  def update
+    learning_question = LearningQuestion.find(params[:id])
+    if learning_question.user != current_user
+      @errors = 'You may not edit a learning question that you did not create.'
+      return render 'v1/shared/errors', status: :bad_request
+    end
+    learning_question.body = learning_question_params[:body]
+    if learning_question.save
+      render nothing: true, status: :no_content
+    else
+      @errors = learning_question.errors
+      render 'v1/shared/errors', status: :bad_request
     end
   end
 
