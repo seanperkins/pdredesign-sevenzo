@@ -1,3 +1,1 @@
-json.assessment_id @learning_question.assessment_id
-json.user_id @learning_question.user_id
-json.body @learning_question.body
+json.partial! 'v1/learning_questions/learning_question', learning_question: @learning_question

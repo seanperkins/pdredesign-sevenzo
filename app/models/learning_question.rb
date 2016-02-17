@@ -19,5 +19,4 @@ class LearningQuestion < ActiveRecord::Base
   validates_presence_of :body
   validates_presence_of :assessment
   validates_presence_of :user
-
 end
