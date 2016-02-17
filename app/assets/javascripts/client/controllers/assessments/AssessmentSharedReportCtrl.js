@@ -3,13 +3,12 @@ PDRClient.controller('AssessmentSharedReportCtrl', [
   '$http',
   '$timeout', 
   '$anchorScroll',
-  '$location', 
   '$stateParams',
   'SharedAssessment', 
   'SharedReport',
   'Consensus',
-  function($scope, $http, $timeout, $anchorScroll, $location, $stateParams, SharedAssessment, SharedReport, Consensus) {
-      var token = $location.search().token || "";
+  function($scope, $http, $timeout, $anchorScroll, $stateParams, SharedAssessment, SharedReport, Consensus) {
+      var token = $stateParams.token;
       $scope.token = token;
       $scope.assessment = SharedAssessment.get({token: token});
       $scope.report = SharedReport.get({token: token});

@@ -50,7 +50,7 @@ PDRClient.config(['$stateProvider', '$urlRouterProvider',
      }
    })
    .state('shared_assessment_report', {
-     url: '/assessments/:id/shared/report',
+     url: '/assessments/shared/:token/report',
      authenticate: false,
      views: {
        '': {

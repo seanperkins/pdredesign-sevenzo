@@ -99,5 +99,16 @@ PDRClient.controller('AssessmentDashboardSidebarCtrl', [
         return $scope.assessment.status == 'consensus';
       };
 
+      $scope.showShareReport = function() {
+        $scope.shareReportUrl = "#/assessments/shared/" + $scope.assessment.share_token + "/report";
+        $scope.shareModal = $modal.open({
+          templateUrl: 'client/views/modals/share_report.html',
+          scope: $scope
+        });
+      };
+
+      $scope.closeShareModal = function() {
+        $scope.shareModal.dismiss('cancel');
+      };
     }
 ]);
