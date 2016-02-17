@@ -259,8 +259,12 @@ describe V1::LearningQuestionsController do
         create(:learning_question)
       }
 
+      let(:assessment) {
+        learning_question.assessment
+      }
+
       before(:each) do
-        patch :update, assessment_id: learning_question.assessment.id, id: learning_question.id, format: :json
+        patch :update, assessment_id: assessment.id, id: learning_question.id, format: :json
       end
 
       it 'sends a message telling the user to authenticate' do
@@ -269,7 +273,7 @@ describe V1::LearningQuestionsController do
     end
 
     context 'when signed in' do
-      context 'when attempting to edit a question that does not belong to its creator' do
+      context 'when attempting to edit a question that does not belong to the current user' do
         let(:learning_question) {
           create(:learning_question)
         }
@@ -295,10 +299,15 @@ describe V1::LearningQuestionsController do
           expect(response.status).to eq 400
         end
       end
-      context 'when attempting to edit a question that belongs to its creator' do
+
+      context 'when attempting to edit a question that belongs to the current user' do
         context 'when passing in a blank body' do
           let(:learning_question) {
             create(:learning_question)
+          }
+
+          let(:assessment) {
+            learning_question.assessment
           }
 
           let(:user) {
@@ -307,7 +316,7 @@ describe V1::LearningQuestionsController do
 
           before(:each) do
             sign_in user
-            patch :update, assessment_id: learning_question.assessment.id, id: learning_question.id, learning_question: {body: ''}, format: :json
+            patch :update, assessment_id: assessment.id, id: learning_question.id, learning_question: {body: ''}, format: :json
           end
 
           it 'rejects the edit' do
@@ -317,11 +326,19 @@ describe V1::LearningQuestionsController do
           it 'does not change the entity' do
             expect(learning_question.body).not_to eq ''
           end
+
+          it 'provides a helpful response in JSON' do
+            expect(json['errors']['body'][0]).to eq "can't be blank"
+          end
         end
 
         context 'when passing in a non-blank body' do
           let(:learning_question) {
             create(:learning_question)
+          }
+
+          let(:assessment) {
+            learning_question.assessment
           }
 
           let(:user) {
@@ -330,7 +347,7 @@ describe V1::LearningQuestionsController do
 
           before(:each) do
             sign_in user
-            patch :update, assessment_id: learning_question.assessment.id, id: learning_question.id, learning_question: {body: 'This is a fix!'}, format: :json
+            patch :update, assessment_id: assessment.id, id: learning_question.id, learning_question: {body: 'This is a fix!'}, format: :json
           end
 
           it 'accepts the edit' do
@@ -341,6 +358,81 @@ describe V1::LearningQuestionsController do
             learning_question.reload
             expect(learning_question.body).to eq 'This is a fix!'
           end
+        end
+      end
+    end
+  end
+
+  describe 'DELETE #destroy' do
+    context 'when not signed in' do
+
+      let(:learning_question) {
+        create(:learning_question)
+      }
+
+      let(:assessment) {
+        learning_question.assessment
+      }
+
+      before(:each) do
+        delete :destroy, assessment_id: assessment.id, id: learning_question.id, format: :json
+      end
+
+      it 'sends a message telling the user to authenticate' do
+        expect(json['error']).to eq 'You need to sign in or sign up before continuing.'
+      end
+    end
+
+    context 'when signed in' do
+      context 'when attempting to delete a question that does not belong to the current user' do
+
+        let(:learning_question) {
+          create(:learning_question)
+        }
+
+        let(:assessment) {
+          learning_question.assessment
+        }
+
+        let(:user) {
+          create(:user)
+        }
+
+        before(:each) do
+          sign_in user
+          delete :destroy, assessment_id: assessment.id, id: learning_question.id, format: :json
+        end
+
+        it 'provides a helpful message in JSON' do
+          expect(json['errors']).to eq 'You may not delete a learning question that does not belong to you.'
+        end
+
+        it 'responds with a bad request error code' do
+          expect(response.status).to eq 400
+        end
+      end
+
+      context 'when attempting to delete a question belongs to the current user' do
+
+        let(:learning_question) {
+          create(:learning_question)
+        }
+
+        let(:assessment) {
+          learning_question.assessment
+        }
+
+        let(:user) {
+          learning_question.user
+        }
+
+        before(:each) do
+          sign_in user
+          delete :destroy, assessment_id: assessment.id, id: learning_question.id, format: :json
+        end
+
+        it 'responds with a no content response code' do
+          expect(response.status).to eq 204
         end
       end
     end
