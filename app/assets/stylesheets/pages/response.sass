@@ -1,35 +1,3 @@
-.scored-1
-  background-color: $scored1
-.scored-2
-  background-color: $scored2
-.scored-3
-  background-color: $scored3
-.scored-4
-  background-color: $scored4
-.skipped
-  background-color: $skipped
-
-.value-color-1
-  background-color: #faf9f7
-  color: #333
-
-.value-color-2
-  background-color: #efeeea
-  color: #333
-
-.value-color-3
-  background-color: #eae9e4
-  color: #333
-
-.value-color-4
-  background-color: #e0ddd6
-  color: #333
-
-.value-color-skipped
-  background-color: #e0ddd6
-  color: #333
-
-
 .categories
   margin-top: 1em
   .label
@@ -56,71 +24,60 @@
   margin-bottom: 1.1em
 
   .question-row
-    display: table
+    width: 100%
+    overflow: hidden
     &:hover
       cursor: pointer
 
 
   .question
-    margin: 0
+    float: left
+    margin: 0 1em 0 0
     padding: 0
 
   .question-id
-    background-color: $unscored
-    color:  white
+    height: $circle-size
+    width: $circle-size
+    line-height: $circle-size
+    color:  $font-color
     text-align: center
     vertical-align: middle
-    font-size: 3em
+    font-size: $font-size-h2
     margin: 0em
-    min-height: 1.6em
+    border-radius: 100px
+    border: 1px solid $unscored
+    font-weight: 300
 
     i.fa
       font-size: 1em
       color: #fff
 
-    &.scored-1
-      background-color: $scored1
-    &.scored-2
-      background-color: $scored2
-    &.scored-3
-      background-color: $scored3
-    &.scored-4
-      background-color: $scored4
-    &.scored-skipped
-      background-color: $skipped
-    &.skipped
-      background-color: $skipped
-
-
   .question-content
-    border-top: 0em
-    background-color: #f8f9fb
-    border-bottom:  1px solid #e2e1dc
+    padding: 1em
+    background-color: $background-color-body
+    overflow: hidden
 
-    .question
-      font-size: 1.3em
-      margin-bottom: 0em
+    .question-headline
       font-weight: bold
+      display: block
     .content
       font-size: 1.0em
       margin-bottom: 0em
     &:hover
-      box-shadow:  0em 0.2em 0em #d4d2c8
+      box-shadow:  darken($background-color-body, 20%)
 
 
 .category-label
-  font-size: 1em
+  font-size: $font-size-h3
   font-weight: bold
-  letter-spacing: 0.05em
-  color: #9f1c2c
-  border-top: 0.1em solid #d3d3cb
+  color: $primary-color
   padding-top: 0.1em
   &:hover
     cursor: pointer
   &:first-child
     margin-top: 1em
   i
-    color: #9f1c2c
+    color: $primary-color
     font-size: 0.8em
 .answer-row
   display: table
@@ -157,53 +114,35 @@
       font-weight: lighter
 
   &.active
-    color: white
+    color: $font-color
   &.scored1
     background-color: $scored1
-    > div > div
-      color: white
   &.scored2
     background-color: $scored2
-    color: white
-    > div > div
-      color: white
   &.scored3
     background-color: $scored3
-    > div > div
-      color: white
   &.scored4
     background-color: $scored4
-    > div > div
-      color: white
   &.skipped
     background-color: $skipped
-    > div > div
-      color: white
   .title-1
     &:hover
       background-color: $scored1
-      color: white
   .title-2
     &:hover
       background-color: $scored2
-      color: white
   .title-3
     &:hover
       background-color: $scored3
-      color: white
   .title-4
     &:hover
       background-color: $scored4
-      color: white
   .title-skipped
     &:hover
       background-color: $skipped
-      color: white
 
   .score-evidence
     margin: 1em auto
-    textarea
-      color: #333 !important
 
   .save-holder
     text-align: center
@@ -278,19 +217,31 @@ table.table-evidence
 .btn-value-1
   font-size: 1em
   background-color: $scored1
-  color: #f6f3ec
+  color: $font-color
 
 .btn-value-2
   font-size: 1em
   background-color: $scored2
-  color: #f6f3ec
+  color: $font-color
 
 .btn-value-3
   font-size: 1em
   background-color: $scored3
-  color: #f6f3ec
+  color: $font-color
 
 .btn-value-4
   font-size: 1em
   background-color: $scored4
-  color: #f6f3ec
+  color: $font-color
+
+
+.scored-1
+  background-color: $scored1
+.scored-2
+  background-color: $scored2
+.scored-3
+  background-color: $scored3
+.scored-4
+  background-color: $scored4
+.skipped
+  background-color: $skipped
