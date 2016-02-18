@@ -1,29 +1,27 @@
-<div id='response-sidebar'>
-  <div class='punchcard'>
-    <div>
-      <h2>{{responseTitle()}}</h2>
-      <p class="h3">
-        Saved Answers
-        <span class='score-count'>
-          ({{answeredQuestions()}}/{{questions.length}})
-        </span>
-      </p>
-    </div>
-    <div class='card'>
-      <a href="" ng-click="scrollTo($index+1)" ng-repeat="question in questions" >
-        <span class="scored-{{questionScoreValue(question)}}">
-          {{$index+1}}
-        </span>
-      </a>
-    </div>
-    <button
-      ng-show="canSubmit()"
-      class="submit btn btn-primary btn-block"
-      data-toggle="modal"
-      data-target="#assessmentReview"
-      ng-click="submitResponseModal()">
-        <span ng-show='isResponseCompleted()'>Update {{responseTitle()}}</span>
-        <span ng-hide='isResponseCompleted()'>Submit {{responseTitle()}}</span>
-    </button>
+<div class='punchcard'>
+  <div>
+    <h2>{{responseTitle()}}</h2>
+    <p class="h3">
+      Saved Answers
+      <span class='score-count'>
+        ({{answeredQuestions()}}/{{questions.length}})
+      </span>
+    </p>
   </div>
+  <div class='card'>
+    <a href="" ng-click="scrollTo($index+1)" ng-repeat="question in questions" >
+      <span class="scored-{{questionScoreValue(question)}}">
+        {{$index+1}}
+      </span>
+    </a>
+  </div>
+  <button
+    ng-show="canSubmit()"
+    class="submit btn btn-primary btn-block"
+    data-toggle="modal"
+    data-target="#assessmentReview"
+    ng-click="submitResponseModal()">
+      <span ng-show='isResponseCompleted()'>Update {{responseTitle()}}</span>
+      <span ng-hide='isResponseCompleted()'>Submit {{responseTitle()}}</span>
+  </button>
 </div>
