@@ -24,6 +24,6 @@ class V1::SharedPrioritiesController < ApplicationController
   end
 
   def request_share_token
-    params[:shared_id]
+    params[:shared_token]
   end
 end

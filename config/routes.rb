@@ -29,7 +29,7 @@ PdrServer::Application.routes.draw do
     resources  :prospective_users, only: :create
     resources  :assessments, only: [:index, :show, :update, :create] do
       collection do
-        resources :shared, controller: 'shared_assessments', only: [:show] do
+        resources :shared, controller: 'shared_assessments', only: [:show], param: :token do
           get :report, to: 'shared_report#show'
           resources :priorities, controller: 'shared_priorities', only: [:index]
         end

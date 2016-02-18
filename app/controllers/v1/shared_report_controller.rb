@@ -17,6 +17,6 @@ class V1::SharedReportController < V1::ReportController
   end
 
   def request_share_token
-    params[:shared_id]
+    params[:shared_token]
   end
 end

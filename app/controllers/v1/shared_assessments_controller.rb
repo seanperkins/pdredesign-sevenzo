@@ -16,6 +16,6 @@ class V1::SharedAssessmentsController < ApplicationController
   end
 
   def request_share_token
-    params[:id]
+    params[:token]
   end
 end

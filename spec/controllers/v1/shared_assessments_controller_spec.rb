@@ -3,10 +3,6 @@ require 'spec_helper'
 describe V1::SharedAssessmentsController do
   render_views
 
-  before :each do
-    request.env["HTTP_ACCEPT"] = 'application/json'
-  end
-
   describe '#show' do
     let(:facilitator) { FactoryGirl.create :user, :with_facilitator_role }
     let(:rubric) { FactoryGirl.create :rubric }
@@ -16,11 +12,16 @@ describe V1::SharedAssessmentsController do
     context 'with valid token' do
       let(:token) { assessment.share_token }
 
+      before(:each) do
+        get :show, token: token, format: :json
+      end
+
       it do
-        get :show, id: token
-        assigned = assigns(:assessment)
-        expect(assigned.id).to eq(assessment.id)
-        assert_response :success
+        expect(response).to have_http_status(:success)
+      end
+
+      it do
+        expect(assigns(:assessment).id).to eq(assessment.id)
       end
     end
 
@@ -28,8 +29,8 @@ describe V1::SharedAssessmentsController do
       let(:token) { 'foo-bar-invalid-token' }
 
       it do
-        get :show, id: token
-        assert_response :not_found
+        get :show, token: token, format: :json
+        expect(response).to have_http_status(:not_found)
       end
     end
   end
