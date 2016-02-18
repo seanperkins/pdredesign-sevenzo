@@ -44,16 +44,16 @@
         <div class="answers" ng-show="question.answersVisible">
           <div class="answer" ng-repeat="answer in question.answers" ng-click="assignAnswerToQuestion(answer, question)">
             <div>
-              <ng-include
-                class="left-score"
-                ng-show="isConsensus"
-                src="'client/views/shared/responses/score_count.html'">
-              </ng-include>
             </div>
 
             <div
               class="answer-row value-color-{{answer.value}}"
               ng-class="{scored{{answer.value}}: question.score.value == answer.value}">
+              <ng-include
+                class="left-score"
+                ng-show="isConsensus"
+                src="'client/views/shared/responses/score_count.html'">
+              </ng-include>
 
               <div class="answer-info-row value-color-{{answer.value}}">
                 <div class="scored-{{answer.value}} answer-value">
@@ -72,15 +72,7 @@
                 </div>
               </div>
 
-              <ng-include
-                ng-show="isConsensus"
-                src="'client/views/shared/responses/evidence.html'" >
-              </ng-include>
 
-              <ng-include
-                ng-show="isConsensus"
-                src="'client/views/shared/responses/consensus_score_entry.html'" >
-              </ng-include>
             </div>
           </div>
             <skip-question
@@ -89,6 +81,14 @@
               response-id="{{responseId}}"
               assessment-id="{{assessmentId}}">
             </skip-question>
+            <ng-include
+              ng-show="isConsensus"
+              src="'client/views/shared/responses/evidence.html'" >
+            </ng-include>
+            <ng-include
+              ng-show="isConsensus"
+              src="'client/views/shared/responses/consensus_score_entry.html'" >
+            </ng-include>
         </div>
       </div>
     </div>
