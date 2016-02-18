@@ -11,15 +11,12 @@ PDRClient.directive('sharedTakeAway', [
         '$scope',
         'SharedAssessment',
         function($scope, SharedAssessment) {
-
           $scope.assessment = {};
-          $scope.saving     = false;
 
           SharedAssessment.get({token: $scope.token})
           .$promise.then(
             function(assessment) {
               $scope.assessment = assessment;
-              if($scope.isTakeawayEmpty()) $scope.setEditing(true);
           });
 
           $scope.isFacilitator = function() {
