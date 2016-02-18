@@ -5,15 +5,13 @@ PDRClient.directive('sharedAssessmentPriority', [
         replace: true,
         scope: {
           token: '@',
-          editable: '@',
         },
         templateUrl: 'client/views/directives/assessment_priority.html',
         controller: [
           '$scope',
-          '$timeout',
           '$attrs',
           'SharedPriority',
-          function($scope, $timeout, $attrs, SharedPriority) {
+          function($scope, $attrs, SharedPriority) {
             $scope.scoredAverage = function(category) {
               return Math.ceil(category.average);
             };
@@ -29,9 +27,6 @@ PDRClient.directive('sharedAssessmentPriority', [
                 .$promise
                 .then(function(categories) {
                   $scope.categories = categories;
-                  if($scope.editable == "true"){
-                   $scope.setupDnD();
-                  }
                   $scope.loading = false;
                 });
             };
@@ -39,12 +34,6 @@ PDRClient.directive('sharedAssessmentPriority', [
             $attrs.$observe('token', function(token) {
               if(token) $scope.updateCategories(token);
             });
-
-            $scope.setupDnD = function() {
-              $timeout(function() {
-                $(".table-diagnostic").tableDnD();
-              });
-            };
         }],
       };
     }
