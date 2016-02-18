@@ -70,39 +70,46 @@
   i
     color: $primary-color
     font-size: 0.8em
+
+.answers .answer
+  margin-top: -1px
+  &:first-child
+    margin-top: 0px
 .answer-row
   display: table
   padding-left: 0em
+  width: 100%
   .answer-info-row
-    border-top: 0.1em solid #ddd
+    border: 0.1em solid $unscored
     .answer-value
-      width: 2%
-      font-size: 1.2em
-      height: 3em
-      margin-left: -0.75em
+      min-width: 40px
+      padding: 1em
       float: none
       display: table-cell
       vertical-align: top
       span
         color: white
-        vertical-align: -0.75em
-        margin-left: -0.14em
-    .answer-value.skipped
-      width: 4%
+        vertical-align: -0.65em
+        margin: 0 0 0 3px
+        display: inline-block
+        text-align: center
+    .answer-container
+      display: table-cell
+      padding: 1.5em 1em 1em
     .answer-title
       float: none
       display: table-cell
       vertical-align: top
       width: 22%
-      font-size: 1.0em
-      min-height: 3.01em
-      line-height: 2.8em
+      font-size: $font-size-h4
+      font-weight: bold
     .answer-description
       float: none
       display: table-cell
       vertical-align: top
-      font-size:  1em
+      font-size:  $font-size-h4
       font-weight: lighter
+      width: 650px
 
   &.active
     color: $font-color
@@ -116,20 +123,25 @@
     background-color: $scored4
   &.skipped
     background-color: $skipped
-  .title-1
+  .value-color-1
     &:hover
+      cursor: pointer
       background-color: $scored1
-  .title-2
+  .value-color-2
     &:hover
+      cursor: pointer
       background-color: $scored2
-  .title-3
+  .value-color-3
     &:hover
+      cursor: pointer
       background-color: $scored3
-  .title-4
+  .value-color-4
     &:hover
+      cursor: pointer
       background-color: $scored4
-  .title-skipped
+  .value-color-skipped
     &:hover
+      cursor: pointer
       background-color: $skipped
 
   .score-evidence
