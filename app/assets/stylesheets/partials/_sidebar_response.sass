@@ -1,12 +1,4 @@
-@media (max-width: 768px)
-  body
-    #response-sidebar
-      position: relative !important
-      height: 41em
-      width: 100%
-
-
-#response-sidebar
+.response-sidebar
   @extend .main-content
   h2
     margin-top: 0
@@ -45,14 +37,7 @@
         font-size: 1.3em
   .sidebar-title
     font-weight: bold
-    color: #4b616f
+    color: $unscored
     .score-count
-      color: #4b616f
+      color: $unscored
       font-weight: lighter
-  .why-pd
-    .title
-      font-style: italic
-      color: #999999
-      margin: .5em 0
-    i
-      color: #999

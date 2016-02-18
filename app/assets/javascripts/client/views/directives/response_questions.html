@@ -1,14 +1,15 @@
 <div class="categories">
-  <ng-include
-    ng-show="isConsensus"
-    src="'client/views/shared/responses/sort_by.html'" >
-  </ng-include>
+  <div class="row sort-by">
+    <ng-include
+      ng-show="isConsensus"
+      src="'client/views/shared/responses/sort_by.html'" >
+    </ng-include>
 
-  <ng-include
-    ng-show="isConsensus"
-    src="'client/views/shared/responses/filter_by_role.html'" >
-  </ng-include>
-
+    <ng-include
+      ng-show="isConsensus"
+      src="'client/views/shared/responses/filter_by_role.html'" >
+    </ng-include>
+  </div>
   <div class="category" ng-repeat="category in categories">
     <div class="row">
       <div>
