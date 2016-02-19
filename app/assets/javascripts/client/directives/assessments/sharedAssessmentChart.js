@@ -11,8 +11,9 @@ PDRClient.directive('sharedAssessmentChart', [
           '$scope',
           '$timeout',
           '$attrs',
+          '$element',
           'SharedPriority',
-          function($scope, $timeout, $attrs, SharedPriority) {
+          function($scope, $timeout, $attrs, $element, SharedPriority) {
 
             $scope.updateCategories = function() {
               $scope.loading = true;
@@ -55,7 +56,7 @@ PDRClient.directive('sharedAssessmentChart', [
             };
 
             $scope.createChart = function() {
-              $('#assessment-chart').highcharts({
+              $element.find('#assessment-chart').highcharts({
                 chart: {
                   polar: true,
                   type: 'line',
