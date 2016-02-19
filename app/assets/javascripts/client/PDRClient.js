@@ -9,7 +9,9 @@ PDRClient = angular.module("PDRClient", [
   'ng.shims.placeholder',
   'ui.utils',
   'ui.router',
-  'ui.bootstrap']);
+  'ui.bootstrap',
+  'xeditable'
+]);
 
 angular.module("PDRClient").run(function ($rootScope, $state, $stateParams) {
     $rootScope.$state       = $state;

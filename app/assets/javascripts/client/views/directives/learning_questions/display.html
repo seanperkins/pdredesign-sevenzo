@@ -2,11 +2,9 @@
   <div class="row">
     <div class="col-lg-12">
       <button class="close"><i class="fa fa-times"></i></button>
-        <span id="learning-question-{{ learningQuestion.id }}" ng-hide="learningQuestion.isEditable"
-              ng-click="learningQuestionDisplay.toggleEditor(learningQuestion)">
+        <span id="learning-question-{{ learningQuestion.id }}" editable-text="learningQuestion.body">
           {{ learningQuestion.body }}
         </span>
-        <learning-question-editor question="learningQuestion" editable="learningQuestion.isEditable" />
     </div>
   </div>
   <br ng-hide="$last"/>
