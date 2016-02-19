@@ -6,7 +6,7 @@ PDRClient.directive('sharedAssessmentPriority', [
         scope: {
           token: '@',
         },
-        templateUrl: 'client/views/directives/assessment_priority.html',
+        templateUrl: 'client/views/directives/shared_assessment_priority.html',
         controller: [
           '$scope',
           '$attrs',
