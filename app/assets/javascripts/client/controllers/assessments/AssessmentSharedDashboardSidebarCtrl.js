@@ -1,10 +1,11 @@
-PDRClient.controller('SharedAssessmentDashboardSidebarCtrl', [
+PDRClient.controller('AssessmentSharedDashboardSidebarCtrl', [
   '$scope',
   '$stateParams',
   'SharedAssessment',
   function($scope, $stateParams, SharedAssessment) {
       var token = $stateParams.token;
       $scope.token = token;
+
       $scope.fetchAssessment = function() {
         return SharedAssessment.get({token: $scope.token});
       };
