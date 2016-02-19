@@ -2,13 +2,11 @@
   <div class="row">
     <div class="col-lg-12">
       <button class="close"><i class="fa fa-times"></i></button>
-        <span id="learning-question-{{ learningQuestion.id }}" ng-hide="learningQuestionDisplay.editorOpened"
-              ng-click="learningQuestionDisplay.toggleEditor()">
+        <span id="learning-question-{{ learningQuestion.id }}" ng-hide="learningQuestion.isEditable"
+              ng-click="learningQuestionDisplay.toggleEditor(learningQuestion)">
           {{ learningQuestion.body }}
         </span>
-      <input id="learning-question-{{ learningQuestion.id }}" ng-show="learningQuestionDisplay.editorOpened"
-             class="form-control" type="text" value="{{ learningQuestion.body }}"
-             ng-model="learningQuestionForm.model.body" ng-maxlength="255"/>
+        <learning-question-editor question="learningQuestion" editable="learningQuestion.isEditable" />
     </div>
   </div>
   <br ng-hide="$last"/>

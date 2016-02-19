@@ -1,8 +1,8 @@
 <div class="input-group">
-  <input id="learning-question" class="form-control" type="text" placeholder="Enter your Learning Question here."
-         ng-model="learningQuestionForm.model.body" ng-maxlength="255"/>
+  <input name="learningQuestionForm" id="learning-question" class="form-control" type="text" placeholder="Enter your Learning Question here."
+         ng-model="learningQuestionForm.newEntity.body" ng-maxlength="255"/>
   <span class="input-group-btn">
-    <button class="btn btn-primary" type="submit" ng-click="learningQuestionForm.createLearningQuestion(learningQuestionForm.model)">
+    <button class="btn btn-primary" type="submit" ng-click="learningQuestionForm.createLearningQuestion(learningQuestionForm.newEntity)">
       <i class="fa fa-plus"></i>
     </button>
   </span>
