@@ -26,7 +26,20 @@
           });
     };
 
-    $scope.$on('new-learning-question', function () {
+    vm.deleteLearningQuestion = function (learningQuestion) {
+      LearningQuestion
+          .delete({assessment_id: $stateParams.id, id: learningQuestion.id})
+          .$promise
+          .then(function (result) {
+            console.log(result);
+            $scope.$emit('learning-question-change');
+          }).catch(function (result) {
+            console.log(result.data.errors);
+            $scope.$emit('learning-question-change');
+          });
+    };
+
+    $scope.$on('learning-question-change', function () {
       vm.loadQuestions();
     });
 

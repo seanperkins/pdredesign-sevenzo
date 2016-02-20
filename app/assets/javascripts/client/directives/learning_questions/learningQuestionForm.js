@@ -30,7 +30,7 @@
           .$promise
           .then(function(result) {
             vm.status = result;
-            $scope.$emit('new-learning-question');
+            $scope.$emit('learning-question-change');
             vm.clearInputForm(model);
           });
     }
