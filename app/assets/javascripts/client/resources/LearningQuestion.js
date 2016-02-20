@@ -3,7 +3,7 @@
 
   var methodOptions = {
     'create': {method: 'POST'},
-    'update': {method: 'PATCH'}
+    'update': {method: 'PATCH', params: {id: '@id', assessment_id: '@assessment_id'}}
   };
 
   function learningQuestionFactory($resource, UrlService) {

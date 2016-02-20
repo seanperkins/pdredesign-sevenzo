@@ -2,7 +2,7 @@
   <div class="row">
     <div class="col-lg-12">
       <button class="close" ng-click="learningQuestionDisplay.deleteLearningQuestion(learningQuestion)"><i class="fa fa-times"></i></button>
-        <span editable-text="learningQuestion.body">
+        <span editable-text="learningQuestion.body" onaftersave="learningQuestionDisplay.updateLearningQuestion(learningQuestion)">
           {{ learningQuestion.body }}
         </span>
     </div>

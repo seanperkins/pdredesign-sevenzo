@@ -26,15 +26,25 @@
           });
     };
 
-    vm.deleteLearningQuestion = function (learningQuestion) {
+    vm.deleteLearningQuestion = function (model) {
       LearningQuestion
-          .delete({assessment_id: $stateParams.id, id: learningQuestion.id})
+          .delete({assessment_id: $stateParams.id, id: model.id})
           .$promise
           .then(function (result) {
             console.log(result);
             $scope.$emit('learning-question-change');
           }).catch(function (result) {
             console.log(result.data.errors);
+          });
+    };
+
+    vm.updateLearningQuestion = function(model) {
+      LearningQuestion
+          .update({assessment_id: $stateParams.id, id: model.id, learning_question: {body: model.body}})
+          .$promise
+          .then(function() {
+            $scope.$emit('learning-question-change');
+          }).catch(function() {
             $scope.$emit('learning-question-change');
           });
     };

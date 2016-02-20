@@ -61,3 +61,9 @@ angular.module("PDRClient").config(['$tooltipProvider', function($tooltipProvide
     'focus': 'blur',
   });
 }]);
+
+angular.module('PDRClient').run(function(editableOptions, editableThemes) {
+  editableOptions.theme = 'bs3';
+  editableThemes.bs3.submitTpl = '<button type="submit" class="btn btn-primary"><span class="fa fa-plus"></span></button>';
+  editableThemes.bs3.cancelTpl = '<button type="button" class="btn btn-default" ng-click="$form.$cancel()"><span class="fa fa-ban"></span></button>'
+});
