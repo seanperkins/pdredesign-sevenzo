@@ -15,7 +15,6 @@
 //= require angular
 //= require moment
 //= require angular-resource
-//= require angular-mocks
 //= require angular-sanitize
 //= require angular-route
 //= require angular-ui-router

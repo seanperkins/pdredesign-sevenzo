@@ -26,3 +26,4 @@ public/exported_*
 .DS_Store
 .env
 
+public/assets
