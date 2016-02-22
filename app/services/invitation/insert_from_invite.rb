@@ -69,6 +69,9 @@ module Invitation
     end
 
     def set_permission
+      if invite.user.network_partner?
+        invite.role = 'facilitator'
+      end
       if invite.role
         ap = Assessments::Permission.new(invite.assessment)
         ap.add_level(invite.user, invite.role)
