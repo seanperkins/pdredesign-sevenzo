@@ -1,9 +1,10 @@
-<div class="input-group">
-  <input name="learningQuestionForm" id="learning-question" class="form-control" type="text" placeholder="Enter your Learning Question here."
+<form class="input-group" ng-submit="learningQuestionForm.createLearningQuestion(learningQuestionForm.newEntity)">
+  <input name="learningQuestionForm" id="learning-question" class="form-control" type="text"
+         placeholder="Enter your Learning Question here."
          ng-model="learningQuestionForm.newEntity.body" ng-maxlength="255"/>
   <span class="input-group-btn">
-    <button class="btn btn-primary" type="submit" ng-click="learningQuestionForm.createLearningQuestion(learningQuestionForm.newEntity)">
+    <button class="btn btn-primary" type="submit">
       <i class="fa fa-plus"></i>
     </button>
   </span>
-</div>
+</form>

@@ -33,23 +33,20 @@
         LearningQuestion
             .delete({assessment_id: $stateParams.id, id: model.id})
             .$promise
-            .then(function (result) {
-              console.log(result);
+            .then(function () {
               $scope.$emit('learning-question-change');
-            }).catch(function (result) {
-          console.log(result.data.errors);
-        });
+            });
       }
     };
 
-    vm.updateLearningQuestion = function(model) {
-      if(model.editable) {
+    vm.updateLearningQuestion = function (model) {
+      if (model.editable) {
         LearningQuestion
             .update({assessment_id: $stateParams.id, id: model.id, learning_question: {body: model.body}})
             .$promise
-            .then(function() {
+            .then(function () {
               $scope.$emit('learning-question-change');
-            }).catch(function() {
+            }).catch(function () {
           $scope.$emit('learning-question-change');
         });
       }

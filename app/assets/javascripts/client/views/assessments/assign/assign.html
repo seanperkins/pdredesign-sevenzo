@@ -18,7 +18,7 @@
       <p class='byline'>
         organized by: {{assessment.facilitator.full_name}} on {{formattedDate(assessment.created_at)}}
       </p>
-`
+
       <div class='row row--0-settings'>
         <div class='col-md-3 col-sm-3'>
           <div class='control-group'>
@@ -169,15 +169,6 @@
                 community of practice to support districts to redesign systems that meet the needs of educators and
                 students.
               </p>
-              <button class="btn btn-primary" name="commit" type="submit" id='assign_assessment'
-                      ng-click='assignAndSave(assessment)'>
-                <i class='fa fa-spinner fa-spin' ng-show="saving"></i>
-                <i class='fa fa-envelope-o'></i> Send
-              </button>
-              <button class="btn right" name="commit" type="submit" ng-click='save(assessment)'>
-                <i class='fa fa-spinner fa-spin' ng-show="saving"></i>
-                <i class='fa fa-save'></i> Save
-              </button>
             </div>
           </div>
         </div>
@@ -212,5 +203,18 @@
       </div>
     </div>
   </div>
+  <div class="row row-wizard">
+    <div class="col-md-10 col-md-offset-2">
+      <button class="btn btn-primary" name="commit" type="submit" id='assign_assessment'
+              ng-click='assignAndSave(assessment)'>
+        <i class='fa fa-spinner fa-spin' ng-show="saving"></i>
+        <i class='fa fa-envelope-o'></i> Send
+      </button>
 
+      <button class="btn" name="commit" type="submit" ng-click='save(assessment)'>
+        <i class='fa fa-spinner fa-spin' ng-show="saving"></i>
+        <i class='fa fa-save'></i> Save
+      </button>
+    </div>
+  </div>
 </div>

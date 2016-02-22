@@ -4,7 +4,7 @@ class V1::LearningQuestionsController < ApplicationController
 
   def index
     if assessment_includes_current_user?
-      @learning_questions = LearningQuestion.where(assessment: @assessment)
+      @learning_questions = LearningQuestion.where(assessment: @assessment).order(created_at: :asc)
       render 'v1/learning_questions/index'
     else
       @errors = 'You are not a part of this assessment, so you cannot see any learning questions.'
