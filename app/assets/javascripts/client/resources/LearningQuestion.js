@@ -1,4 +1,5 @@
 (function () {
+  'use strict';
   PDRClient.factory('LearningQuestion', ['$resource', 'UrlService', learningQuestionFactory]);
 
   var methodOptions = {

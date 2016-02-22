@@ -208,46 +208,104 @@ describe V1::LearningQuestionsController do
       end
 
       context 'when the user is a participant of the assessment' do
+        context 'when the user has created all learning questions' do
 
-        let(:user) {
-          create(:user)
-        }
+          let(:assessment) {
+            create(:assessment, :with_participants)
+          }
 
-        let(:assessment) {
-          create(:assessment, :with_participants)
-        }
+          let(:participant) {
+            assessment.participants.first.user
+          }
 
-        let(:participant) {
-          assessment.participants.first.user
-        }
+          let!(:learning_question_state) {
+            create_list(:learning_question, 5, assessment: assessment, user: participant)
+          }
 
-        let!(:learning_question_state) {
-          create_list(:learning_question, 5, assessment: assessment)
-        }
+          before(:each) do
+            sign_in participant
+            get :index, assessment_id: assessment.id, format: :json
+          end
 
-        before(:each) do
-          sign_in participant
-          get :index, assessment_id: assessment.id, format: :json
+          it 'has the right count of entities' do
+            expect(json['learning_questions'].size).to eq 5
+          end
+
+          it 'has an assessment id' do
+            expect(json['learning_questions'][0]['assessment_id']).to_not be_nil
+          end
+
+          it 'has a user id' do
+            expect(json['learning_questions'][0]['user_id']).to_not be_nil
+          end
+
+          it 'has a body' do
+            expect(json['learning_questions'][0]['body']).to_not be_nil
+          end
+
+          it 'has an ID' do
+            expect(json['learning_questions'][0]['id']).to_not be_nil
+          end
+
+          it 'has different IDs' do
+            expect(json['learning_questions'].uniq{|result| result['id']}.size).to eq 5
+          end
+
+          it 'has an editable field' do
+            expect(json['learning_questions'][0]['editable']).to_not be_nil
+          end
+
+          it 'indicates that all questions are editable' do
+            expect(json['learning_questions'].all? { |result| result['editable'] }).to be true
+          end
         end
 
-        it 'has the right count of entities' do
-          expect(json['learning_questions'].size).to eq 5
-        end
+        context 'when the user has created none of the learning questions' do
 
-        it 'has an assessment id' do
-          expect(json['learning_questions'][0]['assessment_id']).to_not be_nil
-        end
+          let(:assessment) {
+            create(:assessment, :with_participants)
+          }
 
-        it 'has a user id' do
-          expect(json['learning_questions'][0]['user_id']).to_not be_nil
-        end
+          let(:participant) {
+            assessment.participants.first.user
+          }
 
-        it 'has a body' do
-          expect(json['learning_questions'][0]['body']).to_not be_nil
-        end
+          let!(:learning_question_state) {
+            create_list(:learning_question, 5, assessment: assessment)
+          }
 
-        it 'has an ID' do
-          expect(json['learning_questions'][0]['id']).to_not be_nil
+          before(:each) do
+            sign_in participant
+            get :index, assessment_id: assessment.id, format: :json
+          end
+
+          it 'has the right count of entities' do
+            expect(json['learning_questions'].size).to eq 5
+          end
+
+          it 'has an assessment id' do
+            expect(json['learning_questions'][0]['assessment_id']).to_not be_nil
+          end
+
+          it 'has a user id' do
+            expect(json['learning_questions'][0]['user_id']).to_not be_nil
+          end
+
+          it 'has a body' do
+            expect(json['learning_questions'][0]['body']).to_not be_nil
+          end
+
+          it 'has an ID' do
+            expect(json['learning_questions'][0]['id']).to_not be_nil
+          end
+
+          it 'has an editable field' do
+            expect(json['learning_questions'][0]['editable']).to_not be_nil
+          end
+
+          it 'indicates that none of the questions are editable' do
+            expect(json['learning_questions'].all? { |result| result['editable'] }).to be false
+          end
         end
       end
     end
