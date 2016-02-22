@@ -10,6 +10,7 @@
             editable-text="learningQuestion.body"
             e-form="$form"
             e-ng-disabled="!learningQuestion.editable"
+            e-maxlength="255"
             onaftersave="learningQuestionDisplay.updateLearningQuestion(learningQuestion)">
         {{ learningQuestion.body }}
       </span>
