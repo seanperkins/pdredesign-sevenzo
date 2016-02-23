@@ -8,9 +8,10 @@ PDRClient.controller('AssessmentDashboardSidebarCtrl', [
   '$stateParams',
   'Participant',
   'Reminder',
+  'AssessmentService',
     function($scope, $timeout, $modal, $location,
       SessionService, Assessment, $stateParams,
-      Participant, Reminder) {
+      Participant, Reminder, AssessmentService) {
 
       $scope.id         = $stateParams.id;
 
@@ -99,5 +100,17 @@ PDRClient.controller('AssessmentDashboardSidebarCtrl', [
         return $scope.assessment.status == 'consensus';
       };
 
+      $scope.showShareReport = function() {
+        $scope.shareReportUrl = AssessmentService.sharedUrl($scope.assessment.share_token)
+        $scope.shareModal = $modal.open({
+          templateUrl: 'client/views/modals/share_report.html',
+          animation: true,
+          scope: $scope
+        });
+      };
+
+      $scope.closeShareModal = function() {
+        $scope.shareModal.dismiss('cancel');
+      };
     }
 ]);

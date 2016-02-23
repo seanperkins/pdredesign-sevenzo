@@ -10,8 +10,7 @@ json.status            assessment.status
 json.rubric_id         assessment.rubric_id
 json.report_takeaway   assessment.report_takeaway
 json.message           assessment.message || default_assessment_message
-json.owner             (assessment.user.id == current_user.id)
-json.share_token       assessment.share_token
+json.owner             false
 
 if assessment.consensus
   json.consensus do
@@ -32,9 +31,9 @@ json.messages @messages, :id, :category, :teaser, :sent_at do |message|
   json.sent_at  message.sent_at
 end
 
-json.is_participant assessment.participant?(current_user)
-json.is_facilitator assessment.facilitator?(current_user)
-json.has_access assessment.has_access?(current_user)
+json.is_participant true
+json.is_facilitator false
+json.has_access true
 
 json.responses assessment.responses(current_user) do |response|
   json.id response.id
@@ -47,5 +46,4 @@ end
 json.facilitator do
   json.partial! 'v1/shared/user', user: assessment.user
 end
-
 

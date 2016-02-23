@@ -12,9 +12,8 @@
             {{assessment.overview.text}}
             <a ng-if="assessment.overview.link == 'view_consensus' " href="#/assessments/{{assessment.id}}/consensus/{{assessment.consensus.id}}">View Consensus</a>
           </p>
-          <assessment-priority
-          data-editable="{{canEditPriorities()}}"
-          data-assessment-id="{{assessment.id}}"></assessment-priority>
+          <shared-assessment-priority
+          data-token="{{token}}"></shared-assessment-priority>
         </div>
       </div>
   </div>
@@ -60,7 +59,7 @@
       </div>
   </div>
   <div class="row">
-    <take-away assessment-id="{{id}}"></take-away>
+    <shared-take-away token="{{token}}"></shared-take-away>
   </div>
     <div class="row">
       <div class="col-md-12 col-sm-12">
@@ -97,7 +96,7 @@
                 </div>
                 <div class="col-md-11 col-sm-11 col-xs-10">
                   <h4 class="subject">Review</h4>
-                  <p class="content">Review this report with others in your organization to clarify, review, gather more evidence, etc. You can start by <a href="{{shareMailto}}" target="_blank">sharing this report</a> with specific colleagues.</p>
+                  <p class="content">Review this report with others in your organization to clarify, review, gather more evidence, etc.</p>
                 </div>
               </div>
             </div>
