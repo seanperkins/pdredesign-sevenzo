@@ -105,7 +105,6 @@ PDRClient.controller('AssessmentDashboardSidebarCtrl', [
         $scope.shareModal = $modal.open({
           templateUrl: 'client/views/modals/share_report.html',
           animation: true,
-          size: 'lg',
           scope: $scope
         });
       };

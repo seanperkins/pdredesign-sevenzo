@@ -5,9 +5,7 @@
   <div class="modal-body" id="modal-invite-participant">
     <div class="modal-body">
       <p>Use the following link to share this report</p>
-      <blockquote>
-        <p>{{shareReportUrl}}</p>
-      </blockqupte>
+      <textarea readonly="readonly"  class="form-control" rows="3">{{shareReportUrl}}</textarea>
     </div>
     <div class="modal-footer">
       <button type="button" class="btn btn-primary" ng-click="closeShareModal()">Close</button>
