@@ -29,11 +29,6 @@ describe('Directive: sharedTakeAway', function() {
       expect(isolatedScope.token).toEqual('token-123');
     });
 
-    it('isFacilitator returns true if assessment.is_facilitator is true', function(){
-      isolatedScope.assessment.is_facilitator = true;
-      expect(isolatedScope.isFacilitator()).toEqual(true);
-    });
-
     it('isFacilitator returns true', function(){
       expect(isolatedScope.isFacilitator()).toEqual(true);
     });
