@@ -21,5 +21,35 @@ PDRClient.controller('AssessmentSharedDashboardSidebarCtrl', [
           return false;
         return moment().isAfter($scope.assessment.meeting_date);
       };
+
+      $scope.preMeetingDate = function() {
+        if(!$scope.assessment.meeting_date)
+          return false;
+        return moment().isBefore($scope.assessment.meeting_date);
+      };
+
+      $scope.noMeetingDate = function() {
+        return $scope.assessment.meeting_date == null;
+      };
+
+      $scope.meetingDayNumber = function() {
+        return moment($scope.assessment.meeting_date).format("D");
+      };
+
+      $scope.meetingDayName = function() {
+        return moment($scope.assessment.meeting_date).format("dddd");
+      };
+
+      $scope.meetingMonthName = function() {
+        return moment($scope.assessment.meeting_date).format("MMM");
+      };     
+
+      $scope.meetingDayName = function() {
+        return moment($scope.assessment.meeting_date).format("dddd");
+      };
+
+      $scope.meetingMonthName = function() {
+        return moment($scope.assessment.meeting_date).format("MMM");
+      };     
     }
 ]);
