@@ -1,6 +1,7 @@
-(function () {
+(function() {
   'use strict';
-  PDRClient.factory('LearningQuestion', ['$resource', 'UrlService', learningQuestionFactory]);
+  angular.module('PDRClient')
+      .factory('LearningQuestion', ['$resource', 'UrlService', learningQuestionFactory]);
 
   var methodOptions = {
     'create': {method: 'POST'},
