@@ -24,8 +24,8 @@ describe Invitation::InsertFromInvite do
 
   describe '#execute' do
     context 'inviting network partner as participant' do
-      let!(:existing_user) { FactoryGirl.create(:user, :with_network_partner_role) }
-      let!(:invitation) { FactoryGirl.create(:user_invitation, :as_participant, assessment_id: assessment.id ,email: existing_user.email) }
+      let(:existing_user) { FactoryGirl.create(:user, :with_network_partner_role) }
+      let(:invitation) { FactoryGirl.create(:user_invitation, :as_participant, assessment_id: assessment.id ,email: existing_user.email) }
 
       before(:each) do
         subject.new(invitation).execute
@@ -37,8 +37,8 @@ describe Invitation::InsertFromInvite do
     end
 
     context 'inviting non network partner as participant' do
-      let!(:existing_user) { FactoryGirl.create(:user, :without_role) }
-      let!(:invitation) { FactoryGirl.create(:user_invitation, :as_participant, assessment_id: assessment.id ,email: existing_user.email) }
+      let(:existing_user) { FactoryGirl.create(:user, :without_role) }
+      let(:invitation) { FactoryGirl.create(:user_invitation, :as_participant, assessment_id: assessment.id ,email: existing_user.email) }
 
       before(:each) do
         subject.new(invitation).execute
