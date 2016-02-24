@@ -43,5 +43,18 @@
 
       expect($scope.$emit).not.toHaveBeenCalledWith('learning-question-change');
     });
+
+    it('clears out the model on success', function() {
+      var model = {body: 'Hello there'};
+      spyOn($scope, '$emit');
+
+      $httpBackend.expect('POST',
+          '/v1/assessments/1/learning_questions',
+          {learning_question: model}).respond(201, {});
+      controller.createLearningQuestion(model);
+      $httpBackend.flush();
+
+      expect(model.body).toEqual('');
+    });
   });
 })();
