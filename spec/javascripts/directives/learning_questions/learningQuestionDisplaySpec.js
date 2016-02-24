@@ -28,6 +28,10 @@
         });
       });
 
+      afterEach(function() {
+        $httpBackend.verifyNoOutstandingExpectation();
+      });
+
       it('displays no elements when none exist', function() {
         $httpBackend.expect('GET',
             '/v1/assessments/1/learning_questions').respond(200, {learning_questions: []});

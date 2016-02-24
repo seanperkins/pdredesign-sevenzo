@@ -20,6 +20,10 @@
       });
     });
 
+    afterEach(function() {
+      $httpBackend.verifyNoOutstandingExpectation();
+    });
+
     it('emits an event on successful entity creation', function() {
       spyOn($scope, '$emit');
       $httpBackend.expect('POST',
