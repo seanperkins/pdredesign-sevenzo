@@ -1,103 +1,112 @@
-PDRClient.controller('AssessmentDashboardSidebarCtrl', [
-  '$scope',
-  '$timeout',
-  '$modal',
-  '$location',
-  'SessionService',
-  'Assessment',
-  '$stateParams',
-  'Participant',
-  'Reminder',
-    function($scope, $timeout, $modal, $location,
-      SessionService, Assessment, $stateParams,
-      Participant, Reminder) {
+(function() {
+  'use strict';
+  angular.module('PDRClient')
+      .controller('AssessmentDashboardSidebarCtrl', AssessmentDashboardSidebarCtrl);
 
-      $scope.id         = $stateParams.id;
+  AssessmentDashboardSidebarCtrl.$inject = [
+    '$scope',
+    '$modal',
+    '$location',
+    'Assessment',
+    '$stateParams',
+    'Reminder'
+  ];
 
-      $scope.fetchAssessment = function() {
-        return Assessment.get({id: $scope.id});
-      };
+  function AssessmentDashboardSidebarCtrl($scope, $modal, $location, Assessment, $stateParams, Reminder) {
 
-      $scope.assessment = $scope.fetchAssessment();
+    $scope.id = $stateParams.id;
 
-      $scope.modifySchedule  = function() {
-        $scope.modal = $modal.open({
-          templateUrl: 'client/views/modals/modify_schedule.html',
-          scope: $scope
-        });
-      };
+    $scope.fetchAssessment = function() {
+      return Assessment.get({id: $scope.id});
+    };
 
-      $scope.createConsensus  = function() {
-        $scope.modal = $modal.open({
-          templateUrl: 'client/views/modals/create_consensus.html',
-          scope: $scope
-        });
-      };
+    $scope.assessment = $scope.fetchAssessment();
 
-      $scope.redirectToCreateConsensus = function() {
-        $scope.close();
-        $location.url("/assessments/" + $scope.id + "/consensus");
-      };
+    $scope.modifySchedule = function() {
+      $scope.modal = $modal.open({
+        templateUrl: 'client/views/modals/modify_schedule.html',
+        scope: $scope
+      });
+    };
 
-      $scope.newReminder  = function() {
-        $scope.modal = $modal.open({
-          templateUrl: 'client/views/modals/new_reminder.html',
-          scope: $scope
-        });
-      };
+    $scope.createConsensus = function() {
+      $scope.modal = $modal.open({
+        templateUrl: 'client/views/modals/create_consensus.html',
+        scope: $scope
+      });
+    };
 
-      $scope.close = function() {
-        $scope.modal.dismiss('cancel');
-      };
+    $scope.redirectToCreateConsensus = function() {
+      $scope.close();
+      $location.url('/assessments/' + $scope.id + '/consensus');
+    };
 
-      $scope.sendReminder = function(message) {
-        Reminder
+    $scope.newReminder = function() {
+      $scope.modal = $modal.open({
+        templateUrl: 'client/views/modals/new_reminder.html',
+        scope: $scope
+      });
+    };
+
+    $scope.close = function() {
+      $scope.modal.dismiss('cancel');
+    };
+
+    $scope.sendReminder = function(message) {
+      Reminder
           .save({assessment_id: $scope.id}, {message: message})
           .$promise
-          .then(function(){
+          .then(function() {
             $scope.close();
           });
-      };
+    };
 
-      $scope.meetingDateDaysAgo = function() {
-        return moment().diff($scope.assessment.meeting_date, 'days');
-      };
+    $scope.addLearningQuestion = function() {
+      $scope.modal = $modal.open({
+        templateUrl: 'client/views/modals/learning_questions/add_learning_question.html',
+        scope: $scope
+      });
+    };
 
-      $scope.postMeetingDate = function() {
-        if(!$scope.assessment.meeting_date)
-          return false;
-        return moment().isAfter($scope.assessment.meeting_date);
-      };
+    $scope.meetingDateDaysAgo = function() {
+      return moment().diff($scope.assessment.meeting_date, 'days');
+    };
 
-      $scope.preMeetingDate = function() {
-        if(!$scope.assessment.meeting_date)
-          return false;
-        return moment().isBefore($scope.assessment.meeting_date);
-      };
+    $scope.postMeetingDate = function() {
+      if (!$scope.assessment.meeting_date)
+        return false;
+      return moment().isAfter($scope.assessment.meeting_date);
+    };
 
-      $scope.noMeetingDate = function() {
-        return $scope.assessment.meeting_date == null;
-      };
+    $scope.preMeetingDate = function() {
+      if (!$scope.assessment.meeting_date)
+        return false;
+      return moment().isBefore($scope.assessment.meeting_date);
+    };
 
-      $scope.reportPresent = function() {
-        return $scope.assessment.submitted_at !== null;
-      };
+    $scope.noMeetingDate = function() {
+      return $scope.assessment.meeting_date == null;
+    };
 
-      $scope.meetingDayNumber = function() {
-        return moment($scope.assessment.meeting_date).format("D");
-      };
+    $scope.reportPresent = function() {
+      return $scope.assessment.submitted_at !== null;
+    };
 
-      $scope.meetingDayName = function() {
-        return moment($scope.assessment.meeting_date).format("dddd");
-      };
+    $scope.meetingDayNumber = function() {
+      return moment($scope.assessment.meeting_date).format('D');
+    };
 
-      $scope.meetingMonthName = function() {
-        return moment($scope.assessment.meeting_date).format("MMM");
-      };     
+    $scope.meetingDayName = function() {
+      return moment($scope.assessment.meeting_date).format('dddd');
+    };
 
-      $scope.consensusStarted = function() {
-        return $scope.assessment.status == 'consensus';
-      };
+    $scope.meetingMonthName = function() {
+      return moment($scope.assessment.meeting_date).format('MMM');
+    };
 
-    }
-]);
+    $scope.consensusStarted = function() {
+      return $scope.assessment.status === 'consensus';
+    };
+  }
+})();
+

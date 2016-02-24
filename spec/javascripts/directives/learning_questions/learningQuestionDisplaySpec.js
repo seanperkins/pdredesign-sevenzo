@@ -1,6 +1,6 @@
 (function() {
   'use strict';
-  describe('Directive: learningQuestionDisplay', function() {
+  describe('Directive: learningQuestionListDisplay', function() {
     describe('when rendering the directive', function() {
       var element,
           $scope,
@@ -23,7 +23,7 @@
           $scope = $rootScope.$new(true);
           $stateParams = {id: 1};
           $httpBackend = _$httpBackend_;
-          element = angular.element('<div><learning-question-display></learning-question-display></div>');
+          element = angular.element('<div><learning-question-list-display></learning-question-list-display></div>');
           $compile(element)($scope);
         });
       });

@@ -1,7 +1,7 @@
 (function() {
   'use strict';
 
-  describe('Controller: LearningQuestionDisplay', function() {
+  describe('Controller: LearningQuestionListDisplay', function() {
     var controller,
         LearningQuestion,
         $scope,
@@ -16,7 +16,7 @@
         $httpBackend = $injector.get('$httpBackend');
         $window = $injector.get('$window');
 
-        controller = $controller('LearningQuestionDisplayCtrl', {
+        controller = $controller('LearningQuestionListDisplayCtrl', {
           $scope: $scope,
           $stateParams: {id: 1},
           LearningQuestion: LearningQuestion,

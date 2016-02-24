@@ -1,16 +1,16 @@
 (function() {
   'use strict';
   angular.module('PDRClient')
-      .controller('LearningQuestionDisplayCtrl', LearningQuestionDisplayCtrl);
+      .controller('LearningQuestionListDisplayCtrl', LearningQuestionListDisplayCtrl);
 
-  LearningQuestionDisplayCtrl.$inject = [
+  LearningQuestionListDisplayCtrl.$inject = [
       '$stateParams',
       '$scope',
       '$window',
       'LearningQuestion'
   ];
 
-  function LearningQuestionDisplayCtrl($stateParams, $scope, $window, LearningQuestion) {
+  function LearningQuestionListDisplayCtrl($stateParams, $scope, $window, LearningQuestion) {
     var vm = this;
     vm.learningQuestions = [];
 
