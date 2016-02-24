@@ -495,4 +495,75 @@ describe V1::LearningQuestionsController do
       end
     end
   end
+
+  describe 'GET #exists' do
+    context 'when the user has not created any learning questions' do
+      let(:user) {
+        create(:user)
+      }
+
+      let(:assessment) {
+        create(:assessment)
+      }
+
+      before(:each) do
+        sign_in user
+        get :exists, assessment_id: assessment.id
+      end
+
+      it { is_expected.to respond_with 404 }
+    end
+
+    context 'when the user has created a learning question, but not for the current assessment' do
+      let!(:first_learning_question) {
+        create(:learning_question)
+      }
+
+      let!(:other_learning_question) {
+        create(:learning_question, user: user)
+      }
+
+      let(:assessment) {
+        first_learning_question.assessment
+      }
+
+      let(:user) {
+        create(:user)
+      }
+
+      let(:other_user) {
+        create(:user)
+      }
+
+      before(:each) do
+        sign_in other_user
+        get :exists, assessment_id: assessment.id
+      end
+
+
+      it { is_expected.to respond_with 404 }
+    end
+
+    context 'when the user has created a learning question for the current assessment' do
+
+      let(:learning_question) {
+        create(:learning_question)
+      }
+
+      let(:assessment) {
+        learning_question.assessment
+      }
+
+      let(:user) {
+        learning_question.user
+      }
+
+      before(:each) do
+        sign_in user
+        get :exists, assessment_id: assessment.id
+      end
+
+      it { is_expected.to respond_with 200}
+    end
+  end
 end

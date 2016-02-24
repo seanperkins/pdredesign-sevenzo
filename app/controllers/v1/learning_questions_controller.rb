@@ -1,6 +1,6 @@
 class V1::LearningQuestionsController < ApplicationController
   before_action :authenticate_user!
-  before_action :fetch_assessment, only: [:index, :create]
+  before_action :fetch_assessment, only: [:index, :create, :exists]
 
   def index
     if assessment_includes_current_user?
@@ -52,6 +52,15 @@ class V1::LearningQuestionsController < ApplicationController
     else
       @errors = 'You may not delete a learning question that does not belong to you.'
       render 'v1/shared/errors', status: :bad_request
+    end
+  end
+
+  def exists
+    has_created_question = LearningQuestion.where(user: current_user, assessment: @assessment).exists?
+    if has_created_question
+      render nothing: true, status: :ok
+    else
+      render nothing: true, status: :not_found
     end
   end
 

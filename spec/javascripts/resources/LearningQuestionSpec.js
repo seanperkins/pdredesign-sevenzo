@@ -27,6 +27,14 @@
       });
     });
 
+    describe('#GET (exists)', function() {
+      it('uses the right URL', function() {
+        $httpBackend.expectGET('/v1/assessments/1/learning_questions/exists').respond({200: {}});
+        subject.exists({assessment_id: 1});
+        $httpBackend.flush();
+      });
+    });
+
     describe('#POST', function() {
       it('uses the right URL', function() {
         $httpBackend.expectPOST('/v1/assessments/1/learning_questions').respond(201);

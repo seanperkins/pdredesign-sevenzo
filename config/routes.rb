@@ -39,7 +39,11 @@ PdrServer::Application.routes.draw do
         get 'mail', to: 'participants#mail'
       end
 
-      resources :learning_questions, only: [:index, :create, :update, :destroy]
+      resources :learning_questions, only: [:index, :create, :update, :destroy] do
+        collection do
+          get 'exists', to: 'learning_questions#exists'
+        end
+      end
 
       resources :user_invitations, only: [:create]
       resources :consensus, except: [:delete, :index] do

@@ -14,9 +14,13 @@
     var vm = this;
     vm.learningQuestions = [];
 
+    vm.extractId = function() {
+      return $stateParams.assessment_id || $stateParams.id;
+    };
+
     vm.loadQuestions = function () {
       LearningQuestion
-          .get({assessment_id: $stateParams.id})
+          .get({assessment_id: vm.extractId()})
           .$promise
           .then(function (result) {
             vm.learningQuestions = result.learning_questions;
@@ -38,7 +42,7 @@
     vm.updateLearningQuestion = function (model) {
       if (model.editable) {
         LearningQuestion
-            .update({assessment_id: $stateParams.id, id: model.id, learning_question: {body: model.body}})
+            .update({assessment_id: vm.extractId(), id: model.id, learning_question: {body: model.body}})
             .$promise
             .then(function () {
               $scope.$emit('learning-question-change');
