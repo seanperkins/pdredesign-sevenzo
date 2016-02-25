@@ -77,9 +77,7 @@ PDRClient.directive('assessmentLinks', [
 
             $scope.requestAccess = function() {
               if($scope.isNetworkPartner()) {
-                $scope.performAccessRequest('facilitator').then(function() {
-                  console.log("requested")
-                });
+                $scope.performAccessRequest('facilitator').then(function() {});
               } else {
                 $scope.modal = $modal.open({
                   templateUrl: 'client/views/modals/request_access.html',
