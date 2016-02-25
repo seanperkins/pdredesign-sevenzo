@@ -46,6 +46,28 @@
         expect(controller.learningQuestions.length).toEqual(1);
       });
 
+      it('does not emit a change event if the entity is not editable', function() {
+        $httpBackend.expect('GET', '/v1/assessments/1/learning_questions').respond(200, {
+          learning_questions: [
+            {
+              id: 1,
+              editable: true,
+              body: 'Hello world!'
+            }
+          ]
+        });
+        var invoked = false;
+        spyOn($window, 'confirm').and.returnValue(false);
+        $httpBackend.when('DELETE', '/v1/assessments/1/learning_questions/1').respond(function() {
+          invoked = true;
+          return {400: []};
+        });
+        controller.deleteLearningQuestion({id: 1, editable: false});
+
+        $httpBackend.flush();
+        expect(invoked).toBe(false);
+      });
+
       it('does not emit a change event if the user does not delete the entity', function() {
         $httpBackend.expect('GET', '/v1/assessments/1/learning_questions').respond(200, {
           learning_questions: [
@@ -62,7 +84,7 @@
           invoked = true;
           return {400: []};
         });
-        controller.deleteLearningQuestion({id: 1});
+        controller.deleteLearningQuestion({id: 1, editable: true});
 
         $httpBackend.flush();
         expect(invoked).toBe(false);
@@ -81,7 +103,7 @@
         spyOn($window, 'confirm').and.returnValue(true);
         spyOn($scope, '$emit');
         $httpBackend.expect('DELETE', '/v1/assessments/1/learning_questions/1').respond({204: {}});
-        controller.deleteLearningQuestion({id: 1});
+        controller.deleteLearningQuestion({id: 1, editable: true});
 
         $httpBackend.flush();
         expect($scope.$emit).toHaveBeenCalledWith('learning-question-change');

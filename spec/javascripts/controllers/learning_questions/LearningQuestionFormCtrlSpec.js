@@ -11,6 +11,7 @@
       inject(function($injector, $controller, $rootScope) {
         $httpBackend = $injector.get('$httpBackend');
         $scope = $rootScope.$new(true);
+        $scope.learningQuestionForm = {};
         LearningQuestion = $injector.get('LearningQuestion');
         controller = $controller('LearningQuestionFormCtrl', {
           $stateParams: {id: 1},
@@ -26,6 +27,7 @@
 
     it('emits an event on successful entity creation', function() {
       spyOn($scope, '$emit');
+
       $httpBackend.expect('POST',
           '/v1/assessments/1/learning_questions',
           {learning_question: {body: 'Hello there'}}).respond(201, {});

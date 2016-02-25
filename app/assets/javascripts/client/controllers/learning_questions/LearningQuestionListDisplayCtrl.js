@@ -4,13 +4,14 @@
       .controller('LearningQuestionListDisplayCtrl', LearningQuestionListDisplayCtrl);
 
   LearningQuestionListDisplayCtrl.$inject = [
-      '$stateParams',
-      '$scope',
-      '$window',
-      'LearningQuestion'
+    '$stateParams',
+    '$scope',
+    '$window',
+    'LearningQuestion',
+    'LearningQuestionValidator'
   ];
 
-  function LearningQuestionListDisplayCtrl($stateParams, $scope, $window, LearningQuestion) {
+  function LearningQuestionListDisplayCtrl($stateParams, $scope, $window, LearningQuestion, LearningQuestionValidator) {
     var vm = this;
     vm.learningQuestions = [];
 
@@ -18,41 +19,48 @@
       return $stateParams.assessment_id || $stateParams.id;
     };
 
-    vm.loadQuestions = function () {
+    vm.loadQuestions = function() {
       LearningQuestion
           .get({assessment_id: vm.extractId()})
           .$promise
-          .then(function (result) {
+          .then(function(result) {
             vm.learningQuestions = result.learning_questions;
           });
     };
 
-    vm.deleteLearningQuestion = function (model) {
+    vm.deleteLearningQuestion = function(model) {
+      if (!model.editable) {
+        return;
+      }
       var willDelete = $window.confirm('Are you sure you wish to delete this learning question?');
       if (willDelete) {
         LearningQuestion
             .delete({assessment_id: $stateParams.id, id: model.id})
             .$promise
-            .then(function () {
+            .then(function() {
               $scope.$emit('learning-question-change');
             });
       }
     };
 
-    vm.updateLearningQuestion = function (model) {
+    vm.updateLearningQuestion = function(model) {
       if (model.editable) {
         LearningQuestion
             .update({assessment_id: vm.extractId(), id: model.id, learning_question: {body: model.body}})
             .$promise
-            .then(function () {
+            .then(function() {
               $scope.$emit('learning-question-change');
-            }).catch(function () {
+            }).catch(function() {
           $scope.$emit('learning-question-change');
         });
       }
     };
 
-    $scope.$on('learning-question-change', function () {
+    vm.validate = function(data) {
+      return LearningQuestionValidator.validate(data);
+    };
+
+    $scope.$on('learning-question-change', function() {
       vm.loadQuestions();
     });
 

@@ -6,11 +6,13 @@
   LearningQuestionFormCtrl.$inject = [
     '$stateParams',
     '$scope',
-    'LearningQuestion'
+    'LearningQuestion',
+    'LearningQuestionValidator'
   ];
 
-  function LearningQuestionFormCtrl($stateParams, $scope, LearningQuestion) {
+  function LearningQuestionFormCtrl($stateParams, $scope, LearningQuestion, LearningQuestionValidator) {
     var vm = this;
+    vm.error = '';
     vm.newEntity = {
       'body': ''
     };
@@ -24,13 +26,24 @@
     };
 
     vm.createLearningQuestion = function(model) {
-      LearningQuestion
-          .create({assessment_id: vm.extractId()}, {learning_question: {body: model.body}})
-          .$promise
-          .then(function() {
-            $scope.$emit('learning-question-change');
-            vm.clearInputForm(model);
-          });
+      var validationMsg = vm.validate(model.body);
+      if(validationMsg) {
+        vm.error = validationMsg;
+        $scope.learningQuestionForm.$invalid = true;
+      } else {
+        $scope.learningQuestionForm.$invalid = false;
+        LearningQuestion
+            .create({assessment_id: vm.extractId()}, {learning_question: {body: model.body}})
+            .$promise
+            .then(function() {
+              $scope.$emit('learning-question-change');
+              vm.clearInputForm(model);
+            });
+      }
+    };
+
+    vm.validate = function(data) {
+      return LearningQuestionValidator.validate(data);
     }
   }
 })();
