@@ -196,6 +196,17 @@ ActiveRecord::Schema.define(version: 20160223195539) do
     t.datetime "updated_at"
   end
 
+  create_table "learning_questions", force: :cascade do |t|
+    t.integer  "assessment_id"
+    t.integer  "user_id"
+    t.text     "body"
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
+  end
+
+  add_index "learning_questions", ["assessment_id"], name: "index_learning_questions_on_assessment_id", using: :btree
+  add_index "learning_questions", ["created_at"], name: "index_learning_questions_on_created_at", using: :btree
+
   create_table "messages", force: :cascade do |t|
     t.text     "content"
     t.string   "category",      limit: 255
