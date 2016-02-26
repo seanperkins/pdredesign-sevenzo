@@ -4,10 +4,8 @@ describe V1::ReportController do
   render_views
 
   describe '#show' do
-    before { create_magic_assessments }
-    before { create_struct }
-    let(:assessment) { @assessment_with_participants }
-    let(:consensu){ assessment.response.nil? ? Response.create(responder_id:   assessment.id, responder_type: 'Assessment') : assessment.response }
+    let(:assessment) { FactoryGirl.create(:assessment, :with_participants) }
+    let(:consensu) { assessment.response.nil? ? Response.create(responder_id:   assessment.id, responder_type: 'Assessment') : assessment.response }
 
     context 'without user' do
       before(:each) do
@@ -22,8 +20,11 @@ describe V1::ReportController do
     end
 
     context 'logged in as participant user' do
+      let(:participant) { assessment.participants.first }
+      let(:participant_user) { participant.user }
+
       before(:each) do
-        sign_in @user2
+        sign_in participant_user
         get :show, assessment_id: assessment.id, format: :json
       end
 
@@ -32,10 +33,7 @@ describe V1::ReportController do
       end
 
       it 'updates the participants viewed report time' do
-        participant = Participant
-          .find_by(assessment: assessment, user: @user2)
-
-        expect(participant[:report_viewed_at]).not_to be_nil
+        expect(participant.reload[:report_viewed_at]).not_to be_nil
       end
 
       it 'assigns the assessment' do
@@ -46,17 +44,25 @@ describe V1::ReportController do
         expect(assigns(:axes)).not_to be_nil
       end 
 
-      it 'assigns response' do
-        assessment.update(response: Response.find(99))
-        get :show, assessment_id: assessment.id, format: :json
-        expect(assigns(:response)).not_to be_nil
-      end
+      context 'with response assigned' do
+        let(:response) { FactoryGirl.create(:response, responder: participant, rubric: assessment.rubric) }
 
+        before(:each) do
+          assessment.update(response: response)
+          get :show, assessment_id: assessment.id, format: :json
+        end
+
+        it 'loads response' do
+          expect(assigns(:response)).not_to be_nil
+        end
+      end
     end
 
     context 'logged in as non-participant user' do
+      let(:non_participant_user) { FactoryGirl.create(:user) }
+
       before(:each) do
-        sign_in @user3
+        sign_in non_participant_user
         get :show, assessment_id: assessment.id, format: :json
       end
 
