@@ -3,10 +3,10 @@
 # Table name: technical_questions
 #
 #  id             :integer          not null, primary key
-#  platform       :text             not null, is an Array
-#  hosting        :text             not null
-#  connectivity   :text             not null
-#  single_sign_on :text             not null
+#  platform       :text             is an Array
+#  hosting        :text
+#  connectivity   :text
+#  single_sign_on :text
 #  created_at     :datetime
 #  updated_at     :datetime
 #

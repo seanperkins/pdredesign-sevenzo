@@ -85,10 +85,10 @@ ActiveRecord::Schema.define(version: 20160226162039) do
   end
 
   create_table "data_access_questions", force: :cascade do |t|
-    t.string   "data_storage",         null: false
-    t.string   "who_access_data",      null: false
-    t.string   "how_data_is_accessed", null: false
-    t.string   "why_data_is_accessed", null: false
+    t.string   "data_storage"
+    t.string   "who_access_data"
+    t.string   "how_data_is_accessed"
+    t.string   "why_data_is_accessed"
     t.string   "notes"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -107,9 +107,9 @@ ActiveRecord::Schema.define(version: 20160226162039) do
   add_index "data_entries", ["general_data_question_id"], name: "index_data_entries_on_general_data_question_id", using: :btree
 
   create_table "data_entry_questions", force: :cascade do |t|
-    t.string   "who_enters_data",      null: false
-    t.string   "how_data_is_entered",  null: false
-    t.string   "when_data_is_entered", null: false
+    t.string   "who_enters_data"
+    t.string   "how_data_is_entered"
+    t.string   "when_data_is_entered"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -213,25 +213,26 @@ ActiveRecord::Schema.define(version: 20160226162039) do
   end
 
   create_table "general_data_questions", force: :cascade do |t|
-    t.string   "subcategory",                 null: false
-    t.string   "point_of_contact_name",       null: false
-    t.string   "point_of_contact_department", null: false
-    t.string   "data_capture",                null: false
+    t.string   "subcategory"
+    t.string   "point_of_contact_name"
+    t.string   "point_of_contact_department"
+    t.string   "data_capture"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
   create_table "general_inventory_questions", force: :cascade do |t|
-    t.text     "product_name",                                        null: false
-    t.text     "vendor",                                              null: false
-    t.text     "point_of_contact_name",                               null: false
-    t.text     "point_of_contact_department",                         null: false
-    t.text     "pricing_structure",                                   null: false
-    t.decimal  "price",                       precision: 9, scale: 2, null: false
-    t.text     "type",                                                null: false, array: true
-    t.text     "purpose",                                             null: false
+    t.text     "product_name"
+    t.text     "vendor"
+    t.text     "point_of_contact_name"
+    t.text     "point_of_contact_department"
+    t.text     "pricing_structure"
+    t.decimal  "price",                                                           precision: 9, scale: 2
+    t.text     "type",                                                                                    array: true
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.text     "purpose"
+    t.text     "#<ActiveRecord::ConnectionAdapters::PostgreSQL::TableDefinition"
   end
 
   create_table "inventories", force: :cascade do |t|
@@ -334,10 +335,10 @@ ActiveRecord::Schema.define(version: 20160226162039) do
   add_index "product_entries", ["usage_question_id"], name: "index_product_entries_on_usage_question_id", using: :btree
 
   create_table "product_questions", force: :cascade do |t|
-    t.text     "how_its_assigned", null: false, array: true
-    t.text     "how_its_used",     null: false, array: true
-    t.text     "how_its_accessed", null: false, array: true
-    t.text     "audience",         null: false, array: true
+    t.text     "how_its_assigned", array: true
+    t.text     "how_its_used",     array: true
+    t.text     "how_its_accessed", array: true
+    t.text     "audience",         array: true
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -441,10 +442,10 @@ ActiveRecord::Schema.define(version: 20160226162039) do
   add_index "sessions", ["updated_at"], name: "index_sessions_on_updated_at", using: :btree
 
   create_table "technical_questions", force: :cascade do |t|
-    t.text     "platform",       null: false, array: true
-    t.text     "hosting",        null: false
-    t.text     "connectivity",   null: false
-    t.text     "single_sign_on", null: false
+    t.text     "platform",       array: true
+    t.text     "hosting"
+    t.text     "connectivity"
+    t.text     "single_sign_on"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -479,9 +480,9 @@ ActiveRecord::Schema.define(version: 20160226162039) do
   end
 
   create_table "usage_questions", force: :cascade do |t|
-    t.text     "school_usage", null: false
-    t.text     "usage",        null: false
-    t.text     "vendor_data",  null: false
+    t.text     "school_usage"
+    t.text     "usage"
+    t.text     "vendor_data"
     t.text     "notes"
     t.datetime "created_at"
     t.datetime "updated_at"

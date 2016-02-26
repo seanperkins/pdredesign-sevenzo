@@ -16,9 +16,9 @@ class CreateInventoryContainerModels < ActiveRecord::Migration
     end
 
     create_table :inventories do |t|
-      t.string :name
-      t.timestamp :deadline
-      t.references :districts
+      t.string :name, null: false
+      t.timestamp :deadline, null: false
+      t.references :districts, null: false
       t.references :product_entry, null: false, index: true
       t.references :data_entry, null: false, index: true
     end
