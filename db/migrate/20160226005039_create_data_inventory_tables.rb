@@ -8,14 +8,14 @@ class CreateDataInventoryTables < ActiveRecord::Migration
       t.timestamps
     end
 
-    create_table :data_entry do |t|
+    create_table :data_entry_questions do |t|
       t.string :who_enters_data, null: false
       t.string :how_data_is_entered, null: false
       t.string :when_data_is_entered, null: false
       t.timestamps
     end
 
-    create_table :data_access do |t|
+    create_table :data_access_questions do |t|
       t.string :data_storage, null: false
       t.string :who_access_data, null: false
       t.string :how_data_is_accessed, null: false

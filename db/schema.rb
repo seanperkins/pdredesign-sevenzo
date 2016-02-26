@@ -11,11 +11,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141009150320) do
+ActiveRecord::Schema.define(version: 20160226162039) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-  enable_extension "pg_trgm"
 
   create_table "access_requests", force: :cascade do |t|
     t.integer  "assessment_id"
@@ -48,6 +47,7 @@ ActiveRecord::Schema.define(version: 20141009150320) do
     t.string   "mandrill_id",     limit: 255
     t.text     "mandrill_html"
     t.text     "report_takeaway"
+    t.string   "share_token"
   end
 
   create_table "assessments_facilitators", force: :cascade do |t|
@@ -82,6 +82,36 @@ ActiveRecord::Schema.define(version: 20141009150320) do
   create_table "categories_organizations", id: false, force: :cascade do |t|
     t.integer "category_id",     null: false
     t.integer "organization_id", null: false
+  end
+
+  create_table "data_access_questions", force: :cascade do |t|
+    t.string   "data_storage",         null: false
+    t.string   "who_access_data",      null: false
+    t.string   "how_data_is_accessed", null: false
+    t.string   "why_data_is_accessed", null: false
+    t.string   "notes"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "data_entries", force: :cascade do |t|
+    t.integer  "general_data_question_id", null: false
+    t.integer  "data_entry_question_id",   null: false
+    t.integer  "data_access_question_id",  null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "data_entries", ["data_access_question_id"], name: "index_data_entries_on_data_access_question_id", using: :btree
+  add_index "data_entries", ["data_entry_question_id"], name: "index_data_entries_on_data_entry_question_id", using: :btree
+  add_index "data_entries", ["general_data_question_id"], name: "index_data_entries_on_general_data_question_id", using: :btree
+
+  create_table "data_entry_questions", force: :cascade do |t|
+    t.string   "who_enters_data",      null: false
+    t.string   "how_data_is_entered",  null: false
+    t.string   "when_data_is_entered", null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "delayed_jobs", force: :cascade do |t|
@@ -182,6 +212,39 @@ ActiveRecord::Schema.define(version: 20141009150320) do
     t.datetime "updated_at"
   end
 
+  create_table "general_data_questions", force: :cascade do |t|
+    t.string   "subcategory",                 null: false
+    t.string   "point_of_contact_name",       null: false
+    t.string   "point_of_contact_department", null: false
+    t.string   "data_capture",                null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "general_inventory_questions", force: :cascade do |t|
+    t.text     "product_name",                                        null: false
+    t.text     "vendor",                                              null: false
+    t.text     "point_of_contact_name",                               null: false
+    t.text     "point_of_contact_department",                         null: false
+    t.text     "pricing_structure",                                   null: false
+    t.decimal  "price",                       precision: 9, scale: 2, null: false
+    t.text     "type",                                                null: false
+    t.text     "purpose",                                             null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "inventories", force: :cascade do |t|
+    t.string   "name"
+    t.datetime "deadline"
+    t.integer  "districts_id"
+    t.integer  "product_entry_id", null: false
+    t.integer  "data_entry_id",    null: false
+  end
+
+  add_index "inventories", ["data_entry_id"], name: "index_inventories_on_data_entry_id", using: :btree
+  add_index "inventories", ["product_entry_id"], name: "index_inventories_on_product_entry_id", using: :btree
+
   create_table "key_question_points", force: :cascade do |t|
     t.integer  "key_question_question_id"
     t.text     "text"
@@ -195,6 +258,17 @@ ActiveRecord::Schema.define(version: 20141009150320) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  create_table "learning_questions", force: :cascade do |t|
+    t.integer  "assessment_id"
+    t.integer  "user_id"
+    t.text     "body"
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
+  end
+
+  add_index "learning_questions", ["assessment_id"], name: "index_learning_questions_on_assessment_id", using: :btree
+  add_index "learning_questions", ["created_at"], name: "index_learning_questions_on_created_at", using: :btree
 
   create_table "messages", force: :cascade do |t|
     t.text     "content"
@@ -241,6 +315,29 @@ ActiveRecord::Schema.define(version: 20141009150320) do
   create_table "priorities", force: :cascade do |t|
     t.integer  "assessment_id"
     t.integer  "order",         array: true
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "product_entries", force: :cascade do |t|
+    t.integer  "general_inventory_question_id", null: false
+    t.integer  "product_question_id"
+    t.integer  "usage_question_id",             null: false
+    t.integer  "technical_question_id",         null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "product_entries", ["general_inventory_question_id"], name: "index_product_entries_on_general_inventory_question_id", using: :btree
+  add_index "product_entries", ["product_question_id"], name: "index_product_entries_on_product_question_id", using: :btree
+  add_index "product_entries", ["technical_question_id"], name: "index_product_entries_on_technical_question_id", using: :btree
+  add_index "product_entries", ["usage_question_id"], name: "index_product_entries_on_usage_question_id", using: :btree
+
+  create_table "product_questions", force: :cascade do |t|
+    t.text     "how_its_assigned", null: false
+    t.text     "how_its_used",     null: false
+    t.text     "how_its_accessed", null: false
+    t.text     "audience",         null: false
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -334,7 +431,7 @@ ActiveRecord::Schema.define(version: 20141009150320) do
   add_index "scores", ["response_id", "question_id"], name: "index_scores_on_response_id_and_question_id", unique: true, using: :btree
 
   create_table "sessions", force: :cascade do |t|
-    t.string   "session_id", null: false
+    t.string   "session_id", limit: 255, null: false
     t.text     "data"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -342,6 +439,15 @@ ActiveRecord::Schema.define(version: 20141009150320) do
 
   add_index "sessions", ["session_id"], name: "index_sessions_on_session_id", unique: true, using: :btree
   add_index "sessions", ["updated_at"], name: "index_sessions_on_updated_at", using: :btree
+
+  create_table "technical_questions", force: :cascade do |t|
+    t.text     "platform",       null: false
+    t.text     "hosting",        null: false
+    t.text     "connectivity",   null: false
+    t.text     "single_sign_on", null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "tool_categories", force: :cascade do |t|
     t.string  "title"
@@ -370,6 +476,15 @@ ActiveRecord::Schema.define(version: 20141009150320) do
     t.integer "tool_subcategory_id"
     t.integer "user_id"
     t.integer "tool_category_id"
+  end
+
+  create_table "usage_questions", force: :cascade do |t|
+    t.text     "school_usage", null: false
+    t.text     "usage",        null: false
+    t.text     "vendor_data",  null: false
+    t.text     "notes"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "user_invitations", force: :cascade do |t|
@@ -408,4 +523,13 @@ ActiveRecord::Schema.define(version: 20141009150320) do
   add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree
   add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
 
+  add_foreign_key "data_entries", "data_access_questions", on_delete: :cascade
+  add_foreign_key "data_entries", "data_entry_questions", on_delete: :cascade
+  add_foreign_key "data_entries", "general_data_questions", on_delete: :cascade
+  add_foreign_key "inventories", "data_entries", on_delete: :cascade
+  add_foreign_key "inventories", "product_entries", on_delete: :cascade
+  add_foreign_key "product_entries", "general_inventory_questions", on_delete: :cascade
+  add_foreign_key "product_entries", "product_questions", on_delete: :cascade
+  add_foreign_key "product_entries", "technical_questions", on_delete: :cascade
+  add_foreign_key "product_entries", "usage_questions", on_delete: :cascade
 end
