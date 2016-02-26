@@ -34,5 +34,33 @@ class CreateInventoryContainerModels < ActiveRecord::Migration
 
     add_foreign_key :inventories, :product_entries, on_delete: :cascade
     add_foreign_key :inventories, :data_entries, on_delete: :cascade
+
+    change_table :general_data_questions do |t|
+      t.references :data_entry, index: true
+    end
+
+    change_table :data_entry_questions do |t|
+      t.references :data_entry, index: true
+    end
+
+    change_table :data_access_questions do |t|
+      t.references :data_entry, index: true
+    end
+
+    change_table :general_inventory_questions do |t|
+      t.references :product_entry, index: true
+    end
+
+    change_table :product_questions do |t|
+      t.references :product_entry, index: true
+    end
+
+    change_table :usage_questions do |t|
+      t.references :product_entry, index: true
+    end
+
+    change_table :technical_questions do |t|
+      t.references :product_entry, index: true
+    end
   end
 end

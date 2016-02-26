@@ -2,13 +2,14 @@
 #
 # Table name: technical_questions
 #
-#  id             :integer          not null, primary key
-#  platform       :text             is an Array
-#  hosting        :text
-#  connectivity   :text
-#  single_sign_on :text
-#  created_at     :datetime
-#  updated_at     :datetime
+#  id               :integer          not null, primary key
+#  platform         :text             is an Array
+#  hosting          :text
+#  connectivity     :text
+#  single_sign_on   :text
+#  created_at       :datetime
+#  updated_at       :datetime
+#  product_entry_id :integer
 #
 
 class TechnicalQuestion < ActiveRecord::Base
@@ -23,8 +24,7 @@ class TechnicalQuestion < ActiveRecord::Base
       windows: 'Native Windows App',
       surface: 'Native Surface App',
       kindle: 'Native Kindle App',
-      custom: 'Custom Hardware',
-      other: 'Other'
+      custom: 'Custom Hardware'
   }
 
   enum hosting: {

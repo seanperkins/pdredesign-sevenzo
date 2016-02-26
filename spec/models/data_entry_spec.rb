@@ -10,13 +10,10 @@
 #  updated_at               :datetime
 #
 
-class DataEntry < ActiveRecord::Base
+require 'spec_helper'
 
-  has_one :general_data_question
-  has_one :data_entry_question
-  has_one :data_access_question
-
-  default_scope {
-    includes(:general_data_question, :data_entry_question, :data_access_question)
-  }
+describe DataEntry do
+  it { is_expected.to have_one(:general_data_question) }
+  it { is_expected.to have_one(:data_entry_question) }
+  it { is_expected.to have_one(:data_access_question) }
 end

@@ -9,6 +9,7 @@
 #  data_capture                :string
 #  created_at                  :datetime
 #  updated_at                  :datetime
+#  data_entry_id               :integer
 #
 
 class GeneralDataQuestion < ActiveRecord::Base

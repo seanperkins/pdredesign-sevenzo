@@ -13,6 +13,7 @@
 #  purpose                     :text
 #  created_at                  :datetime
 #  updated_at                  :datetime
+#  product_entry_id            :integer
 #
 
 class GeneralInventoryQuestion < ActiveRecord::Base

@@ -11,14 +11,11 @@
 #  updated_at                    :datetime
 #
 
-class ProductEntry < ActiveRecord::Base
+require 'spec_helper'
 
-  has_one :general_inventory_question
-  has_one :product_question
-  has_one :usage_question
-  has_one :technical_question
-
-  default_scope {
-    includes(:general_inventory_question, :product_question, :usage_question, :technical_question)
-  }
+describe ProductEntry do
+  it { is_expected.to have_one(:general_inventory_question) }
+  it { is_expected.to have_one(:product_question) }
+  it { is_expected.to have_one(:usage_question) }
+  it { is_expected.to have_one(:technical_question) }
 end

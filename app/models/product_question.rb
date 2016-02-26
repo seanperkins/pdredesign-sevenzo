@@ -3,30 +3,31 @@
 # Table name: product_questions
 #
 #  id               :integer          not null, primary key
-#  how_its_assigned :text             not null, is an Array
-#  how_its_used     :text             not null, is an Array
-#  how_its_accessed :text             not null, is an Array
-#  audience         :text             not null, is an Array
+#  how_its_assigned :text             is an Array
+#  how_its_used     :text             is an Array
+#  how_its_accessed :text             is an Array
+#  audience         :text             is an Array
 #  created_at       :datetime
 #  updated_at       :datetime
+#  product_entry_id :integer
 #
 
 class ProductQuestion < ActiveRecord::Base
 
-  enum product_assignments: {
+  enum assignment: {
       teacher_choice: 'Teacher Choice',
       data_driven: 'Data Driven',
       differentiated: 'Differentiated',
       adaptive: 'Adaptive'
   }
 
-  enum product_usage_frequency: {
-      anytime: 'Anytime Anywhere',
+  enum usage_frequency: {
+      anytime_anywhere: 'Anytime Anywhere',
       blended: 'Blended',
       scheduled: 'Scheduled'
   }
 
-  enum product_accessed_via: {
+  enum accessed_via: {
       content_repository: 'Content Repository',
       video_share: 'Video Share Platform',
       social_network: 'Social Network',
@@ -36,11 +37,11 @@ class ProductQuestion < ActiveRecord::Base
       online_courses: 'Online Courses'
   }
 
-  enum product_audience: {
-      administrators: 'Administrators',
-      teachers: 'Teachers',
-      home_school: 'Home School',
-      parents: 'Parents',
-      students: 'Students'
+  enum audience: {
+      admin_audience: 'Administrators',
+      teacher_audience: 'Teachers',
+      home_school_audience: 'Home School',
+      parent_audience: 'Parents',
+      student_audience: 'Students'
   }
 end

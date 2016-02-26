@@ -8,6 +8,7 @@
 #  when_data_is_entered :string
 #  created_at           :datetime
 #  updated_at           :datetime
+#  data_entry_id        :integer
 #
 
 class DataEntryQuestion < ActiveRecord::Base

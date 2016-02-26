@@ -92,7 +92,10 @@ ActiveRecord::Schema.define(version: 20160226162039) do
     t.string   "notes"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "data_entry_id"
   end
+
+  add_index "data_access_questions", ["data_entry_id"], name: "index_data_access_questions_on_data_entry_id", using: :btree
 
   create_table "data_entries", force: :cascade do |t|
     t.integer  "general_data_question_id", null: false
@@ -112,7 +115,10 @@ ActiveRecord::Schema.define(version: 20160226162039) do
     t.string   "when_data_is_entered"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "data_entry_id"
   end
+
+  add_index "data_entry_questions", ["data_entry_id"], name: "index_data_entry_questions_on_data_entry_id", using: :btree
 
   create_table "delayed_jobs", force: :cascade do |t|
     t.integer  "priority",               default: 0, null: false
@@ -219,7 +225,10 @@ ActiveRecord::Schema.define(version: 20160226162039) do
     t.string   "data_capture"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "data_entry_id"
   end
+
+  add_index "general_data_questions", ["data_entry_id"], name: "index_general_data_questions_on_data_entry_id", using: :btree
 
   create_table "general_inventory_questions", force: :cascade do |t|
     t.text     "product_name"
@@ -232,7 +241,10 @@ ActiveRecord::Schema.define(version: 20160226162039) do
     t.text     "purpose"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "product_entry_id"
   end
+
+  add_index "general_inventory_questions", ["product_entry_id"], name: "index_general_inventory_questions_on_product_entry_id", using: :btree
 
   create_table "inventories", force: :cascade do |t|
     t.string   "name",             null: false
@@ -340,7 +352,10 @@ ActiveRecord::Schema.define(version: 20160226162039) do
     t.text     "audience",         array: true
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "product_entry_id"
   end
+
+  add_index "product_questions", ["product_entry_id"], name: "index_product_questions_on_product_entry_id", using: :btree
 
   create_table "prospective_users", force: :cascade do |t|
     t.string   "email",        limit: 255, default: "", null: false
@@ -441,13 +456,16 @@ ActiveRecord::Schema.define(version: 20160226162039) do
   add_index "sessions", ["updated_at"], name: "index_sessions_on_updated_at", using: :btree
 
   create_table "technical_questions", force: :cascade do |t|
-    t.text     "platform",       array: true
+    t.text     "platform",         array: true
     t.text     "hosting"
     t.text     "connectivity"
     t.text     "single_sign_on"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "product_entry_id"
   end
+
+  add_index "technical_questions", ["product_entry_id"], name: "index_technical_questions_on_product_entry_id", using: :btree
 
   create_table "tool_categories", force: :cascade do |t|
     t.string  "title"
@@ -485,7 +503,10 @@ ActiveRecord::Schema.define(version: 20160226162039) do
     t.text     "notes"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "product_entry_id"
   end
+
+  add_index "usage_questions", ["product_entry_id"], name: "index_usage_questions_on_product_entry_id", using: :btree
 
   create_table "user_invitations", force: :cascade do |t|
     t.string  "first_name"
