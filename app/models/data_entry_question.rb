@@ -11,4 +11,14 @@
 #
 
 class DataEntryQuestion < ActiveRecord::Base
+
+  enum data_entered_frequency: {
+      yearly: 'Yearly',
+      quarterly: 'Quarterly',
+      monthly: 'Monthly',
+      weekly: 'Weekly',
+      daily: 'Daily',
+      scheduled: 'Scheduled'
+  }
+
 end

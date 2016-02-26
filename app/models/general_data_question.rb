@@ -12,4 +12,22 @@
 #
 
 class GeneralDataQuestion < ActiveRecord::Base
+
+  enum data_type: {
+      finance_and_budget: 'Finance & Budget Data',
+      pd: 'PD Data',
+      hr: 'HR Data',
+      student: 'Student Data',
+      student_assessment: 'Student Assessment Data',
+      stakeholder_survey: 'Stakeholder Survey Data',
+      teacher_evaluation: 'Teacher Evaluation Data',
+      custom: 'Custom'
+  }
+
+  enum data_capture: {
+      manually: 'Yes, manually',
+      digitally: 'Yes, digitally',
+      no: 'No'
+  }
+
 end

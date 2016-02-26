@@ -228,7 +228,7 @@ ActiveRecord::Schema.define(version: 20160226162039) do
     t.text     "point_of_contact_department",                         null: false
     t.text     "pricing_structure",                                   null: false
     t.decimal  "price",                       precision: 9, scale: 2, null: false
-    t.text     "type",                                                null: false
+    t.text     "type",                                                null: false, array: true
     t.text     "purpose",                                             null: false
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -334,10 +334,10 @@ ActiveRecord::Schema.define(version: 20160226162039) do
   add_index "product_entries", ["usage_question_id"], name: "index_product_entries_on_usage_question_id", using: :btree
 
   create_table "product_questions", force: :cascade do |t|
-    t.text     "how_its_assigned", null: false
-    t.text     "how_its_used",     null: false
-    t.text     "how_its_accessed", null: false
-    t.text     "audience",         null: false
+    t.text     "how_its_assigned", null: false, array: true
+    t.text     "how_its_used",     null: false, array: true
+    t.text     "how_its_accessed", null: false, array: true
+    t.text     "audience",         null: false, array: true
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -441,7 +441,7 @@ ActiveRecord::Schema.define(version: 20160226162039) do
   add_index "sessions", ["updated_at"], name: "index_sessions_on_updated_at", using: :btree
 
   create_table "technical_questions", force: :cascade do |t|
-    t.text     "platform",       null: false
+    t.text     "platform",       null: false, array: true
     t.text     "hosting",        null: false
     t.text     "connectivity",   null: false
     t.text     "single_sign_on", null: false

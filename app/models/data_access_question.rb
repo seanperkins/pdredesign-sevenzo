@@ -13,4 +13,13 @@
 #
 
 class DataAccessQuestion < ActiveRecord::Base
+
+  enum data_accessed_by: {
+      team: 'Team',
+      central_office: 'Central Office',
+      school_district: 'School District',
+      public_access: 'Public',
+      other: 'Other'
+  }
+
 end
