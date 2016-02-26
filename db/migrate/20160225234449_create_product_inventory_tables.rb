@@ -7,16 +7,16 @@ class CreateProductInventoryTables < ActiveRecord::Migration
       t.text :point_of_contact_department
       t.text :pricing_structure
       t.decimal :price, precision: 9, scale: 2
-      t.text :type, array: true
+      t.text :data_type, array: true, default: []
       t.text :purpose
       t.timestamps
     end
 
     create_table :product_questions do |t|
-      t.text :how_its_assigned, array: true
-      t.text :how_its_used, array: true
-      t.text :how_its_accessed, array: true
-      t.text :audience, array: true
+      t.text :how_its_assigned, array: true, default: []
+      t.text :how_its_used, array: true, default: []
+      t.text :how_its_accessed, array: true, default: []
+      t.text :audience, array: true, default: []
       t.timestamps
     end
 
@@ -29,7 +29,7 @@ class CreateProductInventoryTables < ActiveRecord::Migration
     end
 
     create_table :technical_questions do |t|
-      t.text :platform, array: true
+      t.text :platform, array: true, default: []
       t.text :hosting
       t.text :connectivity
       t.text :single_sign_on

@@ -16,6 +16,8 @@ class DataEntry < ActiveRecord::Base
   has_one :data_entry_question
   has_one :data_access_question
 
+  validates :general_data_question, presence: true
+
   default_scope {
     includes(:general_data_question, :data_entry_question, :data_access_question)
   }

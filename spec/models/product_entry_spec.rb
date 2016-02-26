@@ -18,4 +18,8 @@ describe ProductEntry do
   it { is_expected.to have_one(:product_question) }
   it { is_expected.to have_one(:usage_question) }
   it { is_expected.to have_one(:technical_question) }
+
+  it { is_expected.to validate_presence_of(:general_inventory_question) }
+  it { is_expected.to validate_presence_of(:usage_question) }
+  it { is_expected.to validate_presence_of(:technical_question) }
 end

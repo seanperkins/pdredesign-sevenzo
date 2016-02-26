@@ -18,6 +18,10 @@ class ProductEntry < ActiveRecord::Base
   has_one :usage_question
   has_one :technical_question
 
+  validates :general_inventory_question, presence: true
+  validates :usage_question, presence: true
+  validates :technical_question, presence: true
+
   default_scope {
     includes(:general_inventory_question, :product_question, :usage_question, :technical_question)
   }

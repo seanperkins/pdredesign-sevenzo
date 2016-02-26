@@ -9,7 +9,7 @@
 #  point_of_contact_department :text
 #  pricing_structure           :text
 #  price                       :decimal(9, 2)
-#  type                        :text             is an Array
+#  data_type                   :text             default([]), is an Array
 #  purpose                     :text
 #  created_at                  :datetime
 #  updated_at                  :datetime
@@ -18,7 +18,7 @@
 
 class GeneralInventoryQuestion < ActiveRecord::Base
 
-  enum product_types: {
+  enum product_type: {
       academic_content: 'PD for Academic Content',
       instructional_skills: 'PD for Instructional Skills',
       pedagogies: 'PD for Pedagogies',
@@ -27,5 +27,6 @@ class GeneralInventoryQuestion < ActiveRecord::Base
       human_resources: 'Human Resources'
   }
 
+  validates :data_type, array_enum: { enum: GeneralInventoryQuestion.product_types }
 
 end

@@ -3,7 +3,7 @@
 # Table name: technical_questions
 #
 #  id               :integer          not null, primary key
-#  platform         :text             is an Array
+#  platform         :text             default([]), is an Array
 #  hosting          :text
 #  connectivity     :text
 #  single_sign_on   :text

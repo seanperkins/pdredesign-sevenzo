@@ -3,10 +3,10 @@
 # Table name: product_questions
 #
 #  id               :integer          not null, primary key
-#  how_its_assigned :text             is an Array
-#  how_its_used     :text             is an Array
-#  how_its_accessed :text             is an Array
-#  audience         :text             is an Array
+#  how_its_assigned :text             default([]), is an Array
+#  how_its_used     :text             default([]), is an Array
+#  how_its_accessed :text             default([]), is an Array
+#  audience         :text             default([]), is an Array
 #  created_at       :datetime
 #  updated_at       :datetime
 #  product_entry_id :integer
