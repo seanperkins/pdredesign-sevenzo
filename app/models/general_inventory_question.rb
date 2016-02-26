@@ -2,18 +2,17 @@
 #
 # Table name: general_inventory_questions
 #
-#  id                                                              :integer          not null, primary key
-#  product_name                                                    :text
-#  vendor                                                          :text
-#  point_of_contact_name                                           :text
-#  point_of_contact_department                                     :text
-#  pricing_structure                                               :text
-#  price                                                           :decimal(9, 2)
-#  type                                                            :text             is an Array
-#  created_at                                                      :datetime
-#  updated_at                                                      :datetime
-#  purpose                                                         :text
-#  #<ActiveRecord::ConnectionAdapters::PostgreSQL::TableDefinition :text
+#  id                          :integer          not null, primary key
+#  product_name                :text
+#  vendor                      :text
+#  point_of_contact_name       :text
+#  point_of_contact_department :text
+#  pricing_structure           :text
+#  price                       :decimal(9, 2)
+#  type                        :text             is an Array
+#  purpose                     :text
+#  created_at                  :datetime
+#  updated_at                  :datetime
 #
 
 class GeneralInventoryQuestion < ActiveRecord::Base

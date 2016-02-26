@@ -12,4 +12,7 @@
 #
 
 class ProductEntry < ActiveRecord::Base
+  default_scope {
+    includes(:general_inventory_question, :product_question, :usage_question, :technical_question)
+  }
 end

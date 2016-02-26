@@ -8,7 +8,7 @@ class CreateProductInventoryTables < ActiveRecord::Migration
       t.text :pricing_structure
       t.decimal :price, precision: 9, scale: 2
       t.text :type, array: true
-      t.text :purpose, 
+      t.text :purpose
       t.timestamps
     end
 

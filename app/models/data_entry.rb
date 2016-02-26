@@ -11,4 +11,7 @@
 #
 
 class DataEntry < ActiveRecord::Base
+  default_scope {
+    includes(:general_data_question, :data_entry_question, :data_access_question)
+  }
 end

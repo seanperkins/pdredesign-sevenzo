@@ -227,18 +227,17 @@ ActiveRecord::Schema.define(version: 20160226162039) do
     t.text     "point_of_contact_name"
     t.text     "point_of_contact_department"
     t.text     "pricing_structure"
-    t.decimal  "price",                                                           precision: 9, scale: 2
-    t.text     "type",                                                                                    array: true
+    t.decimal  "price",                       precision: 9, scale: 2
+    t.text     "type",                                                array: true
+    t.text     "purpose"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.text     "purpose"
-    t.text     "#<ActiveRecord::ConnectionAdapters::PostgreSQL::TableDefinition"
   end
 
   create_table "inventories", force: :cascade do |t|
-    t.string   "name"
-    t.datetime "deadline"
-    t.integer  "districts_id"
+    t.string   "name",             null: false
+    t.datetime "deadline",         null: false
+    t.integer  "districts_id",     null: false
     t.integer  "product_entry_id", null: false
     t.integer  "data_entry_id",    null: false
   end
