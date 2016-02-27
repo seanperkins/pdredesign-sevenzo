@@ -62,5 +62,13 @@ class CreateInventoryContainerModels < ActiveRecord::Migration
     change_table :technical_questions do |t|
       t.references :product_entry, index: true
     end
+
+    change_table :product_entries do |t|
+      t.references :inventory, index: true
+    end
+
+    change_table :data_entries do |t|
+      t.references :inventory, index: true
+    end
   end
 end

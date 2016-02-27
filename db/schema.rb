@@ -103,11 +103,13 @@ ActiveRecord::Schema.define(version: 20160226162039) do
     t.integer  "data_access_question_id",  null: false
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "inventory_id"
   end
 
   add_index "data_entries", ["data_access_question_id"], name: "index_data_entries_on_data_access_question_id", using: :btree
   add_index "data_entries", ["data_entry_question_id"], name: "index_data_entries_on_data_entry_question_id", using: :btree
   add_index "data_entries", ["general_data_question_id"], name: "index_data_entries_on_general_data_question_id", using: :btree
+  add_index "data_entries", ["inventory_id"], name: "index_data_entries_on_inventory_id", using: :btree
 
   create_table "data_entry_questions", force: :cascade do |t|
     t.string   "who_enters_data"
@@ -338,9 +340,11 @@ ActiveRecord::Schema.define(version: 20160226162039) do
     t.integer  "technical_question_id",         null: false
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "inventory_id"
   end
 
   add_index "product_entries", ["general_inventory_question_id"], name: "index_product_entries_on_general_inventory_question_id", using: :btree
+  add_index "product_entries", ["inventory_id"], name: "index_product_entries_on_inventory_id", using: :btree
   add_index "product_entries", ["product_question_id"], name: "index_product_entries_on_product_question_id", using: :btree
   add_index "product_entries", ["technical_question_id"], name: "index_product_entries_on_technical_question_id", using: :btree
   add_index "product_entries", ["usage_question_id"], name: "index_product_entries_on_usage_question_id", using: :btree

@@ -14,6 +14,8 @@
 
 class GeneralDataQuestion < ActiveRecord::Base
 
+  belongs_to :data_entry
+
   enum data_type: {
       finance_and_budget: 'Finance & Budget Data',
       pd: 'PD Data',
