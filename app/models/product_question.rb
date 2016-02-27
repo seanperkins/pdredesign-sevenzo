@@ -14,7 +14,7 @@
 
 class ProductQuestion < ActiveRecord::Base
 
-  enum assignment: {
+  enum assignment_approach: {
       teacher_choice: 'Teacher Choice',
       data_driven: 'Data Driven',
       differentiated: 'Differentiated',
@@ -27,7 +27,7 @@ class ProductQuestion < ActiveRecord::Base
       scheduled: 'Scheduled'
   }
 
-  enum accessed_via: {
+  enum access: {
       content_repository: 'Content Repository',
       video_share: 'Video Share Platform',
       social_network: 'Social Network',
@@ -37,11 +37,17 @@ class ProductQuestion < ActiveRecord::Base
       online_courses: 'Online Courses'
   }
 
-  enum audience: {
+  enum audience_type: {
       admin_audience: 'Administrators',
       teacher_audience: 'Teachers',
       home_school_audience: 'Home School',
       parent_audience: 'Parents',
       student_audience: 'Students'
   }
+
+  validates :how_its_assigned, array_enum: {enum: ProductQuestion.assignment_approaches}
+  validates :how_its_used, array_enum: {enum: ProductQuestion.usage_frequencies}
+  validates :how_its_accessed, array_enum: {enum: ProductQuestion.accesses}
+  validates :audience, array_enum: {enum: ProductQuestion.audience_types}
+
 end
