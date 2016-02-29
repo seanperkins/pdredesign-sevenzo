@@ -78,7 +78,7 @@ describe V1::ReportController do
     context 'without user logged in' do
       before(:each) do
         sign_out :user
-        get :consensus_report, assessment_id: 1, consensu_id: 1, format: :json
+        get :consensus_report, assessment_id: 1, consensu_id: consensu.id, format: :json
       end
 
       it 'does not retrieve consensus report' do
@@ -133,32 +133,61 @@ describe V1::ReportController do
   end
 
   describe "#participant_consensu_report" do
-    before { create_magic_assessments }
-    before { create_struct }
-    before { sign_in @user2 }
-    let(:assessment) { @assessment_with_participants }
+    let(:assessment) { FactoryGirl.create(:assessment, :with_participants) }
+    let(:participant) { assessment.participants.first }
+    let(:participant_user) { participant.user }
     let(:consensu){ assessment.response.nil? ? Response.create(responder_id:   assessment.id, responder_type: 'Assessment') : assessment.response }
 
-    it 'get the participant consensus report' do
-      get :participant_consensu_report, assessment_id: assessment.id, consensu_id: consensu.id, participant_id: @participant.id, format: :json
-      
-      expect(json["questions"]).to be_kind_of(Array)
-      expect(json["consensu_id"]).not_to be_nil
-      expect(json["assessment_id"]).not_to be_nil
-      expect(json["participant_id"]).not_to be_nil
+    context 'without user logged in' do
+      before(:each) do
+        get :participant_consensu_report, assessment_id:  assessment.id, consensu_id: consensu.id, participant_id: participant.id, format: :json
+      end
 
-      expect(response).to have_http_status(:ok)
+      it 'requires a user login' do
+        expect(response).to have_http_status(:unauthorized)
+      end
     end
 
-    it 'render not found when consensus does not exist' do
-      get :participant_consensu_report, assessment_id: 900, consensu_id: 900, participant_id: 800, format: :json
-      expect(response).to have_http_status(:not_found)
-    end
+    context 'with participant logged in' do
+      before(:each) do
+          sign_in participant_user
+      end
 
-    it 'requires a user login' do
-      sign_out :user
-      get :participant_consensu_report, assessment_id: 1, consensu_id: 1, participant_id: 1, format: :json
-      expect(response).to have_http_status(:unauthorized)
+      context 'consensus, participant assessment or does not exists' do
+        before(:each) do
+          get :participant_consensu_report, assessment_id: 900, consensu_id: 900, participant_id: 800, format: :json
+        end
+
+        it 'render not found' do
+          expect(response).to have_http_status(:not_found)
+        end
+      end
+
+      context 'retriving valid assessment, consensus and participant' do
+        before(:each) do 
+          get :participant_consensu_report, assessment_id: assessment.id, consensu_id: consensu.id, participant_id: participant.id, format: :json
+        end
+
+        it 'retrieves questions' do
+          expect(json["questions"]).to be_kind_of(Array)
+        end
+
+        it 'matches fetched consensu' do
+          expect(json["consensu_id"]).to eq consensu.id
+        end
+
+        it 'matches fetched assessment' do
+          expect(json["assessment_id"]).to eq assessment.id
+        end
+
+        it 'matches fetched participant' do
+          expect(json["participant_id"]).to eq participant.id
+        end
+
+        it 'renders successfully' do
+          expect(response).to have_http_status(:ok)
+        end
+      end
     end
   end
 end
