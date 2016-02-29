@@ -72,8 +72,8 @@ describe V1::ReportController do
   end
 
   describe "#consensus_report" do
-    let(:assessment) { FactoryGirl.create(:assessment, :with_participants) }
-    let(:consensu){ assessment.response.nil? ? Response.create(responder_id:   assessment.id, responder_type: 'Assessment') : assessment.response }
+    let(:assessment) { FactoryGirl.create(:assessment, :with_participants, :with_consensus) }
+    let(:consensu) { assessment.response }
 
     context 'without user logged in' do
       before(:each) do
@@ -133,10 +133,10 @@ describe V1::ReportController do
   end
 
   describe "#participant_consensu_report" do
-    let(:assessment) { FactoryGirl.create(:assessment, :with_participants) }
+    let(:assessment) { FactoryGirl.create(:assessment, :with_participants, :with_consensus) }
     let(:participant) { assessment.participants.first }
     let(:participant_user) { participant.user }
-    let(:consensu){ assessment.response.nil? ? Response.create(responder_id:   assessment.id, responder_type: 'Assessment') : assessment.response }
+    let(:consensu) { assessment.response }
 
     context 'without user logged in' do
       before(:each) do

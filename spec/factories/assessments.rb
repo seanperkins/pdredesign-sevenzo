@@ -38,5 +38,11 @@ FactoryGirl.define do
         assessment.facilitators = [FactoryGirl.create(:user, :with_district)]
       end
     end
+
+    trait :with_consensus do
+      after(:create) do |assessment|
+        assessment.update_attributes(response: FactoryGirl.create(:response, responder: assessment))
+      end
+    end
   end
 end
