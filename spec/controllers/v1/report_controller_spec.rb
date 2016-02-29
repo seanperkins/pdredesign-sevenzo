@@ -5,7 +5,6 @@ describe V1::ReportController do
 
   describe '#show' do
     let(:assessment) { FactoryGirl.create(:assessment, :with_participants) }
-    let(:consensu) { assessment.response.nil? ? Response.create(responder_id:   assessment.id, responder_type: 'Assessment') : assessment.response }
 
     context 'without user' do
       before(:each) do
@@ -73,10 +72,7 @@ describe V1::ReportController do
   end
 
   describe "#consensus_report" do
-    before { create_magic_assessments }
-    before { create_struct }
-    before { sign_in @user2 }
-    let(:assessment) { @assessment_with_participants }
+    let(:assessment) { FactoryGirl.create(:assessment, :with_participants) }
     let(:consensu){ assessment.response.nil? ? Response.create(responder_id:   assessment.id, responder_type: 'Assessment') : assessment.response }
 
     context 'without user logged in' do
@@ -90,19 +86,49 @@ describe V1::ReportController do
       end
     end
 
-    it 'get the consensus report response' do
-      get :consensus_report, assessment_id: assessment.id, consensu_id: consensu.id, format: :json
+    context 'user participant logged in' do
+      let(:participant) { assessment.participants.first }
+      let(:participant_user) { participant.user }
 
-      expect(json["participants"].count).to eq(assessment.participants.count)
-      expect(json["participant_count"]).not_to be_nil
-      expect(json["questions"]).to be_kind_of(Array)
-      expect(json["scores"]).to be_kind_of(Array)
-      expect(response).to have_http_status(:ok)
-    end
+      before do
+        sign_in participant_user
+      end
 
-    it 'render not found when consensus does not exist' do
-      get :consensus_report, assessment_id: assessment.id, consensu_id: 9990, format: :json
-      expect(response).to have_http_status(:not_found)
+      context 'on an existing consensus' do
+        before do
+          get :consensus_report, assessment_id: assessment.id, consensu_id: consensu.id, format: :json
+        end
+
+        it 'responds successfully' do
+          expect(response).to have_http_status(:ok)
+        end
+
+        it 'returns scores as array' do
+          expect(json["scores"]).to be_kind_of(Array)
+        end
+
+        it 'returns questions as array' do
+          expect(json["questions"]).to be_kind_of(Array)
+        end
+
+        it 'returns participants as array as the participants of the assessment' do
+          expect(json["participants"].count).to eq(assessment.participants.count)
+        end
+
+        it 'get the participant count' do
+          expect(json["participant_count"]).not_to be_nil
+        end
+      end
+
+      context 'on an existing consensus' do
+        before do
+          get :consensus_report, assessment_id: assessment.id, consensu_id: 9990, format: :json
+        end
+
+        it 'render not found when consensus does not exist' do
+          expect(response).to have_http_status(:not_found)
+        end
+      end
     end
   end
 
