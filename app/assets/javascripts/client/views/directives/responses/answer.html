@@ -17,10 +17,7 @@
       <div class="answer-description">
         <p ng-bind-html="answer.content"></p>
       </div>
-      <ng-include
-          ng-hide="isConsensus"
-          src="'client/views/shared/responses/member_question.html'">
-      </ng-include>
+      <response-answer-form question="question" answer="answer" />
     </div>
   </div>
 </div>

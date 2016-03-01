@@ -36,7 +36,7 @@
               </p>
               <p class="content">{{question.content}}</p>
             </div>
-            <div class="answers" ng-show="question.answersVisible">
+            <div class="answers">
               <div class="answer" ng-repeat="answer in question.answers" ng-click="assignAnswerToQuestion(answer, question)">
                 <response-answer question="question" answer="answer" />
               </div>

@@ -11,6 +11,7 @@
         question: '=',
         answer: '='
       },
+      replace: true,
       templateUrl: 'client/views/directives/responses/answer.html',
       controller: 'ResponseAnswerCtrl',
       controllerAs: 'responseAnswer'
