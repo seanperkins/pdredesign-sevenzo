@@ -10,7 +10,10 @@
       transclude: true,
       scope: {
         question: '=',
-        answer: '='
+        answer: '=',
+        blankable: '@',
+        visible: '@',
+        placeholder: '@'
       },
       replace: true,
       templateUrl: 'client/views/directives/responses/form.html',

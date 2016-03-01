@@ -1,7 +1,7 @@
-<div class="row score-evidence" ng-show="question.score.value == answer.value">
+<div class="row score-evidence" ng-show="visible === 'true'">
   <div ng-hide="question.score.editMode">
     <textarea class="col-xs-12" ng-model="question.score.evidence"
-              placeholder="Write evidence of why you believe this is the correct score for this question. Skip to next question if you're not sure.">
+              placeholder="{{ placeholder }}">
     </textarea>
     <div class="save-holder">
       <button ng-disabled="responseAnswerForm.invalidEvidence(question)"
@@ -11,7 +11,7 @@
       </button>
     </div>
   </div>
-  <div ng-show="question.score.editMode ">
+  <div ng-show="question.score.editMode">
     <div class="evidence-read">
       <p ng-bind-html="question.score.evidence"></p>
       <div class="edit-holder">

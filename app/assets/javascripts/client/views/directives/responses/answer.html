@@ -17,7 +17,13 @@
       <div class="answer-description">
         <p ng-bind-html="answer.content"></p>
       </div>
-      <response-answer-form question="question" answer="answer"/>
+      <response-answer-form
+          question="question"
+          answer="answer"
+          blankable="false"
+          visible="{{ question.score.value === answer.value }}"
+          placeholder="Write evidence of why you believe this is the correct score for this question. Skip to next question if you're not sure."
+      ></response-answer-form>
     </div>
   </div>
 </div>
