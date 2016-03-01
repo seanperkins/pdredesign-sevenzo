@@ -1,0 +1,26 @@
+<div class="answer-row value-color-{{answer.value}}"
+    ng-class="{'scored{{answer.value}}': question.score.value === answer.value}">
+  <ng-include
+      class="left-score"
+      ng-show="isConsensus"
+      src="'client/views/shared/responses/score_count.html'">
+  </ng-include>
+
+  <div class="answer-info-row value-color-{{answer.value}}">
+    <div class="scored-{{answer.value}} answer-value">
+      <span>{{answer.value}}</span>
+    </div>
+    <div class="answer-container">
+      <div class="answer-title title-{{answer.value}}">
+        {{responseAnswer.extractAnswerTitle(answer.value)}}
+      </div>
+      <div class="answer-description">
+        <p ng-bind-html="answer.content"></p>
+      </div>
+      <ng-include
+          ng-hide="isConsensus"
+          src="'client/views/shared/responses/member_question.html'">
+      </ng-include>
+    </div>
+  </div>
+</div>
