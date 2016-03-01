@@ -9,11 +9,10 @@ describe V1::ReportController do
     context 'without user' do
       before(:each) do
         sign_out :user
-        get :show, assessment_id: 1, format: :json
+        get :show, assessment_id: assessment.id, format: :json
       end
 
       it do
-        sign_out :user
         expect(response).to have_http_status(:unauthorized)
       end
     end
@@ -120,7 +119,7 @@ describe V1::ReportController do
         end
       end
 
-      context 'on an existing consensus' do
+      context 'on a non-existing consensus' do
         before do
           get :consensus_report, assessment_id: assessment.id, consensu_id: 9990, format: :json
         end
