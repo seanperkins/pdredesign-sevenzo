@@ -1,13 +1,13 @@
 <div class="categories">
   <div ng-show="isConsensus" class="row sort-by">
     <ng-include
-      ng-show="isConsensus"
-      src="'client/views/shared/responses/sort_by.html'" >
+        ng-show="isConsensus"
+        src="'client/views/shared/responses/sort_by.html'">
     </ng-include>
 
     <ng-include
-      ng-show="isConsensus"
-      src="'client/views/shared/responses/filter_by_role.html'" >
+        ng-show="isConsensus"
+        src="'client/views/shared/responses/filter_by_role.html'">
     </ng-include>
   </div>
   <div class="category" ng-repeat="category in categories">
@@ -24,37 +24,18 @@
             <p class="question-id scored-{{question.score.value}}" ng-show="question.loading">
               <i class="fa fa-spinner fa-spin"></i>
             </p>
-            <p id="question-{{question.number}}" class="question-id {{questionColor(question, isConsensus)}}" ng-hide="question.loading">
+            <p id="question-{{question.number}}" class="question-id {{questionColor(question, isConsensus)}}"
+               ng-hide="question.loading">
               <a href="#question-{{question.id}}"></a>
               {{question.number}}
             </p>
           </div>
           <div class="question-content">
-            <div>
-              <p class="question-headline">
-                {{question.headline}}
-              </p>
-              <p class="content">{{question.content}}</p>
-            </div>
-            <div class="answers">
-              <div class="answer" ng-repeat="answer in question.answers" ng-click="assignAnswerToQuestion(answer, question)">
-                <response-answer question="question" answer="answer" />
-              </div>
-              <skip-question
-                  editable="!isConsensus"
-                  question="question"
-                  response-id="{{responseId}}"
-                  assessment-id="{{assessmentId}}">
-              </skip-question>
-              <ng-include
-                  ng-show="isConsensus"
-                  src="'client/views/shared/responses/evidence.html'" >
-              </ng-include>
-              <ng-include
-                  ng-show="isConsensus"
-                  src="'client/views/shared/responses/consensus_score_entry.html'" >
-              </ng-include>
-            </div>
+            <p class="question-headline">
+              {{question.headline}}
+            </p>
+            <p class="content">{{question.content}}</p>
+            <response-answer-group question="question" />
           </div>
         </div>
       </div>

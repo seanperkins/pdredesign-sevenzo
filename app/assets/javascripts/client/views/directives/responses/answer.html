@@ -1,5 +1,5 @@
 <div class="answer-row value-color-{{answer.value}}"
-    ng-class="{'scored{{answer.value}}': question.score.value === answer.value}">
+     ng-class="{'scored{{answer.value}}': question.score.value === answer.value}">
   <ng-include
       class="left-score"
       ng-show="isConsensus"
@@ -17,7 +17,7 @@
       <div class="answer-description">
         <p ng-bind-html="answer.content"></p>
       </div>
-      <response-answer-form question="question" answer="answer" />
+      <response-answer-form question="question" answer="answer"/>
     </div>
   </div>
 </div>

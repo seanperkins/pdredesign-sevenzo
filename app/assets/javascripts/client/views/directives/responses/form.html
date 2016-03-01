@@ -1,15 +1,12 @@
 <div class="row score-evidence" ng-show="question.score.value == answer.value">
   <div ng-hide="question.score.editMode">
-      <textarea
-          class="col-xs-12"
-          ng-model="question.score.evidence"
-          placeholder="Write evidence of why you believe this is the correct score for this question. Skip to next question if you're not sure.">
-      </textarea>
+    <textarea class="col-xs-12" ng-model="question.score.evidence"
+              placeholder="Write evidence of why you believe this is the correct score for this question. Skip to next question if you're not sure.">
+    </textarea>
     <div class="save-holder">
-      <button
-          ng-disabled="responseAnswerForm.invalidEvidence(question)"
-          class='btn btn-primary pull-right'
-          ng-click="responseAnswerForm.saveEvidence(question)">
+      <button ng-disabled="responseAnswerForm.invalidEvidence(question)"
+              class='btn btn-primary pull-right'
+              ng-click="responseAnswerForm.saveEvidence(question)">
         <i class='fa fa-save'></i> Save
       </button>
     </div>

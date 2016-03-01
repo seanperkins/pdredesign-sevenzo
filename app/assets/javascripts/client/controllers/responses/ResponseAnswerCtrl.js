@@ -13,6 +13,6 @@
 
     vm.extractAnswerTitle = function(answer) {
       return ResponseHelper.answerTitle(answer);
-    }
+    };
   }
 })();
