@@ -6,14 +6,15 @@
 
   ResponseAnswerFormCtrl.$inject = [
     '$scope',
-    'ResponseHelper'
+    'ResponseHelper',
+    'ResponseValidationService'
   ];
 
-  function ResponseAnswerFormCtrl($scope, ResponseHelper) {
+  function ResponseAnswerFormCtrl($scope, ResponseHelper, ResponseValidationService) {
     var vm = this;
 
     vm.invalidEvidence = function(question) {
-      return vm.blankable === 'false' && (question.score.evidence === null || question.score.evidence === '');
+      return ResponseValidationService.invalidEvidence(question, vm.blankable);
     };
 
     vm.saveEvidence = function(question) {
