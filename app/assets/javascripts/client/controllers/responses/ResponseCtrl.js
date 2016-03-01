@@ -8,21 +8,30 @@
     '$timeout',
     '$stateParams',
     '$modal',
-    'Assessment'
+    'Assessment',
+    'LearningQuestion'
   ];
 
-  function ResponseCtrl($scope, $timeout, $stateParams, $modal, Assessment) {
+  function ResponseCtrl($scope, $timeout, $stateParams, $modal, Assessment, LearningQuestion) {
 
     $scope.assessmentId = $stateParams.assessment_id;
     $scope.responseId = $stateParams.response_id;
     $scope.assessment = Assessment.get({id: $stateParams.assessment_id});
 
+
     $scope.$on('responses-loaded', function() {
       $timeout(function() {
-        $scope.modal = $modal.open({
-          template: '<learning-question-modal reminder="true" />',
-          scope: $scope
-        });
+        LearningQuestion.exists({assessment_id: $stateParams.assessment_id})
+            .$promise
+            .then(function() {
+              // No-op - implies that a learning question exists for this user on this assessment
+            }, function() {
+              // We did not find a learning question for this user, so we must open the modal.
+              $scope.modal = $modal.open({
+                template: '<learning-question-modal reminder="true" />',
+                scope: $scope
+              });
+            });
       });
     });
   }
