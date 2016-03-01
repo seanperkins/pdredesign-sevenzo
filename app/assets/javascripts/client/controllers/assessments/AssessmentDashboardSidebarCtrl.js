@@ -63,7 +63,7 @@
 
         $scope.addLearningQuestion = function () {
             $scope.modal = $modal.open({
-                templateUrl: 'client/views/modals/learning_questions/add_learning_question.html',
+                template: '<learning-question-modal reminder="false" />',
                 scope: $scope
             });
         };

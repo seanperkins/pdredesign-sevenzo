@@ -12,7 +12,6 @@
   ];
 
   function ConsensusShowCtrl($scope, SessionService, Assessment, ConsensusHelper, $stateParams) {
-    console.log(consensus);
     $scope.user = SessionService.getCurrentUser();
 
     $scope.assessmentId = $stateParams.assessment_id;
