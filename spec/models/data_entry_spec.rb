@@ -14,9 +14,9 @@
 require 'spec_helper'
 
 describe DataEntry do
-  it { is_expected.to belong_to(:general_data_question) }
-  it { is_expected.to belong_to(:data_entry_question) }
-  it { is_expected.to belong_to(:data_access_question) }
+  it { is_expected.to have_one(:general_data_question) }
+  it { is_expected.to have_one(:data_entry_question) }
+  it { is_expected.to have_one(:data_access_question) }
 
   it { is_expected.to belong_to(:inventory) }
 

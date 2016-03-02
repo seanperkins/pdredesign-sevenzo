@@ -5,9 +5,9 @@
 #  id               :integer          not null, primary key
 #  name             :string           not null
 #  deadline         :datetime         not null
-#  districts_id     :integer          not null
-#  product_entry_id :integer          not null
-#  data_entry_id    :integer          not null
+#  district_id      :integer          not null
+#  product_entry_id :integer
+#  data_entry_id    :integer
 #
 
 FactoryGirl.define do
@@ -15,7 +15,5 @@ FactoryGirl.define do
     name { Faker::Lorem.word }
     deadline { Faker::Date.between(2.days.ago, Date.today) }
     association :district
-    association :data_entry
-    association :product_entry
   end
 end

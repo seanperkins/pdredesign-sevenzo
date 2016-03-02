@@ -13,11 +13,10 @@
 #
 
 class ProductEntry < ActiveRecord::Base
-
-  belongs_to :general_inventory_question, dependent: :delete
-  belongs_to :product_question, dependent: :delete
-  belongs_to :usage_question, dependent: :delete
-  belongs_to :technical_question, dependent: :delete
+  has_one :general_inventory_question, dependent: :delete
+  has_one :product_question, dependent: :delete
+  has_one :usage_question, dependent: :delete
+  has_one :technical_question, dependent: :delete
 
   belongs_to :inventory
 

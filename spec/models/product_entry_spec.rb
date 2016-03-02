@@ -15,10 +15,10 @@
 require 'spec_helper'
 
 describe ProductEntry do
-  it { is_expected.to belong_to(:general_inventory_question) }
-  it { is_expected.to belong_to(:product_question) }
-  it { is_expected.to belong_to(:usage_question) }
-  it { is_expected.to belong_to(:technical_question) }
+  it { is_expected.to have_one(:general_inventory_question) }
+  it { is_expected.to have_one(:product_question) }
+  it { is_expected.to have_one(:usage_question) }
+  it { is_expected.to have_one(:technical_question) }
 
   it { is_expected.to belong_to(:inventory) }
 
