@@ -11,11 +11,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160226162039) do
+ActiveRecord::Schema.define(version: 20160302170305) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-  enable_extension "pg_trgm"
 
   create_table "access_requests", force: :cascade do |t|
     t.integer  "assessment_id"
@@ -252,7 +251,7 @@ ActiveRecord::Schema.define(version: 20160226162039) do
   create_table "inventories", force: :cascade do |t|
     t.string   "name",             null: false
     t.datetime "deadline",         null: false
-    t.integer  "districts_id",     null: false
+    t.integer  "district_id",      null: false
     t.integer  "product_entry_id", null: false
     t.integer  "data_entry_id",    null: false
   end
@@ -451,7 +450,7 @@ ActiveRecord::Schema.define(version: 20160226162039) do
   add_index "scores", ["response_id", "question_id"], name: "index_scores_on_response_id_and_question_id", unique: true, using: :btree
 
   create_table "sessions", force: :cascade do |t|
-    t.string   "session_id", null: false
+    t.string   "session_id", limit: 255, null: false
     t.text     "data"
     t.datetime "created_at"
     t.datetime "updated_at"

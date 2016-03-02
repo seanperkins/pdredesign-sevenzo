@@ -10,15 +10,11 @@
 #  data_entry_id    :integer          not null
 #
 
-class Inventory < ActiveRecord::Base
-  belongs_to :product_entry
-  belongs_to :data_entry
-  belongs_to :district
-
-  accepts_nested_attributes_for :product_entry
-  accepts_nested_attributes_for :data_entry
-
-  default_scope {
-    includes(:product_entry, :data_entry)
-  }
+FactoryGirl.define do
+  factory :inventory do
+    name { Faker::Lorem.word }
+    deadline { Faker::Date.between(2.days.ago, Date.today) }
+    association :district
+    association :data_entry
+  end
 end
