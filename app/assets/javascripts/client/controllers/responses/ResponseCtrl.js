@@ -35,5 +35,9 @@
             });
       });
     });
+
+    $scope.$on('close-learning-question-modal', function() {
+      $scope.modal.close('cancel');
+    });
   }
 })();

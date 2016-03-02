@@ -120,5 +120,9 @@
         $scope.closeShareModal = function () {
             $scope.shareModal.dismiss('cancel');
         };
+
+        $scope.$on('close-learning-question-modal', function() {
+          $scope.modal.close('cancel');
+        });
     }
 })();
