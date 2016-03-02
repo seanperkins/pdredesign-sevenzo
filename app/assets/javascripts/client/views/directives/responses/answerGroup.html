@@ -1,7 +1,7 @@
 <div class="answers" ng-show="question.answersVisible">
   <div class="answer" ng-repeat="answer in question.answers"
        ng-click="responseAnswerGroup.assignAnswerToQuestion(answer, question)">
-    <response-answer question="question" answer="answer" is-consensus="isConsensus"></response-answer>
+    <response-answer question="question" answer="answer" is-consensus="{{isConsensus}}" />
   </div>
   <skip-question
       editable="!isConsensus"

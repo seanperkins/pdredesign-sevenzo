@@ -18,7 +18,8 @@ PDRClient.directive('consensus', [
         'Consensus',
         'Score',
         'ResponseHelper',
-        function($scope, $http, $timeout, $stateParams, $location, SessionService, Consensus, Score, ResponseHelper) {
+        'ConsensusStateService',
+        function($scope, $http, $timeout, $stateParams, $location, SessionService, Consensus, Score, ResponseHelper, ConsensusStateService) {
 
           $scope.isConsensus        = true;
           $scope.isReadOnly         = true;
@@ -83,6 +84,7 @@ PDRClient.directive('consensus', [
                     team_role: $scope.teamRole})
               .$promise
               .then(function(data) {
+                $scope.updateConsensusState(data);
                 $scope.scores     = data.scores;
                 $scope.data       = data.categories;
                 $scope.categories = data.categories;
@@ -91,6 +93,10 @@ PDRClient.directive('consensus', [
                 $scope.participantCount = data.participant_count;
                 return true;
               });
+          };
+
+          $scope.updateConsensusState = function(data) {
+            ConsensusStateService.addConsensusData(data);
           };
 
           $scope.updateTeamRole = function(teamRole) {

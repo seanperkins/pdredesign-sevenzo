@@ -1,10 +1,8 @@
 <div class="answer-row value-color-{{answer.value}}"
      ng-class="{'scored{{answer.value}}': question.score.value === answer.value}">
-  <ng-include
-      class="left-score"
-      ng-show="isConsensus"
-      src="'client/views/shared/responses/score_count.html'">
-  </ng-include>
+  <div ng-if="isConsensus === 'true'">
+    <score-count question="question" answer="answer" />
+  </div>
 
   <div class="answer-info-row value-color-{{answer.value}}">
     <div class="scored-{{answer.value}} answer-value">
