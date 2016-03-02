@@ -9,10 +9,10 @@
 #  technical_question_id         :integer          not null
 #  created_at                    :datetime
 #  updated_at                    :datetime
+#  inventory_id                  :integer
 #
 
 class ProductEntry < ActiveRecord::Base
-
   has_one :general_inventory_question, dependent: :delete
   has_one :product_question, dependent: :delete
   has_one :usage_question, dependent: :delete
