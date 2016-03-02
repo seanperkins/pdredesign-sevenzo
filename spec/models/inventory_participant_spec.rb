@@ -1,15 +1,13 @@
 # == Schema Information
 #
-# Table name: participants
+# Table name: inventory_participants
 #
-#  id               :integer          not null, primary key
-#  user_id          :integer
-#  assessment_id    :integer
-#  created_at       :datetime
-#  updated_at       :datetime
-#  invited_at       :datetime
-#  reminded_at      :datetime
-#  report_viewed_at :datetime
+#  id           :integer          not null, primary key
+#  inventory_id :integer          not null
+#  user_id      :integer          not null
+#  created_at   :datetime
+#  updated_at   :datetime
+#  invited_at   :datetime
 #
 
 require 'spec_helper'

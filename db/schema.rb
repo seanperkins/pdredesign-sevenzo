@@ -248,6 +248,20 @@ ActiveRecord::Schema.define(version: 20160303175531) do
     t.integer  "district_id", null: false
   end
 
+  create_table "inventory_invitations", force: :cascade do |t|
+    t.string  "first_name"
+    t.string  "last_name"
+    t.string  "email"
+    t.string  "team_role"
+    t.string  "role"
+    t.string  "token"
+    t.integer "inventory_id", null: false
+    t.integer "user_id"
+  end
+
+  add_index "inventory_invitations", ["inventory_id"], name: "index_inventory_invitations_on_inventory_id", using: :btree
+  add_index "inventory_invitations", ["user_id"], name: "index_inventory_invitations_on_user_id", using: :btree
+
   create_table "key_question_points", force: :cascade do |t|
     t.integer  "key_question_question_id"
     t.text     "text"
@@ -528,4 +542,21 @@ ActiveRecord::Schema.define(version: 20160303175531) do
 
   add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree
   add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
+<<<<<<< 07013a5d2025ae9413b7c8ec0fc01736f3302ef9
+=======
+
+  add_foreign_key "data_entries", "data_access_questions", on_delete: :cascade
+  add_foreign_key "data_entries", "data_entry_questions", on_delete: :cascade
+  add_foreign_key "data_entries", "general_data_questions", on_delete: :cascade
+  add_foreign_key "inventories", "data_entries", on_delete: :cascade
+  add_foreign_key "inventories", "product_entries", on_delete: :cascade
+  add_foreign_key "inventory_invitations", "inventories", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "inventory_invitations", "users", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "inventory_participants", "inventories", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "inventory_participants", "users", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "product_entries", "general_inventory_questions", on_delete: :cascade
+  add_foreign_key "product_entries", "product_questions", on_delete: :cascade
+  add_foreign_key "product_entries", "technical_questions", on_delete: :cascade
+  add_foreign_key "product_entries", "usage_questions", on_delete: :cascade
+>>>>>>> Inventory Invitations Controller
 end

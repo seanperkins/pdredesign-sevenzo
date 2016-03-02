@@ -75,6 +75,11 @@ PdrServer::Application.routes.draw do
           get :current_level
         end
       end
+
+    end
+
+    scope '/inventories/:inventory_id' do
+      resources :invitations, controller:'inventory_invitations', only: [:create]
     end
 
     get 'user', to: 'user#show'
