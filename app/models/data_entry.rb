@@ -13,9 +13,9 @@
 
 class DataEntry < ActiveRecord::Base
 
-  has_one :general_data_question, dependent: :delete
-  has_one :data_entry_question, dependent: :delete
-  has_one :data_access_question, dependent: :delete
+  belongs_to :general_data_question, dependent: :delete
+  belongs_to :data_entry_question, dependent: :delete
+  belongs_to :data_access_question, dependent: :delete
 
   belongs_to :inventory
 
