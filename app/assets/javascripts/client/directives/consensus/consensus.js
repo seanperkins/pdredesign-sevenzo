@@ -32,13 +32,12 @@ PDRClient.directive('consensus', [
           $scope.toggleCategoryAnswers = function(category) {
             category.toggled = !category.toggled;
             angular.forEach(category.questions, function(question, key) {
-              $scope.toggleAnswers(question);
+              ResponseHelper.toggleCate(question);
             });
           };
 
           $scope.questionColor          = ResponseHelper.questionColor;
           $scope.answerCount            = ResponseHelper.answerCount;
-          $scope.toggleAnswers          = ResponseHelper.toggleAnswers;
           $scope.saveEvidence           = ResponseHelper.saveEvidence;
           $scope.editAnswer             = ResponseHelper.editAnswer;
           $scope.answerTitle            = ResponseHelper.answerTitle;

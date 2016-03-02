@@ -24,7 +24,6 @@ PDRClient.directive('responseQuestions', [
           $scope.isConsensus = false;
 
           $scope.questionColor = ResponseHelper.questionColor;
-          $scope.toggleAnswers = ResponseHelper.toggleAnswers;
           $scope.saveEvidence  = ResponseHelper.saveEvidence;
           $scope.editAnswer    = ResponseHelper.editAnswer;
           $scope.answerTitle   = ResponseHelper.answerTitle;
@@ -32,8 +31,12 @@ PDRClient.directive('responseQuestions', [
           $scope.toggleCategoryAnswers = function(category) {
             category.toggled = !category.toggled;
             angular.forEach(category.questions, function(question, key) {
-              $scope.toggleAnswers(question);
+              ResponseHelper.toggleCategoryAnswers(question);
             });
+          };
+
+          $scope.toggleAnswers = function(question, $event) {
+            ResponseHelper.toggleAnswers(question, $event);
           };
 
           $scope.invalidEvidence = function (question) {

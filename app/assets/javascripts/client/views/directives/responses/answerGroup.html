@@ -1,4 +1,4 @@
-<div class="answers">
+<div class="answers" ng-show="question.answersVisible">
   <div class="answer" ng-repeat="answer in question.answers"
        ng-click="responseAnswerGroup.assignAnswerToQuestion(answer, question)">
     <response-answer question="question" answer="answer"></response-answer>
