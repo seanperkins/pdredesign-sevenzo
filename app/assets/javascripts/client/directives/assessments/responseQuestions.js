@@ -65,9 +65,9 @@ PDRClient.directive('responseQuestions', [
               .then(function(data){
                 $scope.categories = data.categories;
                 $rootScope.$broadcast('success_change');
+                $rootScope.$broadcast('responses-loaded');
               });
           });
-
         }]
     };
 }]);

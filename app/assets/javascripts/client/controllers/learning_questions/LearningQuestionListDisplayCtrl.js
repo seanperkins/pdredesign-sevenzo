@@ -35,7 +35,7 @@
       var willDelete = $window.confirm('Are you sure you wish to delete this learning question?');
       if (willDelete) {
         LearningQuestion
-            .delete({assessment_id: $stateParams.id, id: model.id})
+            .delete({assessment_id: vm.extractId(), id: model.id})
             .$promise
             .then(function() {
               $scope.$emit('learning-question-change');

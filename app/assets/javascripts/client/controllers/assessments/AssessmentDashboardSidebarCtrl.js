@@ -63,7 +63,7 @@
 
         $scope.addLearningQuestion = function () {
             $scope.modal = $modal.open({
-                templateUrl: 'client/views/modals/learning_questions/add_learning_question.html',
+                template: '<learning-question-modal reminder="false" />',
                 scope: $scope
             });
         };
@@ -120,5 +120,9 @@
         $scope.closeShareModal = function () {
             $scope.shareModal.dismiss('cancel');
         };
+
+        $scope.$on('close-learning-question-modal', function() {
+          $scope.modal.close('cancel');
+        });
     }
 })();
