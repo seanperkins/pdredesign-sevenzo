@@ -9,7 +9,8 @@
       transclude: true,
       scope: {
         question: '=',
-        answer: '='
+        answer: '=',
+        isConsensus: '@'
       },
       replace: true,
       templateUrl: 'client/views/directives/responses/answer.html',

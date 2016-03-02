@@ -4,11 +4,7 @@ PDRClient.directive('responseQuestions', [
       restrict: 'E',
       replace: true,
       scope: {},
-      templateUrl: 'client/views/directives/response_questions.html',
-      link: function(scope, element, attrs) {
-        scope.assessmentId = attrs.assessmentId;
-        scope.responseId   = attrs.responseId;
-      },
+      templateUrl: 'client/views/directives/responses/response_questions.html',
       controller: [
         '$scope',
         '$rootScope',
@@ -29,6 +25,7 @@ PDRClient.directive('responseQuestions', [
           $scope.answerTitle   = ResponseHelper.answerTitle;
 
           $scope.toggleCategoryAnswers = function(category) {
+            console.log($stateParams);
             category.toggled = !category.toggled;
             angular.forEach(category.questions, function(question, key) {
               ResponseHelper.toggleCategoryAnswers(question);
@@ -53,7 +50,7 @@ PDRClient.directive('responseQuestions', [
 
           $scope.$on('submit_response', function() {
             Response
-              .submit({assessment_id: $scope.assessmentId, id: $scope.responseId}, {submit: true})
+              .submit({assessment_id: $stateParams.assessment_id, id: $stateParams.response_id}, {submit: true})
               .$promise
               .then(function(data){
                 $location.path('/assessments');
@@ -63,14 +60,13 @@ PDRClient.directive('responseQuestions', [
           $timeout(function(){
             $rootScope.$broadcast('start_change');
             Response
-              .get({assessment_id: $scope.assessmentId, id: $scope.responseId})
+              .get({assessment_id: $stateParams.assessment_id, id: $stateParams.response_id})
               .$promise
               .then(function(data){
                 $scope.categories = data.categories;
                 $rootScope.$broadcast('success_change');
               });
           });
-
         }]
     };
 }]);

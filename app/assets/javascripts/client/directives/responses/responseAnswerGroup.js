@@ -8,7 +8,8 @@
     return {
       restrict: 'E',
       scope: {
-        question: '='
+        question: '=',
+        isConsensus: '@'
       },
       transclude: true,
       replace: true,

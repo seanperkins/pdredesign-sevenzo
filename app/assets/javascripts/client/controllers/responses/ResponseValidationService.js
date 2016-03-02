@@ -6,6 +6,9 @@
 
   function ResponseValidationService() {
     this.invalidEvidence = function(question, blankable) {
+      if(!(question && question.score)) {
+        return;
+      }
       return blankable === 'false' && (question.score.evidence === null || question.score.evidence === '');
     }
   }

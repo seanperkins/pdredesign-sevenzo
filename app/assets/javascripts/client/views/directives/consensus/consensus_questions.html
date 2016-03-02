@@ -1,14 +1,12 @@
 <div class="categories">
-  <div ng-show="isConsensus" class="row sort-by">
-    <ng-include
-        ng-show="isConsensus"
-        src="'client/views/shared/responses/sort_by.html'">
-    </ng-include>
-
-    <ng-include
-        ng-show="isConsensus"
-        src="'client/views/shared/responses/filter_by_role.html'">
-    </ng-include>
+  <div class="row sort-by">
+    <div>
+      <sort-by categories="categories" data="data" />
+    </div>
+    <div>
+      <ng-include src="'client/views/directives/consensus/filter_by_role.html'">
+      </ng-include>
+    </div>
   </div>
   <div class="category" ng-repeat="category in categories">
     <div class="row">
@@ -33,7 +31,7 @@
               {{question.headline}}
             </p>
             <p class="content">{{question.content}}</p>
-            <response-answer-group question="question"/>
+            <response-answer-group question="question" is-consensus="true" />
           </div>
         </div>
       </div>

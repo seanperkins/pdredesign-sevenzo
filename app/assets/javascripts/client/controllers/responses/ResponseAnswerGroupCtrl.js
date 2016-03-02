@@ -21,12 +21,20 @@
     $scope.assessmentId = vm.assessmentId;
 
     vm.assignAnswerToQuestion = function(answer, question) {
-      if (ResponseValidationService.invalidEvidence(question)){
-        return;
+      if ($scope.isConsensus === 'true') {
+        if (!(question && question.score) || (question.score.evidence === null || question.score.evidence === '')) {
+          question.isAlert = true;
+          return false;
+        }
+        ResponseHelper.assignAnswerToQuestion($scope, answer, question);
+      } else {
+        if (ResponseValidationService.invalidEvidence(question)) {
+          return;
+        }
+        question.skipped = false;
+        question.score.value = answer.value;
+        ResponseHelper.assignAnswerToQuestion($scope, answer, question);
       }
-      question.skipped = false;
-      question.score.value = answer.value;
-      ResponseHelper.assignAnswerToQuestion($scope, answer, question);
     };
   }
 })();
