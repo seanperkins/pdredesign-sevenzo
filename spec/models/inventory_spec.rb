@@ -23,6 +23,6 @@ describe Inventory do
   describe '#save' do
     subject { FactoryGirl.create(:inventory) }
 
-    it { expect(subject.saved).to be true } 
+    it { expect(subject.new_record?).to be false } 
   end
 end

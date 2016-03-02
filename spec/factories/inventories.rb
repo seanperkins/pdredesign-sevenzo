@@ -16,5 +16,6 @@ FactoryGirl.define do
     deadline { Faker::Date.between(2.days.ago, Date.today) }
     association :district
     association :data_entry
+    association :product_entry
   end
 end
