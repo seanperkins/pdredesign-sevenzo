@@ -25,12 +25,13 @@
             .$promise
             .then(function() {
               // No-op - implies that a learning question exists for this user on this assessment
-            }, function() {
-              // We did not find a learning question for this user, so we must open the modal.
-              $scope.modal = $modal.open({
-                template: '<learning-question-modal reminder="true" />',
-                scope: $scope
-              });
+            }, function(err) {
+              if (err.status === 404) {
+                $scope.modal = $modal.open({
+                  template: '<learning-question-modal reminder="true" />',
+                  scope: $scope
+                });
+              }
             });
       });
     });
