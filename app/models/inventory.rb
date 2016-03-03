@@ -15,8 +15,4 @@ class Inventory < ActiveRecord::Base
 
   accepts_nested_attributes_for :product_entries
   accepts_nested_attributes_for :data_entries
-
-  default_scope {
-    includes(:product_entries, :data_entries)
-  }
 end
