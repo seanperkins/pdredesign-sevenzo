@@ -27,4 +27,10 @@ describe ProductQuestion do
   it { is_expected.to allow_value(ProductQuestion.accesses.values).for(:how_its_accessed) }
   it { is_expected.to allow_value(ProductQuestion.audience_types.values).for(:audience) }
 
+  describe '#save' do
+    subject { FactoryGirl.create(:product_question) }
+
+    it { expect(subject.new_record?).to be false }
+  end
+
 end

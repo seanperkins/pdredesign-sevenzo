@@ -19,7 +19,13 @@ describe DataEntry do
 
   it { is_expected.to validate_presence_of(:general_data_question) }
 
-  it { is_expected.to accept_nested_attributes_for(:general_data_question)}
-  it { is_expected.to accept_nested_attributes_for(:data_entry_question)}
-  it { is_expected.to accept_nested_attributes_for(:data_access_question)}
+  it { is_expected.to accept_nested_attributes_for(:general_data_question) }
+  it { is_expected.to accept_nested_attributes_for(:data_entry_question) }
+  it { is_expected.to accept_nested_attributes_for(:data_access_question) }
+
+  describe '#save' do
+    subject { FactoryGirl.create(:data_entry) }
+
+    it { expect(subject.new_record?).to be false }
+  end
 end

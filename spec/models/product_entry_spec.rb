@@ -26,4 +26,10 @@ describe ProductEntry do
   it { is_expected.to accept_nested_attributes_for(:product_question) }
   it { is_expected.to accept_nested_attributes_for(:usage_question) }
   it { is_expected.to accept_nested_attributes_for(:technical_question) }
+
+  describe '#save' do
+    subject { FactoryGirl.create(:product_entry) }
+
+    it { expect(subject.new_record?).to be false }
+  end
 end

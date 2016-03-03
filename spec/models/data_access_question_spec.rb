@@ -17,4 +17,10 @@ require 'spec_helper'
 
 describe DataAccessQuestion do
   it { is_expected.to belong_to(:data_entry) }
+
+  describe '#save' do
+    subject { FactoryGirl.create(:data_access_question) }
+
+    it { expect(subject.new_record?).to be false }
+  end
 end

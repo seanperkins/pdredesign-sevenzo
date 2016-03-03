@@ -16,4 +16,10 @@ require 'spec_helper'
 
 describe UsageQuestion do
   it { is_expected.to belong_to(:product_entry) }
+
+  describe '#save' do
+    subject { FactoryGirl.create(:usage_question) }
+
+    it { expect(subject.new_record?).to be false }
+  end
 end

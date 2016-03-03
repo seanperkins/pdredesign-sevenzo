@@ -11,7 +11,7 @@
 FactoryGirl.define do
   factory :data_entry do
     association :general_data_question
-    association :data_entry_question, :yearly_frequency
+    association :data_entry_question
     association :data_access_question
   end
 end

@@ -23,4 +23,10 @@ describe GeneralInventoryQuestion do
   it { is_expected.to belong_to(:product_entry) }
   it { is_expected.to_not allow_value(['foo']).for(:data_type) }
   it { is_expected.to allow_value(GeneralInventoryQuestion.product_types.values).for(:data_type) }
+
+  describe '#save' do
+    subject { FactoryGirl.create(:general_inventory_question) }
+
+    it { expect(subject.new_record?).to be false }
+  end
 end
