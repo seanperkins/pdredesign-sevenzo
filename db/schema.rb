@@ -11,10 +11,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160302204016) do
+ActiveRecord::Schema.define(version: 20160303160639) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+  enable_extension "pg_trgm"
 
   create_table "access_requests", force: :cascade do |t|
     t.integer  "assessment_id"
@@ -249,15 +250,10 @@ ActiveRecord::Schema.define(version: 20160302204016) do
   add_index "general_inventory_questions", ["product_entry_id"], name: "index_general_inventory_questions_on_product_entry_id", using: :btree
 
   create_table "inventories", force: :cascade do |t|
-    t.string   "name",             null: false
-    t.datetime "deadline",         null: false
-    t.integer  "district_id",      null: false
-    t.integer  "product_entry_id"
-    t.integer  "data_entry_id"
+    t.string   "name",        null: false
+    t.datetime "deadline",    null: false
+    t.integer  "district_id", null: false
   end
-
-  add_index "inventories", ["data_entry_id"], name: "index_inventories_on_data_entry_id", using: :btree
-  add_index "inventories", ["product_entry_id"], name: "index_inventories_on_product_entry_id", using: :btree
 
   create_table "key_question_points", force: :cascade do |t|
     t.integer  "key_question_question_id"
@@ -450,7 +446,7 @@ ActiveRecord::Schema.define(version: 20160302204016) do
   add_index "scores", ["response_id", "question_id"], name: "index_scores_on_response_id_and_question_id", unique: true, using: :btree
 
   create_table "sessions", force: :cascade do |t|
-    t.string   "session_id", limit: 255, null: false
+    t.string   "session_id", null: false
     t.text     "data"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -551,8 +547,6 @@ ActiveRecord::Schema.define(version: 20160302204016) do
   add_foreign_key "data_entries", "data_access_questions", on_delete: :cascade
   add_foreign_key "data_entries", "data_entry_questions", on_delete: :cascade
   add_foreign_key "data_entries", "general_data_questions", on_delete: :cascade
-  add_foreign_key "inventories", "data_entries", on_delete: :cascade
-  add_foreign_key "inventories", "product_entries", on_delete: :cascade
   add_foreign_key "product_entries", "general_inventory_questions", on_delete: :cascade
   add_foreign_key "product_entries", "product_questions", on_delete: :cascade
   add_foreign_key "product_entries", "technical_questions", on_delete: :cascade

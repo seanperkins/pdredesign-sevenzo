@@ -16,6 +16,7 @@ require 'spec_helper'
 
 describe ProductQuestion do
 
+  it { is_expected.to belong_to(:product_entry) }
   it { is_expected.not_to allow_value(['foo']).for(:how_its_assigned) }
   it { is_expected.not_to allow_value(['foo']).for(:how_its_used) }
   it { is_expected.not_to allow_value(['foo']).for(:how_its_accessed) }

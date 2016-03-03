@@ -18,6 +18,8 @@
 
 class GeneralInventoryQuestion < ActiveRecord::Base
 
+  belongs_to :product_entry
+
   enum product_type: {
       academic_content: 'PD for Academic Content',
       instructional_skills: 'PD for Instructional Skills',

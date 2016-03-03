@@ -12,6 +12,8 @@
 #  product_entry_id :integer
 #
 
-class UsageQuestion < ActiveRecord::Base
-  belongs_to :product_entry
+require 'spec_helper'
+
+describe UsageQuestion do
+  it { is_expected.to belong_to(:product_entry) }
 end

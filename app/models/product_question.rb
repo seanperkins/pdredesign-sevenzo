@@ -14,6 +14,8 @@
 
 class ProductQuestion < ActiveRecord::Base
 
+  belongs_to :product_entry
+
   enum assignment_approach: {
       teacher_choice: 'Teacher Choice',
       data_driven: 'Data Driven',

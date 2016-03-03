@@ -13,16 +13,8 @@
 #  data_entry_id        :integer
 #
 
-class DataAccessQuestion < ActiveRecord::Base
+require 'spec_helper'
 
-  belongs_to :data_entry
-
-  enum data_accessed_by: {
-      team: 'Team',
-      central_office: 'Central Office',
-      school_district: 'School District',
-      public_access: 'Public',
-      other: 'Other'
-  }
-
+describe DataAccessQuestion do
+  it { is_expected.to belong_to(:data_entry) }
 end

@@ -2,12 +2,10 @@
 #
 # Table name: inventories
 #
-#  id               :integer          not null, primary key
-#  name             :string           not null
-#  deadline         :datetime         not null
-#  district_id      :integer          not null
-#  product_entry_id :integer
-#  data_entry_id    :integer
+#  id          :integer          not null, primary key
+#  name        :string           not null
+#  deadline    :datetime         not null
+#  district_id :integer          not null
 #
 
 FactoryGirl.define do
