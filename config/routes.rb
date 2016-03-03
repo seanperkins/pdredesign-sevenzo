@@ -85,6 +85,8 @@ PdrServer::Application.routes.draw do
       resources :participants, controller: 'inventory_participants', only: [:create, :destroy]
     end
 
+    resources :inventories, only: [:create, :index]
+
     get 'user', to: 'user#show'
     put 'user', to: 'user#update'
     post 'user', to: 'user#create'

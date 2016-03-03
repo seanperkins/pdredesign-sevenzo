@@ -7,6 +7,8 @@
 #  deadline    :datetime         not null
 #  district_id :integer          not null
 #  owner_id    :integer
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
 #
 
 class Inventory < ActiveRecord::Base
@@ -17,6 +19,12 @@ class Inventory < ActiveRecord::Base
   belongs_to :district
   belongs_to :owner, class_name: 'User'
   self.authorizer_name = 'InventoryAuthorizer'
+
+  validates_length_of :name, minimum: 1, maximum: 255
+  validates_presence_of :owner
+  validates_presence_of :deadline
+
+  validates :deadline, date: true
 
   accepts_nested_attributes_for :product_entries
   accepts_nested_attributes_for :data_entries

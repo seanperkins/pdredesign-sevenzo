@@ -247,6 +247,8 @@ ActiveRecord::Schema.define(version: 20160308011005) do
     t.datetime "deadline",    null: false
     t.integer  "district_id", null: false
     t.integer  "owner_id"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
   end
 
   create_table "inventory_access_requests", force: :cascade do |t|
