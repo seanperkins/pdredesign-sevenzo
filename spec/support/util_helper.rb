@@ -30,12 +30,12 @@ end
 
 
 def create_responses
-  response1    = Response.find_or_create_by!(
+  response1    = Response.create(
     responder_type: 'Participant',
     responder_id:   @participant.id,
     submitted_at: Time.now)
 
-  response2    = Response.find_or_create_by!(
+  response2    = Response.create(
     responder_type: 'Participant',
     responder_id:   @participant2.id,
     submitted_at: Time.now)

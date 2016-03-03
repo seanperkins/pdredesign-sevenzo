@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160303160639) do
+ActiveRecord::Schema.define(version: 20160303175531) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -99,17 +99,11 @@ ActiveRecord::Schema.define(version: 20160303160639) do
   add_index "data_access_questions", ["data_entry_id"], name: "index_data_access_questions_on_data_entry_id", using: :btree
 
   create_table "data_entries", force: :cascade do |t|
-    t.integer  "general_data_question_id", null: false
-    t.integer  "data_entry_question_id",   null: false
-    t.integer  "data_access_question_id",  null: false
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "inventory_id"
   end
 
-  add_index "data_entries", ["data_access_question_id"], name: "index_data_entries_on_data_access_question_id", using: :btree
-  add_index "data_entries", ["data_entry_question_id"], name: "index_data_entries_on_data_entry_question_id", using: :btree
-  add_index "data_entries", ["general_data_question_id"], name: "index_data_entries_on_general_data_question_id", using: :btree
   add_index "data_entries", ["inventory_id"], name: "index_data_entries_on_inventory_id", using: :btree
 
   create_table "data_entry_questions", force: :cascade do |t|
@@ -330,20 +324,12 @@ ActiveRecord::Schema.define(version: 20160303160639) do
   end
 
   create_table "product_entries", force: :cascade do |t|
-    t.integer  "general_inventory_question_id", null: false
-    t.integer  "product_question_id"
-    t.integer  "usage_question_id",             null: false
-    t.integer  "technical_question_id",         null: false
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "inventory_id"
   end
 
-  add_index "product_entries", ["general_inventory_question_id"], name: "index_product_entries_on_general_inventory_question_id", using: :btree
   add_index "product_entries", ["inventory_id"], name: "index_product_entries_on_inventory_id", using: :btree
-  add_index "product_entries", ["product_question_id"], name: "index_product_entries_on_product_question_id", using: :btree
-  add_index "product_entries", ["technical_question_id"], name: "index_product_entries_on_technical_question_id", using: :btree
-  add_index "product_entries", ["usage_question_id"], name: "index_product_entries_on_usage_question_id", using: :btree
 
   create_table "product_questions", force: :cascade do |t|
     t.text     "how_its_assigned", default: [], array: true
@@ -544,11 +530,4 @@ ActiveRecord::Schema.define(version: 20160303160639) do
   add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree
   add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
 
-  add_foreign_key "data_entries", "data_access_questions", on_delete: :cascade
-  add_foreign_key "data_entries", "data_entry_questions", on_delete: :cascade
-  add_foreign_key "data_entries", "general_data_questions", on_delete: :cascade
-  add_foreign_key "product_entries", "general_inventory_questions", on_delete: :cascade
-  add_foreign_key "product_entries", "product_questions", on_delete: :cascade
-  add_foreign_key "product_entries", "technical_questions", on_delete: :cascade
-  add_foreign_key "product_entries", "usage_questions", on_delete: :cascade
 end
