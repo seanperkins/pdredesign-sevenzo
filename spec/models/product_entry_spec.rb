@@ -2,14 +2,10 @@
 #
 # Table name: product_entries
 #
-#  id                            :integer          not null, primary key
-#  general_inventory_question_id :integer          not null
-#  product_question_id           :integer
-#  usage_question_id             :integer          not null
-#  technical_question_id         :integer          not null
-#  created_at                    :datetime
-#  updated_at                    :datetime
-#  inventory_id                  :integer
+#  id           :integer          not null, primary key
+#  created_at   :datetime
+#  updated_at   :datetime
+#  inventory_id :integer
 #
 
 require 'spec_helper'
@@ -30,4 +26,10 @@ describe ProductEntry do
   it { is_expected.to accept_nested_attributes_for(:product_question) }
   it { is_expected.to accept_nested_attributes_for(:usage_question) }
   it { is_expected.to accept_nested_attributes_for(:technical_question) }
+
+  describe '#save' do
+    subject { FactoryGirl.create(:product_entry) }
+
+    it { expect(subject.new_record?).to be false }
+  end
 end

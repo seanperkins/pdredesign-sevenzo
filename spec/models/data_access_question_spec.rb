@@ -13,16 +13,14 @@
 #  data_entry_id        :integer
 #
 
-class DataAccessQuestion < ActiveRecord::Base
+require 'spec_helper'
 
-  belongs_to :data_entry
+describe DataAccessQuestion do
+  it { is_expected.to belong_to(:data_entry) }
 
-  enum data_accessed_by: {
-      team: 'Team',
-      central_office: 'Central Office',
-      school_district: 'School District',
-      public_access: 'Public',
-      other: 'Other'
-  }
+  describe '#save' do
+    subject { FactoryGirl.create(:data_access_question) }
 
+    it { expect(subject.new_record?).to be false }
+  end
 end

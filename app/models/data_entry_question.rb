@@ -13,6 +13,8 @@
 
 class DataEntryQuestion < ActiveRecord::Base
 
+  belongs_to :data_entry
+
   enum data_entered_frequency: {
       yearly: 'Yearly',
       quarterly: 'Quarterly',

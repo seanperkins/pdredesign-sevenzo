@@ -14,6 +14,8 @@
 
 class TechnicalQuestion < ActiveRecord::Base
 
+  belongs_to :product_entry
+
   enum platform: {
       browser: 'Browser Based',
       iphone: 'Native iPhone App',

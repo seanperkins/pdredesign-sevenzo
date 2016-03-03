@@ -13,8 +13,6 @@
 
 FactoryGirl.define do
   factory :data_entry_question do
-    trait :yearly_frequency do
-      when_data_is_entered DataEntryQuestion.data_entered_frequencies[:yearly]
-    end
+    when_data_is_entered DataEntryQuestion.data_entered_frequencies[:yearly]
   end
 end

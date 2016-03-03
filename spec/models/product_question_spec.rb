@@ -16,6 +16,7 @@ require 'spec_helper'
 
 describe ProductQuestion do
 
+  it { is_expected.to belong_to(:product_entry) }
   it { is_expected.not_to allow_value(['foo']).for(:how_its_assigned) }
   it { is_expected.not_to allow_value(['foo']).for(:how_its_used) }
   it { is_expected.not_to allow_value(['foo']).for(:how_its_accessed) }
@@ -25,5 +26,11 @@ describe ProductQuestion do
   it { is_expected.to allow_value(ProductQuestion.usage_frequencies.values).for(:how_its_used) }
   it { is_expected.to allow_value(ProductQuestion.accesses.values).for(:how_its_accessed) }
   it { is_expected.to allow_value(ProductQuestion.audience_types.values).for(:audience) }
+
+  describe '#save' do
+    subject { FactoryGirl.create(:product_question) }
+
+    it { expect(subject.new_record?).to be false }
+  end
 
 end
