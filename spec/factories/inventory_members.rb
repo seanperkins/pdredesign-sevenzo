@@ -12,8 +12,16 @@
 #
 
 FactoryGirl.define do
-  factory :inventory_members do
+  factory :inventory_member do
     association :user
     association :inventory
+
+    trait :as_facilitator do
+      role 'facilitator'
+    end
+
+    trait :as_participant do
+      role 'participant'
+    end
   end
 end

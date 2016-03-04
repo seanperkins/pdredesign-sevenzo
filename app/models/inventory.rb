@@ -6,12 +6,16 @@
 #  name        :string           not null
 #  deadline    :datetime         not null
 #  district_id :integer          not null
+#  owner_id         :integer
 #
 
 class Inventory < ActiveRecord::Base
+  include Authority::Abilities
   has_many :product_entries
   has_many :data_entries
   belongs_to :district
+  belongs_to :owner, class_name: 'User'
+  self.authorizer_name = 'InventoryAuthorizer'
 
   accepts_nested_attributes_for :product_entries
   accepts_nested_attributes_for :data_entries
@@ -26,5 +30,13 @@ class Inventory < ActiveRecord::Base
 
   def participant?(user:)
     participants.where(user: user).exists?
+  end
+
+  def owner?(user:)
+    self.owner_id == user.id
+  end
+
+  def member?(user:)
+    self.members.where(user: user).exists?
   end
 end

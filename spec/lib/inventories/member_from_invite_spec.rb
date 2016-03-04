@@ -39,7 +39,7 @@ describe Inventories::MemberFromInvite do
         Inventories::MemberFromInvite.new(invitation).execute
       end
 
-      it do
+      it 'adds user as participant' do
         expect(inventory.participant?(user: existing_user)).to be true
       end
     end
@@ -64,36 +64,10 @@ describe Inventories::MemberFromInvite do
       it 'sets user team_role' do
         expect(user.team_role).to eq invitation.team_role
       end
+
+      it 'updates invitation with created user' do
+        expect(invitation.user_id).to eq user.id
+      end
     end
   end
-
-=begin
-  it 'updates the user_id after a user has been created' do
-    subject.new(existing_user_invite).execute
-
-    user = User.find_by(email: @user.email)
-    expect(UserInvitation.find_by(user_id: user.id)).not_to be_nil
-  end 
-
-  it 'can safely create two invites' do
-    subject.new(create_valid_invite).execute
-    user = User.find_by(email: 'john_doe@gmail.com')
-
-    Participant.find_by(user_id: user.id).delete
-  end
-
-  it 'creates a participant for an invite' do
-    subject.new(create_valid_invite).execute
-    user = User.find_by(email: 'john_doe@gmail.com')
-
-    expect(Participant.find_by(user_id: user.id)).not_to be_nil
-  end
-
-  it 'creates a participant and set the specified role' do
-    subject.new(create_valid_invite).execute
-    expect(
-      assessment.facilitator?(User.find_by(email: 'john_doe@gmail.com'))
-    ).to eq(true)
-  end
-=end
 end

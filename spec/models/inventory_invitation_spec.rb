@@ -21,5 +21,5 @@ describe InventoryInvitation do
   it { is_expected.to belong_to(:inventory) }
   it { is_expected.to validate_presence_of :email }
   it { is_expected.to validate_presence_of :inventory_id }
-  it { is_expected.to validate_uniqueness_of(:email).scoped_to(:inventory_id) }
+  it { is_expected.to validate_uniqueness_of(:email).scoped_to(:inventory_id).with_message('User has already been invited').ignoring_case_sensitivity }
 end

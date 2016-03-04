@@ -1,6 +1,8 @@
 class V1::InventoryInvitationsController < ApplicationController
   before_action :authenticate_user!
+  authorize_actions_for :inventory
 
+  authority_actions create: 'update'
   def create
     create_params = invitation_params
     create_params[:inventory_id] = inventory_id

@@ -72,7 +72,6 @@ module Inventories
           assessment.network_partners.destroy(user)
           assessment.reload
       end
-
     end
 
     def self.available_permissions
