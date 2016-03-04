@@ -21,18 +21,4 @@ describe InventoryInvitationNotificationWorker do
       expect(member.updated_at).not_to be_nil
     end
   end
-
-=begin
-  it 'sets the participant :invited_at' do
-    double = double("mailer").as_null_object
-
-    allow(NotificationsMailer).to receive(:invite).and_return(double)
-    @participant.update(invited_at: nil) 
-
-    subject.new.perform(@invitation.id)
-
-    @participant.reload
-    expect(@participant.invited_at).not_to be_nil
-  end
-=end
 end
