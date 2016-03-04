@@ -23,7 +23,7 @@ class V1::InventoryInvitationsController < ApplicationController
 
   private
   def queue_worker(invite_id)
-    UserInvitationNotificationWorker.perform_async(invite_id)
+    InventoryInvitationNotificationWorker.perform_async(invite_id)
   end
 
   def invitation_params
