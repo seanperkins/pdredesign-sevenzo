@@ -4,7 +4,8 @@ describe Inventories::MemberFromInvite do
   describe '#execute' do
     context 'inviting existing network partner as participant' do
       let(:inventory) { FactoryGirl.create(:inventory) }
-      let(:existing_user) { FactoryGirl.create(:user, :with_network_partner_role) }
+      let(:existing_user) { FactoryGirl.create(:user, :with_network_partner_role, :with_district) }
+      let!(:original_user_district) { existing_user.districts.first }
       let(:invitation) { FactoryGirl.create(:inventory_invitation, :as_participant, inventory_id: inventory.id ,email: existing_user.email) }
 
       before(:each) do
@@ -18,6 +19,10 @@ describe Inventories::MemberFromInvite do
 
       it 'sets user district' do
         expect(existing_user.district_ids).to include inventory.district_id
+      end
+
+      it 'does not overrides existing districts' do
+        expect(existing_user.district_ids).to include original_user_district.id
       end
 
       it 'sets user team_role' do
@@ -63,15 +68,6 @@ describe Inventories::MemberFromInvite do
   end
 
 =begin
-  it 'does not create multiple district entries for existing user' do
-    @user.update(district_ids: [@district2.id])
-
-    subject.new(existing_user_invite).execute
-
-    user = User.find_by(email: @user.email)
-    expect(user.district_ids.count).to eq(1)
-  end
-
   it 'updates the user_id after a user has been created' do
     subject.new(existing_user_invite).execute
 

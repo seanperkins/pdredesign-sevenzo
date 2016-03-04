@@ -14,6 +14,8 @@ module Inventories
     end
 
     private
+    delegate :inventory, to: :invite
+
     def update_user_id(user)
       invite.user_id = user.id
       invite.save
@@ -21,34 +23,28 @@ module Inventories
 
     def create_member
       InventoryMember.find_or_create_by(
-        inventory_id: invite.inventory_id,
+        inventory_id: inventory.id,
         user_id:       user_found.id)
     end
 
     def create_or_update_user
-      if user_found
+      user = if user_found
         update_user(user_found)
       else
         create_user
       end
+      ensure_user_district(user)
+      user
     end
 
     def update_user(user)
-      add_district_to_user(user)
-      user.update_column(:team_role, invite.team_role)
+      user.team_role = invite.team_role
+      user.save
       return user
     end
 
-    def add_district_to_user(user)
-      return if district_member?(user)
-      user.tap do
-        user.districts << invite.inventory.district 
-        user.save
-      end
-    end
-
-    def district_member?(user)
-      user.district_ids.include?(invite.inventory.district_id)
+    def ensure_user_district(user)
+      user.ensure_district(district: inventory.district)
     end
 
     def create_user
@@ -56,8 +52,7 @@ module Inventories
                    last_name:    invite.last_name,
                    email:        invite.email,
                    password:     generate_password,
-                   team_role:    invite.team_role,
-                   district_ids: invite.inventory.district_id)
+                   team_role:    invite.team_role)
     end
 
     def user_found
@@ -71,7 +66,7 @@ module Inventories
     def set_permission
       invite.role = 'facilitator' if invite.user.network_partner?
       return unless invite.role
-      ap = Inventories::Permission.new(inventory: invite.inventory, user: invite.user)
+      ap = Inventories::Permission.new(inventory: inventory, user: invite.user)
       ap.add_level(invite.role)
     end
   end
