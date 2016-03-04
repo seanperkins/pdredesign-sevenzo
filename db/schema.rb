@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160303175531) do
+ActiveRecord::Schema.define(version: 20160304041233) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -243,18 +243,10 @@ ActiveRecord::Schema.define(version: 20160303175531) do
   add_index "general_inventory_questions", ["product_entry_id"], name: "index_general_inventory_questions_on_product_entry_id", using: :btree
 
   create_table "inventories", force: :cascade do |t|
-<<<<<<< 33378be3a7f3eba30c9ef7b25fc5847f9b1462ef
     t.string   "name",        null: false
     t.datetime "deadline",    null: false
     t.integer  "district_id", null: false
-=======
-    t.string   "name",             null: false
-    t.datetime "deadline",         null: false
-    t.integer  "district_id",      null: false
-    t.integer  "product_entry_id"
-    t.integer  "data_entry_id"
     t.integer  "owner_id"
->>>>>>> Inventory Authorizer and owner
   end
 
   create_table "inventory_invitations", force: :cascade do |t|
