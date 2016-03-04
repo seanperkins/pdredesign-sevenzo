@@ -6,7 +6,7 @@ class V1::InventoryInvitationsController < ApplicationController
     create_params[:inventory_id] = inventory_id
 
     send_invite = create_params.delete(:send_invite)
-    invite = UserInvitation.new(create_params)
+    invite = InventoryInvitation.new(create_params)
 
     unless invite.save
       @errors = invite.errors.messages
@@ -14,7 +14,7 @@ class V1::InventoryInvitationsController < ApplicationController
       return
     end
 
-    Invitation::InsertFromInvite.new(invite).execute
+    Inventories::MemberFromInvite.new(invite).execute
     queue_worker(invite.id) if send_invite
     render nothing: true
   end
@@ -33,8 +33,7 @@ class V1::InventoryInvitationsController < ApplicationController
     params[:inventory_id]
   end
 
-  def assessment
-    Inventory
-      .find(inventory_id)
+  def inventory
+    Inventory.find(inventory_id)
   end
 end

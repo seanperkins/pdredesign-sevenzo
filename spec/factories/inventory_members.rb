@@ -1,6 +1,6 @@
 # == Schema Information
 #
-# Table name: inventory_participants
+# Table name: inventory_members
 #
 #  id           :integer          not null, primary key
 #  inventory_id :integer          not null
@@ -8,12 +8,12 @@
 #  created_at   :datetime
 #  updated_at   :datetime
 #  invited_at   :datetime
+#  role         :string
 #
 
-class InventoryParticipant < ActiveRecord::Base
-  belongs_to :user
-  belongs_to :inventory
-
-  validates_presence_of :user
-  validates_presence_of :inventory
+FactoryGirl.define do
+  factory :inventory_members do
+    association :user
+    association :inventory
+  end
 end

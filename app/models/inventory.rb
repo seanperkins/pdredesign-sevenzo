@@ -15,4 +15,16 @@ class Inventory < ActiveRecord::Base
 
   accepts_nested_attributes_for :product_entries
   accepts_nested_attributes_for :data_entries
+
+  has_many :members, class_name:'InventoryMember'
+  has_many :participants, -> { where(role: 'participant') }, class_name:'InventoryMember'
+  has_many :facilitators, -> { where(role: 'facilitator') }, class_name:'InventoryMember'
+
+  def facilitator?(user:)
+    facilitators.where(user: user).exists?
+  end
+
+  def participant?(user:)
+    participants.where(user: user).exists?
+  end
 end
