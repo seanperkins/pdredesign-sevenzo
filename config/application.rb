@@ -29,7 +29,7 @@ module PdrServer
 
     config.active_record.raise_in_transactional_callbacks = true
     config.angular_templates.module_name    = 'templates'
-    config.angular_templates.inside_paths   = [Rails.root.join('app', 'assets', 'javascripts', 'client', 'views')]
+    config.angular_templates.inside_paths   = [Rails.root.join('app', 'assets', 'javascripts', 'client', 'views'), Rails.root.join('app', 'assets', 'javascripts', 'client', 'inventories')]
     config.angular_templates.markups        = %w(erb)
     config.angular_templates.htmlcompressor = false
   end

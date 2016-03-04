@@ -22,5 +22,4 @@ class V1::InventoriesController < ApplicationController
   def inventory_params
     params.require(:inventory).permit(:name, :deadline, :district_id)
   end
-
 end

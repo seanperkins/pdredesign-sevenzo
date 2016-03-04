@@ -1,0 +1,32 @@
+(function() {
+  'use strict';
+  angular.module('PDRClient')
+      .config(InventoryRoutesConfig);
+
+  InventoryRoutesConfig.$inject = [
+    '$stateProvider'
+  ];
+
+  function InventoryRoutesConfig($stateProvider) {
+    $stateProvider.state('inventories', {
+      url: '/inventories',
+      authenticate: true,
+      views: {
+        '': {
+          resolve: {
+            inventories: ['Inventory', function(Inventory) {
+              return Inventory.query().$promise;
+            }]
+          },
+          controller: 'InventoryIndexCtrl',
+          controllerAs: 'inventoryIndex',
+          templateUrl: 'client/inventories/inventory_index.html'
+        },
+        'sidebar': {
+          controller: 'SidebarCtrl',
+          templateUrl: 'client/views/sidebar/sidebar_generic.html'
+        }
+      }
+    });
+  }
+})();
