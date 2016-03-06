@@ -24,7 +24,7 @@
       if ($scope.isConsensus === 'true') {
         if (!(question && question.score) || (question.score.evidence === null || question.score.evidence === '')) {
           question.isAlert = true;
-          return false;
+          return;
         }
         ResponseHelper.assignAnswerToQuestion($scope, answer, question);
       } else {
