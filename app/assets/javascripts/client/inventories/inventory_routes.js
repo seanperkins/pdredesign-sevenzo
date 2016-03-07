@@ -1,13 +1,13 @@
 (function() {
   'use strict';
   angular.module('PDRClient')
-      .config(InventoryRoutesConfig);
+      .config(InventoryRoutes);
 
-  InventoryRoutesConfig.$inject = [
+  InventoryRoutes.$inject = [
     '$stateProvider'
   ];
 
-  function InventoryRoutesConfig($stateProvider) {
+  function InventoryRoutes($stateProvider) {
     $stateProvider.state('inventories', {
       url: '/inventories',
       authenticate: true,

@@ -1,18 +1,26 @@
-PDRClient.config(['$stateProvider', '$urlRouterProvider',
-  function($stateProvider, $urlRouterProvider) {
+(function() {
+  'use strict';
+  angular.module('PDRClient')
+      .config(HomeRoutes);
 
+  HomeRoutes.$inject = [
+    '$stateProvider',
+    '$urlRouterProvider'
+  ];
+
+  function HomeRoutes($stateProvider, $urlRouterProvider) {
     $stateProvider.state('home', {
       url: '/home',
       authenticate: true,
       views: {
         '': {
           controller: 'HomeCtrl',
-          templateUrl: 'client/views/home/home_user.html'
+          templateUrl: 'client/home/home_user.html'
         },
         'sidebar': {
           controller: 'SidebarCtrl',
           templateUrl: 'client/views/sidebar/sidebar_generic.html'
-       }
+        }
       }
     });
 
@@ -22,25 +30,21 @@ PDRClient.config(['$stateProvider', '$urlRouterProvider',
       views: {
         'full-width': {
           controller: 'FAQsCtrl',
-          templateUrl: 'client/views/faqs/faqs.html'
-        },
+          templateUrl: 'client/home/home_faqs.html'
+        }
       }
     });
-
 
     $stateProvider.state('root', {
       url: '/',
       showFluid: true,
       views: {
         'full-width': {
-          controller: 'HomeCtrl',
-          templateUrl: 'client/views/home/home_anon.html'
-        },
+          templateUrl: 'client/home/home_anon.html'
+        }
       }
     });
 
     $urlRouterProvider.otherwise("/");
   }
-]);
-
-
+})();

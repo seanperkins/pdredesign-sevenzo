@@ -4,7 +4,7 @@ PDRClient.directive('startAssessment', [
         restrict: 'E',
         replace: true,
         scope: {},
-        templateUrl: 'client/views/directives/start_assessment.html',
+        templateUrl: 'client/home/start_assessment.html',
         controller: [
           '$scope',
           '$timeout',
