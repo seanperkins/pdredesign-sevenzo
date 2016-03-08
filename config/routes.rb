@@ -79,7 +79,8 @@ PdrServer::Application.routes.draw do
     end
 
     scope '/inventories/:inventory_id' do
-      resources :invitations, controller:'inventory_invitations', only: [:create]
+      resources :invitations, controller: 'inventory_invitations', only: [:create]
+      resources :access_requests, controller: 'inventory_access_requests', only: [:index, :create]
     end
 
     get 'user', to: 'user#show'

@@ -19,6 +19,7 @@ describe InventoryAccessRequest do
   it { is_expected.to belong_to(:user) }
   it { is_expected.to validate_presence_of :inventory_id }
   it { is_expected.to validate_presence_of :user_id }
+  it { is_expected.to validate_presence_of :role }
   it { is_expected.to validate_uniqueness_of(:user_id).scoped_to(:inventory_id).with_message('User has already requested access').ignoring_case_sensitivity }
   it { expect(subject.token).not_to be_empty }
 end

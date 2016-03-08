@@ -145,11 +145,13 @@ describe Inventories::Permission do
       subject { Inventories::Permission.new(inventory: inventory, user: user) }
 
       before(:each) do
+        allow(InventoryAccessRequestNotificationWorker).to receive(:perform_async) 
         subject.request_access(role: 'participant')
       end
 
       it { expect(subject.access_request).not_to be_nil }
       it { expect(subject.access_request.role).to eq 'participant' }
+      it { expect(InventoryAccessRequestNotificationWorker).to have_received(:perform_async).with(subject.access_request.id) }
     end
 
     context 'as facilitator' do

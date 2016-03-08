@@ -55,7 +55,11 @@ module Inventories
     end
 
     def request_access(role:)
-      InventoryAccessRequest.create(inventory: inventory, user: user, role: role)
+      request = InventoryAccessRequest.new(inventory: inventory, user: user, role: role)
+      return request unless request.save
+
+      InventoryAccessRequestNotificationWorker.perform_async(request.id)
+      request
     end
 
     private

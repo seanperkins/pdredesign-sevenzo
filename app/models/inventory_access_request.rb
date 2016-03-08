@@ -17,6 +17,7 @@ class InventoryAccessRequest < ActiveRecord::Base
 
   validates :inventory_id, presence: true
   validates :user_id, presence: true
+  validates :role, presence: true
   validates :user_id, uniqueness: { scope: :inventory_id, message: 'User has already requested access' }
   before_create :ensure_token
 
