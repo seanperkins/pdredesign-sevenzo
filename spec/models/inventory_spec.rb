@@ -6,7 +6,7 @@
 #  name        :string           not null
 #  deadline    :datetime         not null
 #  district_id :integer          not null
-#  owner_id         :integer
+#  owner_id    :integer
 #
 
 require 'spec_helper'
@@ -14,6 +14,7 @@ require 'spec_helper'
 describe Inventory do
   it { is_expected.to have_many(:product_entries) }
   it { is_expected.to have_many(:data_entries) }
+  it { is_expected.to have_many(:access_requests) }
   it { is_expected.to belong_to(:district) }
   it { is_expected.to belong_to(:owner) }
 

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160304041233) do
+ActiveRecord::Schema.define(version: 20160308011005) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -247,6 +247,15 @@ ActiveRecord::Schema.define(version: 20160304041233) do
     t.datetime "deadline",    null: false
     t.integer  "district_id", null: false
     t.integer  "owner_id"
+  end
+
+  create_table "inventory_access_requests", force: :cascade do |t|
+    t.integer  "inventory_id", null: false
+    t.integer  "user_id",      null: false
+    t.string   "role",         null: false
+    t.string   "token"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "inventory_invitations", force: :cascade do |t|
@@ -556,6 +565,8 @@ ActiveRecord::Schema.define(version: 20160304041233) do
   add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree
   add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
 
+  add_foreign_key "inventory_access_requests", "inventories", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "inventory_access_requests", "users", on_update: :cascade, on_delete: :cascade
   add_foreign_key "inventory_invitations", "inventories", on_update: :cascade, on_delete: :cascade
   add_foreign_key "inventory_invitations", "users", on_update: :cascade, on_delete: :cascade
   add_foreign_key "inventory_members", "inventories", on_update: :cascade, on_delete: :cascade

@@ -6,13 +6,14 @@
 #  name        :string           not null
 #  deadline    :datetime         not null
 #  district_id :integer          not null
-#  owner_id         :integer
+#  owner_id    :integer
 #
 
 class Inventory < ActiveRecord::Base
   include Authority::Abilities
   has_many :product_entries
   has_many :data_entries
+  has_many :access_requests, class_name: 'InventoryAccessRequest'
   belongs_to :district
   belongs_to :owner, class_name: 'User'
   self.authorizer_name = 'InventoryAuthorizer'

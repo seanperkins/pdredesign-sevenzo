@@ -6,7 +6,7 @@
 #  name        :string           not null
 #  deadline    :datetime         not null
 #  district_id :integer          not null
-#  owner_id         :integer
+#  owner_id    :integer
 #
 
 FactoryGirl.define do

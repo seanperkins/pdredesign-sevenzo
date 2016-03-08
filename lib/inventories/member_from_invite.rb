@@ -67,7 +67,7 @@ module Inventories
       invite.role = 'facilitator' if invite.user.network_partner?
       return unless invite.role
       ap = Inventories::Permission.new(inventory: inventory, user: invite.user)
-      ap.add_level(invite.role)
+      ap.role= invite.role
     end
   end
 end

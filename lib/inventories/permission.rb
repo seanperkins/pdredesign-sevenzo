@@ -14,50 +14,34 @@ module Inventories
       PERMISSIONS-[get_level(user)]
     end
 
-    def requested
-      AccessRequest.where(assessment_id: assessment.id)
+    def role
+      participant.try(:role)
     end
 
-    def get_access_request(user)
-      AccessRequest.find_by(assessment_id: assessment.id, user_id: user.id)
-    end
-
-    def get_level(user)
-      case
-        when assessment.facilitator?(user)
-          :facilitator
-        when assessment.participant?(user)
-          :participant
-      end
-    end
-
-    def add_level(level)
-      level = level.to_sym
-      return unless PERMISSIONS.include? level
+    def role=(role)
+      return unless PERMISSIONS.include? role.to_sym
 
       member = inventory.members.find_or_create_by(user: user)
-      member.role = level
+      return if member.role == role
+
+      member.role = role
       member.save!
-      notify_user_for_access_granted(level: level)
-      true
+      notify_user_for_access_granted(role: role)
+      participant.reload.role
     end
 
-    def update_level(user, level)
-      unless assessment.owner?(user)
-        unless get_level(user).to_s == level.to_s
-          revoke_level(user)
-          add_level(user, level)
-        end
-      end
+    def access_request
+      inventory.access_requests.where(user: user).first
     end
 
-    def accept_permission_requested(user)
-      ar = get_access_request(user)
-      grant_access(ar)
-      notify_user_for_access_granted(ar.assessment, ar.user, ar.roles.first)
+    def accept
+      request = access_request
+      return false unless request
+      self.role = request.role
+      request.destroy!
     end
 
-    def deny(user)
+    def deny
       ar = get_access_request(user)
       ar.destroy
     end
@@ -89,6 +73,10 @@ module Inventories
     end
 
     private
+    def participant
+      @participant ||= inventory.members.where(user: user).first
+    end
+
     ROLES_TO_NOT_SEND_GRANTED_NOTIFICATION = [:participant]
 
     def grant_access(record)
@@ -99,9 +87,9 @@ module Inventories
       true
     end
 
-    def notify_user_for_access_granted(level:)
-      return if ROLES_TO_NOT_SEND_GRANTED_NOTIFICATION.include? level.to_sym
-      InventoryAccessGrantedNotificationWorker.perform_async(inventory.id, user.id, level) 
+    def notify_user_for_access_granted(role:)
+      return if ROLES_TO_NOT_SEND_GRANTED_NOTIFICATION.include? role.to_sym
+      InventoryAccessGrantedNotificationWorker.perform_async(inventory.id, user.id, role) 
     end
   end
 end
