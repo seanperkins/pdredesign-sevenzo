@@ -1,7 +1,5 @@
 module Inventories
   class Permission
-    PERMISSIONS = [:facilitator, :participant]
-
     attr_reader :inventory
     attr_reader :user
 
@@ -10,16 +8,12 @@ module Inventories
       @user = user
     end
 
-    def possible_roles_permissions
-      PERMISSIONS-[get_level(user)]
-    end
-
     def role
-      participant.try(:role)
+      member.try(:role)
     end
 
     def role=(role)
-      return unless PERMISSIONS.include? role.to_sym
+      return unless ROLES.include? role
 
       member = inventory.members.find_or_create_by(user: user)
       return if member.role == role
@@ -27,7 +21,8 @@ module Inventories
       member.role = role
       member.save!
       notify_user_for_access_granted(role: role)
-      participant.reload.role
+      reset_member
+      role
     end
 
     def access_request
@@ -39,53 +34,42 @@ module Inventories
       return false unless request
       self.role = request.role
       request.destroy!
+      reset_member
     end
 
     def deny
-      ar = get_access_request(user)
-      ar.destroy
+      request = access_request
+      return false unless request
+      request.destroy!
+      reset_member
     end
 
-    def revoke_level(user)
-      case get_level(user)
-        when :facilitator
-          assessment.facilitators.delete(user)
-        when :viewer
-          assessment.viewers.destroy(user)
-        when :network_partner
-          assessment.network_partners.destroy(user)
-          assessment.reload
-      end
+    def revoke
+      membership = member
+      membership.destroy!
+      reset_member
     end
 
-    def self.available_permissions
-      PERMISSIONS
+    def available_roles
+      ROLES-[role]
     end
 
-    def self.request_access(user:, assessment_id:, roles:)
-      roles = roles.is_a?(String) ? [roles] : roles
-
-      return AccessRequest.create(
-          {
-              roles: roles, token: SecureRandom.hex[0..9],
-              user: user, assessment_id: assessment_id
-          })
+    def request_access(role:)
+      InventoryAccessRequest.create(inventory: inventory, user: user, role: role)
     end
 
     private
-    def participant
+    ROLES = ['facilitator', 'participant']
+
+    def member
       @participant ||= inventory.members.where(user: user).first
     end
 
-    ROLES_TO_NOT_SEND_GRANTED_NOTIFICATION = [:participant]
-
-    def grant_access(record)
-      record.roles.each do |role|
-        send("grant_#{role}", assessment, record.user)
-      end
-      record.destroy
-      true
+    def reset_member
+      @participant = nil
     end
+
+    ROLES_TO_NOT_SEND_GRANTED_NOTIFICATION = [:participant]
 
     def notify_user_for_access_granted(role:)
       return if ROLES_TO_NOT_SEND_GRANTED_NOTIFICATION.include? role.to_sym
