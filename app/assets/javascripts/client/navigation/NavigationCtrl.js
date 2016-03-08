@@ -14,8 +14,8 @@
     $scope.updateTemplate = function() {
       SessionService.setUserTemplate(
           $scope,
-          'client/views/navigation/navigation_user.html',
-          'client/views/navigation/navigation_anon.html'
+          'client/navigation/navigation_user.html',
+          'client/navigation/navigation_anon.html'
       );
     };
     $scope.updateTemplate();
