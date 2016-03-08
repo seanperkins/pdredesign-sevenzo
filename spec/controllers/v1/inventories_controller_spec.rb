@@ -92,7 +92,7 @@ describe V1::InventoriesController do
       }
 
       before(:each) do
-        post :create, inventory: {district_id: district.id, name: 'I exist', deadline: 1.week.from_now.to_s}, format: :json
+        post :create, inventory: {district: {id: district.id}, name: 'I exist', deadline: 1.week.from_now.to_s}, format: :json
       end
 
       it {
@@ -113,7 +113,7 @@ describe V1::InventoriesController do
 
         before(:each) do
           sign_in user
-          post :create, inventory: {district_id: district.id, name: '', deadline: 1.week.from_now.to_s}, format: :json
+          post :create, inventory: {district: {id: district.id}, name: '', deadline: 1.week.from_now.to_s}, format: :json
         end
 
         it 'sends back a meaningful error message' do
@@ -136,7 +136,7 @@ describe V1::InventoriesController do
 
         before(:each) do
           sign_in user
-          post :create, inventory: {district_id: district.id, name: Faker::Lorem.characters(256), deadline: 1.week.from_now.to_s}, format: :json
+          post :create, inventory: {district: {id: district.id}, name: Faker::Lorem.characters(256), deadline: 1.week.from_now.to_s}, format: :json
         end
 
         it 'sends back a meaningful error message' do
@@ -163,7 +163,7 @@ describe V1::InventoriesController do
 
         before(:each) do
           sign_in user
-          post :create, inventory: {district_id: district.id, name: Faker::Lorem.characters(32), deadline: deadline}, format: :json
+          post :create, inventory: {district: {id: district.id}, name: Faker::Lorem.characters(32), deadline: deadline}, format: :json
         end
 
 
@@ -172,6 +172,7 @@ describe V1::InventoriesController do
           expect(Time.parse(json['deadline']).iso8601.to_s).to eq deadline.iso8601.to_s
           expect(json['district_id']).to eq district.id
           expect(json['user_id']).to eq user.id
+          expect(json['name']).to_not be_nil
           expect(json['created_at']).to_not be_nil
           expect(json['updated_at']).to_not be_nil
         end
@@ -196,7 +197,7 @@ describe V1::InventoriesController do
 
         before(:each) do
           sign_in user
-          post :create, inventory: {district_id: district.id, name: Faker::Lorem.characters(32), deadline: deadline}, format: :json
+          post :create, inventory: {district: {id: district.id}, name: Faker::Lorem.characters(32), deadline: deadline}, format: :json
         end
 
         it 'rejects the request' do
@@ -223,7 +224,7 @@ describe V1::InventoriesController do
 
         before(:each) do
           sign_in user
-          post :create, inventory: {district_id: district.id, name: Faker::Lorem.characters(32), deadline: deadline}, format: :json
+          post :create, inventory: {district: {id: district.id}, name: Faker::Lorem.characters(32), deadline: deadline}, format: :json
         end
 
         it 'rejects the request' do

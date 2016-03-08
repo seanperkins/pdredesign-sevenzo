@@ -1,4 +1,5 @@
 json.id inventory.id
+json.name inventory.name
 json.user_id inventory.user_id
 json.deadline inventory.deadline
 json.district_id inventory.district_id

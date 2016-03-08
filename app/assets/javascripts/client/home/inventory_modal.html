@@ -3,14 +3,14 @@
     <button class="close" ng-click="inventoryModal.close()">&times;</button>
     <h4>Start Data &amp; Tech Audit</h4>
   </div>
-  <form name="startInventoryForm">
-    <div class="modal-body">
+  <div class="modal-body">
+    <form name="startInventoryForm">
       <div class="row">
         <div class="col-md-12">
           <input class="form-control" type="text" ng-model="inventoryModal.inventory.name" placeholder="Name*" required>
         </div>
       </div>
-
+      <br />
       <div class="row">
         <div class="col-md-6">
           <select
@@ -35,15 +35,15 @@
           </div>
         </div>
       </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="submit"
-                ng-disabled="startInventoryForm.$invalid"
-                ng-click="inventoryModal.create(inventoryModal.inventory)"
-                class="btn btn-primary">
-          Create
-        </button>
-      </div>
-  </form>
-</div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-default" ng-click="inventoryModal.close()">Close</button>
+    <button type="submit"
+            ng-disabled="startInventoryForm.$invalid"
+            ng-click="inventoryModal.createInventory(inventoryModal.inventory)"
+            class="btn btn-primary">
+      Create
+    </button>
+  </div>
 </div>

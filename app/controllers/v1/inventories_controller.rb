@@ -7,7 +7,10 @@ class V1::InventoriesController < ApplicationController
   end
 
   def create
-    @inventory = Inventory.new(inventory_params)
+    @inventory = Inventory.new
+    @inventory.name = inventory_params[:name]
+    @inventory.deadline = inventory_params[:deadline]
+    @inventory.district = District.find(inventory_params[:district][:id])
     @inventory.user = current_user
     if @inventory.save
       render template: 'v1/inventories/show'
@@ -20,6 +23,6 @@ class V1::InventoriesController < ApplicationController
 
   private
   def inventory_params
-    params.require(:inventory).permit(:name, :deadline, :district_id)
+    params.require(:inventory).permit(:name, :deadline, district: [:id])
   end
 end
