@@ -3,6 +3,25 @@ require  'spec_helper'
 describe V1::InventoryAccessRequestsController do
   render_views
 
+  describe '#index' do
+    context 'as signed in user' do
+      let(:user) { FactoryGirl.create(:user) }
+      let(:inventory) { FactoryGirl.create(:inventory) }
+      let!(:access_requests) { FactoryGirl.create_list(:inventory_access_request, 2, :as_facilitator, inventory: inventory) }
+
+      before(:each) do 
+        sign_in user
+        get :index, inventory_id: inventory.id, format: :json
+      end
+
+      it { expect(response).to have_http_status(:success) }
+
+      it  do
+        expect(response.body).to match(/requested_permission_level/)
+      end
+    end
+  end
+
   describe '#create' do
     context 'as signed in user' do
       let(:user) { FactoryGirl.create(:user) }

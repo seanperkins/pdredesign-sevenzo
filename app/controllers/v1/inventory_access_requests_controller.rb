@@ -2,6 +2,10 @@ class V1::InventoryAccessRequestsController < ApplicationController
   before_action :authenticate_user!
   before_action :inventory
 
+  def index
+    @requests = inventory.access_requests
+  end
+
   def create
     permission = Inventories::Permission.new(inventory: inventory, user: current_user)
     @request = permission.request_access(role: request_params[:role])
