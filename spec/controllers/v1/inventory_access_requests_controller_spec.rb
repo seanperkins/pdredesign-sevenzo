@@ -64,4 +64,58 @@ describe V1::InventoryAccessRequestsController do
       end
     end
   end
+
+  describe '#update' do
+    context 'as signed-in user' do
+      let(:user) { FactoryGirl.create(:user) }
+
+      before(:each) do 
+        sign_in user
+      end
+
+      context 'denying access' do
+        let(:inventory) { FactoryGirl.create(:inventory) }
+        let(:access_request) { FactoryGirl.create(:inventory_access_request, :as_participant, inventory: inventory) }
+
+        before(:each) do 
+          patch :update,
+            inventory_id: inventory.id,
+            id: access_request.id,
+            status: 'denied', format: :json
+        end
+
+        it { expect(response).to have_http_status(:success) }
+
+        it 'destroys access request' do
+          expect(InventoryAccessRequest.where(id: access_request.id)).not_to exist
+        end
+
+        it 'does not assign roles to user' do
+          expect(Inventories::Permission.new(inventory: inventory, user: access_request.user).role).to be_blank
+        end
+      end
+
+      context 'accepting access' do
+        let(:inventory) { FactoryGirl.create(:inventory) }
+        let(:access_request) { FactoryGirl.create(:inventory_access_request, :as_participant, inventory: inventory) }
+
+        before(:each) do 
+          patch :update,
+            inventory_id: inventory.id,
+            id: access_request.id,
+            status: 'accepted', format: :json
+        end
+
+        it { expect(response).to have_http_status(:success) }
+
+        it 'destroys access request' do
+          expect(InventoryAccessRequest.where(id: access_request.id)).not_to exist
+        end
+
+        it 'creates member with requested role' do
+          expect(Inventories::Permission.new(inventory: inventory, user: access_request.user).role).to eq 'participant'
+        end
+      end
+    end
+  end
 end
