@@ -40,6 +40,7 @@
       showFluid: true,
       views: {
         'full-width': {
+          controller: 'HomeCtrl',
           templateUrl: 'client/home/home_anon.html'
         }
       }
