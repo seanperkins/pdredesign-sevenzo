@@ -41,7 +41,7 @@ describe V1::InventoryParticipantsController do
 
       before(:each) do
         delete :destroy, inventory_id: inventory.id, format: :json,
-          user_id: user.id
+          id: user.id
       end
 
       it { expect(response).to have_http_status(:unauthorized) }
@@ -56,7 +56,7 @@ describe V1::InventoryParticipantsController do
         sign_in me
         delete :destroy,
           inventory_id: inventory.id,
-          user_id: member_user.id,
+          id: member_user.id,
           format: :json
       end
 
