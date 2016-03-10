@@ -7,11 +7,12 @@
   InventoryModalCtrl.$inject = [
     '$scope',
     '$timeout',
+    '$location',
     'SessionService',
     'Inventory'
   ];
 
-  function InventoryModalCtrl($scope, $timeout, SessionService, Inventory) {
+  function InventoryModalCtrl($scope, $timeout, $location, SessionService, Inventory) {
     var vm = this;
 
     vm.alerts = [];
@@ -44,15 +45,14 @@
     vm.createInventory = function(model) {
       Inventory.create({inventory: model})
           .$promise
-          .then(function(success) {
-            console.log(success);
-            console.log('ok!');
+          .then(function() {
+            vm.close();
+            $location.url('/inventories');
           }, function(response) {
             var errors = response.data.errors;
             angular.forEach(errors, function(error, field) {
               vm.error(field + " : " + error);
             });
-            console.log('not ok!');
           });
     }
   }
