@@ -6,29 +6,17 @@
 
   InventoryModalCtrl.$inject = [
     '$scope',
-    '$timeout',
     '$location',
     'SessionService',
     'Inventory'
   ];
 
-  function InventoryModalCtrl($scope, $timeout, $location, SessionService, Inventory) {
+  function InventoryModalCtrl($scope, $location, SessionService, Inventory) {
     var vm = this;
 
     vm.alerts = [];
     vm.user = SessionService.getCurrentUser();
     vm.inventory = {};
-
-    $timeout(function() {
-      vm.datetime = $('.datetime').datetimepicker({
-        pickTime: false,
-        minDate: '+1970/01/02'
-      });
-
-      vm.datetime.on('dp.change', function(e) {
-        $('#deadline').trigger('change');
-      });
-    });
 
     vm.close = function() {
       $scope.$emit('close-inventory-modal');

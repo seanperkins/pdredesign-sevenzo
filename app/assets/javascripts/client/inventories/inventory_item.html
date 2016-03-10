@@ -1,4 +1,19 @@
-<div class="row">
-  Name: {{ inventoryItem.element.name }}
-  Deadline: {{ inventoryItem.element.deadline }}
+<div class="inventory-item">
+  <div class="row">
+    <div class="col-md-1 col-xs-2 draft">
+      <div class="text-center">Draft</div>
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle-o fa-stack-2x"></i>
+        <i class="fa fa-pencil fa-stack-1x"></i>
+      </span>
+    </div>
+    <div class="col-md-9 col-xs-9">
+      <div class="row">
+        <div class="col-xs-12">
+            {{ inventoryItem.element.name }}
+          </h2>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
