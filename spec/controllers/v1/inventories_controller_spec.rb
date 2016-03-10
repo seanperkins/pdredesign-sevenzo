@@ -92,7 +92,7 @@ describe V1::InventoriesController do
       }
 
       before(:each) do
-        post :create, inventory: {district: {id: district.id}, name: 'I exist', deadline: 1.week.from_now.to_s}, format: :json
+        post :create, inventory: {district: {id: district.id}, name: 'I exist', deadline: 1.week.from_now.to_date.strftime('%m/%d/%y')}, format: :json
       end
 
       it {
@@ -113,11 +113,11 @@ describe V1::InventoriesController do
 
         before(:each) do
           sign_in user
-          post :create, inventory: {district: {id: district.id}, name: '', deadline: 1.week.from_now.to_s}, format: :json
+          post :create, inventory: {district: {id: district.id}, name: '', deadline: 1.week.from_now.to_date.strftime('%m/%d/%y')}, format: :json
         end
 
         it 'sends back a meaningful error message' do
-          expect(json['errors'][0]).to eq 'Name is too short (minimum is 1 character)'
+          expect(json['errors']['name'][0]).to eq 'is too short (minimum is 1 character)'
         end
 
         it 'rejects the request' do
@@ -136,11 +136,11 @@ describe V1::InventoriesController do
 
         before(:each) do
           sign_in user
-          post :create, inventory: {district: {id: district.id}, name: Faker::Lorem.characters(256), deadline: 1.week.from_now.to_s}, format: :json
+          post :create, inventory: {district: {id: district.id}, name: Faker::Lorem.characters(256), deadline: 1.week.from_now.to_date.strftime('%m/%d/%y')}, format: :json
         end
 
         it 'sends back a meaningful error message' do
-          expect(json['errors'][0]).to eq 'Name is too long (maximum is 255 characters)'
+          expect(json['errors']['name'][0]).to eq 'is too long (maximum is 255 characters)'
         end
 
         it 'rejects the request' do
@@ -158,7 +158,7 @@ describe V1::InventoriesController do
         }
 
         let(:deadline) {
-          1.week.from_now
+          1.week.from_now.to_date.strftime('%m/%d/%Y')
         }
 
         before(:each) do
@@ -166,16 +166,14 @@ describe V1::InventoriesController do
           post :create, inventory: {district: {id: district.id}, name: Faker::Lorem.characters(32), deadline: deadline}, format: :json
         end
 
-
-        it 'returns the created entity back' do
-          expect(json['id']).to_not be_nil
-          expect(Time.parse(json['deadline']).iso8601.to_s).to eq deadline.iso8601.to_s
-          expect(json['district_id']).to eq district.id
-          expect(json['user_id']).to eq user.id
-          expect(json['name']).to_not be_nil
-          expect(json['created_at']).to_not be_nil
-          expect(json['updated_at']).to_not be_nil
-        end
+        it { expect(json['id']).to_not be_nil }
+        it { expect(Time.parse(json['deadline'])).to eq DateTime.strptime(deadline, '%m/%d/%Y') }
+        it { expect(json['district_id']).to eq district.id }
+        it { expect(json['user_id']).to eq user.id }
+        it { expect(json['name']).to_not be_nil }
+        it { expect(json['created_at']).to_not be_nil }
+        it { expect(json['updated_at']).to_not be_nil }
+        it { expect(json['district_name']).to_not be_nil }
 
         it 'persists the entity' do
           expect(Inventory.all.size).to eq 1
@@ -205,11 +203,11 @@ describe V1::InventoriesController do
         end
 
         it 'sends back a meaningful error message' do
-          expect(json['errors'][0]).to eq "Deadline can't be blank"
+          expect(json['errors']['deadline'][0]).to eq "can't be blank"
         end
       end
 
-      context 'with a deadline in the past' do
+      context 'with a malformatted deadline string' do
         let(:user) {
           create(:user, :with_district)
         }
@@ -219,7 +217,7 @@ describe V1::InventoriesController do
         }
 
         let(:deadline) {
-          1.minute.ago
+          'foo this is broken bar'
         }
 
         before(:each) do
@@ -232,7 +230,36 @@ describe V1::InventoriesController do
         end
 
         it 'sends back a meaningful error message' do
-          expect(json['errors'][0]).to eq 'Deadline cannot be in the past'
+          expect(json['errors']['deadline'][0]).to eq 'must be in DD/MM/YYYY format'
+        end
+
+        it { expect(json['errors']['deadline'].length).to eq 1 }
+      end
+
+      context 'with a deadline in the past' do
+        let(:user) {
+          create(:user, :with_district)
+        }
+
+        let(:district) {
+          user.districts.first
+        }
+
+        let(:deadline) {
+          1.week.ago.to_date.strftime('%m/%d/%y')
+        }
+
+        before(:each) do
+          sign_in user
+          post :create, inventory: {district: {id: district.id}, name: Faker::Lorem.characters(32), deadline: deadline}, format: :json
+        end
+
+        it 'rejects the request' do
+          expect(response.status).to eq 400
+        end
+
+        it 'sends back a meaningful error message' do
+          expect(json['errors']['deadline'][0]).to eq 'cannot be in the past'
         end
       end
     end

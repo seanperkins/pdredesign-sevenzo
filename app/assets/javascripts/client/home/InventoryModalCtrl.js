@@ -14,8 +14,8 @@
   function InventoryModalCtrl($scope, $timeout, SessionService, Inventory) {
     var vm = this;
 
+    vm.alerts = [];
     vm.user = SessionService.getCurrentUser();
-
     vm.inventory = {};
 
     $timeout(function() {
@@ -33,14 +33,25 @@
       $scope.$emit('close-inventory-modal');
     };
 
+    vm.error = function(message) {
+      vm.alerts.push({type: 'danger', msg: message});
+    };
+
+    vm.closeAlert = function(index) {
+      vm.alerts.splice(index, 1);
+    };
+
     vm.createInventory = function(model) {
       Inventory.create({inventory: model})
           .$promise
           .then(function(success) {
             console.log(success);
             console.log('ok!');
-          }, function(err) {
-            console.log(err);
+          }, function(response) {
+            var errors = response.data.errors;
+            angular.forEach(errors, function(error, field) {
+              vm.error(field + " : " + error);
+            });
             console.log('not ok!');
           });
     }
