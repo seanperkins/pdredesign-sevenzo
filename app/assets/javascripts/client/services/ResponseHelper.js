@@ -1,16 +1,26 @@
-PDRClient.service('ResponseHelper',
-  ['$q',
-  'Score',
-  '$modal',
-  function($q, Score, $modal) {
+(function() {
+  'use strict';
+  angular.module('PDRClient')
+      .service('ResponseHelper', ResponseHelper);
+
+  ResponseHelper.$inject = [
+    'Score',
+    '$modal'
+  ];
+
+  function ResponseHelper(Score, $modal) {
     var scope = this;
 
     this.answerCount = function(scores, questionId, answerValue) {
       var count = 0;
       angular.forEach(scores, function(score) {
-        if(score.question_id != questionId) return false;
-        if(score.value == answerValue)
+        if (score.question_id !== questionId) {
+          return false;
+        }
+
+        if (score.value === answerValue) {
           count++;
+        }
       });
       return count;
     };
@@ -29,7 +39,7 @@ PDRClient.service('ResponseHelper',
     };
 
     this.answerTitle = function(value) {
-      switch(value) {
+      switch (value) {
         case 1:
           return 'Non-Existent';
         case 2:
@@ -50,14 +60,14 @@ PDRClient.service('ResponseHelper',
     };
 
     this.skipped = function(question) {
-      switch(true) {
+      switch (true) {
         case !question || !question.score:
-        return false;
+          return false;
         case question.skipped:
         case question.score.value == null && question.score.evidence != null:
-        return true;
+          return true;
         default:
-        return false;
+          return false;
       }
     };
 
@@ -81,27 +91,29 @@ PDRClient.service('ResponseHelper',
 
     this.assignAnswerToQuestion = function(scopeObject, answer, question) {
       var params = {response_id: scopeObject.responseId, assessment_id: scopeObject.assessmentId};
-      var score  = {question_id: question.id, value: answer.value, evidence: question.score.evidence};
+      var score = {question_id: question.id, value: answer.value, evidence: question.score.evidence};
 
       question.loading = true;
 
       Score
-        .save(params, score)
-        .$promise
-        .then(function(){
-          scopeObject.$emit('response_updated');
-          question.loading = false;
-          question.isAlert = false;
-          question.score.value = answer.value;
-        }, function(){
+          .save(params, score)
+          .$promise
+          .then(function() {
+            scopeObject.$emit('response_updated');
+            question.loading = false;
+            question.isAlert = false;
+            question.score.value = answer.value;
+          }, function() {
             scope.saveRetry(scopeObject, answer, question);
-        });
+          });
     };
 
     this.questionColor = function(question, isConsensus) {
-      if(!question.score) return null;
+      if (!question.score) {
+        return null;
+      }
 
-      if(!isConsensus) {
+      if (!isConsensus) {
         if (question.score.evidence != null && question.score.value == null)
           return "scored-skipped";
       }
@@ -109,9 +121,9 @@ PDRClient.service('ResponseHelper',
       return 'scored-' + question.score.value;
     };
 
-    this.percentageByResponse = function(scores, questionId, answerValue, totalParticipants){
+    this.percentageByResponse = function(scores, questionId, answerValue, totalParticipants) {
       var numberOfAnswers = scope.answerCount(scores, questionId, answerValue);
-      return ((numberOfAnswers*100)/totalParticipants) + '%';
+      return ((numberOfAnswers * 100) / totalParticipants) + '%';
     };
-
-}]);
+  }
+})();

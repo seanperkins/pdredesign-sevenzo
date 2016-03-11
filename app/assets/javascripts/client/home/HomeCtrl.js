@@ -16,19 +16,6 @@
     $scope.user = SessionService.getCurrentUser();
     $scope.tools = [];
 
-    $scope.$watch($scope.tools, function() {
-      $scope.setToolTip();
-    });
-
-    $scope.$watch($scope.user, function() {
-      if ($state.is('root') && ($scope.user && $scope.user.id))
-        $state.go('home');
-    });
-
-    $scope.$on('updated_tools', function() {
-      $scope.updateTools();
-    });
-
     $scope.isNetworkPartner = function() {
       return SessionService.isNetworkPartner();
     };
@@ -65,7 +52,6 @@
       return '<p class="no-link">This item is currently under development. Please stay tuned.</p>';
     };
 
-
     $scope.popoverContent = function(tool) {
       if (!tool.description)
         return $scope.emptyTool();
@@ -80,5 +66,18 @@
       output += "</p>" + "</div></div>";
       return output;
     };
+
+    $scope.$watch($scope.tools, function() {
+      $scope.setToolTip();
+    });
+
+    $scope.$watch('user', function() {
+      if ($state.is('root') && ($scope.user && $scope.user.id))
+        $state.go('home');
+    });
+
+    $scope.$on('updated_tools', function() {
+      $scope.updateTools();
+    });
   }
 })();
