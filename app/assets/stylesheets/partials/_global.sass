@@ -12,19 +12,23 @@ h1, h2, h3, h4, h5, h6
 .row.secondary
   background-color: $header-background-color
   margin-top: 0
-  color: $secondary-font-color
+  color: $secondary-font-color 
   a
     color: $secondary-color
-    :hover
+    &:hover
       color: darken($secondary-color, 20%)
+      cursor: pointer
 .row.tertiary
   background-color: $background-color-body
-  margin-top: 0
+  padding-top: 20px
   color: $font-color
+  h1,h2,h3,.h1,.h2,.h3
+    margin-top: 0
   a
     color: $secondary-color
-    :hover
+    &:hover
       color: darken($secondary-color, 20%)
+      cursor: pointer
 .row
   margin-right: 0 !important
   margin-left: 0 !important
@@ -44,10 +48,12 @@ body
     margin-bottom: 1em
   .main-container
     padding-top: 2em
+    height: initial
 
 .normal-cursor-hover
   cursor: pointer
-
+.modal-content
+  color: $font-color
 .modal-header
   button.close
     font-size: 2em !important
