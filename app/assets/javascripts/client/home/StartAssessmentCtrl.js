@@ -74,8 +74,12 @@
       });
     });
 
+    vm.isNetworkPartner = function() {
+      return SessionService.isNetworkPartner();
+    };
+
     vm.text = function() {
-      if (SessionService.isNetworkPartner()) {
+      if (vm.isNetworkPartner()) {
         return 'Recommend Assessment';
       }
       return 'Facilitate New Assessment';

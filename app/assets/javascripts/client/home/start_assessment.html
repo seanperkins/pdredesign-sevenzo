@@ -6,7 +6,7 @@
           <i class="fa fa-plus fa-stack-1x"></i>
         </span>
         <div class="heading">
-          {{text()}}
+          {{startAssessment.text()}}
         </div>
       </a>
   </div>
@@ -19,7 +19,7 @@
           <h4 class="modal-title">{{startAssessment.text()}}</h4>
         </div>
         <div class="modal-body">
-          <p ng-hide="isNetworkPartner()">Facilitate the Readiness Assessment process for your district by creating a
+          <p ng-hide="startAssessment.isNetworkPartner()">Facilitate the Readiness Assessment process for your district by creating a
             new assessment.<a ng-click="startAssessment.hideModal()"
                               href="#/assessments"> Click here</a> to view current assessments for your district or to
             participate in an existing assessment.</p>
