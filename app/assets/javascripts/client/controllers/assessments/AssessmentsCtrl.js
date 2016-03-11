@@ -112,13 +112,13 @@ PDRClient.controller('AssessmentsCtrl', ['$scope', '$location', 'SessionService'
       $scope.roundNumber = function(number) {
         return Math.floor(number);
       };
-
-      $scope.meetingTime = function(date) {
-        if(date != null)
-          return moment(date).format("Do MMM YYYY");
-
-        return "TBD";
-      };
+      //
+      //$scope.meetingTime = function(date) {
+      //  if(date != null)
+      //    return moment(date).format("Do MMM YYYY");
+      //
+      //  return "TBD";
+      //};
 
       $scope.gotoLocation = function(location) {
         if(location)
