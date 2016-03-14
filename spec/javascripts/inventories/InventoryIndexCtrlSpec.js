@@ -10,7 +10,7 @@
         var scope = _$rootScope_.$new(true);
         controller = _$controller_('InventoryIndexCtrl', {
           $scope: scope,
-          inventories: {
+          inventory_result: {
             inventories: [1, 2, 3]
           }
         });
@@ -19,7 +19,7 @@
     });
 
     it('binds inventories to the view model', function() {
-      expect(controller.inventories).toEqual({inventories: [1, 2, 3]});
+      expect(controller.inventories).toEqual([1, 2, 3]);
     });
   });
 })();
