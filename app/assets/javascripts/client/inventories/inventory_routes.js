@@ -14,7 +14,7 @@
       views: {
         '': {
           resolve: {
-            inventories: ['Inventory', function(Inventory) {
+            inventory_result: ['Inventory', function(Inventory) {
               return Inventory.query().$promise;
             }]
           },

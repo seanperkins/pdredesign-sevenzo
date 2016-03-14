@@ -9,7 +9,7 @@
   <div class="col-md-12">
     <start-assessment></start-assessment>
     <div class="row">
-      <div id="assessments-filter">
+      <div class="assessments-filter">
         <div ng-show="isNetworkPartner()">
           <div class="col-md-4">
             <district-filter
@@ -34,12 +34,10 @@
     </div>
   </div>
 </div>
-<div class="assessments">
-  <div ng-repeat="assessment in assessments
-   | filter: {district_name: selectedDistrict}
-   | filter: permissionsFilter(selectedPermission)
-   | filter: {status: selectedStatus}">
+<div ng-repeat="assessment in assessments
+ | filter: {district_name: selectedDistrict}
+ | filter: permissionsFilter(selectedPermission)
+ | filter: {status: selectedStatus}">
 
-    <entry is-assessment="true" entity="assessment"></entry>
-  </div>
+  <entry is-assessment="true" entity="assessment"></entry>
 </div>

@@ -5,14 +5,14 @@
 
   InventoryIndexCtrl.$inject = [
     'SessionService',
-    'inventories'
+    'inventory_result'
   ];
 
-  function InventoryIndexCtrl(SessionService, inventories) {
+  function InventoryIndexCtrl(SessionService, inventory_result) {
     var vm = this;
 
     vm.user = SessionService.getCurrentUser();
-    vm.inventories = inventories;
+    vm.inventories = inventory_result.inventories;
 
   }
 })();

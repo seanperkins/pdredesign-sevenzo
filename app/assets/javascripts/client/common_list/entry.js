@@ -13,7 +13,8 @@
       },
       templateUrl: 'client/common_list/entry_view.html',
       controller: 'EntryCtrl',
-      controllerAs: 'entry'
+      controllerAs: 'entry',
+      replace: true
     }
   }
 })();
