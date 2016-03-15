@@ -23,19 +23,44 @@
       });
     });
 
-    it('sets draft to background-color: rgb(151, 160, 165);', function() {
-      element = createElement('draft');
-      expect(element.css('background-color')).toEqual('rgb(151, 160, 165)');
+    describe('when setting the entity status to draft', function() {
+      beforeEach(function() {
+        element = createElement('draft');
+      });
+
+      it('adds the draft-state CSS class', function() {
+        expect(element.hasClass('draft-state')).toBe(true);
+      });
     });
 
-    it('sets assessment to background-color: rgb(91, 193, 180);', function() {
-      element = createElement('assessment');
-      expect(element.css('background-color')).toEqual('rgb(91, 193, 180)');
+    describe('when setting the entity status to assessment', function() {
+      beforeEach(function() {
+        element = createElement('assessment');
+      });
+
+      it('adds the assessment-state CSS class', function() {
+        expect(element.hasClass('assessment-state')).toBe(true);
+      });
     });
 
-    it('sets consensus to background-color: rgb(13, 72, 101));', function() {
-      element = createElement('consensus');
-      expect(element.css('background-color')).toEqual('rgb(13, 72, 101)');
+    describe('when setting the entity status to consensus', function() {
+      beforeEach(function() {
+        element = createElement('consensus');
+      });
+
+      it('adds the consensus-state CSS class', function() {
+        expect(element.hasClass('consensus-state')).toBe(true);
+      });
+    });
+
+    describe('when leaving the entity status undefined', function() {
+      beforeEach(function() {
+        element = createElement(undefined);
+      });
+
+      it('adds the consensus-state CSS class', function() {
+        expect(element.hasClass('consensus-state')).toBe(true);
+      });
     });
   });
 })();
