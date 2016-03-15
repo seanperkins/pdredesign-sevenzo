@@ -158,7 +158,7 @@
         });
 
         spyOn($scope, '$emit');
-        $httpBackend.expect('PATCH', '/v1/assessments/1/learning_questions/1').respond({400: {}});
+        $httpBackend.when('PATCH', '/v1/assessments/1/learning_questions/1').respond(400);
 
         controller.updateLearningQuestion({id: 1, editable: true, body: 'Hello world!'});
         $httpBackend.flush();
