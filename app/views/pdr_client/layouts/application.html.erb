@@ -10,20 +10,20 @@
   <body>
     <%= render 'pdr_client/layouts/partials/top_nav' %>
 
-    <div class="home-container container-fluid" ng-show="showFluid">
+    <div class="home-container container-fluid" ng-if="showFluid">
       <div class="row">
         <div class="col-md-12 view" ui-view="full-width">
         </div>
       </div>
     </div>
 
-    <div class="main-container container" ng-hide="showFluid">
+    <div class="main-container container" ng-if="!showFluid">
       <div class="row">
-        <div class="col-md-12 main-content" ui-view="full-width" ng-show="showFullWidth">
+        <div class="col-md-12 main-content" ui-view="full-width" ng-if="showFullWidth">
         </div>
       </div>
       <div class="row">
-        <div class="col-xs-12 col-md-9" ng-hide="showFullWidth">
+        <div class="col-xs-12 col-md-9" ng-if="!showFullWidth">
           <div class="main-content">
             <%= yield %>
           </div>
