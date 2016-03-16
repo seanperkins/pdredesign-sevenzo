@@ -40,23 +40,23 @@
     $scope.fetchAssessment();
 
     $scope.$watch('assessment.due_date', function(value) {
-      $scope.due_date = moment(value).format("MM/DD/YYYY");
+      $scope.due_date = moment(value).format('MM/DD/YYYY');
     });
 
     $scope.$on('update_participants', function() {
       updateParticipantsList();
     });
 
-    $scope.messageError = "A message is required to send!";
+    $scope.messageError = 'A message is required to send!';
     $scope.alertError   = false;
 
     $scope.assignAndSave = function(assessment) {
-      if (assessment.message == null || assessment.message == '') {
+      if (assessment.message === null || assessment.message === '') {
         $scope.alertError = true;
         return;
       }
 
-      if ($window.confirm("Are you sure you want to send out the assessment and invite all your participants?")) {
+      if ($window.confirm('Are you sure you want to send out the assessment and invite all your participants?')) {
         $scope.alertError = false;
         $scope
             .save(assessment, true)
@@ -67,15 +67,15 @@
     };
 
     $scope.save = function(assessment, assign) {
-      if(assessment.name == '') {
-        $scope.error("Assessment needs a name!");
+      if(assessment.name === '') {
+        $scope.error('Assessment needs a name!');
         return;
       }
 
       assessment.district_id = $scope.district.id;
 
       $scope.saving = true;
-      assessment.due_date = moment($("#due-date").val()).toISOString();
+      assessment.due_date = moment($("#due-date").val(), 'MM/DD/YYYY').toISOString();
 
       if(assign) assessment.assign = true;
 

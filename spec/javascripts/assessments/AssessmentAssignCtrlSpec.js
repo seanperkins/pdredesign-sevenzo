@@ -229,12 +229,11 @@
           spyOn($scope, 'save');
         });
 
-        it('does not call the save method on the scope', function() {
+        it('does not invoke #save', function() {
           $scope.assignAndSave(assessment);
           expect($scope.save).not.toHaveBeenCalled();
         });
       });
-
 
       describe('when the alert dialog is accepted', function() {
         var assessment = {message: 'This is a test!'};
@@ -245,9 +244,11 @@
           });
           subject.$window = $window;
           spyOn($window, 'confirm').and.returnValue(true);
-          spyOn($scope, 'save').and.returnValue({then: function(callback) {
-            callback();
-          }});
+          spyOn($scope, 'save').and.returnValue({
+            then: function(callback) {
+              callback();
+            }
+          });
         });
 
         it('does call the save method on the scope', function() {
@@ -258,6 +259,155 @@
         it('sets the location to /assessments', function() {
           $scope.assignAndSave(assessment);
           expect($location.path()).toEqual('/assessments');
+        });
+      });
+
+      afterEach(function() {
+        $httpBackend.verifyNoOutstandingExpectation();
+        $httpBackend.verifyNoOutstandingRequest();
+      });
+    });
+
+    describe('#save', function() {
+      beforeEach(function() {
+        $stateParams = {id: 1};
+        spyOn(SessionService, 'getCurrentUser').and.returnValue(
+            {
+              districts: [
+                {
+                  id: 19
+                },
+                {
+                  id: 12
+                }
+              ]
+            });
+        $httpBackend.expect('GET', '/v1/assessments/1/participants').respond([]);
+        $httpBackend.when('GET', '/v1/assessments/1').respond({});
+
+        subject = $controller('AssessmentAssignCtrl', {
+          $scope: $scope,
+          $timeout: $timeout,
+          $anchorScroll: $anchorScroll,
+          $location: $location,
+          $stateParams: $stateParams,
+          SessionService: SessionService,
+          Assessment: Assessment,
+          Participant: Participant,
+          Rubric: Rubric
+        });
+
+        $httpBackend.flush();
+      });
+
+      describe('when the assessment name is blank', function() {
+        beforeEach(function() {
+          var assessment = {name: ''};
+          spyOn($scope, 'error');
+          $scope.save(assessment, true);
+        });
+
+        it('invokes #error', function() {
+          expect($scope.error).toHaveBeenCalledWith('Assessment needs a name!');
+        });
+      });
+
+      describe('when the assessment name is not blank', function() {
+        var assessment, inputField;
+
+        beforeEach(function() {
+          assessment = {id: 1, name: 'This is a test'};
+          inject(function(_$compile_) {
+            inputField = angular.element('<input class="form-control" id="due-date" data-format="dd/MM/yyyy" name="due-date">');
+            angular.element(document.body).append(inputField);
+            inputField.val('08/01/1997');
+            _$compile_(inputField)($scope);
+          });
+        });
+
+        it('pulls the date value from the input form', function() {
+          $scope.save(assessment, true);
+          expect(assessment.due_date).toEqual(moment('08/01/1997', 'MM/DD/YYYY').toISOString());
+        });
+
+        describe('when assign is true', function() {
+          it('sets assessment.assign to true', function() {
+            $scope.save(assessment, true);
+            expect(assessment.assign).toEqual(true);
+          });
+        });
+
+        describe('when assign is false', function() {
+          it('leaves assessment.assign undefined', function() {
+            $scope.save(assessment, false);
+            expect(assessment.assign).toBeUndefined();
+          });
+        });
+
+        describe('when the save is successful', function() {
+          var successfulAssessment = {
+            id: 1,
+            name: 'This is a test',
+            district_id: 19,
+            due_date: moment('08/01/1997', 'MM/DD/YYYY').toISOString(),
+            assign: true
+          };
+          beforeEach(function() {
+            $httpBackend.expect('PUT', '/v1/assessments/1', successfulAssessment).respond(201);
+          });
+
+          it('sets the scope saving value to false', function() {
+            $scope.save(successfulAssessment, true);
+            $httpBackend.flush();
+            expect($scope.saving).toEqual(false);
+          });
+
+          it('invokes #success function with the correct parameter', function() {
+            spyOn($scope, 'success');
+            $scope.save(successfulAssessment, true);
+            $httpBackend.flush();
+            expect($scope.success).toHaveBeenCalledWith('Assessment Saved!');
+          });
+
+          afterEach(function() {
+            $httpBackend.verifyNoOutstandingRequest();
+            $httpBackend.verifyNoOutstandingExpectation();
+          });
+        });
+
+        describe('when the save is unsuccessful', function() {
+          var unsuccessfulAssessment = {
+            id: 12,
+            name: 'This is a test',
+            district_id: 19,
+            due_date: moment('08/01/1997', 'MM/DD/YYYY').toISOString(),
+            assign: true
+          };
+          beforeEach(function() {
+            $httpBackend.expect('PUT', '/v1/assessments/12', unsuccessfulAssessment).respond(400);
+          });
+
+          it('sets the scope saving value to false', function() {
+            $scope.save(unsuccessfulAssessment, true);
+            $httpBackend.flush();
+            expect($scope.saving).toEqual(false);
+          });
+
+          it('invokes #error function with the correct parameter', function() {
+            spyOn($scope, 'error');
+            $scope.save(unsuccessfulAssessment, true);
+            $httpBackend.flush();
+            expect($scope.error).toHaveBeenCalledWith('Could not save assessment');
+          });
+
+          afterEach(function() {
+            $httpBackend.verifyNoOutstandingRequest();
+            $httpBackend.verifyNoOutstandingExpectation();
+          });
+        });
+
+        afterEach(function() {
+          inputField.remove();
         });
       });
     });
