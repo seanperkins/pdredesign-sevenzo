@@ -15,6 +15,8 @@ describe Inventory do
   it { is_expected.to have_many(:product_entries) }
   it { is_expected.to have_many(:data_entries) }
   it { is_expected.to have_many(:access_requests) }
+  it { is_expected.to have_many(:facilitators) }
+  it { is_expected.to have_many(:participants) }
   it { is_expected.to belong_to(:district) }
   it { is_expected.to belong_to(:owner) }
 

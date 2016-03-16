@@ -59,76 +59,22 @@ describe V1::InventoryInvitationsController do
         end
       end
 
-      context 'inviting user for first time' do
-
+      context 'inviting user' do
         let(:created_invitation) { InventoryInvitation.where(email: email).first }
 
-        shared_examples 'successful_invitation' do
-          it 'responds successfully' do
-            expect(response).to have_http_status(:success)
-          end
-
-          it 'creates an invitation' do
-            expect(created_invitation).not_to be_nil
-          end
-
-          it 'sets inventory in invitation' do
-            expect(created_invitation.inventory).to eq inventory
-          end
-
-          it 'sets invitation first_name' do
-            expect(created_invitation.first_name).to eq 'john'
-          end
-
-          it 'sets invitation last_name' do
-            expect(created_invitation.last_name).to eq 'doe'
-          end
-
-          it 'sets invitation team_role' do
-            expect(created_invitation.team_role).to eq 'Finance'
-          end
-
-          it 'sets invitation role' do
-            expect(created_invitation.role).to eq 'facilitator'
-          end
+        before(:each) do
+          sign_in facilitator_user
+          post :create,
+            inventory_id: inventory.id,
+            first_name: 'john',
+            last_name: 'doe',
+            email: email,
+            team_role: 'Finance',
+            role: 'facilitator', format: :json
         end
 
-        context 'without send_invite' do
-          before(:each) do
-            sign_in facilitator_user
-            post :create,
-              inventory_id: inventory.id,
-              first_name: 'john',
-              last_name: 'doe',
-              email: email,
-              team_role: 'Finance',
-              role: 'facilitator', format: :json
-          end
-
-          it 'ignores invitation notification' do
-            expect(InventoryInvitationNotificationWorker.jobs.count).to eq(0)
-          end
-          it_behaves_like 'successful_invitation'
-        end
-
-        context 'with send_invite' do
-          before(:each) do
-            sign_in facilitator_user
-            post :create,
-              inventory_id: inventory.id,
-              first_name: 'john',
-              last_name: 'doe',
-              email: email,
-              team_role: 'Finance',
-              role: 'facilitator',
-              send_invite: true, format: :json
-          end
-
-          it 'sends invitation notification' do
-            expect(InventoryInvitationNotificationWorker.jobs.count).to eq(1)
-          end
-
-          it_behaves_like 'successful_invitation'
+        it 'invitation gets created' do
+          expect(created_invitation).not_to be_nil
         end
       end
     end

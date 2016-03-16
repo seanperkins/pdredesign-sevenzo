@@ -60,7 +60,7 @@ module Inventories
     end
 
     def generate_password
-      SecureRandom.hex[0..9]
+      SecureRandom.hex(5)
     end
 
     def set_permission
