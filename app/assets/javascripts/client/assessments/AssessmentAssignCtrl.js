@@ -18,23 +18,24 @@
 
   function AssessmentAssignCtrl($scope, $timeout, $anchorScroll, $location, $stateParams, $window, SessionService, Assessment, Participant) {
 
-    $scope.id                      = $stateParams.id;
-    $scope.user                    = SessionService.getCurrentUser();
-    $scope.participants            = Participant.query({assessment_id: $scope.id});
-    $scope.alerts                  = [];
+    $scope.id = $stateParams.id;
+    $scope.user = SessionService.getCurrentUser();
+    $scope.participants = Participant.query({assessment_id: $scope.id});
+    $scope.alerts = [];
 
-    $scope.district   = $scope.user.districts[0];
+    $scope.district = $scope.user.districts[0];
 
     $scope.fetchAssessment = function() {
       Assessment
           .get({id: $scope.id})
           .$promise.then(function(assessment) {
-            $scope.assessment = assessment;
-            angular.forEach($scope.user.districts, function(district) {
-              if(assessment.district_id === district.id)
-                $scope.district = district;
-            });
-          });
+        $scope.assessment = assessment;
+        angular.forEach($scope.user.districts, function(district) {
+          if (assessment.district_id === district.id) {
+            $scope.district = district;
+          }
+        });
+      });
     };
 
     $scope.fetchAssessment();
@@ -47,8 +48,15 @@
       updateParticipantsList();
     });
 
-    $scope.messageError = 'A message is required to send!';
-    $scope.alertError   = false;
+    $scope.$on('add_assessment_alert', function(event, data) {
+      if (data['type'] === 'success') {
+        $scope.success(data['msg']);
+      } else if (data['type'] === 'danger') {
+        $scope.error(data['msg']);
+      }
+    });
+
+    $scope.alertError = false;
 
     $scope.assignAndSave = function(assessment) {
       if (assessment.message === null || assessment.message === '') {
@@ -67,7 +75,7 @@
     };
 
     $scope.save = function(assessment, assign) {
-      if(assessment.name === '') {
+      if (assessment.name === '') {
         $scope.error('Assessment needs a name!');
         return;
       }
@@ -77,30 +85,32 @@
       $scope.saving = true;
       assessment.due_date = moment($("#due-date").val(), 'MM/DD/YYYY').toISOString();
 
-      if(assign) assessment.assign = true;
+      if (assign) {
+        assessment.assign = true;
+      }
 
       return Assessment
-          .save({ id: assessment.id }, assessment)
+          .save({id: assessment.id}, assessment)
           .$promise
           .then(function(_data) {
             $scope.saving = false;
             $scope.success('Assessment Saved!');
-          }, function(){
+          }, function() {
             $scope.saving = false;
             $scope.error('Could not save assessment');
           });
     };
 
     $scope.success = function(message) {
-      $scope.alerts.push({type: 'success', msg: message });
+      $scope.alerts.push({type: 'success', msg: message});
       $anchorScroll();
       $timeout(function() {
         $scope.alerts.splice(message, 1);
       }, 10000);
     };
 
-    $scope.error   = function(message) {
-      $scope.alerts.push({type: 'danger', msg: message });
+    $scope.error = function(message) {
+      $scope.alerts.push({type: 'danger', msg: message});
       $anchorScroll();
     };
 
@@ -112,7 +122,7 @@
       Participant
           .query({assessment_id: $scope.id})
           .$promise
-          .then(function(data){
+          .then(function(data) {
             $scope.participants = data;
           }, function() {
             $scope.error('Could not update participants list');
@@ -129,11 +139,9 @@
       Participant
           .delete({assessment_id: $scope.id, id: user.participant_id}, {user_id: user.id})
           .$promise
-          .then(function(){ updateParticipantsList(); });
-    };
-
-    $scope.formattedDate = function(date) {
-      return moment(date).format("ll");
+          .then(function() {
+            updateParticipantsList();
+          });
     };
 
     $scope.isNetworkPartner = function() {
@@ -142,7 +150,7 @@
 
     $timeout(function() {
       $scope.datetime = $('.datetime').datetimepicker({
-        pickTime: false,
+        pickTime: false
       });
     });
   }
