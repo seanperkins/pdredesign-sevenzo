@@ -34,10 +34,6 @@
       this.scope.$emit('add_assessment_alert', {type: 'danger', msg: message});
     };
 
-    this.closeAlert = function(index) {
-      this.alerts.splice(index, 1);
-    };
-
     this.assignAndSaveAssessment = function(assessment) {
       if (assessment.message === null || assessment.message === '') {
         this.alertError = true;
@@ -56,7 +52,7 @@
 
     this.saveAssessment = function(assessment, assign) {
       if (assessment.name === '') {
-        this.error('Assessment needs a name!');
+        this.emitError('Assessment needs a name!');
         return;
       }
 

@@ -14,24 +14,28 @@
     var vm = this;
 
     vm.user = SessionService.getCurrentUser();
-
-    vm.save = InviteService.saveAssessment;
-    vm.assignAndSave = InviteService.assignAndSaveAssessment;
     vm.saving = false;
 
-    $scope.$on('toggle-saving-state', function() {
-      vm.saving = !vm.saving;
-    });
+    vm.save = function(assessment, assign) {
+      InviteService.saveAssessment(assessment, assign);
+    };
+
+    vm.assignAndSave = function(assessment) {
+      InviteService.assignAndSaveAssessment(assessment);
+    };
 
     vm.formattedDate = function(date) {
       return moment(date).format('ll');
     };
 
-    InviteService.loadDistrict(vm.district);
     InviteService.loadScope($scope);
 
+    $scope.$on('toggle-saving-state', function() {
+      vm.saving = !vm.saving;
+    });
+
     $scope.$watch('district', function(val) {
-      vm.district = val;
-    }).bind(vm);
+      InviteService.loadDistrict(val);
+    });
   }
 })();
