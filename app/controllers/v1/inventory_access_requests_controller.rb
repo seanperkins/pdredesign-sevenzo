@@ -18,6 +18,9 @@ class V1::InventoryAccessRequestsController < ApplicationController
   end
 
   def update
+    unless access_request
+      return render status: :not_found, nothing: true
+    end
     permission = Inventories::Permission.new(inventory: inventory, user: access_request.user)
     case update_request_params[:status]
     when 'denied'
@@ -50,7 +53,7 @@ class V1::InventoryAccessRequestsController < ApplicationController
   end
 
   def access_request
-    inventory.access_requests.find(access_request_id)
+    @access_request ||= inventory.access_requests.where(id: access_request_id).first
   end
 end
  

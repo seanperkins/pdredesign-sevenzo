@@ -69,15 +69,28 @@ describe V1::InventoryAccessRequestsController do
     context 'as signed-in user' do
       let(:user) { FactoryGirl.create(:user) }
 
-      before(:each) do 
+      before(:each) do
         sign_in user
+      end
+
+      context 'on non-existing request' do
+        let(:inventory) { FactoryGirl.create(:inventory) }
+
+        before(:each) do
+          patch :update,
+            inventory_id: inventory.id,
+            id: 99999999,
+            status: 'denied', format: :json
+        end
+
+        it { expect(response).to have_http_status(:not_found) }
       end
 
       context 'denying access' do
         let(:inventory) { FactoryGirl.create(:inventory) }
         let(:access_request) { FactoryGirl.create(:inventory_access_request, :as_participant, inventory: inventory) }
 
-        before(:each) do 
+        before(:each) do
           patch :update,
             inventory_id: inventory.id,
             id: access_request.id,
