@@ -72,5 +72,9 @@ class User < ActiveRecord::Base
   def name
     "#{first_name} #{last_name}"
   end
- 
+
+  def ensure_district(district:)
+    return if district_ids.include? district.id
+    districts << district
+  end
 end

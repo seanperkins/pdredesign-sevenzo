@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160303175531) do
+ActiveRecord::Schema.define(version: 20160308011005) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -246,7 +246,43 @@ ActiveRecord::Schema.define(version: 20160303175531) do
     t.string   "name",        null: false
     t.datetime "deadline",    null: false
     t.integer  "district_id", null: false
+    t.integer  "owner_id"
   end
+
+  create_table "inventory_access_requests", force: :cascade do |t|
+    t.integer  "inventory_id", null: false
+    t.integer  "user_id",      null: false
+    t.string   "role",         null: false
+    t.string   "token"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "inventory_invitations", force: :cascade do |t|
+    t.string  "first_name"
+    t.string  "last_name"
+    t.string  "email"
+    t.string  "team_role"
+    t.string  "role"
+    t.string  "token"
+    t.integer "inventory_id", null: false
+    t.integer "user_id"
+  end
+
+  add_index "inventory_invitations", ["inventory_id"], name: "index_inventory_invitations_on_inventory_id", using: :btree
+  add_index "inventory_invitations", ["user_id"], name: "index_inventory_invitations_on_user_id", using: :btree
+
+  create_table "inventory_members", force: :cascade do |t|
+    t.integer  "inventory_id", null: false
+    t.integer  "user_id",      null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.datetime "invited_at"
+    t.string   "role"
+  end
+
+  add_index "inventory_members", ["inventory_id"], name: "index_inventory_members_on_inventory_id", using: :btree
+  add_index "inventory_members", ["user_id"], name: "index_inventory_members_on_user_id", using: :btree
 
   create_table "key_question_points", force: :cascade do |t|
     t.integer  "key_question_question_id"
@@ -529,4 +565,10 @@ ActiveRecord::Schema.define(version: 20160303175531) do
   add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree
   add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
 
+  add_foreign_key "inventory_access_requests", "inventories", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "inventory_access_requests", "users", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "inventory_invitations", "inventories", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "inventory_invitations", "users", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "inventory_members", "inventories", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "inventory_members", "users", on_update: :cascade, on_delete: :cascade
 end
