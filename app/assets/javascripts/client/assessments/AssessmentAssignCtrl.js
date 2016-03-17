@@ -41,6 +41,8 @@
 
     $scope.fetchAssessment();
 
+
+
     $scope.assignAndSave = function(assessment) {
       if (assessment.message === null || assessment.message === '') {
         $scope.alertError = true;
