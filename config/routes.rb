@@ -82,7 +82,7 @@ PdrServer::Application.routes.draw do
       resources :invitations, controller: 'inventory_invitations', only: [:create]
       resources :access_requests, controller: 'inventory_access_requests', only: [:index, :create, :update]
       resource :permissions, controller: 'inventory_permissions', only: [:show, :update]
-      resources :participants, controller: 'inventory_participants', only: [:index, :create, :destroy]
+      resources :participants, controller: 'inventory_participants', only: [:create, :destroy]
     end
 
     get 'user', to: 'user#show'
