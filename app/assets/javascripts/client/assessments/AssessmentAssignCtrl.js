@@ -22,6 +22,7 @@
     $scope.user = SessionService.getCurrentUser();
     $scope.participants = Participant.query({assessment_id: $scope.id});
     $scope.alerts = [];
+    $scope.alertError = false;
 
     $scope.district = $scope.user.districts[0];
 
@@ -39,24 +40,6 @@
     };
 
     $scope.fetchAssessment();
-
-    $scope.$watch('assessment.due_date', function(value) {
-      $scope.due_date = moment(value).format('MM/DD/YYYY');
-    });
-
-    $scope.$on('update_participants', function() {
-      updateParticipantsList();
-    });
-
-    $scope.$on('add_assessment_alert', function(event, data) {
-      if (data['type'] === 'success') {
-        $scope.success(data['msg']);
-      } else if (data['type'] === 'danger') {
-        $scope.error(data['msg']);
-      }
-    });
-
-    $scope.alertError = false;
 
     $scope.assignAndSave = function(assessment) {
       if (assessment.message === null || assessment.message === '') {
@@ -118,7 +101,7 @@
       $scope.alerts.splice(index, 1);
     };
 
-    function updateParticipantsList() {
+    $scope.updateParticipantsList = function() {
       Participant
           .query({assessment_id: $scope.id})
           .$promise
@@ -133,14 +116,14 @@
       }, function() {
         $scope.error('Could not update participants list');
       });
-    }
+    };
 
     $scope.removeParticipant = function(user) {
       Participant
           .delete({assessment_id: $scope.id, id: user.participant_id}, {user_id: user.id})
           .$promise
           .then(function() {
-            updateParticipantsList();
+            $scope.updateParticipantsList();
           });
     };
 
@@ -152,6 +135,22 @@
       $scope.datetime = $('.datetime').datetimepicker({
         pickTime: false
       });
+    });
+
+    $scope.$watch('assessment.due_date', function(value) {
+      $scope.due_date = moment(value).format('MM/DD/YYYY');
+    });
+
+    $scope.$on('update_participants', function() {
+      $scope.updateParticipantsList();
+    });
+
+    $scope.$on('add_assessment_alert', function(event, data) {
+      if (data['type'] === 'success') {
+        $scope.success(data['msg']);
+      } else if (data['type'] === 'danger') {
+        $scope.error(data['msg']);
+      }
     });
   }
 })();

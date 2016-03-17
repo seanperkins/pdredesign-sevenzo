@@ -9,7 +9,7 @@
       replace: true,
       transclude: true,
       scope: {
-        assessment: '=',
+        model: '=',
         district: '='
       },
       templateUrl: 'client/common_create/invite.html',

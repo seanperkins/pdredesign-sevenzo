@@ -15,8 +15,13 @@
 
     vm.user = SessionService.getCurrentUser();
 
-    vm.save = InviteService.save;
-    vm.assignAndSave = InviteService.assignAndSave;
+    vm.save = InviteService.saveAssessment;
+    vm.assignAndSave = InviteService.assignAndSaveAssessment;
+    vm.saving = false;
+
+    $scope.$on('toggle-saving-state', function() {
+      vm.saving = !vm.saving;
+    });
 
     vm.formattedDate = function(date) {
       return moment(date).format('ll');

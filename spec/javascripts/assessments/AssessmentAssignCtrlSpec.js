@@ -411,5 +411,154 @@
         });
       });
     });
+
+    describe('#success', function() {
+      var anchorScroll = jasmine.createSpy('anchorScroll');
+      beforeEach(function() {
+        $stateParams = {id: 1};
+        spyOn(SessionService, 'getCurrentUser').and.returnValue({districts: [{id: 19}]});
+
+        subject = $controller('AssessmentAssignCtrl', {
+          $scope: $scope,
+          $timeout: $timeout,
+          $anchorScroll: anchorScroll,
+          $location: $location,
+          $stateParams: $stateParams,
+          SessionService: SessionService,
+          Assessment: Assessment,
+          Participant: Participant,
+          Rubric: Rubric
+        });
+      });
+
+      it('adds the message to the alerts array', function() {
+        $scope.success('Success!');
+        expect($scope.alerts[0]).toEqual({type: 'success', msg: 'Success!'});
+      });
+
+      it('invokes the $anchorScroll service', function() {
+        $scope.success('Success!');
+        expect(anchorScroll).toHaveBeenCalled();
+      });
+
+      it('removes the alert after the timeout', function() {
+        $httpBackend.when('GET', '/v1/assessments/1/participants').respond([]);
+        $httpBackend.when('GET', '/v1/assessments/1').respond({});
+
+        $scope.success('Success!');
+        expect($scope.alerts.length).toEqual(1);
+        $timeout.flush();
+        expect($scope.alerts.length).toEqual(0);
+      });
+    });
+
+
+    describe('#error', function() {
+      var anchorScroll = jasmine.createSpy('anchorScroll');
+      beforeEach(function() {
+        $stateParams = {id: 1};
+        spyOn(SessionService, 'getCurrentUser').and.returnValue({districts: [{id: 19}]});
+
+        subject = $controller('AssessmentAssignCtrl', {
+          $scope: $scope,
+          $timeout: $timeout,
+          $anchorScroll: anchorScroll,
+          $location: $location,
+          $stateParams: $stateParams,
+          SessionService: SessionService,
+          Assessment: Assessment,
+          Participant: Participant,
+          Rubric: Rubric
+        });
+      });
+
+      it('adds the message to the alerts array', function() {
+        $scope.error('Error!');
+        expect($scope.alerts[0]).toEqual({type: 'danger', msg: 'Error!'});
+      });
+
+      it('invokes the $anchorScroll service', function() {
+        $scope.error('Error!');
+        expect(anchorScroll).toHaveBeenCalled();
+      });
+    });
+
+    describe('$on: update_participants', function() {
+      var $rootScope;
+      beforeEach(function() {
+        inject(function(_$rootScope_) {
+          $rootScope = _$rootScope_;
+        });
+        $stateParams = {id: 1};
+        spyOn(SessionService, 'getCurrentUser').and.returnValue({districts: [{id: 19}]});
+
+        subject = $controller('AssessmentAssignCtrl', {
+          $scope: $scope,
+          $timeout: $timeout,
+          $anchorScroll: $anchorScroll,
+          $location: $location,
+          $stateParams: $stateParams,
+          SessionService: SessionService,
+          Assessment: Assessment,
+          Participant: Participant,
+          Rubric: Rubric
+        });
+      });
+
+      it('invokes the correct method', function() {
+        spyOn($scope, 'updateParticipantsList');
+        $rootScope.$broadcast('update_participants');
+        expect($scope.updateParticipantsList).toHaveBeenCalled();
+      });
+    });
+
+    describe('$on: add_assessment_alert', function() {
+      var $rootScope;
+      beforeEach(function() {
+        inject(function(_$rootScope_) {
+          $rootScope = _$rootScope_;
+        });
+        $stateParams = {id: 1};
+        spyOn(SessionService, 'getCurrentUser').and.returnValue({districts: [{id: 19}]});
+
+        subject = $controller('AssessmentAssignCtrl', {
+          $scope: $scope,
+          $timeout: $timeout,
+          $anchorScroll: $anchorScroll,
+          $location: $location,
+          $stateParams: $stateParams,
+          SessionService: SessionService,
+          Assessment: Assessment,
+          Participant: Participant,
+          Rubric: Rubric
+        });
+      });
+
+      describe('when the data type is success', function() {
+        it('invokes success with the right parameters', function() {
+          spyOn($scope, 'success');
+          $rootScope.$broadcast('add_assessment_alert', {type: 'success', msg: 'This is a success!'});
+          expect($scope.success).toHaveBeenCalledWith('This is a success!');
+        });
+      });
+
+      describe('when the data type is danger', function() {
+        it('invokes error with the right parameters', function() {
+          spyOn($scope, 'error');
+          $rootScope.$broadcast('add_assessment_alert', {type: 'danger', msg: 'This is a warning!'});
+          expect($scope.error).toHaveBeenCalledWith('This is a warning!');
+        });
+      });
+
+      describe('when the data type is anything else', function() {
+        it('invokes no methods', function() {
+          spyOn($scope, 'success');
+          spyOn($scope, 'error');
+          $rootScope.$broadcast('add_assessment_alert', {type: 'error', msg: 'This really will not be invoked'});
+          expect($scope.success).not.toHaveBeenCalled();
+          expect($scope.error).not.toHaveBeenCalled();
+        });
+      });
+    });
   });
 })();

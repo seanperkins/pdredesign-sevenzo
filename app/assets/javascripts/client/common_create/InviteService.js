@@ -20,6 +20,10 @@
       this.scope = scope;
     };
 
+    this.toggleSavingState = function() {
+      this.scope.$emit('toggle-saving-state');
+    };
+
     this.alertError = false;
 
     this.emitSuccess = function(message) {
@@ -34,8 +38,7 @@
       this.alerts.splice(index, 1);
     };
 
-
-    this.assignAndSave = function(assessment) {
+    this.assignAndSaveAssessment = function(assessment) {
       if (assessment.message === null || assessment.message === '') {
         this.alertError = true;
         return;
@@ -44,14 +47,14 @@
       if ($window.confirm('Are you sure you want to send out the assessment and invite all your participants?')) {
         this.alertError = false;
         this
-            .save(assessment, true)
+            .saveAssessment(assessment, true)
             .then(function() {
               $location.path('/assessments');
             });
       }
     };
 
-    this.save = function(assessment, assign) {
+    this.saveAssessment = function(assessment, assign) {
       if (assessment.name === '') {
         this.error('Assessment needs a name!');
         return;
@@ -59,7 +62,7 @@
 
       assessment.district_id = this.district.id;
 
-      this.saving = true;
+      service.toggleSavingState();
       assessment.due_date = moment($("#due-date").val(), 'MM/DD/YYYY').toISOString();
 
       if (assign) {
@@ -69,11 +72,11 @@
       return Assessment
           .save({id: assessment.id}, assessment)
           .$promise
-          .then(function(_data) {
-            service.saving = false;
+          .then(function() {
+            service.toggleSavingState();
             service.emitSuccess('Assessment Saved!');
           }, function() {
-            service.saving = false;
+            service.toggleSavingState();
             service.emitError('Could not save assessment');
           });
     };
