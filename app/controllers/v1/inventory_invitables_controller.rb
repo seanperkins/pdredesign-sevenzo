@@ -7,7 +7,7 @@ class V1::InventoryInvitablesController < ApplicationController
     member_users = inventory.members.select(:user_id).map(&:user_id)
     @users = User.includes(:districts)
       .where(districts:{id: inventory.district_id})
-      .where.not(id: member_users)
+      .where.not(id: member_users, role: 'network_partner')
   end
 
   private
