@@ -5,19 +5,19 @@
     var subject,
         $scope,
         SessionService,
-        InviteService;
+        CreateService;
 
     beforeEach(function() {
       module('PDRClient');
       inject(function(_$controller_, _$rootScope_, _$injector_) {
         $scope = _$rootScope_.$new(true);
         SessionService = _$injector_.get('SessionService');
-        InviteService = _$injector_.get('InviteService');
+        CreateService = _$injector_.get('CreateService');
 
         subject = _$controller_('InviteMessageCtrl', {
           $scope: $scope,
           SessionService: SessionService,
-          InviteService: InviteService
+          InviteService: CreateService
         });
       });
 
@@ -51,14 +51,14 @@
         subject = _$controller_('InviteMessageCtrl', {
           $scope: $scope,
           SessionService: SessionService,
-          InviteService: InviteService
+          InviteService: CreateService
         });
       }));
 
-      it('delegates to InviteService#saveAssessment', function() {
-        spyOn(InviteService, 'saveAssessment');
+      it('delegates to CreateService#saveAssessment', function() {
+        spyOn(CreateService, 'saveAssessment');
         subject.save({}, true);
-        expect(InviteService.saveAssessment).toHaveBeenCalled();
+        expect(CreateService.saveAssessment).toHaveBeenCalled();
       });
     });
 
@@ -67,14 +67,14 @@
         subject = _$controller_('InviteMessageCtrl', {
           $scope: $scope,
           SessionService: SessionService,
-          InviteService: InviteService
+          InviteService: CreateService
         });
       }));
 
-      it('delegates to InviteService#assignAndSaveAssesssment', function() {
-        spyOn(InviteService, 'assignAndSaveAssessment');
+      it('delegates to CreateService#assignAndSaveAssesssment', function() {
+        spyOn(CreateService, 'assignAndSaveAssessment');
         subject.assignAndSave({});
-        expect(InviteService.assignAndSaveAssessment).toHaveBeenCalled();
+        expect(CreateService.assignAndSaveAssessment).toHaveBeenCalled();
       });
     });
 
@@ -87,33 +87,33 @@
 
     describe('$watch: district', function() {
       beforeEach(inject(function(_$controller_) {
-        spyOn(InviteService, 'loadDistrict');
+        spyOn(CreateService, 'loadDistrict');
         subject = _$controller_('InviteMessageCtrl', {
           $scope: $scope,
           SessionService: SessionService,
-          InviteService: InviteService
+          InviteService: CreateService
         });
       }));
 
       it('passes the district to the service', function() {
         $scope.$apply('district={"id": 1}');
-        expect(InviteService.loadDistrict).toHaveBeenCalledWith({id: 1});
+        expect(CreateService.loadDistrict).toHaveBeenCalledWith({id: 1});
       });
     });
 
     describe('on initialization', function() {
       beforeEach(inject(function(_$controller_) {
-        spyOn(InviteService, 'loadDistrict');
-        spyOn(InviteService, 'loadScope');
+        spyOn(CreateService, 'loadDistrict');
+        spyOn(CreateService, 'loadScope');
         subject = _$controller_('InviteMessageCtrl', {
           $scope: $scope,
           SessionService: SessionService,
-          InviteService: InviteService
+          InviteService: CreateService
         });
       }));
 
       it('invokes loadScope with the bound scope', function() {
-        expect(InviteService.loadScope).toHaveBeenCalledWith($scope);
+        expect(CreateService.loadScope).toHaveBeenCalledWith($scope);
       });
     });
   });

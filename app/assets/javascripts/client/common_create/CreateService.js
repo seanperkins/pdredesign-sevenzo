@@ -1,15 +1,15 @@
 (function() {
   'use strict';
   angular.module('PDRClient')
-      .service('InviteService', InviteService);
+      .service('CreateService', CreateService);
 
-  InviteService.$inject = [
+  CreateService.$inject = [
     '$window',
     '$location',
     'Assessment'
   ];
 
-  function InviteService($window, $location, Assessment) {
+  function CreateService($window, $location, Assessment) {
     var service = this;
 
     this.loadDistrict = function(district) {

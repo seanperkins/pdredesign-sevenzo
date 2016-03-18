@@ -153,7 +153,11 @@
     });
 
     describe('#updateParticipantsList', function() {
+      var CreateService;
       beforeEach(function() {
+        inject(function($injector) {
+          CreateService = $injector.get('CreateService');
+        });
         $stateParams = {id: 1};
         spyOn(SessionService, 'getCurrentUser').and.returnValue({districts: [{id: 19}]});
 
@@ -186,12 +190,13 @@
 
       describe('when Participant#query is unsuccessful', function() {
         beforeEach(function() {
-          spyOn($scope, '$emit');
+          spyOn(CreateService, 'emitError');
           subject = $controller('CreateParticipantsCtrl', {
             $scope: $scope,
             $stateParams: $stateParams,
             SessionService: SessionService,
-            Participant: Participant
+            Participant: Participant,
+            CreateService: CreateService
           });
           $httpBackend.when('GET', '/v1/assessments/1/participants').respond(400);
           $httpBackend.when('GET', '/v1/assessments/1/participants/all').respond(200);
@@ -200,21 +205,19 @@
         it('emits the error', function() {
           subject.updateParticipantsList();
           $httpBackend.flush();
-          expect($scope.$emit).toHaveBeenCalledWith('add_assessment_alert', {
-            type: 'danger',
-            msg: 'Could not update participants list'
-          });
+          expect(CreateService.emitError).toHaveBeenCalledWith('Could not update participants list');
         });
       });
 
       describe('when Participant#all is unsuccessful', function() {
         beforeEach(function() {
-          spyOn($scope, '$emit');
+          spyOn(CreateService, 'emitError');
           subject = $controller('CreateParticipantsCtrl', {
             $scope: $scope,
             $stateParams: $stateParams,
             SessionService: SessionService,
-            Participant: Participant
+            Participant: Participant,
+            CreateService: CreateService
           });
           $httpBackend.when('GET', '/v1/assessments/1/participants').respond(200);
           $httpBackend.when('GET', '/v1/assessments/1/participants/all').respond(400);
@@ -223,21 +226,19 @@
         it('emits the error', function() {
           subject.updateParticipantsList();
           $httpBackend.flush();
-          expect($scope.$emit).toHaveBeenCalledWith('add_assessment_alert', {
-            type: 'danger',
-            msg: 'Could not update participants list'
-          });
+          expect(CreateService.emitError).toHaveBeenCalledWith('Could not update participants list');
         });
       });
 
       describe('when Participant#query and Participant#all are unsuccessful', function() {
         beforeEach(function() {
-          spyOn($scope, '$emit');
+          spyOn(CreateService, 'emitError');
           subject = $controller('CreateParticipantsCtrl', {
             $scope: $scope,
             $stateParams: $stateParams,
             SessionService: SessionService,
-            Participant: Participant
+            Participant: Participant,
+            CreateService: CreateService
           });
           $httpBackend.when('GET', '/v1/assessments/1/participants').respond(400);
           $httpBackend.when('GET', '/v1/assessments/1/participants/all').respond(400);
@@ -246,7 +247,7 @@
         it('emits the error twice', function() {
           subject.updateParticipantsList();
           $httpBackend.flush();
-          expect($scope.$emit.calls.count()).toEqual(2);
+          expect(CreateService.emitError.calls.count()).toEqual(2);
         });
       });
     });

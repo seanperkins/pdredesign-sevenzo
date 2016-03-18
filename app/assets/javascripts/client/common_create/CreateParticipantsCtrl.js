@@ -8,10 +8,11 @@
     '$stateParams',
     '$scope',
     'SessionService',
-    'Participant'
+    'Participant',
+    'CreateService'
   ];
 
-  function CreateParticipantsCtrl($stateParams, $scope, SessionService, Participant) {
+  function CreateParticipantsCtrl($stateParams, $scope, SessionService, Participant, CreateService) {
     var vm = this;
 
     vm.participants = Participant.query({assessment_id: $stateParams.id});
@@ -19,10 +20,6 @@
 
     vm.isNetworkPartner = function() {
       return SessionService.isNetworkPartner();
-    };
-
-    vm.error = function(message) {
-      $scope.$emit('add_assessment_alert', {type: 'danger', msg: message});
     };
 
     vm.removeParticipant = function(user) {
@@ -40,7 +37,7 @@
           .then(function(data) {
             vm.participants = data;
           }, function() {
-            vm.error('Could not update participants list');
+            CreateService.emitError('Could not update participants list');
           });
 
       Participant.all({assessment_id: $stateParams.id})
@@ -48,7 +45,7 @@
           .then(function(data) {
             vm.invitableParticipants = data;
           }, function() {
-            vm.error('Could not update participants list');
+            CreateService.emitError('Could not update participants list');
           });
     };
 

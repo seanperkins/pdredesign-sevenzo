@@ -1,7 +1,7 @@
 (function() {
   'use strict';
 
-  describe('Service: Invite', function() {
+  describe('Service: Create', function() {
     var subject,
         $window,
         $location,
@@ -13,7 +13,7 @@
         $location = _$location_;
         Assessment = _$injector_.get('Assessment');
 
-        subject = _$injector_.get('InviteService');
+        subject = _$injector_.get('CreateService');
       });
     });
 

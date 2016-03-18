@@ -7,35 +7,35 @@
   InviteMessageCtrl.$inject = [
     '$scope',
     'SessionService',
-    'InviteService'
+    'CreateService'
   ];
 
-  function InviteMessageCtrl($scope, SessionService, InviteService) {
+  function InviteMessageCtrl($scope, SessionService, CreateService) {
     var vm = this;
 
     vm.user = SessionService.getCurrentUser();
     vm.saving = false;
 
     vm.save = function(assessment, assign) {
-      InviteService.saveAssessment(assessment, assign);
+      CreateService.saveAssessment(assessment, assign);
     };
 
     vm.assignAndSave = function(assessment) {
-      InviteService.assignAndSaveAssessment(assessment);
+      CreateService.assignAndSaveAssessment(assessment);
     };
 
     vm.formattedDate = function(date) {
       return moment(date).format('ll');
     };
 
-    InviteService.loadScope($scope);
+    CreateService.loadScope($scope);
 
     $scope.$on('toggle-saving-state', function() {
       vm.saving = !vm.saving;
     });
 
     $scope.$watch('district', function(val) {
-      InviteService.loadDistrict(val);
+      CreateService.loadDistrict(val);
     });
   }
 })();
