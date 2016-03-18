@@ -11,9 +11,7 @@
         $stateParams,
         $httpBackend,
         SessionService,
-        Assessment,
-        Participant,
-        Rubric;
+        Assessment;
 
     beforeEach(function() {
       module('PDRClient');
@@ -27,8 +25,6 @@
 
         SessionService = $injector.get('SessionService');
         Assessment = $injector.get('Assessment');
-        Participant = $injector.get('Participant');
-        Rubric = $injector.get('Rubric');
       });
     });
 
@@ -48,7 +44,6 @@
                     }
                   ]
                 });
-            $httpBackend.expect('GET', '/v1/assessments/1/participants').respond([]);
             $httpBackend.expect('GET', '/v1/assessments/1').respond({id: 7, district_id: 12});
 
             subject = $controller('AssessmentAssignCtrl', {
@@ -58,9 +53,7 @@
               $location: $location,
               $stateParams: $stateParams,
               SessionService: SessionService,
-              Assessment: Assessment,
-              Participant: Participant,
-              Rubric: Rubric
+              Assessment: Assessment
             });
 
             $httpBackend.flush();
@@ -94,7 +87,6 @@
                     }
                   ]
                 });
-            $httpBackend.expect('GET', '/v1/assessments/1/participants').respond([]);
             $httpBackend.expect('GET', '/v1/assessments/1').respond({id: 7, district_id: 12});
 
             subject = $controller('AssessmentAssignCtrl', {
@@ -104,9 +96,7 @@
               $location: $location,
               $stateParams: $stateParams,
               SessionService: SessionService,
-              Assessment: Assessment,
-              Participant: Participant,
-              Rubric: Rubric
+              Assessment: Assessment
             });
 
             $httpBackend.flush();
@@ -141,7 +131,6 @@
                   }
                 ]
               });
-          $httpBackend.expect('GET', '/v1/assessments/1/participants').respond(400);
           $httpBackend.when('GET', '/v1/assessments/1').respond(400);
 
           subject = $controller('AssessmentAssignCtrl', {
@@ -151,9 +140,7 @@
             $location: $location,
             $stateParams: $stateParams,
             SessionService: SessionService,
-            Assessment: Assessment,
-            Participant: Participant,
-            Rubric: Rubric
+            Assessment: Assessment
           });
 
           $httpBackend.flush();
@@ -181,7 +168,6 @@
                 }
               ]
             });
-        $httpBackend.expect('GET', '/v1/assessments/1/participants').respond([]);
         $httpBackend.expect('GET', '/v1/assessments/1').respond({});
 
         subject = $controller('AssessmentAssignCtrl', {
@@ -191,9 +177,7 @@
           $location: $location,
           $stateParams: $stateParams,
           SessionService: SessionService,
-          Assessment: Assessment,
-          Participant: Participant,
-          Rubric: Rubric
+          Assessment: Assessment
         });
 
         $httpBackend.flush();
@@ -282,7 +266,6 @@
                 }
               ]
             });
-        $httpBackend.expect('GET', '/v1/assessments/1/participants').respond([]);
         $httpBackend.when('GET', '/v1/assessments/1').respond({});
 
         subject = $controller('AssessmentAssignCtrl', {
@@ -292,9 +275,7 @@
           $location: $location,
           $stateParams: $stateParams,
           SessionService: SessionService,
-          Assessment: Assessment,
-          Participant: Participant,
-          Rubric: Rubric
+          Assessment: Assessment
         });
 
         $httpBackend.flush();
@@ -425,9 +406,7 @@
           $location: $location,
           $stateParams: $stateParams,
           SessionService: SessionService,
-          Assessment: Assessment,
-          Participant: Participant,
-          Rubric: Rubric
+          Assessment: Assessment
         });
       });
 
@@ -442,7 +421,6 @@
       });
 
       it('removes the alert after the timeout', function() {
-        $httpBackend.when('GET', '/v1/assessments/1/participants').respond([]);
         $httpBackend.when('GET', '/v1/assessments/1').respond({});
 
         $scope.success('Success!');
@@ -466,9 +444,7 @@
           $location: $location,
           $stateParams: $stateParams,
           SessionService: SessionService,
-          Assessment: Assessment,
-          Participant: Participant,
-          Rubric: Rubric
+          Assessment: Assessment
         });
       });
 
@@ -480,35 +456,6 @@
       it('invokes the $anchorScroll service', function() {
         $scope.error('Error!');
         expect(anchorScroll).toHaveBeenCalled();
-      });
-    });
-
-    describe('$on: update_participants', function() {
-      var $rootScope;
-      beforeEach(function() {
-        inject(function(_$rootScope_) {
-          $rootScope = _$rootScope_;
-        });
-        $stateParams = {id: 1};
-        spyOn(SessionService, 'getCurrentUser').and.returnValue({districts: [{id: 19}]});
-
-        subject = $controller('AssessmentAssignCtrl', {
-          $scope: $scope,
-          $timeout: $timeout,
-          $anchorScroll: $anchorScroll,
-          $location: $location,
-          $stateParams: $stateParams,
-          SessionService: SessionService,
-          Assessment: Assessment,
-          Participant: Participant,
-          Rubric: Rubric
-        });
-      });
-
-      it('invokes the correct method', function() {
-        spyOn($scope, 'updateParticipantsList');
-        $rootScope.$broadcast('update_participants');
-        expect($scope.updateParticipantsList).toHaveBeenCalled();
       });
     });
 
@@ -528,9 +475,7 @@
           $location: $location,
           $stateParams: $stateParams,
           SessionService: SessionService,
-          Assessment: Assessment,
-          Participant: Participant,
-          Rubric: Rubric
+          Assessment: Assessment
         });
       });
 

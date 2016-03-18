@@ -12,15 +12,13 @@
     '$stateParams',
     '$window',
     'SessionService',
-    'Assessment',
-    'Participant'
+    'Assessment'
   ];
 
-  function AssessmentAssignCtrl($scope, $timeout, $anchorScroll, $location, $stateParams, $window, SessionService, Assessment, Participant) {
+  function AssessmentAssignCtrl($scope, $timeout, $anchorScroll, $location, $stateParams, $window, SessionService, Assessment) {
 
     $scope.id = $stateParams.id;
     $scope.user = SessionService.getCurrentUser();
-    $scope.participants = Participant.query({assessment_id: $scope.id});
     $scope.alerts = [];
     $scope.alertError = false;
 
@@ -40,8 +38,6 @@
     };
 
     $scope.fetchAssessment();
-
-
 
     $scope.assignAndSave = function(assessment) {
       if (assessment.message === null || assessment.message === '') {
@@ -77,7 +73,7 @@
       return Assessment
           .save({id: assessment.id}, assessment)
           .$promise
-          .then(function(_data) {
+          .then(function() {
             $scope.saving = false;
             $scope.success('Assessment Saved!');
           }, function() {
@@ -103,32 +99,6 @@
       $scope.alerts.splice(index, 1);
     };
 
-    $scope.updateParticipantsList = function() {
-      Participant
-          .query({assessment_id: $scope.id})
-          .$promise
-          .then(function(data) {
-            $scope.participants = data;
-          }, function() {
-            $scope.error('Could not update participants list');
-          });
-
-      Participant.all({assessment_id: $scope.id}).$promise.then(function(data) {
-        $scope.invitableParticipants = data;
-      }, function() {
-        $scope.error('Could not update participants list');
-      });
-    };
-
-    $scope.removeParticipant = function(user) {
-      Participant
-          .delete({assessment_id: $scope.id, id: user.participant_id}, {user_id: user.id})
-          .$promise
-          .then(function() {
-            $scope.updateParticipantsList();
-          });
-    };
-
     $scope.isNetworkPartner = function() {
       return SessionService.isNetworkPartner();
     };
@@ -141,10 +111,6 @@
 
     $scope.$watch('assessment.due_date', function(value) {
       $scope.due_date = moment(value).format('MM/DD/YYYY');
-    });
-
-    $scope.$on('update_participants', function() {
-      $scope.updateParticipantsList();
     });
 
     $scope.$on('add_assessment_alert', function(event, data) {

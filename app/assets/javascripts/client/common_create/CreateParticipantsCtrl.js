@@ -21,6 +21,10 @@
       return SessionService.isNetworkPartner();
     };
 
+    vm.error = function(message) {
+      $scope.$emit('add_assessment_alert', {type: 'danger', msg: message});
+    };
+
     vm.removeParticipant = function(user) {
       Participant
           .delete({assessment_id: $stateParams.id, id: user.participant_id}, {user_id: user.id})
@@ -52,5 +56,4 @@
       vm.updateParticipantsList();
     });
   }
-
 })();
