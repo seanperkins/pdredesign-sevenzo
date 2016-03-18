@@ -14,7 +14,7 @@ class V1::InventoriesController < ApplicationController
       begin
         @inventory.deadline = DateTime.strptime(inventory_params[:deadline], '%m/%d/%Y')
       rescue
-        @inventory.errors.add(:deadline, 'must be in DD/MM/YYYY format')
+        @inventory.errors.add(:deadline, 'must be in MM/DD/YYYY format')
         return render_error
       end
     end

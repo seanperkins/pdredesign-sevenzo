@@ -230,7 +230,7 @@ describe V1::InventoriesController do
         end
 
         it 'sends back a meaningful error message' do
-          expect(json['errors']['deadline'][0]).to eq 'must be in DD/MM/YYYY format'
+          expect(json['errors']['deadline'][0]).to eq 'must be in MM/DD/YYYY format'
         end
 
         it { expect(json['errors']['deadline'].length).to eq 1 }
