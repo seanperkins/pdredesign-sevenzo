@@ -3,7 +3,8 @@ class V1::InventoriesController < ApplicationController
   before_action :authenticate_user!
 
   def index
-    @inventories = Inventory.where(user: current_user)
+    @inventories = Inventory.joins('LEFT OUTER JOIN inventory_members ON inventory_members.inventory_id = inventories.id')
+                       .where('inventories.owner_id = ? OR inventory_members.user_id = ?', current_user.id, current_user.id)
   end
 
   def create
@@ -18,7 +19,7 @@ class V1::InventoriesController < ApplicationController
       end
     end
     @inventory.district = District.find(inventory_params[:district][:id])
-    @inventory.user = current_user
+    @inventory.owner = current_user
     if @inventory.save
       render template: 'v1/inventories/show'
     else

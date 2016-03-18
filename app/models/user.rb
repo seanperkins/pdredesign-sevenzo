@@ -36,7 +36,6 @@ class User < ActiveRecord::Base
   has_many :rubrics
   has_many :feedbacks
   has_many :tools
-  has_many :inventories
 
   has_and_belongs_to_many :organizations
   has_and_belongs_to_many :districts

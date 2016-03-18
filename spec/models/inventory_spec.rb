@@ -7,8 +7,6 @@
 #  deadline    :datetime         not null
 #  district_id :integer          not null
 #  owner_id    :integer
-#  created_at  :datetime         not null
-#  updated_at  :datetime         not null
 #
 
 require 'spec_helper'
@@ -27,7 +25,6 @@ describe Inventory do
 
   it { is_expected.to validate_length_of(:name).is_at_least(1) }
   it { is_expected.to validate_length_of(:name).is_at_most(255) }
-  it { is_expected.to validate_presence_of(:user) }
   it { is_expected.to validate_presence_of(:deadline) }
 
   context 'when saving a record in the past' do
@@ -37,7 +34,7 @@ describe Inventory do
 
     before(:each) do
       subject.deadline = 1.minute.ago
-      subject.user = create(:user)
+      subject.owner = create(:user)
       subject.name = 'Foo'
       subject.save
     end
@@ -47,7 +44,7 @@ describe Inventory do
     end
 
     it 'gives back the correct error message' do
-      expect(subject.errors[:deadline][0]).to eq "cannot be in the past"
+      expect(subject.errors[:deadline][0]).to eq 'cannot be in the past'
     end
 
   end

@@ -41,7 +41,7 @@ describe V1::InventoriesController do
           }
 
           let(:user) {
-            inventory.user
+            inventory.owner
           }
 
           before(:each) do
@@ -69,7 +69,7 @@ describe V1::InventoriesController do
           }
 
           let!(:inventories) {
-            create_list(:inventory, 5, user: other_user)
+            create_list(:inventory, 5, owner: other_user)
           }
 
           before(:each) do
@@ -169,7 +169,7 @@ describe V1::InventoriesController do
         it { expect(json['id']).to_not be_nil }
         it { expect(Time.parse(json['deadline'])).to eq DateTime.strptime(deadline, '%m/%d/%Y') }
         it { expect(json['district_id']).to eq district.id }
-        it { expect(json['user_id']).to eq user.id }
+        it { expect(json['owner_id']).to eq user.id }
         it { expect(json['name']).to_not be_nil }
         it { expect(json['created_at']).to_not be_nil }
         it { expect(json['updated_at']).to_not be_nil }

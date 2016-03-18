@@ -7,8 +7,6 @@
 #  deadline    :datetime         not null
 #  district_id :integer          not null
 #  owner_id    :integer
-#  created_at  :datetime         not null
-#  updated_at  :datetime         not null
 #
 
 class Inventory < ActiveRecord::Base
