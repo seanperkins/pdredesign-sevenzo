@@ -52,11 +52,13 @@ describe Inventory do
   end
 
   describe '#save' do
-    subject {
-      create(:inventory)
-    }
+    let(:owner) { FactoryGirl.create(:user) }
+    subject { FactoryGirl.create(:inventory, owner: owner) }
 
-    it { expect(subject.new_record?).to be false } 
+    it { expect(subject.new_record?).to be false }
+    it 'add owner as facilitator' do
+      expect(subject.facilitators.where(user: owner)).to exist
+    end
   end
 
   describe '#owner?' do

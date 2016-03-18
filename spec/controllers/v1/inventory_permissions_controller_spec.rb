@@ -62,7 +62,7 @@ describe V1::InventoryPermissionsController do
       it { expect(response).to have_http_status(:success) }
 
       it 'changed all roles' do 
-        expect(inventory.facilitators.map(&:user).map(&:email)).to match original_participant_emails
+        expect(inventory.facilitators.map(&:user).map(&:email)).to include *original_participant_emails
       end
     end
   end

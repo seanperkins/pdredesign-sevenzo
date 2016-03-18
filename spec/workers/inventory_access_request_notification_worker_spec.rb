@@ -5,20 +5,17 @@ describe InventoryAccessRequestNotificationWorker do
     let(:subject) { InventoryAccessRequestNotificationWorker }
     let(:inventory) { FactoryGirl.create(:inventory, :with_facilitators, facilitators: 2) }
     let(:request) { FactoryGirl.create(:inventory_access_request, :as_facilitator, inventory: inventory) }
-    let(:first_facilitator) { inventory.facilitators.first.user }
-    let(:second_facilitator) { inventory.facilitators.last.user }
+    let(:all_facilitators) { inventory.facilitators.collect(&:user) }
 
-    it 'sends an email to both facilitators' do
+    it 'sends an email to all facilitators' do
       double = double('mailer')
-      expect(InventoryAccessRequestMailer).to receive(:request_access)
-        .with(request, first_facilitator.email)
-        .and_return(double)
+      all_facilitators.each do |facilitator|
+        expect(InventoryAccessRequestMailer).to receive(:request_access)
+          .with(request, facilitator.email)
+          .and_return(double)
+      end
 
-      expect(InventoryAccessRequestMailer).to receive(:request_access)
-        .with(request, second_facilitator.email)
-        .and_return(double)
-
-      expect(double).to receive(:deliver_now).twice
+      expect(double).to receive(:deliver_now).exactly(all_facilitators.count).times
       subject.new.perform(request.id)
     end
   end
