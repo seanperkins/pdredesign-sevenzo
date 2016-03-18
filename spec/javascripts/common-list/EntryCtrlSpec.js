@@ -115,11 +115,11 @@
 
       describe('when the passed time is a date in an ISO 8601 format', function() {
         beforeEach(function() {
-          result = controller.meetingTime('1999-01-01T00:00:00Z');
+          result = controller.meetingTime('2016-03-18T00:00:00Z');
         });
 
         it('displays the time in Do MMM YYYY format (local timezone)', function() {
-          expect(result).toEqual('1st Jan 1999');
+          expect(result).toEqual('18th Mar 2016');
         });
       });
     });

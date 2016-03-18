@@ -38,7 +38,7 @@
 
     vm.meetingTime = function(date) {
       if (date != null) {
-        return moment(date, 'YYYY-MM-ddTHH:mm:ss').format('Do MMM YYYY');
+        return moment(date, 'YYYY-MM-DDTHH:mm:ss').format('Do MMM YYYY');
       } else {
         return 'TBD';
       }
