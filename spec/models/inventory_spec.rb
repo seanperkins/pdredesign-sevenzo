@@ -6,6 +6,8 @@
 #  name        :string           not null
 #  deadline    :datetime         not null
 #  district_id :integer          not null
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
 #  owner_id    :integer
 #
 
@@ -23,8 +25,36 @@ describe Inventory do
   it { is_expected.to accept_nested_attributes_for(:product_entries) }
   it { is_expected.to accept_nested_attributes_for(:data_entries) }
 
+  it { is_expected.to validate_length_of(:name).is_at_least(1) }
+  it { is_expected.to validate_length_of(:name).is_at_most(255) }
+  it { is_expected.to validate_presence_of(:deadline) }
+
+  context 'when saving a record in the past' do
+    subject {
+      Inventory.new
+    }
+
+    before(:each) do
+      subject.deadline = 1.minute.ago
+      subject.owner = create(:user)
+      subject.name = 'Foo'
+      subject.save
+    end
+
+    it 'has only one error' do
+      expect(subject.errors.size).to eq 1
+    end
+
+    it 'gives back the correct error message' do
+      expect(subject.errors[:deadline][0]).to eq 'cannot be in the past'
+    end
+
+  end
+
   describe '#save' do
-    subject { FactoryGirl.create(:inventory) }
+    subject {
+      create(:inventory)
+    }
 
     it { expect(subject.new_record?).to be false } 
   end

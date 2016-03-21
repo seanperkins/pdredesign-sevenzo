@@ -6,13 +6,15 @@
 #  name        :string           not null
 #  deadline    :datetime         not null
 #  district_id :integer          not null
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
 #  owner_id    :integer
 #
 
 FactoryGirl.define do
   factory :inventory do
     name { Faker::Lorem.word }
-    deadline { Faker::Date.between(2.days.ago, Date.today) }
+    deadline { Faker::Date.between(1.day.from_now, 1.year.from_now) }
     association :district
     association :owner, factory: :user
 

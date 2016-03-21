@@ -39,7 +39,6 @@ describe User do
       expect(user[:email]).to eq('someemail@stuff.com')
     end
   end
-
   describe '#avatar' do
     let(:user) { FactoryGirl.create(:user) }
     it 'returns a default user avatar' do
