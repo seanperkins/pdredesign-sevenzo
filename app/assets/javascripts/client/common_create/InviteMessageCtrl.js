@@ -25,7 +25,7 @@
     };
 
     vm.formattedDate = function(date) {
-      return moment(date).format('ll');
+      return CreateService.formattedDate(date);
     };
 
     CreateService.loadScope($scope);

@@ -16,6 +16,10 @@
       this.district = district;
     };
 
+    this.formattedDate = function(date) {
+      return moment(date).format('ll');
+    };
+
     this.loadScope = function(scope) {
       this.scope = scope;
     };

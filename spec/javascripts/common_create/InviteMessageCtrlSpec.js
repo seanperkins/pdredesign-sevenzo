@@ -17,7 +17,7 @@
         subject = _$controller_('InviteMessageCtrl', {
           $scope: $scope,
           SessionService: SessionService,
-          InviteService: CreateService
+          CreateService: CreateService
         });
       });
 
@@ -51,7 +51,7 @@
         subject = _$controller_('InviteMessageCtrl', {
           $scope: $scope,
           SessionService: SessionService,
-          InviteService: CreateService
+          CreateService: CreateService
         });
       }));
 
@@ -67,7 +67,7 @@
         subject = _$controller_('InviteMessageCtrl', {
           $scope: $scope,
           SessionService: SessionService,
-          InviteService: CreateService
+          CreateService: CreateService
         });
       }));
 
@@ -79,9 +79,10 @@
     });
 
     describe('#formattedDate', function() {
-      it('uses the right format provided to MomentJS', function() {
-        var result = subject.formattedDate(new Date('01/01/2001'));
-        expect(result).toEqual('Jan 1, 2001');
+      it('delegates to CreateService', function() {
+        spyOn(CreateService, 'formattedDate');
+        subject.formattedDate(new Date('01/01/2001'));
+        expect(CreateService.formattedDate).toHaveBeenCalled();
       });
     });
 
@@ -91,7 +92,7 @@
         subject = _$controller_('InviteMessageCtrl', {
           $scope: $scope,
           SessionService: SessionService,
-          InviteService: CreateService
+          CreateService: CreateService
         });
       }));
 
@@ -108,7 +109,7 @@
         subject = _$controller_('InviteMessageCtrl', {
           $scope: $scope,
           SessionService: SessionService,
-          InviteService: CreateService
+          CreateService: CreateService
         });
       }));
 

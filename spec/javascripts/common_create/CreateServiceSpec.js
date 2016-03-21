@@ -23,6 +23,13 @@
       });
     });
 
+    describe('#formattedDate', function() {
+      it('uses the right format provided to MomentJS', function() {
+        var result = subject.formattedDate(new Date('01/01/2001'));
+        expect(result).toEqual('Jan 1, 2001');
+      });
+    });
+
     describe('#loadDistrict', function() {
       it('sets a value in the service', function() {
         expect(subject.district).toBeUndefined();

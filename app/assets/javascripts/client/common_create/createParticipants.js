@@ -9,7 +9,7 @@
       replace: true,
       transclude: true,
       scope: {
-        entity: '='
+        model: '='
       },
       templateUrl: 'client/common_create/participants.html',
       controller: 'CreateParticipantsCtrl',

@@ -10,11 +10,22 @@
       transclude: true,
       replace: true,
       scope: {
-        entity: '='
+        model: '='
       },
+      link: entityDetailsLink,
       templateUrl: 'client/common_create/entity_details.html',
       controller: 'EntityDetailsCtrl',
       controllerAs: 'entityDetails'
     }
+  }
+
+  function entityDetailsLink(scope, element) {
+    scope.datetime = angular.element(element).find('.datetime').datetimepicker({
+      pickTime: false
+    });
+
+    scope.datetime.on('dp.change', function() {
+      angular.element(element).find('#due-date').trigger('change');
+    });
   }
 })();
