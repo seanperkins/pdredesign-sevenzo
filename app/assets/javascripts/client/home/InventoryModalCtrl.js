@@ -30,6 +30,10 @@
       vm.alerts.splice(index, 1);
     };
 
+    vm.noDistrict = function() {
+      return vm.user === null || (typeof(vm.user.district_ids) === 'undefined' || vm.user.district_ids.length === 0);
+    };
+
     vm.createInventory = function(model) {
       Inventory.create({inventory: model})
           .$promise

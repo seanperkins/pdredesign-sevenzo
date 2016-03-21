@@ -10,4 +10,4 @@ json.district_name inventory.district.name
 json.created_at inventory.created_at
 json.updated_at inventory.updated_at
 json.status 'draft'
-json.has_access inventory.member?(user: current_user)
+json.has_access inventory.member?(user: current_user) || inventory.owner == current_user

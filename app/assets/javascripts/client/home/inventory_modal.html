@@ -22,10 +22,17 @@
         <div class="col-md-6">
           <select
               required
+              ng-hide="inventoryModal.noDistrict()"
               class="form-control"
               ng-model="inventoryModal.inventory.district"
               ng-options="district.text for district in inventoryModal.user.districts">
           </select>
+          <div ng-show="inventoryModal.noDistrict()" class="col-md-12">
+            <p>
+              You have not selected districts that you work with. Please update your profile
+              <a href="#/settings" ng-click="inventoryModal.close()">here</a>
+            </p>
+          </div>
         </div>
         <div class="col-md-6">
           <div class="input-group date datetime">

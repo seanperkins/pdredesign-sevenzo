@@ -25,8 +25,6 @@
           Inventory: Inventory
         });
       });
-
-      spyOn(SessionService, 'getCurrentUser').and.returnValue({});
     });
 
     describe('#close', function() {
@@ -38,6 +36,7 @@
     });
 
     describe('#error', function() {
+
       it('pushes elements to the alerts array', function() {
         controller.error('this is an error!');
         expect(controller.alerts).toContain({type: 'danger', msg: 'this is an error!'});
@@ -146,6 +145,65 @@
         afterEach(function() {
           $httpBackend.verifyNoOutstandingExpectation();
           $httpBackend.verifyNoOutstandingRequest();
+        });
+      });
+    });
+
+    describe('#noDistrict', function() {
+      describe('when the user does not have any districts', function() {
+        beforeEach(function() {
+          spyOn(SessionService, 'getCurrentUser').and.returnValue({district_ids: []});
+          inject(function(_$controller_) {
+            controller = _$controller_('InventoryModalCtrl', {
+              $scope: $scope,
+              $timeout: $timeout,
+              $location: $location,
+              SessionService: SessionService,
+              Inventory: Inventory
+            });
+          });
+        });
+
+        it('returns true', function() {
+          expect(controller.noDistrict()).toEqual(true);
+        });
+      });
+
+      describe('when the user does not have the district_ids property', function() {
+        beforeEach(function() {
+          spyOn(SessionService, 'getCurrentUser').and.returnValue({});
+          inject(function(_$controller_) {
+            controller = _$controller_('InventoryModalCtrl', {
+              $scope: $scope,
+              $timeout: $timeout,
+              $location: $location,
+              SessionService: SessionService,
+              Inventory: Inventory
+            });
+          });
+        });
+
+        it('returns true', function() {
+          expect(controller.noDistrict()).toEqual(true);
+        });
+      });
+
+      describe('when the user has at least one district', function() {
+        beforeEach(function() {
+          spyOn(SessionService, 'getCurrentUser').and.returnValue({district_ids: [1]});
+          inject(function(_$controller_) {
+            controller = _$controller_('InventoryModalCtrl', {
+              $scope: $scope,
+              $timeout: $timeout,
+              $location: $location,
+              SessionService: SessionService,
+              Inventory: Inventory
+            });
+          });
+        });
+
+        it('returns false', function() {
+          expect(controller.noDistrict()).toEqual(false);
         });
       });
     });
