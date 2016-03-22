@@ -2,9 +2,9 @@
   'use strict';
 
   angular.module('PDRClient')
-      .directive('entityDetails', entityDetails);
+      .directive('toolDetails', toolDetails);
 
-  function entityDetails() {
+  function toolDetails() {
     return {
       restrict: 'E',
       transclude: true,
@@ -13,9 +13,9 @@
         model: '='
       },
       link: entityDetailsLink,
-      templateUrl: 'client/common_create/entity_details.html',
-      controller: 'EntityDetailsCtrl',
-      controllerAs: 'entityDetails'
+      templateUrl: 'client/common_create/tool_details.html',
+      controller: 'ToolDetailsCtrl',
+      controllerAs: 'toolDetails'
     }
   }
 

@@ -9,10 +9,11 @@
         '$location',
         'Assessment',
         '$stateParams',
-        'Reminder'
+        'Reminder',
+        'AssessmentService'
     ];
 
-    function AssessmentDashboardSidebarCtrl($scope, $modal, $location, Assessment, $stateParams, Reminder) {
+    function AssessmentDashboardSidebarCtrl($scope, $modal, $location, Assessment, $stateParams, Reminder, AssessmentService) {
 
         $scope.id = $stateParams.id;
 
@@ -109,12 +110,12 @@
         };
 
         $scope.showShareReport = function () {
-            $scope.shareReportUrl = AssessmentService.sharedUrl($scope.assessment.share_token)
-            $scope.shareModal = $modal.open({
-                templateUrl: 'client/views/modals/share_report.html',
-                animation: true,
-                scope: $scope
-            });
+          $scope.shareReportUrl = AssessmentService.sharedUrl($scope.assessment.share_token);
+          $scope.shareModal = $modal.open({
+              templateUrl: 'client/views/modals/share_report.html',
+              animation: true,
+              scope: $scope
+          });
         };
 
         $scope.closeShareModal = function () {

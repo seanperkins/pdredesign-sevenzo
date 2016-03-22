@@ -2,15 +2,15 @@
   'use strict';
 
   angular.module('PDRClient')
-      .controller('EntityDetailsCtrl', EntityDetailsCtrl);
+      .controller('ToolDetailsCtrl', ToolDetailsCtrl);
 
-  EntityDetailsCtrl.$inject = [
+  ToolDetailsCtrl.$inject = [
     '$scope',
     'SessionService',
     'CreateService'
   ];
 
-  function EntityDetailsCtrl($scope, SessionService, CreateService) {
+  function ToolDetailsCtrl($scope, SessionService, CreateService) {
     var vm = this;
 
     vm.saving = false;
@@ -24,6 +24,7 @@
     };
 
     vm.save = function(entity) {
+      CreateService.loadDistrict(vm.district);
       CreateService.saveAssessment(entity);
     };
 
