@@ -8,14 +8,13 @@
     '$scope',
     '$timeout',
     '$anchorScroll',
-    '$location',
     '$stateParams',
-    '$window',
     'SessionService',
-    'Assessment'
+    'Assessment',
+    'CreateService'
   ];
 
-  function AssessmentAssignCtrl($scope, $timeout, $anchorScroll, $location, $stateParams, $window, SessionService, Assessment) {
+  function AssessmentAssignCtrl($scope, $timeout, $anchorScroll, $stateParams, SessionService, Assessment, CreateService) {
 
     $scope.id = $stateParams.id;
     $scope.user = SessionService.getCurrentUser();
@@ -24,62 +23,31 @@
 
     $scope.district = $scope.user.districts[0];
 
+    CreateService.loadScope($scope);
+    CreateService.loadDistrict($scope.district);
+
     $scope.fetchAssessment = function() {
       Assessment
-          .get({id: $scope.id})
-          .$promise.then(function(assessment) {
-        $scope.assessment = assessment;
-        angular.forEach($scope.user.districts, function(district) {
-          if (assessment.district_id === district.id) {
-            $scope.district = district;
-          }
+        .get({id: $scope.id})
+        .$promise
+        .then(function(assessment) {
+          $scope.assessment = assessment;
+          angular.forEach($scope.user.districts, function(district) {
+            if (assessment.district_id === district.id) {
+              $scope.district = district;
+            }
+          });
         });
-      });
     };
 
     $scope.fetchAssessment();
 
     $scope.assignAndSave = function(assessment) {
-      if (assessment.message === null || assessment.message === '') {
-        $scope.alertError = true;
-        return;
-      }
-
-      if ($window.confirm('Are you sure you want to send out the assessment and invite all your participants?')) {
-        $scope.alertError = false;
-        $scope
-            .save(assessment, true)
-            .then(function() {
-              $location.path('/assessments');
-            });
-      }
+      CreateService.assignAndSaveAssessment(assessment);
     };
 
-    $scope.save = function(assessment, assign) {
-      if (assessment.name === '') {
-        $scope.error('Assessment needs a name!');
-        return;
-      }
-
-      assessment.district_id = $scope.district.id;
-
-      $scope.saving = true;
-      assessment.due_date = moment($("#due-date").val(), 'MM/DD/YYYY').toISOString();
-
-      if (assign) {
-        assessment.assign = true;
-      }
-
-      return Assessment
-          .save({id: assessment.id}, assessment)
-          .$promise
-          .then(function() {
-            $scope.saving = false;
-            $scope.success('Assessment Saved!');
-          }, function() {
-            $scope.saving = false;
-            $scope.error('Could not save assessment');
-          });
+    $scope.save = function(assessment) {
+      CreateService.saveAssessment(assessment);
     };
 
     $scope.success = function(message) {
@@ -98,20 +66,6 @@
     $scope.closeAlert = function(index) {
       $scope.alerts.splice(index, 1);
     };
-
-    $scope.isNetworkPartner = function() {
-      return SessionService.isNetworkPartner();
-    };
-
-    $timeout(function() {
-      $scope.datetime = $('.datetime').datetimepicker({
-        pickTime: false
-      });
-    });
-
-    $scope.$watch('assessment.due_date', function(value) {
-      $scope.due_date = moment(value).format('MM/DD/YYYY');
-    });
 
     $scope.$on('add_assessment_alert', function(event, data) {
       if (data['type'] === 'success') {

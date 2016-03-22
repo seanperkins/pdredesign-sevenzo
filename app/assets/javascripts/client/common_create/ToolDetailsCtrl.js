@@ -23,6 +23,16 @@
       }
     };
 
+    vm.determineDistrict = function(model) {
+      if (typeof(model) !== 'undefined') {
+        angular.forEach(vm.user.districts, function(district) {
+          if (model.district_id === district.id) {
+            vm.district = district;
+          }
+        });
+      }
+    };
+
     vm.save = function(entity) {
       CreateService.loadDistrict(vm.district);
       CreateService.saveAssessment(entity);
@@ -39,6 +49,7 @@
     });
 
     $scope.$watch('model', function(val) {
+      vm.determineDistrict(val);
       vm.date = vm.defaultDate(val);
     }).bind(vm);
   }
