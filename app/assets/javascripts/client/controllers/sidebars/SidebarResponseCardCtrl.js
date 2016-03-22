@@ -12,7 +12,6 @@
     '$location',
     '$anchorScroll',
     '$timeout',
-    'SessionService',
     'Score',
     'Consensus',
     'Response',
@@ -21,7 +20,7 @@
   ];
 
   function SidebarResponseCardCtrl($modal, $scope, $rootScope, $stateParams, $location,
-                                   $anchorScroll, $timeout, SessionService, Score,
+                                   $anchorScroll, $timeout, Score,
                                    Consensus, Response, ResponseHelper, Assessment) {
 
     $scope.skipped = ResponseHelper.skipped;
