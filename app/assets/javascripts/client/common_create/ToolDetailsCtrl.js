@@ -15,7 +15,9 @@
 
     vm.saving = false;
     vm.user = SessionService.getCurrentUser();
-    vm.district = vm.user.districts[0];
+    if(vm.user) {
+      vm.district = vm.user.districts[0];
+    }
 
     vm.defaultDate = function(model) {
       if (typeof(model) !== 'undefined') {
