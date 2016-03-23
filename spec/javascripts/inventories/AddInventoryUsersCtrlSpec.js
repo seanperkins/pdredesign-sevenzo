@@ -1,6 +1,6 @@
 (function() {
   'use strict';
-  describe('Controller: AddInventoryUsersCtrl', function() {
+  describe('Controller: AddInventoryUsers', function() {
     var $scope, $location, $q, $httpBackend, subject, InventoryParticipant;
 
     beforeEach(function() {
@@ -28,7 +28,7 @@
 
     describe('#addUser', function() {
       beforeEach(function() {
-        spyOn(subject, 'reloadInvitables').and.callThrough();
+        spyOn(subject, 'loadInvitables').and.callThrough();
         spyOn(InventoryParticipant, 'create').and.callFake(function(query, params) {
           var deferred = $q.defer();
           deferred.resolve();
@@ -45,7 +45,7 @@
       });
 
       it('reloads participants', function() {
-        expect(subject.reloadInvitables).toHaveBeenCalled();
+        expect(subject.loadInvitables).toHaveBeenCalled();
       });
     });
   });

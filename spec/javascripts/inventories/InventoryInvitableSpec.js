@@ -1,8 +1,6 @@
 describe('Resource: InventoryInvitable', function() {
   var subject, scope, $httpBackend;
 
-  beforeEach(module('PDRClient'));
-
   beforeEach(inject(function($resource, $rootScope, InventoryInvitable, $injector) {
     scope = $rootScope.$new();
     subject = InventoryInvitable;

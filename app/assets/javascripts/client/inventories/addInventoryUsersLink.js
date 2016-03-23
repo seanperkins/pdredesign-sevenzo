@@ -11,7 +11,7 @@
       },
       templateUrl: 'client/inventories/add_inventory_users_link.html',
       controller: 'AddInventoryUsersLinkCtrl',
-      controllerAs: 'link',
+      controllerAs: 'inventoryUsersLink',
       replace: true
     }
   }

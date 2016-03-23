@@ -5,7 +5,7 @@ class V1::InventoryInvitablesController < ApplicationController
   authority_actions index: 'read'
   def index
     member_users = inventory.members.select(:user_id).map(&:user_id)
-    @users = User.includes(:districts)
+    @users = User.joins(:districts)
       .where(districts:{id: inventory.district_id})
       .where.not(id: member_users, role: 'network_partner')
   end
