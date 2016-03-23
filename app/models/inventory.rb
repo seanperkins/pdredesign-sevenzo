@@ -33,6 +33,8 @@ class Inventory < ActiveRecord::Base
   has_many :participants, -> { where(role: 'participant') }, class_name:'InventoryMember'
   has_many :facilitators, -> { where(role: 'facilitator') }, class_name:'InventoryMember'
 
+  after_create :add_facilitator_owner
+
   def facilitator?(user:)
     facilitators.where(user: user).exists?
   end
@@ -47,5 +49,11 @@ class Inventory < ActiveRecord::Base
 
   def member?(user:)
     self.members.where(user: user).exists?
+  end
+
+  private
+  def add_facilitator_owner
+    return unless owner
+    facilitators.create(user: owner)
   end
 end

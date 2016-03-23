@@ -120,7 +120,7 @@ describe Inventories::Permission do
   describe '#available_permissions' do
     context 'as participant' do
       let(:inventory) { FactoryGirl.create(:inventory, :with_participants) }
-      let(:user) { inventory.members.first.user }
+      let(:user) { inventory.participants.first.user }
 
       subject { Inventories::Permission.new(inventory: inventory, user: user) }
 

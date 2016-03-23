@@ -24,7 +24,7 @@ FactoryGirl.define do
       end
 
       after(:create) do |inventory, evaluator|
-        inventory.members = FactoryGirl.create_list(:inventory_member, evaluator.members)
+        inventory.members << FactoryGirl.create_list(:inventory_member, evaluator.members)
       end
     end
 
