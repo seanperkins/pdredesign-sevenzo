@@ -28,13 +28,13 @@
 
     describe('#addUser', function() {
       beforeEach(function() {
-        spyOn($scope, 'reloadInvitables').and.callThrough();
+        spyOn(subject, 'reloadInvitables').and.callThrough();
         spyOn(InventoryParticipant, 'create').and.callFake(function(query, params) {
           var deferred = $q.defer();
           deferred.resolve();
           return { $promise: deferred.promise };
         });
-        $scope.addUser({
+        subject.addUser({
           id: 50
         });
         $scope.$root.$digest();
@@ -45,7 +45,7 @@
       });
 
       it('reloads participants', function() {
-        expect($scope.reloadInvitables).toHaveBeenCalled();
+        expect(subject.reloadInvitables).toHaveBeenCalled();
       });
     });
   });

@@ -58,7 +58,7 @@
         <span class="stat">{{entity.participant_count}}</span>
         <span class="category">Completed</span>
         <span class="stat">{{entity.completed_responses}}</span>
-        <add-inventory-users inventoryId="{{entity.id}}"/>
+        <add-inventory-users-link data-inventory-id="entity.id"></add-inventory-users-link>
       </div>
       <div class="meeting" ng-if="isAssessment === 'true'">
         <span class='category'>Meeting</span>

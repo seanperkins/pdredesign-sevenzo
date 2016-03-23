@@ -10,9 +10,9 @@
         inventoryId: '=inventoryId'
       },
       templateUrl: 'client/inventories/add_inventory_users.html',
-      replace: true,
       controller: 'AddInventoryUsersCtrl',
       controllerAs: 'addInventoryUsers',
+      replace: true
     }
   }
 })();
