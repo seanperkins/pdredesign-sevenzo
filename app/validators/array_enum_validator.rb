@@ -10,11 +10,7 @@ class ArrayEnumValidator < ActiveModel::EachValidator
       return
     end
 
-    if options[:flat]
-      unless options[:enum].values.include?(value)
-        record.errors.add(attribute, "#{value} is not permissible")
-      end
-    elsif options[:allow_wildcard]
+    if options[:allow_wildcard]
       wildcard_used = nil
       value.each do |type|
         unless options[:enum].values.include?(type)

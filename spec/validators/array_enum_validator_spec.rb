@@ -61,8 +61,6 @@ describe ArrayEnumValidator do
     end
   end
 
-  # TODO contect "flat enum"
-
   context "enum allowing wildcard" do
     before do
       Model.clear_validators!
