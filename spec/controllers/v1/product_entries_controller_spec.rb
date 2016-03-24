@@ -83,7 +83,7 @@ describe V1::ProductEntriesController do
              notes: "notes"
            },
            technical_question_attributes: {
-             hosting: TechnicalQuestion.hostings.first
+             hosting: TechnicalQuestion.hosting_options.first
            }
 
       assert_response 201
