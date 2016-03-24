@@ -39,4 +39,6 @@ class TechnicalQuestion < ActiveRecord::Base
       no: 'No'
   }
 
+  validates :platforms, array_enum: { enum: TechnicalQuestion.platforms, allow_wildcard: true }
+
 end

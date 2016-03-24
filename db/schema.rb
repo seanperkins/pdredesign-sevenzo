@@ -232,8 +232,8 @@ ActiveRecord::Schema.define(version: 20160401210935) do
     t.text     "point_of_contact_name"
     t.text     "point_of_contact_department"
     t.text     "pricing_structure"
-    t.decimal  "price",                       precision: 9, scale: 2
-    t.text     "data_type",                                           default: [], array: true
+    t.integer  "price_in_cents"
+    t.text     "data_type",                   default: [], array: true
     t.text     "purpose"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -479,7 +479,7 @@ ActiveRecord::Schema.define(version: 20160401210935) do
   add_index "sessions", ["updated_at"], name: "index_sessions_on_updated_at", using: :btree
 
   create_table "technical_questions", force: :cascade do |t|
-    t.text     "platform",         default: [], array: true
+    t.text     "platforms",        default: [], array: true
     t.text     "hosting"
     t.text     "connectivity"
     t.text     "single_sign_on"
