@@ -1,4 +1,4 @@
-require "spec_helper"
+require 'spec_helper'
 
 describe V1::ProductEntriesController do
   render_views
@@ -8,11 +8,11 @@ describe V1::ProductEntriesController do
   let(:user) { FactoryGirl.create(:user) }
 
   before :each do
-    request.env["HTTP_ACCEPT"] = 'application/json'
+    request.env['HTTP_ACCEPT'] = 'application/json'
   end
 
-  context "#index" do
-    it "requires logged in user" do
+  context '#index' do
+    it 'requires logged in user' do
       sign_out :user
 
       get :index, inventory_id: inventory.id
@@ -29,8 +29,8 @@ describe V1::ProductEntriesController do
     end
   end
 
-  context "#show" do
-    it "requires logged in user" do
+  context '#show' do
+    it 'requires logged in user' do
       sign_out :user
 
       get :show, inventory_id: inventory.id, id: inventory.product_entries.first.id
@@ -47,8 +47,8 @@ describe V1::ProductEntriesController do
     end
   end
 
-  context "#create" do
-    it "requires logged in user" do
+  context '#create' do
+    it 'requires logged in user' do
       sign_out :user
 
       post :create, inventory_id: inventory.id
@@ -68,10 +68,10 @@ describe V1::ProductEntriesController do
 
       post :create, inventory_id: inventory.id
       assert_response 422
-      expect(json["errors"].values.flatten).to include("can't be blank")
+      expect(json['errors'].values.flatten).to include("can't be blank")
     end
 
-    it "creates a record" do
+    it 'creates a record' do
       sign_in user
 
       post :create,
@@ -80,7 +80,7 @@ describe V1::ProductEntriesController do
              data_type: [GeneralInventoryQuestion.product_types.first]
            },
            usage_question_attributes: {
-             notes: "notes"
+             notes: 'notes'
            },
            technical_question_attributes: {
              hosting: TechnicalQuestion.hosting_options.first
@@ -90,10 +90,10 @@ describe V1::ProductEntriesController do
     end
   end
 
-  context "#update" do
+  context '#update' do
     let(:product_entry) { inventory.product_entries.first }
 
-    it "requires logged in user" do
+    it 'requires logged in user' do
       sign_out :user
 
       put :update, inventory_id: inventory.id, id: product_entry.id
@@ -107,25 +107,25 @@ describe V1::ProductEntriesController do
           inventory_id: inventory.id,
           id: product_entry.id,
           general_inventory_question_attributes: {
-            data_type: ["derp"]
+            data_type: ['derp']
           }
 
       assert_response 422
-      expect(json["errors"].values.flatten).to include("derp is not permissible")
+      expect(json['errors'].values.flatten).to include('derp is not permissible')
     end
 
-    it "updates a record" do
+    it 'updates a record' do
       sign_in user
 
       put :update,
           inventory_id: inventory.id,
           id: product_entry.id,
           usage_question_attributes: {
-            notes: "other notes"
+            notes: 'other notes'
           }
 
       assert_response 200
-      expect(product_entry.reload.usage_question.notes).to eq("other notes")
+      expect(product_entry.reload.usage_question.notes).to eq('other notes')
     end
   end
 end
