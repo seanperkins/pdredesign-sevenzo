@@ -144,18 +144,6 @@ PDRClient.directive('consensus', [
               });
           };
 
-          $scope.scoreValue = function(score) {
-            if(!score || score <= 0)
-              return "S";
-            return "" + score;
-          };
-
-          $scope.scoreClass = function(score) {
-            if(!score || score <= 0)
-              return "skipped";
-            return "scored-" + score;
-          };
-
           $timeout(function(){ $scope.updateConsensus(); });
 
         }]
