@@ -47,5 +47,15 @@ FactoryGirl.define do
         FactoryGirl.create_list(:inventory_member, evaluator.participants, :as_participant, inventory: inventory)
       end
     end
+
+    trait :with_product_entries do
+      transient do
+        product_entries 1
+      end
+
+      after(:create) do |inventory, evaluator|
+        FactoryGirl.create_list(:product_entry, evaluator.product_entries, inventory: inventory)
+      end
+    end
   end
 end
