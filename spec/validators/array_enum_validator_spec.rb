@@ -42,7 +42,7 @@ describe ArrayEnumValidator do
       @model = Model.new
     end
 
-    it "is valid" do
+    it "is valid with valid entries" do
       @model.options = ["A"]
       expect(@model).to be_valid
 
@@ -53,10 +53,18 @@ describe ArrayEnumValidator do
       expect(@model).to be_valid
     end
 
-    it "is invalid" do
+    it "is invalid with invalid entries" do
       expect(@model).to be_invalid
 
       @model.options = ["C"]
+      expect(@model).to be_invalid
+    end
+
+    it "is invalid with duplicate entries" do
+      @model.options = ["A", "A"]
+      expect(@model).to be_invalid
+
+      @model.options = ["C", "C"]
       expect(@model).to be_invalid
     end
   end
@@ -73,7 +81,7 @@ describe ArrayEnumValidator do
       @model = Model.new
     end
 
-    it "is valid" do
+    it "is valid with valid entries" do
       @model.options = ["A"]
       expect(@model).to be_valid
 
@@ -99,11 +107,20 @@ describe ArrayEnumValidator do
       expect(@model).to be_valid
     end
 
-    it "is invalid" do
+    it "is invalid with invalid entries" do
       @model.options = ["derp", "A", "B", "herp"]
       expect(@model).to be_invalid
 
       @model.options = ["derp", "herp"]
+      expect(@model).to be_invalid
+    end
+
+    it "is invalid with duplicate entries" do
+
+      @model.options = ["derp", "derp"]
+      expect(@model).to be_invalid
+
+      @model.options = ["A", "A", "derp"]
       expect(@model).to be_invalid
     end
 

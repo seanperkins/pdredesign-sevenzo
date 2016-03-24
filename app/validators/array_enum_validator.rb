@@ -10,6 +10,10 @@ class ArrayEnumValidator < ActiveModel::EachValidator
       return
     end
 
+    if value.uniq.size != value.size
+      record.errors.add(attribute, "#{value} is not permissible: contains duplicate entries")
+    end
+
     if options[:allow_wildcard]
       wildcard_used = nil
       value.each do |type|
