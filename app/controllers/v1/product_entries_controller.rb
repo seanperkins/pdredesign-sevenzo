@@ -3,12 +3,12 @@ class V1::ProductEntriesController < ApplicationController
 
   def index
     @product_entries = product_entries
-    render json: @product_entries
+    render template: 'v1/product_entries/index'
   end
 
   def show
     @product_entry = product_entries.find(params[:id])
-    render json: @product_entry
+    render template: 'v1/product_entries/show'
   end
 
   def create
@@ -16,10 +16,9 @@ class V1::ProductEntriesController < ApplicationController
     # XXX authorize_action_for...?
 
     if @product_entry.save
-      render nothing: true, status: 201
+      render template: 'v1/product_entries/show', status: 201
     else
-      @errors = @product_entry.errors
-      render 'v1/shared/errors', status: 422
+      render_error
     end
   end
 
@@ -30,8 +29,7 @@ class V1::ProductEntriesController < ApplicationController
     if @product_entry.update(product_entry_params)
       render nothing: true, status: 200
     else
-      @errors = @product_entry.errors
-      render 'v1/shared/errors', status: 422
+      render_error
     end
   end
 
@@ -43,6 +41,11 @@ class V1::ProductEntriesController < ApplicationController
 
   def product_entries
     inventory.product_entries
+  end
+
+  def render_error
+    @errors = @product_entry.errors
+    render 'v1/shared/errors', status: 422
   end
 
   def product_entry_params
