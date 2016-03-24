@@ -37,12 +37,15 @@ PdrServer::Application.routes.draw do
       end
       resources :user_invitations, only: [:create]
       resources :consensus, except: [:delete, :index] do
+        get 'evidence/:question_id', to: 'consensus#evidence'
         get 'consensus_report', to: 'report#consensus_report'
+
         resources :participants, :only => [] do
           get 'report', to: 'report#participant_consensu_report'
         end
       end
       resources :responses, except: [:delete] do
+        get '/slim', to: 'responses#show_slimmed'
         resources :scores, only: [:update, :create, :index]
       end
       get 'participants/all', to: 'participants#all', as: :all_participants

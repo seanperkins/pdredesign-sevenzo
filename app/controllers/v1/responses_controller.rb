@@ -15,6 +15,13 @@ class V1::ResponsesController < ApplicationController
     authorize_action_for @response
   end
 
+  def show_slimmed
+    @response = Response.find(params[:response_id])
+    @rubric = assessment.rubric
+    @categories = @response.categories
+    authorize_action_for @response
+  end
+
   def update
     @response   = Response.find(params[:id])
     authorize_action_for @response

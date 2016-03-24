@@ -36,6 +36,9 @@ class V1::ConsensusController < V1::ResponsesController
     end
   end
 
+  def evidence
+    @answered_scores = assessment.answered_scores.where(question_id: params[:question_id])
+  end
 
   private
   def consensus_params
