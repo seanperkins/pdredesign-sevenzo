@@ -13,7 +13,7 @@
     return $resource(UrlService.url('assessments/:assessment_id/responses/:id'), null, {
       'get': {
         method: 'GET',
-        url: UrlService.url('/assessments/:assessment_id/responses/:response_id/slim')
+        url: UrlService.url('assessments/:assessment_id/responses/:id/slim')
       },
 
       'submit': {method: 'PUT'}
