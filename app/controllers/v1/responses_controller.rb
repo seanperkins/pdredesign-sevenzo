@@ -1,6 +1,8 @@
 class V1::ResponsesController < ApplicationController
   before_action :authenticate_user!
 
+  authority_actions show_slimmed: :read
+
   def create
     @response = response_by(responder_id: participant_from_user.id)
     authorize_action_for @response
