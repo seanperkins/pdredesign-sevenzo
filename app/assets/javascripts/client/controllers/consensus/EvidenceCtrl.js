@@ -32,7 +32,6 @@
     vm.loadResponses = function() {
       Consensus.evidence({
         assessment_id: $stateParams.assessment_id,
-        response_id: $stateParams.response_id,
         question_id: vm.questionId
       }).$promise
           .then(function(data) {

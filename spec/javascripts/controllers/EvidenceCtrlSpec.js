@@ -124,7 +124,7 @@
       });
 
       it('calls the right URL', function() {
-        $httpBackend.expect('GET', '/v1/assessments/50/consensus/323/evidence/1').respond(200);
+        $httpBackend.expect('GET', '/v1/assessments/50/evidence/1').respond(200);
         subject.loadResponses();
         $httpBackend.flush();
       });

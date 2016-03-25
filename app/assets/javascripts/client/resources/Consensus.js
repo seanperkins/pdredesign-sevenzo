@@ -17,10 +17,9 @@
           'submit': {method: 'PUT'},
           'evidence': {
             method: 'GET',
-            url: UrlService.url('assessments/:assessment_id/consensus/:response_id/evidence/:question_id'),
+            url: UrlService.url('assessments/:assessment_id/evidence/:question_id'),
             params: {
               assessment_id: '@assessment_id',
-              response_id: '@response_id',
               question_id: '@question_id'
             },
             isArray: true

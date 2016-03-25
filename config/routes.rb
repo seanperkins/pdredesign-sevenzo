@@ -29,6 +29,7 @@ PdrServer::Application.routes.draw do
     resources  :prospective_users, only: :create
     resources  :assessments, only: [:index, :show, :update, :create] do
       get 'report', to: 'report#show'
+      get 'evidence/:question_id', to: 'consensus#evidence'
       resources :reminders, only: [:create]
       resources :access_request, only: [:create]
       resources :priorities, only: [:create, :index]
@@ -37,7 +38,6 @@ PdrServer::Application.routes.draw do
       end
       resources :user_invitations, only: [:create]
       resources :consensus, except: [:delete, :index] do
-        get 'evidence/:question_id', to: 'consensus#evidence'
         get 'consensus_report', to: 'report#consensus_report'
 
         resources :participants, :only => [] do
