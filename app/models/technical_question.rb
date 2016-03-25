@@ -40,7 +40,7 @@ class TechnicalQuestion < ActiveRecord::Base
   }
 
   validates :platforms, array_enum: { enum: TechnicalQuestion.platform_options, allow_wildcard: true }
-  validates :hosting, inclusion: { in: TechnicalQuestion.hosting_options.values }, allow_blank: true
-  validates :single_sign_on, inclusion: { in: TechnicalQuestion.single_sign_on_options.values }, allow_blank: true
+  validates :hosting, inclusion: { in: TechnicalQuestion.hosting_options.values, message: "'%{value}' not permissible" }, allow_blank: true
+  validates :single_sign_on, inclusion: { in: TechnicalQuestion.single_sign_on_options.values, message: "'%{value}' not permissible" }, allow_blank: true
 
 end
