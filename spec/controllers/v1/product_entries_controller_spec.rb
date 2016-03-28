@@ -4,8 +4,6 @@ describe V1::ProductEntriesController do
   render_views
 
   let(:inventory) { FactoryGirl.create(:inventory, :with_product_entries) }
-  # XXX what type of user?
-  let(:user) { FactoryGirl.create(:user) }
 
   before :each do
     request.env['HTTP_ACCEPT'] = 'application/json'
@@ -20,7 +18,7 @@ describe V1::ProductEntriesController do
     end
 
     it "gets an inventory's product entries" do
-      sign_in user
+      sign_in inventory.owner
       get :index, inventory_id: inventory.id
       product_entries = assigns(:product_entries)
 
@@ -38,7 +36,7 @@ describe V1::ProductEntriesController do
     end
 
     it "gets an inventory's specific product entry" do
-      sign_in user
+      sign_in inventory.owner
       get :show, inventory_id: inventory.id, id: inventory.product_entries.first.id
       product_entry = assigns(:product_entry)
 
@@ -56,7 +54,7 @@ describe V1::ProductEntriesController do
     end
 
     it "doesn't create an incomplete product entry" do
-      sign_in user
+      sign_in inventory.owner
 
       post :create, inventory_id: inventory.id
       assert_response 422
@@ -64,7 +62,7 @@ describe V1::ProductEntriesController do
     end
 
     it "returns json errors when a product entry can't be created" do
-      sign_in user
+      sign_in inventory.owner
 
       post :create, inventory_id: inventory.id
       assert_response 422
@@ -72,7 +70,7 @@ describe V1::ProductEntriesController do
     end
 
     it 'creates a record' do
-      sign_in user
+      sign_in inventory.owner
 
       post :create,
            inventory_id: inventory.id,
@@ -101,7 +99,7 @@ describe V1::ProductEntriesController do
     end
 
     it "returns json errors when a product entry can't be updated" do
-      sign_in user
+      sign_in inventory.owner
 
       put :update,
           inventory_id: inventory.id,
@@ -115,7 +113,7 @@ describe V1::ProductEntriesController do
     end
 
     it 'updates a record' do
-      sign_in user
+      sign_in inventory.owner
 
       put :update,
           inventory_id: inventory.id,
