@@ -31,7 +31,7 @@ describe('Directive: manageParticipants', function() {
     spyOn($modal, 'open')
       .and.callFake(function(params){
         expect(params.templateUrl)
-          .toEqual('client/views/modals/manage_participants.html');
+          .toEqual('client/permissions/manage_participants_tabs.html');
 
         expect(params.size).toEqual('lg');
       });

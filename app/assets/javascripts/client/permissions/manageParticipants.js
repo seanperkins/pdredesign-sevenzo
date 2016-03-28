@@ -3,7 +3,7 @@ PDRClient.directive('manageParticipants', ['SessionService', 'Assessment', '$tim
       return {
         restrict: 'E',
         replace: false,
-        templateUrl: 'client/views/directives/manage_participants.html',
+        templateUrl: 'client/permissions/manage_participants.html',
         scope: {
           'assessmentId': '@',
           'sendInvite': '@',
@@ -29,7 +29,7 @@ PDRClient.directive('manageParticipants', ['SessionService', 'Assessment', '$tim
 
             $scope.modalInstance = $modal.open({
               windowClass: 'permissions-modal',
-              templateUrl: 'client/views/modals/manage_participants.html',
+              templateUrl: 'client/permissions/manage_participants_tabs.html',
               scope: $scope,
               size: 'lg'
             });

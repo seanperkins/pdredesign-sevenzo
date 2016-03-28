@@ -3,7 +3,7 @@ PDRClient.directive('inviteUser', ['SessionService', 'UrlService', '$timeout',
       return {
         restrict: 'E',
         replace: false,
-        templateUrl: 'client/views/directives/invite_user.html',
+        templateUrl: 'client/permissions/invite_user.html',
         scope: {
           'assessmentId': '@',
           'sendInvite': '@',
