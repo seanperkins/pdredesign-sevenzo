@@ -36,8 +36,7 @@ class V1::ProductEntriesController < ApplicationController
 
   private
   def inventory
-    # XXX should this be scoped to current_user? current_user.inventories.find...
-    Inventory.find(params[:inventory_id])
+    current_user.inventories.find(params[:inventory_id])
   end
 
   def product_entries

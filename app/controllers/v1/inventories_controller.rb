@@ -3,8 +3,7 @@ class V1::InventoriesController < ApplicationController
   before_action :authenticate_user!
 
   def index
-    @inventories = Inventory.joins('LEFT OUTER JOIN inventory_members ON inventory_members.inventory_id = inventories.id')
-                       .where('inventories.owner_id = ? OR inventory_members.user_id = ?', current_user.id, current_user.id)
+    @inventories = current_user.inventories
   end
 
   def create

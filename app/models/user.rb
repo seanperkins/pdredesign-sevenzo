@@ -78,4 +78,10 @@ class User < ActiveRecord::Base
     return if district_ids.include? district.id
     districts << district
   end
+
+  def inventories
+    Inventory.
+        joins('LEFT OUTER JOIN inventory_members ON inventory_members.inventory_id = inventories.id').
+        where('inventories.owner_id = ? OR inventory_members.user_id = ?', self.id, self.id)
+  end
 end
