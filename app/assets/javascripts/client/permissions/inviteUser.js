@@ -1,58 +1,63 @@
-PDRClient.directive('inviteUser', ['SessionService', 'UrlService', '$timeout',
-    function(SessionService, UrlService, $timeout) {
-      return {
-        restrict: 'E',
-        replace: false,
-        templateUrl: 'client/permissions/invite_user.html',
-        scope: {
-          'assessmentId': '@',
-          'sendInvite': '@',
-          'role': '@'
-        },
-        controller: ['$scope', '$modal', 'UserInvitation', function($scope, $modal, UserInvitation) {
-          $scope.alerts  = [];
-          $scope.addAlert = function(message) {
-            $scope.alerts.push({type: 'danger', msg: message});
-          };
+(function() {
+  'use strict';
+  angular.module('PDRClient')
+      .directive('inviteUser', inviteUser);
 
-          $scope.closeAlert = function(index) {
-            $scope.alerts.splice(index, 1);
-          };
+  function inviteUser() {
+    return {
+      restrict: 'E',
+      replace: false,
+      templateUrl: 'client/permissions/invite_user.html',
+      scope: {
+        'assessmentId': '@',
+        'sendInvite': '@',
+        'role': '@'
+      },
+      controller: ['$scope', '$modal', 'UserInvitation', function($scope, $modal, UserInvitation) {
+        $scope.alerts = [];
+        $scope.addAlert = function(message) {
+          $scope.alerts.push({type: 'danger', msg: message});
+        };
 
-          $scope.showInviteUserModal = function() {
-            $scope.modalInstance = $modal.open({
-              templateUrl: 'client/views/modals/invite_user.html',
-              scope: $scope
-            });
-          };
+        $scope.closeAlert = function(index) {
+          $scope.alerts.splice(index, 1);
+        };
 
-          $scope.shouldSendInvite = function() {
-            return $scope.sendInvite == "true" || $scope.sendInvite == true;
-          };
+        $scope.showInviteUserModal = function() {
+          $scope.modalInstance = $modal.open({
+            templateUrl: 'client/views/modals/invite_user.html',
+            scope: $scope
+          });
+        };
 
-          $scope.closeModal = function() {
-            $scope.modalInstance.dismiss('cancel');
-          };
+        $scope.shouldSendInvite = function() {
+          return $scope.sendInvite == "true" || $scope.sendInvite == true;
+        };
 
-          $scope.createInvitation = function(userObject) {
-            if($scope.shouldSendInvite())
-              userObject["send_invite"] = true;
+        $scope.closeModal = function() {
+          $scope.modalInstance.dismiss('cancel');
+        };
 
-            UserInvitation
+        $scope.createInvitation = function(userObject) {
+          if ($scope.shouldSendInvite()) {
+            userObject["send_invite"] = true;
+          }
+
+          UserInvitation
               .create({assessment_id: $scope.assessmentId}, userObject)
               .$promise
               .then(function() {
                 $scope.$emit('update_participants');
                 $scope.closeModal();
-              }, function(response){
+              }, function(response) {
                 var errors = response.data.errors;
                 angular.forEach(errors, function(error, field) {
                   $scope.addAlert(field + " : " + error);
                 });
 
               });
-          };
-
-        }],
-     };
-}]);
+        };
+      }]
+    };
+  }
+})();
