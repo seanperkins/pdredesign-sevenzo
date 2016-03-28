@@ -9,6 +9,9 @@
 #
 
 class ProductEntry < ActiveRecord::Base
+  include Authority::Abilities
+  self.authorizer_name = 'ProductEntryAuthorizer'
+
   has_one :general_inventory_question, dependent: :delete
   has_one :product_question, dependent: :delete
   has_one :usage_question, dependent: :delete

@@ -8,12 +8,13 @@ class V1::ProductEntriesController < ApplicationController
 
   def show
     @product_entry = product_entries.find(params[:id])
+    authorize_action_for @product_entry
     render template: 'v1/product_entries/show'
   end
 
   def create
     @product_entry = inventory.product_entries.new(product_entry_params)
-    # XXX authorize_action_for...?
+    authorize_action_for @product_entry
 
     if @product_entry.save
       render template: 'v1/product_entries/show', status: 201
@@ -24,7 +25,7 @@ class V1::ProductEntriesController < ApplicationController
 
   def update
     @product_entry = inventory.product_entries.find(params[:id])
-    # XXX authorize_action_for...?
+    authorize_action_for @product_entry
     
     if @product_entry.update(product_entry_params)
       render nothing: true, status: 200
