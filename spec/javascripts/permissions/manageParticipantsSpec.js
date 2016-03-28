@@ -4,7 +4,6 @@
   describe('Directive: manageParticipants', function() {
     var $scope,
         $compile,
-        $timeout,
         $modal,
         $q,
         element,
@@ -16,13 +15,11 @@
     beforeEach(inject(function($injector, $rootScope) {
       $compile = $injector.get('$compile');
       $q = $injector.get('$q');
-      $timeout = $injector.get('$timeout');
       $modal = $injector.get('$modal');
       $scope = $rootScope.$new();
 
       Participant = $injector.get('Participant');
       element = angular.element('<manage-participants data-assessment-id=1></manage-participants>');
-      timeout = $timeout;
 
       $compile(element)($scope);
 
@@ -73,7 +70,7 @@
       });
 
 
-      e = angular.element('<manage-participants send-invite="true" data-assessment-id=1></manage-participants>');
+      var e = angular.element('<manage-participants send-invite="true" data-assessment-id=1></manage-participants>');
       $compile(e)($scope);
 
       $scope.$digest();

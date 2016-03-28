@@ -3,7 +3,6 @@
   describe('Directive: InviteUser', function() {
     var $scope,
         $compile,
-        $timeout,
         $modal,
         $httpBackend,
         element,
@@ -14,14 +13,12 @@
 
     beforeEach(inject(function($injector, $rootScope) {
       $compile = $injector.get('$compile');
-      $timeout = $injector.get('$timeout');
       $modal   = $injector.get('$modal');
       $scope   = $rootScope.$new();
       $httpBackend = $injector.get('$httpBackend');
 
       UserInvitation = $injector.get('UserInvitation');
       element     = angular.element('<invite-user data-assessment-id=1></invite-user>');
-      timeout     = $timeout;
 
       $compile(element)($scope);
 
