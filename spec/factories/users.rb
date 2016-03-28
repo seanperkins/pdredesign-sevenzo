@@ -38,10 +38,15 @@ FactoryGirl.define do
   trait :with_district do
     transient do
       districts 1
+      district nil
     end
 
     after(:create) do |user, evaluator|
-      user.districts = FactoryGirl.create_list(:district, evaluator.districts)
+      if evaluator.district
+        user.districts << evaluator.district
+      else 
+        user.districts = FactoryGirl.create_list(:district, evaluator.districts)
+      end
     end
   end
 
