@@ -8,14 +8,22 @@
     return {
       restrict: 'E',
       replace: false,
-      templateUrl: 'client/permissions/manage_participants.html',
+      templateUrl: 'client/permissions/participants_button.html',
       scope: {
         'assessmentId': '@',
         'sendInvite': '@',
         'numberOfRequests': '@',
         'autoShow': '@'
       },
-      controller: 'ManageParticipantsCtrl'
+      link: manageParticipantsLink,
+      controller: 'ManageParticipantsCtrl',
+      controllerAs: 'manageParticipants'
+    }
+  }
+
+  function manageParticipantsLink(scope, element, attributes, controller) {
+    if (scope.autoShow === "true" ) {
+      controller.showAddParticipants();
     }
   }
 })();
