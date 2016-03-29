@@ -7,7 +7,7 @@
     return {
       restrict: 'E',
       scope: {
-        inventoryId: '=inventoryId'
+        inventoryId: '='
       },
       templateUrl: 'client/inventories/manage_inventory_permissions.html',
       controller: 'ManageInventoryPermissionsCtrl',

@@ -2,9 +2,9 @@
   'use strict';
   angular.module('PDRClient').controller('ManageInventoryPermissionsCtrl', ManageInventoryPermissionsCtrl); 
 
-  ManageInventoryPermissionsCtrl.$inject = ['$modal', '$scope', 'InventoryPermission'];
+  ManageInventoryPermissionsCtrl.$inject = ['$scope', 'InventoryPermission'];
 
-  function ManageInventoryPermissionsCtrl($modal, $scope, InventoryPermission) {
+  function ManageInventoryPermissionsCtrl($scope, InventoryPermission) {
     var vm = this;
     vm.loadList = function() {
       vm.list = InventoryPermission.list({inventory_id: $scope.inventoryId});
@@ -24,15 +24,15 @@
       return permissions;
     };
 
-    $scope.$on('save', function(_, done) {
-      vm.savePermissions(vm.extractInputValues(), done);
+    $scope.$on('save', function() {
+      vm.savePermissions(vm.extractInputValues());
     });
 
-    vm.savePermissions = function(permissions, done){
+    vm.savePermissions = function(permissions){
       InventoryPermission.update({
         inventory_id: $scope.inventoryId
       }, { permissions: permissions }, function() {
-        done();
+        $scope.$emit('close-modal');
       });
     };
   }
