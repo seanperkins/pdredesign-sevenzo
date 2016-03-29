@@ -10,9 +10,14 @@
       scope: {},
       transclude: true,
       replace: true,
-      templateUrl: 'client/permissions/manage_permission.html',
+      templateUrl: 'client/permissions/manage_participants_modal.html',
       controller: 'ManageParticipantsModalCtrl',
-      controllerAs: 'manageParticipantsModal'
+      controllerAs: 'manageParticipantsModal',
+      link: manageParticipantsModalLink
     }
+  }
+
+  function manageParticipantsModalLink(scope, element, attributes, controller) {
+    controller.updateData();
   }
 })();

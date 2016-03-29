@@ -13,7 +13,6 @@
   ];
 
   function ManageParticipantsModalCtrl($scope, $window, $stateParams, AssessmentPermission, Participant) {
-    
     var vm = this;
 
     vm.participants = [];
@@ -39,7 +38,6 @@
     vm.updateAccessRequests = function() {
       vm.access_requests = AssessmentPermission.query({assessment_id: $stateParams.id});
     };
-
 
     vm.updateData = function() {
       vm.updateParticipants();

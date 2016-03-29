@@ -61,10 +61,9 @@
               <p class='info important_label'>{{user.email }}</p>
             </div>
             <div class='col-md-5 col-sm-5 pull-right'>
-              <p class="info">
               <fieldset>
-                <label class="level_label">Current Permission Level: </label>
-                <select class="permission-level" name="level" ng-disabled="user.role === 'network_partner'">
+                <label for="permission-level" class="level_label">Current Permission Level: </label>
+                <select id="permission-level" class="permission-level" name="level" ng-disabled="user.role === 'network_partner'">
                   <option value={{user.current_permission_level.role}}>
                     {{user.current_permission_level.human}}
                   </option>
@@ -72,12 +71,11 @@
                     {{level.human}}
                   </option>
                 </select>
-                <input type="hidden" name="email" value={{user.email}}/>
+
+                <input type="hidden" name="email" value={{user.email}}>
               </fieldset>
-              </p>
             </div>
           </div>
-
         </form>
       </div>
     </section>

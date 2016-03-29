@@ -4,122 +4,56 @@
   describe('Directive: manageParticipants', function() {
     var $scope,
         $compile,
-        $modal,
-        $q,
         element,
-        Participant,
-        isolatedScope;
+        showAddParticipantsSpy;
 
-    beforeEach(module('PDRClient'));
-
-    beforeEach(inject(function($injector, $rootScope) {
-      $compile = $injector.get('$compile');
-      $q = $injector.get('$q');
-      $modal = $injector.get('$modal');
-      $scope = $rootScope.$new();
-
-      Participant = $injector.get('Participant');
-      element = angular.element('<manage-participants data-assessment-id=1></manage-participants>');
-
-      $compile(element)($scope);
-
-      $scope.$digest();
-      isolatedScope = element.isolateScope();
-    }));
-
-    it('shows the right modal when showing', function() {
-      spyOn($modal, 'open')
-          .and.callFake(function(params) {
-        expect(params.templateUrl)
-            .toEqual('client/permissions/manage_participants_tabs.html');
-
-        expect(params.size).toEqual('lg');
-      });
-
-      isolatedScope.showAddParticipants();
-      expect($modal.open).toHaveBeenCalled();
-    });
-
-    it('calls update with the correct assessment id', function() {
-      spyOn(Participant, 'all');
-
-      isolatedScope.updateParticipants();
-      expect(Participant.all).toHaveBeenCalledWith({assessment_id: '1'});
-    });
-
-    it('does set :send_invite when attribute is not set', function() {
-      spyOn(Participant, 'save').and.callFake(function(params, user) {
-        var deferred = $q.defer();
-        deferred.resolve({});
-        expect(params).toEqual({assessment_id: '1'});
-        expect(user).toEqual({user_id: 8, send_invite: false});
-        return {$promise: deferred.promise};
-      });
-
-      isolatedScope.addParticipant({id: 8});
-    });
-
-    it('sends :send_invite when attribute is set', function() {
-      var scope;
-      spyOn(Participant, 'save').and.callFake(function(params, user) {
-        var deferred = $q.defer();
-        deferred.resolve({});
-        expect(params).toEqual({assessment_id: '1'});
-        expect(user).toEqual({user_id: 8, send_invite: true});
-        return {$promise: deferred.promise};
-      });
-
-
-      var e = angular.element('<manage-participants send-invite="true" data-assessment-id=1></manage-participants>');
-      $compile(e)($scope);
-
-      $scope.$digest();
-      scope = e.isolateScope();
-      scope.$digest();
-
-      scope.addParticipant({id: 8});
-      expect(Participant.save).toHaveBeenCalled();
-    });
-
-    it('saves a participant when adding', function() {
-      spyOn(Participant, 'save').and.callFake(function(params, user) {
-        var deferred = $q.defer();
-        deferred.resolve({});
-        expect(params).toEqual({assessment_id: '1'});
-        expect(user).toEqual({user_id: 8, send_invite: false});
-        return {$promise: deferred.promise};
-      });
-
-      isolatedScope.addParticipant({id: 8});
-      expect(Participant.save).toHaveBeenCalled();
-    });
-
-
-    describe('#humanPermissionName', function() {
-      it('it converts an empty string to None', function() {
-        expect(isolatedScope.humanPermissionName("")).toEqual("None");
-      });
-
-      it('returns the string as itself', function() {
-        expect(isolatedScope.humanPermissionName("Human")).toEqual("Human");
-      });
-    });
-
-
-    describe('#performPermissionsAction', function() {
-      it('calls the given function', function() {
-        this.performExample = function() {
-        }
-
-        spyOn(this, 'performExample').and.callFake(function() {
-          var deferred = $q.defer();
-          deferred.resolve(true);
-          return {$promise: deferred.promise};
+    beforeEach(function() {
+      showAddParticipantsSpy = jasmine.createSpy('ManageParticipantsCtrlSpy');
+      module('PDRClient', function($controllerProvider) {
+        $controllerProvider.register('ManageParticipantsCtrl', function() {
+          this.showAddParticipants = showAddParticipantsSpy;
         });
 
-        var output = isolatedScope.performPermissionsAction(this.performExample);
-        expect(this.performExample).toHaveBeenCalled();
+      });
+      inject(function(_$compile_, _$rootScope_) {
+        $compile = _$compile_;
+        $scope = _$rootScope_.$new(true);
+      });
+    });
 
+    describe('when autoShow is true', function() {
+      beforeEach(function() {
+        element = angular.element('<manage-participants auto-show="true"></manage-participants>');
+        $compile(element)($scope);
+        $scope.$digest();
+      });
+
+      it('calls #showAddParticipants on the ManageParticipantsCtrl', function() {
+        expect(showAddParticipantsSpy).toHaveBeenCalled();
+      });
+    });
+
+    describe('when autoShow is false', function() {
+      beforeEach(function() {
+        element = angular.element('<manage-participants auto-show="false"></manage-participants>');
+        $compile(element)($scope);
+        $scope.$digest();
+      });
+
+      it('calls #showAddParticipants on the ManageParticipantsCtrl', function() {
+        expect(showAddParticipantsSpy).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('when autoShow is undefined', function() {
+      beforeEach(function() {
+        element = angular.element('<manage-participants></manage-participants>');
+        $compile(element)($scope);
+        $scope.$digest();
+      });
+
+      it('calls #showAddParticipants on the ManageParticipantsCtrl', function() {
+        expect(showAddParticipantsSpy).not.toHaveBeenCalled();
       });
     });
   });

@@ -10,7 +10,6 @@
   ];
 
   function ManageParticipantsCtrl($scope, $modal) {
-
     var vm = this;
 
     vm.showAddParticipants = function() {

@@ -10,7 +10,6 @@
       replace: false,
       templateUrl: 'client/permissions/participants_button.html',
       scope: {
-        'assessmentId': '@',
         'sendInvite': '@',
         'numberOfRequests': '@',
         'autoShow': '@'
