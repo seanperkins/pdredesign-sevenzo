@@ -22,16 +22,16 @@
   <div ng-repeat="user in createParticipants.participants">
     <div class='row row-participant'>
       <div class='col-md-1 col-sm-1 '>
-        <avatar avatar="{{createParticipants.user.avatar}}" width="57"></avatar>
+        <avatar avatar="{{ user.avatar}}" width="57"></avatar>
       </div>
       <div class='col-md-2 col-sm-2'>
-        <p class='name'>{{ createParticipants.user.full_name }}</p>
+        <p class='name'>{{ user.full_name }}</p>
       </div>
       <div class='col-md-4 col-sm-4'>
-        <p class='info'>{{ createParticipants.user.email }}</p>
+        <p class='info'>{{ user.email }}</p>
       </div>
       <div class='col-md-2 col-sm-3'>
-        <p class='info'>{{ createParticipants.user.team_role || 'N/A' }}</p>
+        <p class='info'>{{ user.team_role || 'N/A' }}</p>
       </div>
       <div class='col-md-1 col-sm-1 text-center'>
         <div class="btn btn-primary remove_user_button" ng-click="createParticipants.removeParticipant(user)">Remove
