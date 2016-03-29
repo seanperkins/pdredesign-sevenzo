@@ -14,5 +14,10 @@
     vm.close = function() {
       vm.modal.dismiss();
     };
+    vm.save = function() {
+      $scope.$broadcast("save", function done() {
+        vm.close();
+      });
+    };
   }
 })();

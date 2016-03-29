@@ -6,6 +6,9 @@
       list: {
         method: 'GET',
         isArray: true
+      },
+      update: {
+        method: 'PATCH',
       }
     });
   }]);
