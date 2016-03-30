@@ -1,4 +1,6 @@
 (function() {
+  'use strict';
+
   angular.module('PDRClient')
       .factory('Inventory', Inventory);
 
