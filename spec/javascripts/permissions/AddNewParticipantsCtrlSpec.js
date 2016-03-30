@@ -1,7 +1,7 @@
 (function() {
   'use strict';
 
-  xdescribe('Controller: AddParticipants', function() {
+  xdescribe('Controller: AddNewParticipants', function() {
     it('calls update with the correct assessment id', function() {
       spyOn(Participant, 'all');
 

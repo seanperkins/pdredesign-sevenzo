@@ -7,8 +7,8 @@
   function manageParticipants() {
     return {
       restrict: 'E',
-      replace: false,
-      templateUrl: 'client/permissions/participants_button.html',
+      replace: true,
+      templateUrl: 'client/permissions/manage_participants.html',
       scope: {
         'sendInvite': '@',
         'numberOfRequests': '@',

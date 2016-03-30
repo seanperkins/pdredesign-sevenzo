@@ -2,9 +2,9 @@
   'use strict';
 
   angular.module('PDRClient')
-      .controller('AddParticipantsCtrl', AddParticipantsCtrl);
+      .controller('AddNewParticipantsCtrl', AddNewParticipantsCtrl);
 
-  function AddParticipantsCtrl() {
+  function AddNewParticipantsCtrl() {
     var vm = this;
 
 

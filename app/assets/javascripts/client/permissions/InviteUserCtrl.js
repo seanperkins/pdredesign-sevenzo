@@ -7,10 +7,11 @@
   InviteUserCtrl.$inject = [
     '$scope',
     '$modal',
+    '$stateParams',
     'UserInvitation'
   ];
 
-  function InviteUserCtrl($scope, $modal, UserInvitation) {
+  function InviteUserCtrl($scope, $modal, $stateParams, UserInvitation) {
     $scope.alerts = [];
     $scope.addAlert = function(message) {
       $scope.alerts.push({type: 'danger', msg: message});
@@ -28,7 +29,7 @@
     };
 
     $scope.shouldSendInvite = function() {
-      return $scope.sendInvite == "true" || $scope.sendInvite == true;
+      return $scope.sendInvite === 'true';
     };
 
     $scope.closeModal = function() {
@@ -37,11 +38,11 @@
 
     $scope.createInvitation = function(userObject) {
       if ($scope.shouldSendInvite()) {
-        userObject["send_invite"] = true;
+        userObject['send_invite'] = true;
       }
 
       UserInvitation
-          .create({assessment_id: $scope.assessmentId}, userObject)
+          .create({assessment_id: $stateParams.id}, userObject)
           .$promise
           .then(function() {
             $scope.$emit('update_participants');

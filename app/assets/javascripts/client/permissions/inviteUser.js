@@ -6,10 +6,9 @@
   function inviteUser() {
     return {
       restrict: 'E',
-      replace: false,
+      replace: true,
       templateUrl: 'client/permissions/invite_user.html',
       scope: {
-        'assessmentId': '@',
         'sendInvite': '@',
         'role': '@'
       },
