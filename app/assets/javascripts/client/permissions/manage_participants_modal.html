@@ -5,7 +5,7 @@
         Permission Requests
         <permissions-info data-placement="right"></permissions-info>
       </h4>
-      <div ng-if="manageParticipantsModal.access_requests.length == 0">
+      <div ng-if="manageParticipantsModal.access_requests.length === 0">
         <h5>No Permission Requests</h5>
       </div>
 
@@ -46,7 +46,7 @@
 
     <section class="current-participants">
       <h4>Current Participants</h4>
-      <div ng-if="manageParticipantsModal.assessment_users.length == 0">
+      <div ng-if="manageParticipantsModal.assessment_users.length === 0">
         <h5>No Participants</h5>
       </div>
 
