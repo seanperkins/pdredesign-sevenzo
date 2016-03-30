@@ -57,7 +57,7 @@
     };
 
     vm.denyRequest = function(options) {
-      if ($window.confirm("Are you sure you want to deny this access request?")) {
+      if ($window.confirm('Are you sure you want to deny this access request?')) {
         vm.performPermissionsAction(
             AssessmentPermission.deny,
             options.id,
@@ -66,7 +66,7 @@
     };
 
     vm.acceptRequest = function(options) {
-      if ($window.confirm("Are you sure you want to accept this access request?")) {
+      if ($window.confirm('Are you sure you want to accept this access request?')) {
         vm.performPermissionsAction(
             AssessmentPermission.accept,
             options.id,
