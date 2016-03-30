@@ -12,7 +12,8 @@
         'sendInvite': '@',
         'role': '@'
       },
-      controller: 'InviteUserCtrl'
+      controller: 'InviteUserCtrl',
+      controllerAs: 'inviteUser'
     };
   }
 })();
