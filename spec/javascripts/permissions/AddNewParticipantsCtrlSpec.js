@@ -1,62 +1,58 @@
 (function() {
   'use strict';
 
-  xdescribe('Controller: AddNewParticipants', function() {
-    it('calls update with the correct assessment id', function() {
-      spyOn(Participant, 'all');
+  describe('Controller: AddNewParticipants', function() {
+    var subject,
+        $scope,
+        $modal;
 
-      isolatedScope.updateParticipants();
-      expect(Participant.all).toHaveBeenCalledWith({assessment_id: '1'});
+    beforeEach(function() {
+      module('PDRClient');
+
+      inject(function(_$rootScope_, _$modal_, _$controller_) {
+        $scope = _$rootScope_.$new(true);
+        $modal = _$modal_;
+
+        subject = _$controller_('AddNewParticipantsCtrl', {
+          $scope: $scope,
+          $modal: $modal
+        });
+      });
     });
 
-    it('does set :send_invite when attribute is not set', function() {
-      spyOn(Participant, 'save').and.callFake(function(params, user) {
-        var deferred = $q.defer();
-        deferred.resolve({});
-        expect(params).toEqual({assessment_id: '1'});
-        expect(user).toEqual({user_id: 8, send_invite: false});
-        return {$promise: deferred.promise};
+    describe('#showNewParticipantsModal', function() {
+      beforeEach(function() {
+        spyOn($modal, 'open');
       });
 
-      isolatedScope.addParticipant({id: 8});
+      it('invokes the modal with the right parameters', function() {
+        subject.showNewParticipantsModal();
+        expect($modal.open).toHaveBeenCalledWith({
+          template: '<new-participants-modal send-invite="' + $scope.sendInvite + '"></new-participants-modal>',
+          scope: $scope,
+          size: 'lg'
+        });
+      });
     });
 
-    it('sends :send_invite when attribute is set', function() {
-      var scope;
-      spyOn(Participant, 'save').and.callFake(function(params, user) {
-        var deferred = $q.defer();
-        deferred.resolve({});
-        expect(params).toEqual({assessment_id: '1'});
-        expect(user).toEqual({user_id: 8, send_invite: true});
-        return {$promise: deferred.promise};
+    describe('$on: close-new-participants-modal', function() {
+      var $rootScope,
+          dismissSpy;
+
+      beforeEach(function() {
+        inject(function(_$rootScope_) {
+          $rootScope = _$rootScope_;
+        });
+
+        dismissSpy = jasmine.createSpy('dismiss');
+        subject.newParticipantsModal = {dismiss: dismissSpy};
+
+        $rootScope.$broadcast('close-new-participants-modal');
       });
 
-
-      var e = angular.element('<manage-participants send-invite="true" data-assessment-id=1></manage-participants>');
-      $compile(e)($scope);
-
-      $scope.$digest();
-      scope = e.isolateScope();
-      scope.$digest();
-
-      scope.addParticipant({id: 8});
-      expect(Participant.save).toHaveBeenCalled();
-    });
-
-
-    it('saves a participant when adding', function() {
-      spyOn(Participant, 'save').and.callFake(function(params, user) {
-        var deferred = $q.defer();
-        deferred.resolve({});
-        expect(params).toEqual({assessment_id: '1'});
-        expect(user).toEqual({user_id: 8, send_invite: false});
-        return {$promise: deferred.promise};
+      it('invokes the dismiss method in the newParticipantsModal', function() {
+        expect(dismissSpy).toHaveBeenCalledWith('cancel');
       });
-
-      isolatedScope.addParticipant({id: 8});
-      expect(Participant.save).toHaveBeenCalled();
     });
-
-
-  })
+  });
 })();

@@ -1,17 +1,17 @@
 (function() {
   'use strict';
 
-  describe('Directive: manageParticipantsModal', function() {
+  describe('Directive: newParticipantsModal', function() {
     var $scope,
         $compile,
         element,
-        updateDataSpy;
+        updateParticipantsSpy;
 
     beforeEach(function() {
-      updateDataSpy = jasmine.createSpy('ManageParticipantsModalCtrl');
+      updateParticipantsSpy = jasmine.createSpy('updateParticipants');
       module('PDRClient', function($controllerProvider) {
-        $controllerProvider.register('ManageParticipantsModalCtrl', function() {
-          this.updateData = updateDataSpy;
+        $controllerProvider.register('NewParticipantsModalCtrl', function() {
+          this.updateParticipants = updateParticipantsSpy;
         });
       });
 
@@ -23,13 +23,13 @@
 
     describe('when the directive is linked in', function() {
       beforeEach(function() {
-        element = angular.element('<manage-participants-modal></manage-participants-modal>');
+        element = angular.element('<new-participants-modal></new-participants-modal>');
         $compile(element)($scope);
         $scope.$digest();
       });
 
-      it('invokes updateData from the controller', function() {
-        expect(updateDataSpy).toHaveBeenCalled();
+      it('invokes updateParticipants from the controller', function() {
+        expect(updateParticipantsSpy).toHaveBeenCalled();
       });
     });
   });

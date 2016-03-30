@@ -4,22 +4,24 @@
   angular.module('PDRClient')
       .controller('AddNewParticipantsCtrl', AddNewParticipantsCtrl);
 
-  function AddNewParticipantsCtrl() {
+  AddNewParticipantsCtrl.$inject = [
+    '$scope',
+    '$modal'
+  ];
+
+  function AddNewParticipantsCtrl($scope, $modal) {
     var vm = this;
 
-
-    vm.shouldSendInvite = function() {
-      return $scope.sendInvite === "true" || $scope.sendInvite === true;
+    vm.showNewParticipantsModal = function() {
+      vm.newParticipantsModal = $modal.open({
+        template: '<new-participants-modal send-invite="' + $scope.sendInvite + '"></new-participants-modal>',
+        scope: $scope,
+        size: 'lg'
+      });
     };
 
-    vm.addParticipant = function(user) {
-      Participant
-          .save({assessment_id: $scope.assessmentId}, {user_id: user.id, send_invite: vm.shouldSendInvite()})
-          .$promise
-          .then(function() {
-            $scope.updateData();
-            $scope.$emit('update_participants');
-          });
-    };
+    $scope.$on('close-new-participants-modal', function() {
+      vm.newParticipantsModal.dismiss('cancel');
+    });
   }
 })();

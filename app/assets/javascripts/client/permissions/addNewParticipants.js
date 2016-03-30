@@ -9,7 +9,9 @@
       restrict: 'E',
       transclude: true,
       replace: true,
-      scope: {},
+      scope: {
+        sendInvite: '@'
+      },
       templateUrl: 'client/permissions/add_new_participants.html',
       controller: 'AddNewParticipantsCtrl',
       controllerAs: 'addNewParticipants'
