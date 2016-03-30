@@ -15,7 +15,7 @@
     vm.close = function() {
       vm.modal.dismiss();
     };
-    $scope.$on('close-modal', function() {
+    $scope.$on('invite-sent', function() {
       vm.close();
     });
   }
