@@ -17,7 +17,7 @@ describe('Resource: InventoryAccessRequest', function() {
     }, {
       status: 'denied'
     });
-    $httpBackend.flush();
+    expect($httpBackend.flush).not.toThrow();
   });
 
   it("list fetches all access requests for inventory", function(){
@@ -25,6 +25,6 @@ describe('Resource: InventoryAccessRequest', function() {
     subject.list({
       inventory_id: 10
     });
-    $httpBackend.flush();
+    expect($httpBackend.flush).not.toThrow();
   });
 });

@@ -72,6 +72,16 @@
         });
       });
     });
+    
+    describe('#humanPermissionName', function(){
+      it('it converts an empty string to None', function() {
+        expect(subject.humanPermissionName("")).toEqual("None");
+      });
+
+      it('returns the string as itself', function() {
+        expect(subject.humanPermissionName("Human")).toEqual("Human");
+      });
+    });
 
     describe('#acceptRequest', function() {
       describe('confirming', function() {

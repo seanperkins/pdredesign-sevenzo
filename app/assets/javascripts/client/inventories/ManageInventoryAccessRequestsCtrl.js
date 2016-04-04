@@ -36,5 +36,9 @@
           'accepted');
       }
     };
+
+    vm.humanPermissionName = function(value) {
+      return value === '' ? 'None' : value;
+    };
   }
 })();
