@@ -226,7 +226,7 @@ describe V1::InventoriesController do
         end
 
         it { expect(json['id']).to_not be_nil }
-        it { expect(Time.parse(json['deadline'])).to eq DateTime.strptime(deadline, '%m/%d/%Y') }
+        it { expect(Time.parse(json['due_date'])).to eq DateTime.strptime(deadline, '%m/%d/%Y') }
         it { expect(json['district_id']).to eq district.id }
         it { expect(json['owner_id']).to eq user.id }
         it { expect(json['name']).to_not be_nil }
