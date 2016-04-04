@@ -45,15 +45,10 @@
   <br/>
   <div class="row row-wizard">
     <div class="col-md-10 col-md-offset-2">
-      <button class="btn btn-primary" name="commit" type="submit" id='assign_assessment'
-              ng-click='assignAndSave(assessment)'>
-        <i class='fa fa-spinner fa-spin' ng-show="saving"></i>
-        <i class='fa fa-envelope-o'></i> Send
-      </button>
-
-      <button class="btn" name="commit" type="submit" ng-click='save(assessment)'>
-        <i class='fa fa-spinner fa-spin' ng-show="saving"></i>
-        <i class='fa fa-save'></i> Save
+      <button class="btn btn-primary send-btn btn-lg pull-right" name="commit" type="submit" id="assign_assessment"
+              ng-click='assignAndSave(model)'>
+        <i class="fa fa-spinner fa-spin" ng-show="saving"></i>
+        <i class="fa fa-envelope-o"></i> Send Invitation
       </button>
     </div>
   </div>
