@@ -1,0 +1,113 @@
+#product-entry-form-modal
+  width: 100%
+  position: relative
+
+  h1
+    font-size: 1em
+
+  .close-modal
+    position: absolute
+    top: 10px
+    right: 0
+    font-size: 2.5em
+    color: $primary-color
+    line-height: 0
+    margin: 0
+    &:hover
+      text-decoration: none
+
+  .btn
+    border-radius: 2px
+    &.btn-primary
+      background-color: $primary-color
+    &.btn-default
+      color: white
+      background-color: grey
+
+  .row
+    margin-left: -15px !important
+    margin-right: -15px !important
+
+    label
+      display: block
+      font-weight: bold
+
+      > span.field-info
+        display: block
+        color: grey
+        font-weight: normal
+        font-size: 0.9em
+
+    .control-list
+      padding-left: 5px
+
+    .fake-checkbox
+      display: inline-block
+
+      input[type='checkbox']
+        display: none
+
+      input[type='checkbox'] + span
+        cursor: pointer
+        position: relative
+        border: 2px solid $secondary-color
+        border-radius: 4px
+        display: inline-block
+        width: 1.3em
+        height: 1.3em
+        margin-bottom: -0.2em
+        i
+          display: none
+          font-size: 0.9em
+          position: absolute
+          top: 15%
+          left: 10%
+          color: white
+
+      input[type='checkbox']:checked + span
+        background: $secondary-color
+        i
+          display: block
+    
+    .fake-radio
+      display: inline-block
+
+      input[type='radio']
+        display: none
+
+      input[type='radio'] + span
+        cursor: pointer
+        position: relative
+        border: 2px solid $secondary-color
+        border-radius: 50%
+        display: inline-block
+        width: 1.3em
+        height: 1.3em
+        margin-bottom: -0.2em
+
+      input[type='radio']:checked + span
+        background: $secondary-color
+        box-shadow: inset 0 0 0 2px white
+    
+    input,
+    select,
+    textarea
+      background: none
+      border-radius: 0
+      box-shadow: none
+
+    .input-group
+      .input-group-addon
+        background: none
+      &.addon-left
+        input
+          border-left: none
+          padding-left: 0
+      &.addon-right
+        input
+          text-align: right
+          border-right: none
+          padding-right: 0
+
+    &.actions
+      text-align: right

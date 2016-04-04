@@ -20,6 +20,13 @@ class GeneralInventoryQuestion < ActiveRecord::Base
 
   belongs_to :product_entry
 
+  enum pricing_structure_option: {
+    free: 'Free',
+    one_time_purchase: 'One Time Purchase',
+    license: 'License',
+    usage_based: 'Usage Based'
+  }
+
   enum product_type: {
       academic_content: 'PD for Academic Content',
       instructional_skills: 'PD for Instructional Skills',
@@ -30,5 +37,6 @@ class GeneralInventoryQuestion < ActiveRecord::Base
   }
 
   validates :data_type, array_enum: { enum: GeneralInventoryQuestion.product_types }
+  validates :price_in_cents, numericality: {only_integer: true, greater_than_or_equal_to: 0}, allow_blank: true
 
 end
