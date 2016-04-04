@@ -1,5 +1,5 @@
 <form  name="formInviteParticipant"  novalidate>
-  <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
+  <alert ng-repeat="alert in inviteInventoryUser.alerts" type="{{alert.type}}" close="inviteInventoryUser.closeAlert($index)">{{alert.msg}}</alert>
   <div class='row'>
     <div class='flush-left col-md-4 col-sm-4'>
       <div class="form-group">
