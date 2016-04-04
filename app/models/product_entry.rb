@@ -27,7 +27,7 @@ class ProductEntry < ActiveRecord::Base
            to: :general_inventory_question, prefix: false
   delegate :how_its_assigned, :how_its_used, :how_its_accessed, :audience, to: :product_question, prefix: false, allow_nil: true
   delegate :school_usage, :usage, :vendor_data, :notes, to: :usage_question, prefix: false
-  delegate :platform, :hosting, :connectivity, :single_sign_on, to: :technical_question, prefix: false
+  delegate :platforms, :hosting, :connectivity, :single_sign_on, to: :technical_question, prefix: false
 
   accepts_nested_attributes_for :general_inventory_question
   accepts_nested_attributes_for :product_question

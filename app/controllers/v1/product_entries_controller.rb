@@ -28,7 +28,7 @@ class V1::ProductEntriesController < ApplicationController
     authorize_action_for @product_entry
     
     if @product_entry.update(product_entry_params)
-      render nothing: true, status: 200
+      render template: 'v1/product_entries/show', status: 200
     else
       render_error
     end
@@ -51,10 +51,10 @@ class V1::ProductEntriesController < ApplicationController
   def product_entry_params
     params.permit(
       product_question_attributes: [
-        :how_its_assigned,
-        :how_its_used,
-        :how_its_accessed,
-        :audience
+        {how_its_assigned: []},
+        {how_its_used: []},
+        {how_its_accessed: []},
+        {audience: []}
       ],
       usage_question_attributes: [
         :school_usage,
@@ -63,7 +63,7 @@ class V1::ProductEntriesController < ApplicationController
         :notes
       ],
       technical_question_attributes: [
-        :platform,
+        {platforms: []},
         :hosting,
         :connectivity,
         :single_sign_on
