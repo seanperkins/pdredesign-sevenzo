@@ -85,6 +85,12 @@ PdrServer::Application.routes.draw do
       resources :participants, controller: 'inventory_participants', only: [:create, :destroy]
       resources :invitables, controller: 'inventory_invitables', only: [:index]
       resources :product_entries, only: [:index, :show, :create, :update]
+
+      resources :learning_questions, only: [:index, :create, :update, :destroy] do
+        collection do
+          get 'exists', to: 'learning_questions#exists'
+        end
+      end
     end
 
     scope '/constants' do
