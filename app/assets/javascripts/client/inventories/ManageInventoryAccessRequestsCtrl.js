@@ -2,9 +2,9 @@
   'use strict';
   angular.module('PDRClient').controller('ManageInventoryAccessRequestsCtrl', ManageInventoryAccessRequestsCtrl); 
 
-  ManageInventoryAccessRequestsCtrl.$inject = ['$scope', 'InventoryAccessRequest'];
+  ManageInventoryAccessRequestsCtrl.$inject = ['$scope', 'InventoryAccessRequest', '$window'];
 
-  function ManageInventoryAccessRequestsCtrl($scope, InventoryAccessRequest) {
+  function ManageInventoryAccessRequestsCtrl($scope, InventoryAccessRequest, $window) {
     var vm = this;
     vm.loadList = function() {
       vm.list = InventoryAccessRequest.list({inventory_id: $scope.inventoryId});
@@ -22,7 +22,7 @@
     }
 
     vm.denyRequest = function(id) {
-      if (confirm("Are you sure you want to deny this access request?")){
+      if ($window.confirm("Are you sure you want to deny this access request?")){
         vm.performAccessRequestAction(
           id,
           'denied');
@@ -30,7 +30,7 @@
     };
 
     vm.acceptRequest = function(id) {
-      if (confirm("Are you sure you want to accept this access request?")){
+      if ($window.confirm("Are you sure you want to accept this access request?")){
         vm.performAccessRequestAction(
           id,
           'accepted');

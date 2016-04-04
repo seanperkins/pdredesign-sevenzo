@@ -1,14 +1,19 @@
 (function() {
   'use strict';
   describe('Controller: ManageInventoryAccessRequests', function() {
-    var $scope, $q, subject, InventoryAccessRequest;
+    var $scope,
+        $q,
+        $window,
+        subject,
+        InventoryAccessRequest;
 
     beforeEach(function() {
       module('PDRClient');
-      inject(function($injector, $controller, $rootScope) {
-        $scope = $rootScope.$new(true);
+      inject(function(_$controller_, _$rootScope_, _$q_, _$window_, $injector) {
+        $scope = _$rootScope_.$new(true);
+        $q = _$q_;
         InventoryAccessRequest = $injector.get('InventoryAccessRequest');
-        $q = $injector.get('$q');
+        $window = _$window_;
 
         $scope.inventoryId = 4
 
@@ -24,7 +29,7 @@
           return { $promise: deferred.promise };
         });
 
-        subject = $controller('ManageInventoryAccessRequestsCtrl', {
+        subject = _$controller_('ManageInventoryAccessRequestsCtrl', {
           $scope: $scope
         });
       })
@@ -47,7 +52,7 @@
     describe('#denyRequest', function() {
       describe('confirming', function() {
         beforeEach(function() {
-          spyOn(window, 'confirm').and.returnValue(true);
+          spyOn($window, 'confirm').and.returnValue(true);
           subject.denyRequest(143);
         });
 
@@ -58,7 +63,7 @@
 
       describe('canceling', function() {
         beforeEach(function() {
-          spyOn(window, 'confirm').and.returnValue(false);
+          spyOn($window, 'confirm').and.returnValue(false);
           subject.denyRequest(143);
         });
 
@@ -67,30 +72,29 @@
         });
       });
     });
-  });
 
-  describe('#acceptRequest', function() {
-    describe('confirming', function() {
-      beforeEach(function() {
-        spyOn(window, 'confirm').and.returnValue(true);
-        subject.acceptRequest(143);
+    describe('#acceptRequest', function() {
+      describe('confirming', function() {
+        beforeEach(function() {
+          spyOn($window, 'confirm').and.returnValue(true);
+          subject.acceptRequest(143);
+        });
+
+        it('updates request with status', function() {
+          expect(InventoryAccessRequest.update).toHaveBeenCalledWith({ inventory_id: 4, id: 143}, { status: 'accepted' });
+        });
       });
 
-      it('updates request with status', function() {
-        expect(InventoryAccessRequest.update).toHaveBeenCalledWith({ inventory_id: 4, id: 143}, { status: 'accepted' });
+      describe('canceling', function() {
+        beforeEach(function() {
+          spyOn($window, 'confirm').and.returnValue(false);
+          subject.acceptRequest(143);
+        });
+
+        it('does not updates request with status', function() {
+          expect(InventoryAccessRequest.update).not.toHaveBeenCalledWith({ inventory_id: 4, id: 143}, { status: 'accepted' });
+        });
       });
     });
-
-    describe('canceling', function() {
-      beforeEach(function() {
-        spyOn(window, 'confirm').and.returnValue(false);
-        subject.acceptRequest(143);
-      });
-
-      it('does not updates request with status', function() {
-        expect(InventoryAccessRequest.update).not.toHaveBeenCalledWith({ inventory_id: 4, id: 143}, { status: 'accepted' });
-      });
-    });
   });
-});
 })();

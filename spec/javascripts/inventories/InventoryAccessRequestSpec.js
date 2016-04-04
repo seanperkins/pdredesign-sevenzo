@@ -12,7 +12,7 @@ describe('Resource: InventoryAccessRequest', function() {
 
   it("updates access request", function(){
     $httpBackend.expectPATCH('/v1/inventories/10/access_requests', { status: 'denied' }).respond(200, {});
-    var users = subject.update({
+    subject.update({
       inventory_id: 10
     }, {
       status: 'denied'
@@ -22,7 +22,7 @@ describe('Resource: InventoryAccessRequest', function() {
 
   it("list fetches all access requests for inventory", function(){
     $httpBackend.expectGET('/v1/inventories/10/access_requests').respond(200, []);
-    var users = subject.list({
+    subject.list({
       inventory_id: 10
     });
     $httpBackend.flush();
