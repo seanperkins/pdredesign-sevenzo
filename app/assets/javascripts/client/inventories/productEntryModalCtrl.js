@@ -31,45 +31,45 @@
 
     CheckboxService.checkboxize(
       $scope,
-      "selectedProductTypes",
+      'selectedProductTypes',
       vm.constants.product_entry.general_inventory_question.product_types,
       vm.productEntry.general_inventory_question,
-      "data_type"
+      'data_type'
     );
     CheckboxService.checkboxize(
       $scope,
-      "selectedAssignmentApproaches",
+      'selectedAssignmentApproaches',
       vm.constants.product_entry.product_question.assignment_approaches,
       vm.productEntry.product_question,
-      "how_its_assigned"
+      'how_its_assigned'
     );
     CheckboxService.checkboxize(
       $scope,
-      "selectedUsageFrequencies",
+      'selectedUsageFrequencies',
       vm.constants.product_entry.product_question.usage_frequencies,
       vm.productEntry.product_question,
-      "how_its_used"
+      'how_its_used'
     );
     CheckboxService.checkboxize(
       $scope,
-      "selectedAccesses",
+      'selectedAccesses',
       vm.constants.product_entry.product_question.accesses,
       vm.productEntry.product_question,
-      "how_its_accessed"
+      'how_its_accessed'
     );
     CheckboxService.checkboxize(
       $scope,
-      "selectedAudienceTypes",
+      'selectedAudienceTypes',
       vm.constants.product_entry.product_question.audience_types,
       vm.productEntry.product_question,
-      "audience"
+      'audience'
     );
     CheckboxService.checkboxize(
       $scope,
-      "selectedPlatformOptions",
+      'selectedPlatformOptions',
       vm.constants.product_entry.technical_question.platform_options,
       vm.productEntry.technical_question,
-      "platforms"
+      'platforms'
     );
 
     vm.save = function () {
@@ -84,7 +84,7 @@
         delete productEntry[key];
       });
 
-      ProductEntry[productEntry.id ? "update" : "create"]({
+      ProductEntry[productEntry.id ? 'update' : 'create']({
         inventory_id: vm.inventory.id,
         product_entry_id: productEntry.id
       }, productEntry)
@@ -92,9 +92,7 @@
           .then(function (productEntry){
             vm.productEntry = productEntry;
             vm.closeModal();
-            console.log("success");
           }, function (response) {
-            console.log(response);
           });
     };
   }
