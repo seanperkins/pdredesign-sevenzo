@@ -12,7 +12,7 @@
       beforeEach(function() {
         module('PDRClient');
         inject(function($injector, $controller, $rootScope) {
-          LearningQuestion = $injector.get('LearningQuestion');
+          LearningQuestion = $injector.get('AssessmentLearningQuestion');
           $scope = $rootScope.$new(true);
           $httpBackend = $injector.get('$httpBackend');
           $window = $injector.get('$window');
@@ -178,7 +178,7 @@
       beforeEach(function() {
         module('PDRClient');
         inject(function($injector, $controller, $rootScope) {
-          LearningQuestion = $injector.get('LearningQuestion');
+          LearningQuestion = $injector.get('AssessmentLearningQuestion');
           $scope = $rootScope.$new(true);
           $httpBackend = $injector.get('$httpBackend');
           $window = $injector.get('$window');

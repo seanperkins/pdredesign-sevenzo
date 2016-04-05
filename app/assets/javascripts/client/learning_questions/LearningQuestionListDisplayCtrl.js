@@ -7,7 +7,7 @@
     '$stateParams',
     '$scope',
     '$window',
-    'LearningQuestion',
+    'AssessmentLearningQuestion',
     'LearningQuestionValidator'
   ];
 

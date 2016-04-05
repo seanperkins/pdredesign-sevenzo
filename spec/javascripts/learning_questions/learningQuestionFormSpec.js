@@ -6,10 +6,11 @@
 
       beforeEach(function() {
         module('PDRClient');
-        inject(function($rootScope, $injector, $compile) {
-          element = angular.element('<div><learning-question-form /></div>');
-          $compile(element)($rootScope);
-          $rootScope.$digest();
+        inject(function(_$rootScope_, _$compile_) {
+          var $scope = _$rootScope_.$new(true);
+          element = angular.element('<learning-question-form></learning-question-form>');
+          _$compile_(element)($scope);
+          $scope.$digest();
         });
       });
 

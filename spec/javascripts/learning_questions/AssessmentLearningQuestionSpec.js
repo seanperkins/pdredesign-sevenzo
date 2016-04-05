@@ -1,12 +1,12 @@
 (function() {
   'use strict';
-  describe('Resource: LearningQuestion', function() {
+  describe('Resource: AssessmentLearningQuestion', function() {
 
     var subject, $httpBackend, $resource;
 
     beforeEach(module('PDRClient'));
     beforeEach(inject(function($injector) {
-      subject = $injector.get('LearningQuestion');
+      subject = $injector.get('AssessmentLearningQuestion');
       $resource = $injector.get('$resource');
       $httpBackend = $injector.get('$httpBackend');
     }));

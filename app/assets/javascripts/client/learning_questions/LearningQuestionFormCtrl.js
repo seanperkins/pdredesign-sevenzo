@@ -6,7 +6,7 @@
   LearningQuestionFormCtrl.$inject = [
     '$stateParams',
     '$scope',
-    'LearningQuestion',
+    'AssessmentLearningQuestion',
     'LearningQuestionValidator'
   ];
 

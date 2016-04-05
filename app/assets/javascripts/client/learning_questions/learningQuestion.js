@@ -1,5 +1,6 @@
 (function() {
   'use strict';
+
   angular.module('PDRClient')
       .directive('learningQuestion', learningQuestion);
 
@@ -9,7 +10,7 @@
       scope: {
         'modal': '@'
       },
-      templateUrl: 'client/views/directives/learning_questions/display.html',
+      templateUrl: 'client/learning_questions/display.html',
       replace: true,
       transclude: true
     }

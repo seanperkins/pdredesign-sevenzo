@@ -12,7 +12,7 @@
         $httpBackend = $injector.get('$httpBackend');
         $scope = $rootScope.$new(true);
         $scope.learningQuestionForm = {};
-        LearningQuestion = $injector.get('LearningQuestion');
+        LearningQuestion = $injector.get('AssessmentLearningQuestion');
         controller = $controller('LearningQuestionFormCtrl', {
           $stateParams: {id: 1},
           $scope: $scope,
