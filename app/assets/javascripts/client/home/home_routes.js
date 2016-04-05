@@ -15,7 +15,14 @@
       views: {
         '': {
           controller: 'HomeCtrl',
-          templateUrl: 'client/home/home_user.html'
+          templateUrl: 'client/home/home_user.html',
+          resolve: {
+            'Constants' : ['ConstantsService', function (ConstantsService) {
+              return ConstantsService.get("product_entry").then(function (response) {
+                return response.data;
+              });
+            }]
+          }
         },
         'sidebar': {
           controller: 'SidebarCtrl',

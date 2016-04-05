@@ -9,19 +9,10 @@
     'Tool',
     'SessionService',
     '$timeout',
-    '$state',
-    'ProductEntry'
+    '$state'
   ];
 
-  function HomeCtrl($scope, Tool, SessionService, $timeout, $state, ProductEntry) {
-    $scope.inventory = {id: 1};
-    ProductEntry
-      .get({inventory_id: $scope.inventory.id, product_entry_id: 39})
-      .$promise
-      .then(function (productEntry) {
-        $scope.productEntry = productEntry;
-      });
-
+  function HomeCtrl($scope, Tool, SessionService, $timeout, $state) {
     $scope.user = SessionService.getCurrentUser();
     $scope.tools = [];
 
