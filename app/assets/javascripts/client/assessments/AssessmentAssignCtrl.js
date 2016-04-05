@@ -25,6 +25,7 @@
 
     CreateService.loadScope($scope);
     CreateService.loadDistrict($scope.district);
+    CreateService.setContext('assessment');
 
     $scope.fetchAssessment = function() {
       Assessment
@@ -67,7 +68,7 @@
       $scope.alerts.splice(index, 1);
     };
 
-    $scope.$on('add_assessment_alert', function(event, data) {
+    $scope.$on('add-assign-alert', function(event, data) {
       if (data['type'] === 'success') {
         $scope.success(data['msg']);
       } else if (data['type'] === 'danger') {

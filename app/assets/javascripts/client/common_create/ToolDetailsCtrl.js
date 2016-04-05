@@ -37,7 +37,11 @@
 
     vm.save = function(entity) {
       CreateService.loadDistrict(vm.district);
-      CreateService.saveAssessment(entity);
+      if(CreateService.context === 'inventory') {
+        CreateService.saveInventory(entity);
+      } else {
+        CreateService.saveAssessment(entity);
+      }
     };
 
     vm.formattedDate = function(date) {
