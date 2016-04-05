@@ -10,8 +10,8 @@
       replace: true,
       templateUrl: 'client/inventories/product_entry.html',
       scope: {
-        inventory: "=",
-        resource: "="
+        inventory: '=',
+        resource: '='
       },
       controller: 'ProductEntryCtrl',
       controllerAs: 'productEntry'

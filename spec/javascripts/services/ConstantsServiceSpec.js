@@ -16,7 +16,7 @@
       $httpBackend.expectGET('/v1/constants/product_entry')
                   .respond({
                     constants: {
-                      foo: "bar"
+                      foo: 'bar'
                     }
                   });
 
@@ -25,7 +25,7 @@
 
       expect(subject.constants).toEqual({
         product_entry: {
-          foo: "bar"
+          foo: 'bar'
         }
       });
     });

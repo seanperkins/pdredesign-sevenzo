@@ -5,8 +5,8 @@
         return {
           restrict: 'E',
           scope: {
-            model: "=",
-            value: "@"
+            model: '=',
+            value: '@'
           },
           replace: true,
           templateUrl: 'client/forms/fake_radio.html'

@@ -10,8 +10,8 @@
       replace: true,
       transclude: true,
       scope: {
-        inventory: "=",
-        resource: "="
+        inventory: '=',
+        resource: '='
       },
       templateUrl: 'client/inventories/product_entry_modal.html',
       controller: 'ProductEntryModalCtrl',

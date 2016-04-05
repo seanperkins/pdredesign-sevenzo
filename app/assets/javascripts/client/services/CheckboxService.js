@@ -10,7 +10,7 @@
       });
 
       $scope.$watch( scopeKey, function (newValue) {
-        var selectedValues = _.pluck(_.filter(newValue, {selected: true}), "name");
+        var selectedValues = _.pluck(_.filter(newValue, {selected: true}), 'name');
         property[key] = selectedValues;
       }, true);
     };
