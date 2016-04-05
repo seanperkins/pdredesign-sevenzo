@@ -8,7 +8,7 @@
             model: "="
           },
           replace: true,
-          templateUrl: 'client/views/directives/fake_checkbox.html'
+          templateUrl: 'client/forms/fake_checkbox.html'
         }
       });
 })();

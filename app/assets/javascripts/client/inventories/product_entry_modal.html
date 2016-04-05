@@ -64,7 +64,7 @@
           <select 
               class="form-control"
               ng-model="productEntryModal.productEntry.general_inventory_question.pricing_structure"
-              ng-options="name for (id, name) in productEntryModal.enums.models.ProductEntry.GeneralInventoryQuestion.pricingStructures"
+              ng-options="name for (id, name) in productEntryModal.constants.product_entry.general_inventory_question.pricing_structure_options"
               id="product-entry-pricing-structure"></select>
         </div>
       </div>
@@ -214,13 +214,14 @@
             </div>
           </div>
           <div class="row">
-            <div class="col-sm-3">
+            <div class="col-sm-4">
               <div class="input-group addon-right">
                 <input
                     type="text"
                     class="form-control"
                     ng-model="productEntryModal.productEntry.usage_question.usage"
                     float
+                    maxlength=3
                     id="product-entry-usage">
                 <div class="input-group-addon">%</div>
               </div>
@@ -285,7 +286,7 @@
             <span class="field-info">Where is the data hosted? Onsite or offsite?</span>
           </label>
           <div class="control-list">
-            <label ng-repeat="(id, name) in productEntryModal.enums.models.ProductEntry.TechnicalQuestion.hostingOptions">
+            <label ng-repeat="(id, name) in productEntryModal.constants.product_entry.technical_question.hosting_options">
               <fake-radio model="productEntryModal.productEntry.technical_question.hosting" value="{{name}}"></fake-radio>
               {{name}}
             </label>
@@ -301,7 +302,7 @@
             <span class="field-info">Does this product have single sign-on?</span>
           </label>
           <div class="control-list">
-            <label ng-repeat="(id, name) in productEntryModal.enums.models.ProductEntry.TechnicalQuestion.singleSignOnOptions">
+            <label ng-repeat="(id, name) in productEntryModal.constants.product_entry.technical_question.single_sign_on_options">
               <fake-radio model="productEntryModal.productEntry.technical_question.single_sign_on" value="{{name}}"></fake-radio>
               {{name}}
             </label>

@@ -7,17 +7,18 @@
   ProductEntryModalCtrl.$inject = [
     '$scope',
     'ProductEntry',
-    'Enums'
+    'ConstantsService',
+    'CheckboxService'
   ];
 
-  function ProductEntryModalCtrl($scope, ProductEntry, Enums) {
+  function ProductEntryModalCtrl($scope, ProductEntry, ConstantsService, CheckboxService) {
     var vm = this;
 
     vm.closeModal = function() {
       $scope.$emit('close-product-entry-modal');
     };
 
-    vm.enums = Enums;
+    vm.constants = ConstantsService.constants;
 
     vm.inventory = $scope.inventory;
 
@@ -28,60 +29,51 @@
       technical_question : {}
     };
 
-    var checkboxize = function (scopeKey, options, property, key) {
-      var productEntryProperty = vm.productEntry;
-
-      $scope[scopeKey] = _.map(options, function (value) {
-        var selected = _.include( property[key], value);
-        return {name : value, selected: selected};
-      });
-
-      $scope.$watch( scopeKey, function (newValue) {
-        var selectedValues = _.pluck(_.filter(newValue, {selected: true}), "name");
-        property[key] = selectedValues;
-      }, true);
-    };
-
-    checkboxize(
+    CheckboxService.checkboxize(
+      $scope,
       "selectedProductTypes",
-      Enums.models.ProductEntry.GeneralInventoryQuestion.productTypes,
+      vm.constants.product_entry.general_inventory_question.product_types,
       vm.productEntry.general_inventory_question,
       "data_type"
     );
-    checkboxize(
+    CheckboxService.checkboxize(
+      $scope,
       "selectedAssignmentApproaches",
-      Enums.models.ProductEntry.ProductQuestion.assignmentApproaches,
+      vm.constants.product_entry.product_question.assignment_approaches,
       vm.productEntry.product_question,
       "how_its_assigned"
     );
-    checkboxize(
+    CheckboxService.checkboxize(
+      $scope,
       "selectedUsageFrequencies",
-      Enums.models.ProductEntry.ProductQuestion.usageFrequencies,
+      vm.constants.product_entry.product_question.usage_frequencies,
       vm.productEntry.product_question,
       "how_its_used"
     );
-    checkboxize(
+    CheckboxService.checkboxize(
+      $scope,
       "selectedAccesses",
-      Enums.models.ProductEntry.ProductQuestion.accesses,
+      vm.constants.product_entry.product_question.accesses,
       vm.productEntry.product_question,
       "how_its_accessed"
     );
-    checkboxize(
+    CheckboxService.checkboxize(
+      $scope,
       "selectedAudienceTypes",
-      Enums.models.ProductEntry.ProductQuestion.audienceTypes,
+      vm.constants.product_entry.product_question.audience_types,
       vm.productEntry.product_question,
       "audience"
     );
-    checkboxize(
+    CheckboxService.checkboxize(
+      $scope,
       "selectedPlatformOptions",
-      Enums.models.ProductEntry.TechnicalQuestion.platformOptions,
+      vm.constants.product_entry.technical_question.platform_options,
       vm.productEntry.technical_question,
       "platforms"
     );
 
     vm.save = function () {
       var productEntry = angular.copy( vm.productEntry );
-      console.log(productEntry);
 
       _.each(['general_inventory_question',
         'product_question',
