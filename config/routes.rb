@@ -87,6 +87,10 @@ PdrServer::Application.routes.draw do
       resources :product_entries, only: [:index, :show, :create, :update]
     end
 
+    scope '/constants' do
+      get 'product_entry', to: 'constants#product_entry'
+    end
+
     resources :inventories, only: [:create, :index]
 
     get 'user', to: 'user#show'

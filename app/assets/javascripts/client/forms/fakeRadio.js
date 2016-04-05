@@ -9,7 +9,7 @@
             value: "@"
           },
           replace: true,
-          templateUrl: 'client/views/directives/fake_radio.html'
+          templateUrl: 'client/forms/fake_radio.html'
         }
       });
 })();

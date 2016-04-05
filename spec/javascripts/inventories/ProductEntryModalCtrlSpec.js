@@ -5,13 +5,13 @@
     var subject,
         $scope,
         ProductEntry,
-        Enums;
+        ConstantsService;
 
     beforeEach(function() {
       module('PDRClient');
       inject(function(_$rootScope_, _$controller_, $injector) {
         ProductEntry = $injector.get('ProductEntry');
-        Enums = $injector.get('Enums');
+        ConstantsService = $injector.get('ConstantsService');
         $scope = _$rootScope_.$new(true);
         $scope.inventory = {id: 1};
       });
@@ -22,6 +22,16 @@
       beforeEach(function() {
         inject(function(_$httpBackend_) {
           $httpBackend = _$httpBackend_;
+          $httpBackend.expectGET('/v1/constants/product_entry')
+                      .respond({
+                        constants: {
+                          general_inventory_question: {},
+                          product_question: {},
+                          technical_question: {}
+                        }
+                      });
+          ConstantsService.get('product_entry');
+          $httpBackend.flush();
         });
       });
 
@@ -30,7 +40,7 @@
           subject = _$controller_('ProductEntryModalCtrl', {
             $scope: $scope,
             ProductEntry: ProductEntry,
-            Enums: Enums
+            ConstantsService: ConstantsService
           });
         });
 
@@ -62,7 +72,7 @@
           subject = _$controller_('ProductEntryModalCtrl', {
             $scope: $scope,
             ProductEntry: ProductEntry,
-            Enums: Enums
+            ConstantsService: ConstantsService
           });
         });
 
@@ -87,7 +97,7 @@
           subject = _$controller_('ProductEntryModalCtrl', {
             $scope: $scope,
             ProductEntry: ProductEntry,
-            Enums: Enums
+            ConstantsService: ConstantsService
           });
         });
 
