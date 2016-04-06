@@ -15,7 +15,12 @@
       },
       templateUrl: 'client/inventories/product_entry_modal.html',
       controller: 'ProductEntryModalCtrl',
-      controllerAs: 'productEntryModal'
+      controllerAs: 'productEntryModal',
+      link: productEntryModalLink
     }
+  }
+
+  function productEntryModalLink (scope, element, attributes, controller) {
+    controller.updateData().then(controller.setupCheckboxes);
   }
 })();
