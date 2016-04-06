@@ -9,12 +9,9 @@
       response-id="{{responseAnswerGroup.responseId}}"
       assessment-id="{{responseAnswerGroup.assessmentId}}">
   </skip-question>
+  <evidence question-id="{{ question.id }}" ng-if="isConsensus"></evidence>
   <ng-include
-      ng-show="isConsensus"
-      src="'client/views/shared/responses/evidence.html'">
-  </ng-include>
-  <ng-include
-      ng-show="isConsensus"
+      ng-if="isConsensus"
       src="'client/views/shared/responses/consensus_score_entry.html'">
   </ng-include>
 </div>
