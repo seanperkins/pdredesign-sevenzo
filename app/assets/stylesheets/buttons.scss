@@ -1,0 +1,9 @@
+
+.btn-secondary {
+  @include button-variant($btn-primary-color, $secondary-color, $secondary-color);
+}
+
+.btn-default {
+  @include button-variant($btn-default-color, $btn-default-bg, $btn-default-border);
+  border-color: #52616D
+}

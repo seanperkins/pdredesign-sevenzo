@@ -45,7 +45,7 @@
         },
         'sidebar': {
           controller: 'SidebarCtrl',
-          templateUrl: 'client/views/sidebar/sidebar_generic.html'
+          templateUrl: 'client/inventories/edit_sidebar.html'
         }
       }
     });
