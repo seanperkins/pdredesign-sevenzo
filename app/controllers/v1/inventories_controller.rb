@@ -1,10 +1,18 @@
 class V1::InventoriesController < ApplicationController
-
   before_action :authenticate_user!
 
   def index
     @inventories = Inventory.joins('LEFT OUTER JOIN inventory_members ON inventory_members.inventory_id = inventories.id')
                        .where('inventories.owner_id = ? OR inventory_members.user_id = ?', current_user.id, current_user.id)
+  end
+
+  def show
+    @inventory = Inventory.where(id: params[:id]).first
+    unless @inventory
+      render nothing:true, status: :not_found
+      return
+    end
+    authorize_action_for @inventory
   end
 
   def create

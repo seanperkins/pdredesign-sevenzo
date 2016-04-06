@@ -7,7 +7,7 @@
     'inventory'
   ];
 
-  function InventoryEditCtrl(SessionService, inventory) {
+  function InventoryEditCtrl(inventory) {
     var vm = this;
     vm.inventory = inventory;
   }
