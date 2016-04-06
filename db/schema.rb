@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160323183632) do
+ActiveRecord::Schema.define(version: 20160406160558) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -215,7 +215,7 @@ ActiveRecord::Schema.define(version: 20160323183632) do
   end
 
   create_table "general_data_questions", force: :cascade do |t|
-    t.string   "subcategory"
+    t.string   "data_type"
     t.string   "point_of_contact_name"
     t.string   "point_of_contact_department"
     t.string   "data_capture"
@@ -246,9 +246,9 @@ ActiveRecord::Schema.define(version: 20160323183632) do
     t.string   "name",        null: false
     t.datetime "deadline",    null: false
     t.integer  "district_id", null: false
-    t.integer  "owner_id"
     t.datetime "created_at",  null: false
     t.datetime "updated_at",  null: false
+    t.integer  "owner_id"
   end
 
   create_table "inventory_access_requests", force: :cascade do |t|

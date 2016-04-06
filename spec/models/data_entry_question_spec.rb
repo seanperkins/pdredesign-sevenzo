@@ -23,4 +23,9 @@ describe DataEntryQuestion do
     it { is_expected.to allow_value(frequency).for(:when_data_is_entered) }
   }
 
+  describe '#save' do
+    subject { FactoryGirl.create(:data_entry_question) }
+
+    it { expect(subject.new_record?).to be false }
+  end
 end

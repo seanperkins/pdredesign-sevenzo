@@ -1,0 +1,7 @@
+json.id general_data_question.id
+json.created_at general_data_question.created_at
+json.updated_at general_data_question.updated_at
+json.subcategory general_data_question.data_type
+json.point_of_contact_name general_data_question.point_of_contact_name
+json.point_of_contact_department general_data_question.point_of_contact_department
+json.data_capture general_data_question.data_capture

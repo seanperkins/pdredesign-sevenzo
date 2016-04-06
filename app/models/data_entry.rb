@@ -9,6 +9,9 @@
 #
 
 class DataEntry < ActiveRecord::Base
+  include Authority::Abilities
+  self.authorizer_name = 'DataEntryAuthorizer'
+
   has_one :general_data_question, dependent: :delete
   has_one :data_entry_question, dependent: :delete
   has_one :data_access_question, dependent: :delete
