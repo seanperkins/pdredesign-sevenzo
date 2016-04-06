@@ -6,7 +6,7 @@
 
     beforeEach(function () {
       module('PDRClient');
-      inject(function($rootScope, $injector) {
+      inject(function($injector) {
         subject = $injector.get('ConstantsService');
         $httpBackend = $injector.get('$httpBackend');
       });
