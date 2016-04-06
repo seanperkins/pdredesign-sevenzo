@@ -48,9 +48,9 @@ PDRClient.directive('consensus', [
           $scope.answerTitle            = ResponseHelper.answerTitle;
           $scope.percentageByResponse   = ResponseHelper.percentageByResponse;
 
-          $scope.toggleAnswers = function(question) {
+          $scope.toggleAnswers = function(question, $event) {
             $scope.$broadcast('question-toggled', question.id);
-            ResponseHelper.toggleAnswers(question);
+            ResponseHelper.toggleAnswers(question, $event);
           };
 
           $scope.assignAnswerToQuestion = function (answer, question) {
