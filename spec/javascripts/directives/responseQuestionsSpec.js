@@ -49,6 +49,5 @@ describe('Directive: responseQuestions', function() {
       $httpBackend.flush();
       expect(isolatedScope.categories).toEqual([1,2,3]);
     });
-
   });
-});
+})();
