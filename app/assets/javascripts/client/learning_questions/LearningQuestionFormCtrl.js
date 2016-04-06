@@ -4,22 +4,18 @@
       .controller('LearningQuestionFormCtrl', LearningQuestionFormCtrl);
 
   LearningQuestionFormCtrl.$inject = [
-    '$stateParams',
     '$scope',
-    'AssessmentLearningQuestion',
-    'LearningQuestionValidator'
+    'LearningQuestionService'
   ];
 
-  function LearningQuestionFormCtrl($stateParams, $scope, LearningQuestion, LearningQuestionValidator) {
+  function LearningQuestionFormCtrl($scope, LearningQuestionService) {
     var vm = this;
     vm.error = '';
     vm.newEntity = {
       'body': ''
     };
 
-    vm.extractId = function() {
-      return $stateParams.assessment_id || $stateParams.id;
-    };
+    LearningQuestionService.setContext($scope.context);
 
     vm.clearInputForm = function(model) {
       model.body = '';
@@ -27,23 +23,21 @@
 
     vm.createLearningQuestion = function(model) {
       var validationMsg = vm.validate(model.body);
-      if(validationMsg) {
+      if (validationMsg) {
         vm.error = validationMsg;
         $scope.learningQuestionForm.$invalid = true;
       } else {
         $scope.learningQuestionForm.$invalid = false;
-        LearningQuestion
-            .create({assessment_id: vm.extractId()}, {learning_question: {body: model.body}})
-            .$promise
+        LearningQuestionService.createLearningQuestion(model)
             .then(function() {
-              $scope.$emit('learning-question-change');
+              LearningQuestionService.loadQuestions();
               vm.clearInputForm(model);
             });
       }
     };
 
     vm.validate = function(data) {
-      return LearningQuestionValidator.validate(data);
+      return LearningQuestionService.validate(data);
     }
   }
 })();

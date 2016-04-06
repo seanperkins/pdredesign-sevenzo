@@ -8,7 +8,8 @@
     return {
       restrict: 'E',
       scope: {
-        'modal': '@'
+        'modal': '@',
+        'context': '@'
       },
       templateUrl: 'client/learning_questions/display.html',
       replace: true,

@@ -2,215 +2,199 @@
   'use strict';
 
   describe('Controller: LearningQuestionListDisplay', function() {
-    describe('when the state parameter matches :id', function() {
-      var controller,
-          LearningQuestion,
-          $scope,
-          $window,
-          $httpBackend;
+    var controller,
+        LearningQuestionService,
+        $scope,
+        $window,
+        $q;
 
-      beforeEach(function() {
-        module('PDRClient');
-        inject(function($injector, $controller, $rootScope) {
-          LearningQuestion = $injector.get('AssessmentLearningQuestion');
-          $scope = $rootScope.$new(true);
-          $httpBackend = $injector.get('$httpBackend');
-          $window = $injector.get('$window');
+    beforeEach(function() {
+      module('PDRClient');
+      inject(function(_$controller_, _$rootScope_, _$q_, _$window_, $injector) {
+        $q = _$q_;
+        $window = _$window_;
+        $scope = _$rootScope_.$new(true);
 
-          controller = $controller('LearningQuestionListDisplayCtrl', {
-            $scope: $scope,
-            $stateParams: {id: 1},
-            LearningQuestion: LearningQuestion,
-            $window: $window
-          });
+        LearningQuestionService = $injector.get('LearningQuestionService');
+
+        $scope.context = 'testContextPrime';
+
+        spyOn(LearningQuestionService, 'loadQuestions');
+
+        controller = _$controller_('LearningQuestionListDisplayCtrl', {
+          $scope: $scope,
+          $stateParams: {id: 1},
+          LearningQuestionService: LearningQuestionService,
+          $window: $window
         });
-      });
-
-      afterEach(function() {
-        $httpBackend.verifyNoOutstandingExpectation();
-        $httpBackend.resetExpectations();
-      });
-
-      it('loads questions in at controller instantiation', function() {
-        $httpBackend.expect('GET', '/v1/assessments/1/learning_questions').respond(200, {
-          learning_questions: [
-            {
-              id: 1,
-              editable: true,
-              body: 'Hello world!'
-            }
-          ]
-        });
-
-        $httpBackend.flush();
-        expect(controller.learningQuestions.length).toEqual(1);
-      });
-
-      it('does not emit a change event if the entity is not editable', function() {
-        $httpBackend.expect('GET', '/v1/assessments/1/learning_questions').respond(200, {
-          learning_questions: [
-            {
-              id: 1,
-              editable: true,
-              body: 'Hello world!'
-            }
-          ]
-        });
-        var invoked = false;
-        spyOn($window, 'confirm').and.returnValue(false);
-        $httpBackend.when('DELETE', '/v1/assessments/1/learning_questions/1').respond(function() {
-          invoked = true;
-          return {400: []};
-        });
-        controller.deleteLearningQuestion({id: 1, editable: false});
-
-        $httpBackend.flush();
-        expect(invoked).toBe(false);
-      });
-
-      it('does not emit a change event if the user does not delete the entity', function() {
-        $httpBackend.expect('GET', '/v1/assessments/1/learning_questions').respond(200, {
-          learning_questions: [
-            {
-              id: 1,
-              editable: true,
-              body: 'Hello world!'
-            }
-          ]
-        });
-        var invoked = false;
-        spyOn($window, 'confirm').and.returnValue(false);
-        $httpBackend.when('DELETE', '/v1/assessments/1/learning_questions/1').respond(function() {
-          invoked = true;
-          return {400: []};
-        });
-        controller.deleteLearningQuestion({id: 1, editable: true});
-
-        $httpBackend.flush();
-        expect(invoked).toBe(false);
-      });
-
-      it('emits a change event if the user deletes the entity', function() {
-        $httpBackend.expect('GET', '/v1/assessments/1/learning_questions').respond(200, {
-          learning_questions: [
-            {
-              id: 1,
-              editable: true,
-              body: 'Hello world!'
-            }
-          ]
-        });
-        spyOn($window, 'confirm').and.returnValue(true);
-        spyOn($scope, '$emit');
-        $httpBackend.expect('DELETE', '/v1/assessments/1/learning_questions/1').respond({204: {}});
-        controller.deleteLearningQuestion({id: 1, editable: true});
-
-        $httpBackend.flush();
-        expect($scope.$emit).toHaveBeenCalledWith('learning-question-change');
-      });
-
-      it('does not emit a change event if the model is not updatable', function() {
-        $httpBackend.expect('GET', '/v1/assessments/1/learning_questions').respond(200, {
-          learning_questions: [
-            {
-              id: 1,
-              editable: true,
-              body: 'Hello world!'
-            }
-          ]
-        });
-
-        spyOn($scope, '$emit');
-        controller.updateLearningQuestion({id: 1, editable: false, body: 'Hello world!'});
-
-        expect($scope.$emit).not.toHaveBeenCalled();
-      });
-
-      it('emits a change event if the model is successfully updated', function() {
-        $httpBackend.expect('GET', '/v1/assessments/1/learning_questions').respond(200, {
-          learning_questions: [
-            {
-              id: 1,
-              editable: true,
-              body: 'Hello world!'
-            }
-          ]
-        });
-
-        spyOn($scope, '$emit');
-        $httpBackend.expect('PATCH', '/v1/assessments/1/learning_questions/1').respond({200: {}});
-
-        controller.updateLearningQuestion({id: 1, editable: true, body: 'Hello world!'});
-        $httpBackend.flush();
-
-        expect($scope.$emit).toHaveBeenCalledWith('learning-question-change');
-      });
-
-      it('emits a change event if the model is not successfully updated', function() {
-        $httpBackend.expect('GET', '/v1/assessments/1/learning_questions').respond(200, {
-          learning_questions: [
-            {
-              id: 1,
-              editable: true,
-              body: 'Hello world!'
-            }
-          ]
-        });
-
-        spyOn($scope, '$emit');
-        $httpBackend.when('PATCH', '/v1/assessments/1/learning_questions/1').respond(400);
-
-        controller.updateLearningQuestion({id: 1, editable: true, body: 'Hello world!'});
-        $httpBackend.flush();
-
-        expect($scope.$emit).toHaveBeenCalledWith('learning-question-change');
       });
     });
 
+    describe('on initialization', function() {
 
-    describe('when the state parameter matches :assessment_id', function() {
-      var controller,
-          LearningQuestion,
-          $scope,
-          $window,
-          $httpBackend;
+      it('invokes sets the context on the service', function() {
+        expect(LearningQuestionService.context).toEqual('testContextPrime');
+      });
 
-      beforeEach(function() {
-        module('PDRClient');
-        inject(function($injector, $controller, $rootScope) {
-          LearningQuestion = $injector.get('AssessmentLearningQuestion');
-          $scope = $rootScope.$new(true);
-          $httpBackend = $injector.get('$httpBackend');
-          $window = $injector.get('$window');
+      it('loads the questions via the service', function() {
+        expect(LearningQuestionService.loadQuestions).toHaveBeenCalled();
+      });
+    });
 
-          controller = $controller('LearningQuestionListDisplayCtrl', {
-            $scope: $scope,
-            $stateParams: {id: 12},
-            LearningQuestion: LearningQuestion,
-            $window: $window
+    describe('#deleteLearningQuestion', function() {
+      describe('when the entity is not editable', function() {
+        beforeEach(function() {
+          spyOn(LearningQuestionService, 'deleteLearningQuestion').and.returnValue($q.reject('no'));
+          spyOn($window, 'confirm');
+          controller.deleteLearningQuestion({editable: false});
+        });
+
+        it('does not prompt the user', function() {
+          expect($window.confirm).not.toHaveBeenCalled();
+        });
+
+        it('does not make a request to delete the model', function() {
+          expect(LearningQuestionService.deleteLearningQuestion).not.toHaveBeenCalled();
+        });
+      });
+
+      describe('when the entity is editable', function() {
+        var model = {editable: true};
+
+        describe('when deletion is cancelled by the user', function() {
+          beforeEach(function() {
+            spyOn(LearningQuestionService, 'deleteLearningQuestion').and.returnValue($q.reject('no'));
+            spyOn($window, 'confirm').and.returnValue(false);
+
+            controller.deleteLearningQuestion(model);
+          });
+
+          it('does prompt the user', function() {
+            expect($window.confirm).toHaveBeenCalled();
+          });
+
+          it('does not make a request to delete the model', function() {
+            expect(LearningQuestionService.deleteLearningQuestion).not.toHaveBeenCalled();
+          });
+        });
+
+        describe('when deletion is accepted by the user', function() {
+          var $rootScope;
+
+          beforeEach(inject(function(_$rootScope_) {
+            $rootScope = _$rootScope_;
+            spyOn($window, 'confirm').and.returnValue(true);
+          }));
+
+          describe('when the request is successful', function() {
+            beforeEach(function() {
+              spyOn(LearningQuestionService, 'deleteLearningQuestion').and.returnValue($q.when());
+              controller.deleteLearningQuestion(model);
+              $rootScope.$apply();
+            });
+
+            it('does prompt the user', function() {
+              expect($window.confirm).toHaveBeenCalled();
+            });
+
+            it('makes a request to delete the model', function() {
+              expect(LearningQuestionService.deleteLearningQuestion).toHaveBeenCalled();
+            });
+
+            it('reloads the questions list', function() {
+              // Since we call this method once on initialization, and expect it to be called here too,
+              // we expect 2 as its total call count.
+              expect(LearningQuestionService.loadQuestions.calls.count()).toEqual(2);
+            });
+          });
+
+          describe('when the request is unsuccessful', function() {
+            beforeEach(function() {
+              spyOn(LearningQuestionService, 'deleteLearningQuestion').and.returnValue($q.reject('no'));
+              controller.deleteLearningQuestion(model);
+              $rootScope.$apply();
+            });
+
+            it('does prompt the user', function() {
+              expect($window.confirm).toHaveBeenCalled();
+            });
+
+            it('makes a request to delete the model', function() {
+              expect(LearningQuestionService.deleteLearningQuestion).toHaveBeenCalled();
+            });
+
+            it('does not reload the questions list', function() {
+              // Since we call this method once on initialization, and don't expect it to be called here,
+              // we expect 1 as its total call count.
+              expect(LearningQuestionService.loadQuestions.calls.count()).toEqual(1);
+            });
           });
         });
       });
+    });
 
-      afterEach(function() {
-        $httpBackend.verifyNoOutstandingExpectation();
-        $httpBackend.resetExpectations();
-      });
-
-      it('refers to :assessment_id if it is available', function() {
-
-        $httpBackend.expect('GET', '/v1/assessments/12/learning_questions').respond(200, {
-          learning_questions: [
-            {
-              id: 12,
-              editable: true,
-              body: 'Hello world!'
-            }
-          ]
+    describe('#updateLearningQuestion', function() {
+      describe('when the entity is not editable', function() {
+        beforeEach(function() {
+          spyOn(LearningQuestionService, 'updateLearningQuestion').and.returnValue($q.reject('no'));
+          spyOn($window, 'confirm');
+          controller.updateLearningQuestion({editable: false});
         });
 
-        $httpBackend.flush();
-        expect(controller.learningQuestions.length).toEqual(1);
+        it('does not prompt the user', function() {
+          expect($window.confirm).not.toHaveBeenCalled();
+        });
+
+        it('does not make a request to update the model', function() {
+          expect(LearningQuestionService.updateLearningQuestion).not.toHaveBeenCalled();
+        });
+      });
+
+      describe('when the entity is editable', function() {
+        var model = {editable: true};
+        var $rootScope;
+
+        beforeEach(function() {
+          inject(function(_$rootScope_) {
+            $rootScope = _$rootScope_;
+          });
+          spyOn($window, 'confirm').and.returnValue(true);
+        });
+
+        describe('when the request is successful', function() {
+          beforeEach(function() {
+            spyOn(LearningQuestionService, 'updateLearningQuestion').and.returnValue($q.when({}));
+            controller.updateLearningQuestion(model);
+            $rootScope.$apply();
+          });
+
+          it('loads in the list of questions from the service', function() {
+            expect(LearningQuestionService.loadQuestions.calls.count()).toEqual(2);
+          });
+        });
+
+        describe('when the request is unsuccessful', function() {
+          beforeEach(function() {
+            spyOn(LearningQuestionService, 'updateLearningQuestion').and.returnValue($q.reject('no'));
+            controller.updateLearningQuestion(model);
+            $rootScope.$apply();
+          });
+
+          it('loads in the list of questions from the service', function() {
+            expect(LearningQuestionService.loadQuestions.calls.count()).toEqual(2);
+          });
+        });
+      });
+    });
+
+    describe('#validate', function() {
+      beforeEach(function() {
+        spyOn(LearningQuestionService, 'validate');
+        controller.validate('foo');
+      });
+
+      it('delegates to LearningQuestionService#validate', function() {
+        expect(LearningQuestionService.validate).toHaveBeenCalledWith('foo');
       });
     });
   });

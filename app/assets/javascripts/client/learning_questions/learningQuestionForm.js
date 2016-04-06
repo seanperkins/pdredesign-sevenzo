@@ -9,9 +9,12 @@
       restrict: 'E',
       templateUrl: 'client/learning_questions/form.html',
       replace: true,
+      scope: {
+        context: '@'
+      },
       controller: 'LearningQuestionFormCtrl',
       controllerAs: 'learningQuestionForm',
       transclude: true
-    }
+    };
   }
 })();
