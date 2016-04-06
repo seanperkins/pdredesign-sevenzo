@@ -61,6 +61,7 @@
         <!-- <add-inventory-users-link inventory-id="entity.id"></add-inventory-users-link> -->
         <!-- <manage-inventory-permissions-link inventory-id="entity.id"></manage-inventory-permissions-link> -->
         <!-- <invite-inventory-user-link inventory-id="entity.id"></invite-inventory-user-link> -->
+        <product-entry ng-if="isAssessment === 'false'" inventory="entity"></product-entry>
       </div>
       <div class="meeting" ng-if="isAssessment === 'true'">
         <span class='category'>Meeting</span>
