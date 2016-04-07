@@ -8,6 +8,7 @@
       vm.modal = $modal.open({
         templateUrl: 'client/inventories/manage_inventory_permissions_modal.html',
         scope: $scope,
+        size: 'lg',
         windowClass: 'request-access-window'
       });
     };
