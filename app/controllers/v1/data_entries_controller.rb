@@ -52,7 +52,7 @@ class V1::DataEntriesController < ApplicationController
   def data_entry_params
     params.permit(
       general_data_question_attributes: [
-        :subcategory,
+        :data_type,
         :point_of_contact_name,
         :point_of_contact_department,
         :data_capture
