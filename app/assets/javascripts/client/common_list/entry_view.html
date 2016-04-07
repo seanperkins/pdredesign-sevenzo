@@ -30,11 +30,9 @@
       <div class="disable-entry details"
            ng-class="entry.activeAssessmentLink(entity)"
            ng-click="entry.gotoLocation(entry.responseLink(entity))">
-        <a ng-href="#/inventories/{{entity.id}}/edit">
-          <h3 class='name'>{{entity.name}}
-            <i ng-hide="entity.has_access" class="fa fa-lock"></i>
-          </h3>
-        </a>
+        <h3 class='name'>{{entity.name}}
+          <i ng-hide="entity.has_access" class="fa fa-lock"></i>
+        </h3>
         <small>Facilitated by: {{entity.facilitator.full_name}}</small>
       </div>
       <div class="links" ng-if="isAssessment === 'true'">
