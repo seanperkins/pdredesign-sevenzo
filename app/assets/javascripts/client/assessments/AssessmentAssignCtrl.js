@@ -33,11 +33,7 @@
         .$promise
         .then(function(assessment) {
           $scope.assessment = assessment;
-          angular.forEach($scope.user.districts, function(district) {
-            if (assessment.district_id === district.id) {
-              $scope.district = district;
-            }
-          });
+          $scope.district = CreateService.extractCurrentDistrict($scope.user, $scope.assessment);
         });
     };
 

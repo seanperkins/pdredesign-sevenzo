@@ -17,6 +17,17 @@
       this.district = district;
     };
 
+    this.extractCurrentDistrict = function(user, entity) {
+      var result = user.districts[0];
+      for(var i = 0; i < user.districts.length; i++) {
+        if (entity.district_id === user.districts[i].id) {
+          result = user.districts[i];
+          break;
+        }
+      }
+      return result;
+    };
+
     this.setContext = function(context) {
       this.context = context;
     };

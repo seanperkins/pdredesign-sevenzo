@@ -19,7 +19,7 @@
     CreateService.setContext('inventory');
     vm.user = SessionService.getCurrentUser();
     vm.alerts = [];
-    vm.district = vm.user.districts[0];
+    vm.district = CreateService.extractCurrentDistrict(vm.user, current_inventory);
 
     vm.currentInventory = current_inventory;
 
