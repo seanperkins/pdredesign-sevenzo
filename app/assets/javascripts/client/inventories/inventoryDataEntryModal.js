@@ -15,7 +15,12 @@
       },
       templateUrl: 'client/inventories/inventory_data_entry_modal.html',
       controller: 'InventoryDataEntryModalCtrl',
-      controllerAs: 'inventoryDataEntryModal'
+      controllerAs: 'inventoryDataEntryModal',
+      link: inventoryDataEntryModalLink
     }
+  }
+
+  function inventoryDataEntryModalLink (scope, element, attributes, controller) {
+    controller.updateData();
   }
 })();

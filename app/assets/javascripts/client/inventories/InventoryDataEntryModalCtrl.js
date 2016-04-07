@@ -17,7 +17,14 @@
       $scope.$emit('close-inventory-data-entry-modal');
     };
 
-    vm.constants = ConstantsService.constants;
+    vm.updateData = function () {
+      return vm.updateConstants();
+    };
+
+    vm.updateConstants = function () {
+      return ConstantsService.get('data_entry')
+          .then(function () { vm.constants = ConstantsService.constants; });
+    };
 
     vm.inventory = $scope.inventory;
 
