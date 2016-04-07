@@ -53,6 +53,7 @@
           SessionService: SessionService,
           CreateService: CreateService
         });
+        CreateService.context = 'assessment';
       }));
 
       it('delegates to CreateService#saveAssessment', function() {
@@ -69,6 +70,7 @@
           SessionService: SessionService,
           CreateService: CreateService
         });
+        CreateService.context = 'assessment';
       }));
 
       it('delegates to CreateService#assignAndSaveAssesssment', function() {

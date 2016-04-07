@@ -31,7 +31,7 @@
             <textarea placeholder="Add a note (optional)" redactor ng-model="model.message"></textarea>
           </div>
 
-          <h3>Please complete this assessment by {{inviteMessage.formattedDate(model.due_date)}}.</h3>
+          <h3>Please complete this {{ inviteMessage.getToolName() }} by {{inviteMessage.formattedDate(model.due_date)}}.</h3>
           <p>
             PDredesign is a community of educators and designers committed to continuously improving professional
             development systems to better support teachers. Alongside leaders from classrooms, schools, charters,
