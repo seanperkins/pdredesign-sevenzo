@@ -17,6 +17,9 @@
       },
       'create': {
         method: 'POST'
+      },
+      'save': {
+        method: 'PUT'
       }
     };
 

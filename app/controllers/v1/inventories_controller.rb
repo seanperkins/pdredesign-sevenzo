@@ -16,6 +16,7 @@ class V1::InventoriesController < ApplicationController
 
   def create
     @inventory = Inventory.new
+    authorize_action_for @inventory
     @inventory.name = inventory_params[:name]
     unless inventory_params[:deadline].blank?
       begin
@@ -29,6 +30,18 @@ class V1::InventoriesController < ApplicationController
     @inventory.owner = current_user
     if @inventory.save
       render template: 'v1/inventories/show'
+    else
+      render_error
+    end
+  end
+
+  def update
+    @inventory = Inventory.find(params[:id])
+    authorize_action_for @inventory
+
+    saved = @inventory.update(inventory_params)
+    if saved
+      render nothing: true
     else
       render_error
     end

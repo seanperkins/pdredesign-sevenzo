@@ -115,7 +115,7 @@
         inventory.assign = true;
       }
 
-      return Inventory.save({inventory_id: inventory.id}, inventory)
+      return Inventory.save({inventory_id: inventory.id}, {inventory: inventory})
           .$promise
           .then(function() {
             service.toggleSavingState();
