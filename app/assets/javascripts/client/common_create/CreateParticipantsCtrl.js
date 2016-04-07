@@ -22,6 +22,14 @@
       return SessionService.isNetworkPartner();
     };
 
+    vm.displayToolType = function() {
+      if (CreateService.context === 'assessment') {
+        return 'Readiness Assessment';
+      } else if (CreateService.context === 'inventory') {
+        return 'Data & Tech Inventory';
+      }
+    };
+
     vm.removeParticipant = function(user) {
       Participant
           .delete({assessment_id: $stateParams.id, id: user.participant_id}, {user_id: user.id})
