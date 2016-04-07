@@ -25,6 +25,8 @@
 //= require angular-moment
 //= require angular-file-upload
 //= require angular-shims-placeholder
+//= require datatables
+//= require angular-datatables
 //= require bootstrap-datetimepicker
 //= require jquery.tablednd
 //= require highcharts
