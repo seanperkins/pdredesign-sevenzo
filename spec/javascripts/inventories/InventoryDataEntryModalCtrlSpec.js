@@ -1,7 +1,7 @@
 (function() {
   'use strict';
 
-  describe('Controller: DataEntryModal', function() {
+  describe('Controller: InventoryDataEntryModal', function() {
     var subject,
         $scope,
         DataEntry,
@@ -37,7 +37,7 @@
 
       it('creates a DataEntry', function() {
         inject(function(_$rootScope_, _$controller_, $injector) {
-          subject = _$controller_('DataEntryModalCtrl', {
+          subject = _$controller_('InventoryDataEntryModalCtrl', {
             $scope: $scope,
             DataEntry: DataEntry,
             ConstantsService: ConstantsService
@@ -67,7 +67,7 @@
             data_access_question: {}
           }
 
-          subject = _$controller_('DataEntryModalCtrl', {
+          subject = _$controller_('InventoryDataEntryModalCtrl', {
             $scope: $scope,
             DataEntry: DataEntry,
             ConstantsService: ConstantsService
@@ -91,7 +91,7 @@
 
       it('closes the modal', function() {
         inject(function(_$rootScope_, _$controller_, $injector) {
-          subject = _$controller_('DataEntryModalCtrl', {
+          subject = _$controller_('InventoryDataEntryModalCtrl', {
             $scope: $scope,
             DataEntry: DataEntry,
             ConstantsService: ConstantsService

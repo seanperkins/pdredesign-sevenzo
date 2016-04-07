@@ -2,19 +2,19 @@
   'use strict';
 
   angular.module('PDRClient')
-      .controller('DataEntryModalCtrl', DataEntryModalCtrl);
+      .controller('InventoryDataEntryModalCtrl', InventoryDataEntryModalCtrl);
 
-  DataEntryModalCtrl.$inject = [
+  InventoryDataEntryModalCtrl.$inject = [
     '$scope',
     'DataEntry',
     'ConstantsService'
   ];
 
-  function DataEntryModalCtrl($scope, DataEntry, ConstantsService) {
+  function InventoryDataEntryModalCtrl($scope, DataEntry, ConstantsService) {
     var vm = this;
 
     vm.closeModal = function() {
-      $scope.$emit('close-data-entry-modal');
+      $scope.$emit('close-inventory-data-entry-modal');
     };
 
     vm.constants = ConstantsService.constants;

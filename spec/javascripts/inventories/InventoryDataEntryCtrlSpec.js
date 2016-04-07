@@ -1,7 +1,7 @@
 (function() {
   'use strict';
 
-  describe('Controller: DataEntry', function() {
+  describe('Controller: InventoryDataEntry', function() {
     var subject,
         $scope,
         $modal;
@@ -11,28 +11,28 @@
       inject(function(_$controller_, _$rootScope_, _$modal_) {
         $scope = _$rootScope_.$new(true);
         $modal = _$modal_;
-        subject = _$controller_('DataEntryCtrl', {
+        subject = _$controller_('InventoryDataEntryCtrl', {
           $scope: $scope,
           $modal: $modal
         });
       });
     });
 
-    describe('#showDataEntryModal', function() {
+    describe('#showInventoryDataEntryModal', function() {
       beforeEach(function() {
         spyOn($modal, 'open');
       });
 
       it('creates a modal with the right parameters', function() {
-        subject.showDataEntryModal();
+        subject.showInventoryDataEntryModal();
         expect($modal.open).toHaveBeenCalledWith({
-          template: '<data-entry-modal inventory="inventory" resource="resource"></data-entry-modal>',
+          template: '<inventory-data-entry-modal inventory="inventory" resource="resource"></inventory-data-entry-modal>',
           scope: $scope
         });
       });
     });
 
-    describe('$on: close-data-entry-modal', function() {
+    describe('$on: close-inventory-data-entry-modal', function() {
       var modalInstanceSpy = jasmine.createSpy('modalInstance');
       var $rootScope;
       beforeEach(function() {
@@ -43,7 +43,7 @@
       });
 
       it('invokes the dismiss functionality', function() {
-        $rootScope.$broadcast('close-data-entry-modal');
+        $rootScope.$broadcast('close-inventory-data-entry-modal');
         expect(modalInstanceSpy).toHaveBeenCalledWith('cancel');
       });
     });
