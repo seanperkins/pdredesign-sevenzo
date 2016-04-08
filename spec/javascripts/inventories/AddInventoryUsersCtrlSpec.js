@@ -1,58 +1,63 @@
 (function() {
   'use strict';
+
   describe('Controller: AddInventoryUsers', function() {
-    var $httpBackend,
-        $stateParams,
+    var $q,
+        $scope,
+        $rootScope,
+        CreateService,
         subject;
 
     beforeEach(function() {
       module('PDRClient');
-      inject(function($injector, $controller) {
-        $httpBackend = $injector.get('$httpBackend');
-        $stateParams = {id: 4};
-
-        subject = $controller('AddInventoryUsersCtrl', {
-          $stateParams: $stateParams
-        });
-
-        $httpBackend.when('GET', '/v1/inventories/4/invitables').respond([]);
+      inject(function(_$q_, _$controller_, _$rootScope_, $injector) {
+        $q = _$q_;
+        $rootScope = _$rootScope_;
+        $scope = _$rootScope_.$new(true);
+        CreateService = $injector.get('CreateService');
       });
     });
 
-    it('retrieves initial invitables', function() {
-      $httpBackend.expectGET('/v1/inventories/4/invitables').respond([]);
-      expect($httpBackend.flush).not.toThrow();
-    });
-
-    describe('#addUser', function() {
-      var $rootScope,
-          $q,
-          InventoryParticipant;
-
+    describe('on initialization', function() {
       beforeEach(function() {
-        inject(function(_$rootScope_, _$q_, $injector) {
-          $rootScope = _$rootScope_;
-          $q = _$q_;
-          InventoryParticipant = $injector.get('InventoryParticipant');
+        spyOn(CreateService, 'updateInvitableParticipantList').and.returnValue($q.when({}));
+
+        inject(function(_$controller_) {
+          subject = _$controller_('AddInventoryUsersCtrl', {
+            $scope: $scope,
+            CreateService: CreateService
+          });
         });
 
-        spyOn(subject, 'loadInvitables').and.callThrough();
-        spyOn(InventoryParticipant, 'create').and.callFake(function() {
-          var deferred = $q.defer();
-          deferred.resolve();
-          return {$promise: deferred.promise};
-        });
-
-        subject.addUser({id: 50});
         $rootScope.$apply();
       });
 
+      it('retrieves initial invitables', function() {
+        expect(CreateService.updateInvitableParticipantList).toHaveBeenCalled();
+      });
+    });
+
+    describe('#addUser', function() {
+      beforeEach(function() {
+        spyOn(CreateService, 'createParticipant').and.returnValue($q.when({}));
+        spyOn(CreateService, 'updateInvitableParticipantList').and.returnValue($q.when({}));
+        inject(function(_$controller_) {
+          subject = _$controller_('AddInventoryUsersCtrl', {
+            $scope: $scope,
+            CreateService: CreateService
+          });
+        });
+
+        $rootScope.$apply();
+        subject.addUser({id: 50});
+      });
+
       it('creates participant', function() {
-        expect(InventoryParticipant.create).toHaveBeenCalledWith({inventory_id: 4}, {user_id: 50});
+        expect(CreateService.createParticipant).toHaveBeenCalledWith({id: 50});
       });
 
       it('reloads participants', function() {
-        expect(subject.loadInvitables).toHaveBeenCalled();
+        expect(CreateService.updateInvitableParticipantList.calls.count()).toEqual(1);
       });
     });
   });

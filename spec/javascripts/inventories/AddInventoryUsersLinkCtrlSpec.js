@@ -6,14 +6,14 @@
         $scope,
         $q,
         $stateParams,
-        InventoryInvitable;
+        InventoryParticipant;
 
     beforeEach(function() {
       module('PDRClient');
       inject(function($injector, $controller, $rootScope) {
         $scope = $rootScope.$new(true);
-        InventoryInvitable = $injector.get('InventoryInvitable');
-        spyOn(InventoryInvitable, 'list').and.callFake(function() {
+        InventoryParticipant = $injector.get('InventoryParticipant');
+        spyOn(InventoryParticipant, 'all').and.callFake(function() {
           var deferred = $q.defer();
           deferred.resolve([{}, {}]);
           return { $promise: deferred.promise };
@@ -36,7 +36,7 @@
       });
 
       it('loads invitables user for the inventory', function() {
-        expect(InventoryInvitable.list).toHaveBeenCalledWith({ inventory_id: 4});
+        expect(InventoryParticipant.all).toHaveBeenCalledWith({inventory_id: 4});
       });
 
       it('sets invitables', function() {

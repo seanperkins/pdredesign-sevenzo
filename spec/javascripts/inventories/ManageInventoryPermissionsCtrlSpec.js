@@ -10,7 +10,6 @@
         InventoryPermission = $injector.get('InventoryPermission');
         $q = $injector.get('$q');
 
-        $scope.inventoryId = 4
 
         spyOn(InventoryPermission, 'list').and.callFake(function(query, params) {
           var deferred = $q.defer();
@@ -25,7 +24,8 @@
         });
 
         subject = $controller('ManageInventoryPermissionsCtrl', {
-          $scope: $scope
+          $scope: $scope,
+          $stateParams: {id: 4}
         });
       })
     });

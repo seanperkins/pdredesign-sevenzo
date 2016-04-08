@@ -20,13 +20,13 @@
           });
     };
 
-    vm.loadInvitables();
-
     vm.addUser = function(user) {
       CreateService.createParticipant(user)
           .then(function() {
             vm.loadInvitables();
           });
     };
+
+    vm.loadInvitables();
   }
 })();

@@ -32,7 +32,7 @@
       <p class='wizard-instruction'> Each participant will receive an email invite. You can customize the email message
         here.</p>
     </div>
-    <invite-message model="inventoryAssign.currentInventory" district="district"></invite-message>
+    <invite-message model="inventoryAssign.currentInventory" district="inventoryAssign.district"></invite-message>
   </div>
   <div class='row row-wizard'>
     <div class='col-md-2'>
@@ -46,7 +46,7 @@
   <div class="row row-wizard">
     <div class="col-md-10 col-md-offset-2">
       <button class="btn btn-primary send-btn btn-lg pull-right" name="commit" type="submit" id="assign_assessment"
-              ng-click='inventoryAssign.assignAndSave(model)'>
+              ng-click='inventoryAssign.assignAndSave(inventoryAssign.currentInventory)'>
         <i class="fa fa-spinner fa-spin" ng-show="saving"></i>
         <i class="fa fa-envelope-o"></i> Send Invitation
       </button>
