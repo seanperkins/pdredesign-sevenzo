@@ -1,7 +1,13 @@
 (function() {
   'use strict';
-  angular.module('PDRClient').controller('InviteInventoryUserLinkCtrl', InviteInventoryUserLinkCtrl); 
-  InviteInventoryUserLinkCtrl.$inject = ['$modal', '$scope'];
+
+  angular.module('PDRClient')
+      .controller('InviteInventoryUserLinkCtrl', InviteInventoryUserLinkCtrl);
+
+  InviteInventoryUserLinkCtrl.$inject = [
+    '$modal',
+    '$scope'
+  ];
 
   function InviteInventoryUserLinkCtrl($modal, $scope) {
     var vm = this;
@@ -12,9 +18,11 @@
         windowClass: 'request-access-window'
       });
     };
+
     vm.close = function() {
       vm.modal.dismiss();
     };
+    
     $scope.$on('invite-sent', function() {
       vm.close();
     });
