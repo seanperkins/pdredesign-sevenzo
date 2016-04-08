@@ -15,7 +15,7 @@
   function CreateParticipantsCtrl($stateParams, $scope, SessionService, Participant, CreateService) {
     var vm = this;
 
-    vm.participants = Participant.query({assessment_id: $stateParams.id});
+    vm.participants = CreateService.loadParticipants();
     vm.user = SessionService.getCurrentUser();
 
     // Expose context for view
@@ -34,29 +34,25 @@
     };
 
     vm.removeParticipant = function(user) {
-      Participant
-          .delete({assessment_id: $stateParams.id, id: user.participant_id}, {user_id: user.id})
-          .$promise
+      CreateService.removeParticipant(user)
           .then(function() {
             vm.updateParticipantsList();
           });
     };
 
     vm.updateParticipantsList = function() {
-      Participant.query({assessment_id: $stateParams.id})
-          .$promise
+      CreateService.updateParticipantList()
           .then(function(data) {
             vm.participants = data;
           }, function() {
             CreateService.emitError('Could not update participants list');
           });
 
-      Participant.all({assessment_id: $stateParams.id})
-          .$promise
+      CreateService.updateInvitableParticipantList()
           .then(function(data) {
             vm.invitableParticipants = data;
           }, function() {
-            CreateService.emitError('Could not update participants list');
+            CreateService.emitError('Could not update invitable participants list');
           });
     };
 

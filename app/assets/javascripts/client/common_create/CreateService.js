@@ -6,11 +6,14 @@
   CreateService.$inject = [
     '$window',
     '$location',
+    '$stateParams',
     'Assessment',
-    'Inventory'
+    'Inventory',
+    'Participant',
+    'InventoryParticipant'
   ];
 
-  function CreateService($window, $location, Assessment, Inventory) {
+  function CreateService($window, $location, $stateParams, Assessment, Inventory, Participant, InventoryParticipant) {
     var service = this;
 
     this.loadDistrict = function(district) {
@@ -19,7 +22,7 @@
 
     this.extractCurrentDistrict = function(user, entity) {
       var result = user.districts[0];
-      for(var i = 0; i < user.districts.length; i++) {
+      for (var i = 0; i < user.districts.length; i++) {
         if (entity.district_id === user.districts[i].id) {
           result = user.districts[i];
           break;
@@ -135,6 +138,48 @@
             service.toggleSavingState();
             service.emitError('Could not save inventory');
           });
+    };
+
+    this.loadParticipants = function() {
+      if (service.context === 'assessment') {
+        return Participant.query({assessment_id: $stateParams.id});
+      } else if (service.context === 'inventory') {
+        return InventoryParticipant.query({inventory_id: $stateParams.id});
+      }
+    };
+
+    this.removeParticipant = function(participant) {
+      if (service.context === 'assessment') {
+        return Participant.delete({
+          assessment_id: $stateParams.id,
+          id: participant.participant_id
+        }, {user_id: participant.id}).$promise;
+      } else if (service.context === 'inventory') {
+        return InventoryParticipant.delete({
+          inventory_id: $stateParams.id,
+          id: participant.participant_id
+        }).$promise;
+      }
+    };
+
+    this.updateParticipantList = function() {
+      if (service.context === 'assessment') {
+        return Participant.query({assessment_id: $stateParams.id})
+            .$promise;
+      } else if (service.context === 'inventory') {
+        return InventoryParticipant.query({inventory_id: $stateParams.id})
+            .$promise;
+      }
+    };
+
+    this.updateInvitableParticipantList = function() {
+      if (service.context === 'assessment') {
+        return Participant.all({assessment_id: $stateParams.id})
+            .$promise;
+      } else if (service.context === 'inventory') {
+        return InventoryParticipant.all({inventory_id: $stateParams.id})
+            .$promise;
+      }
     };
   }
 })();

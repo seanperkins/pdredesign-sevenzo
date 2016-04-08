@@ -6,15 +6,14 @@
 
   AddInventoryUsersCtrl.$inject = [
     '$stateParams',
-    'InventoryInvitable',
     'InventoryParticipant'
   ];
 
-  function AddInventoryUsersCtrl($stateParams, InventoryInvitable, InventoryParticipant) {
+  function AddInventoryUsersCtrl($stateParams, InventoryParticipant) {
     var vm = this;
 
     vm.loadInvitables = function() {
-      vm.invitables = InventoryInvitable.list({inventory_id: $stateParams.id});
+      vm.invitables = InventoryParticipant.all({inventory_id: $stateParams.id});
     };
 
     vm.loadInvitables();
