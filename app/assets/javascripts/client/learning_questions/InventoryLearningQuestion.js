@@ -1,7 +1,12 @@
 (function() {
   'use strict';
   angular.module('PDRClient')
-      .factory('InventoryLearningQuestion', ['$resource', 'UrlService', inventoryLearningQuestionFactory]);
+      .factory('InventoryLearningQuestion', inventoryLearningQuestionFactory);
+
+  inventoryLearningQuestionFactory.$inject = [
+    '$resource',
+    'UrlService'
+  ];
 
   function inventoryLearningQuestionFactory($resource, UrlService) {
     var methodOptions = {

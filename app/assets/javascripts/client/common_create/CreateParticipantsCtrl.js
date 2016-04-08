@@ -18,6 +18,9 @@
     vm.participants = Participant.query({assessment_id: $stateParams.id});
     vm.user = SessionService.getCurrentUser();
 
+    // Expose context for view
+    vm.currentContext = CreateService.context;
+
     vm.isNetworkPartner = function() {
       return SessionService.isNetworkPartner();
     };

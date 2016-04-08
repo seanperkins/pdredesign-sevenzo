@@ -391,7 +391,6 @@
 
       describe('when the load is successful', function() {
         beforeEach(function() {
-          spyOn($rootScope, '$broadcast').and.callThrough();
           spyOn(subject, 'performGetByContext').and.returnValue($q.when([1, 2, 3]));
 
           subject.loadQuestions();
@@ -399,21 +398,24 @@
         });
 
         it('broadcasts the result', function() {
-          expect($rootScope.$broadcast).toHaveBeenCalledWith('learning-questions-updated', [1, 2, 3]);
+          $rootScope.$on('learning-questions-updated', function(val) {
+            expect(val).toEqual([1, 2, 3]);
+          });
         });
       });
 
       describe('when the load is unsuccessful', function() {
+        var broadcastSpy = jasmine.createSpy('broadcastSpy');
         beforeEach(function() {
-          spyOn($rootScope, '$broadcast').and.callThrough();
           spyOn(subject, 'performGetByContext').and.returnValue($q.reject('nope'));
+          $rootScope.$on('learning-questions-updated', broadcastSpy);
 
           subject.loadQuestions();
           $rootScope.$apply();
         });
 
         it('does not broadcast the result', function() {
-          expect($rootScope.$broadcast).not.toHaveBeenCalledWith('learning-questions-updated', 'nope');
+          expect(broadcastSpy).not.toHaveBeenCalled();
         });
       });
     });

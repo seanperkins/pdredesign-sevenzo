@@ -11,3 +11,4 @@ json.created_at inventory.created_at
 json.updated_at inventory.updated_at
 json.status 'draft'
 json.has_access inventory.member?(user: current_user) || inventory.owner == current_user
+json.participant_count inventory.members.count

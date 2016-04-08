@@ -1,24 +1,31 @@
 (function() {
   'use strict';
+
   describe('Controller: AddInventoryUsersLink', function() {
-    var $scope, subject, $q, InventoryInvitable;
+    var subject,
+        $scope,
+        $q,
+        $stateParams,
+        InventoryInvitable;
 
     beforeEach(function() {
       module('PDRClient');
       inject(function($injector, $controller, $rootScope) {
         $scope = $rootScope.$new(true);
         InventoryInvitable = $injector.get('InventoryInvitable');
-        spyOn(InventoryInvitable, 'list').and.callFake(function(query, params) {
+        spyOn(InventoryInvitable, 'list').and.callFake(function() {
           var deferred = $q.defer();
           deferred.resolve([{}, {}]);
           return { $promise: deferred.promise };
         });
+
         $q = $injector.get('$q');
 
-        $scope.inventoryId = 4
+        $stateParams = {id: 4};
 
         subject = $controller('AddInventoryUsersLinkCtrl', {
-          $scope: $scope
+          $scope: $scope,
+          $stateParams: $stateParams
         });
       });
     });
