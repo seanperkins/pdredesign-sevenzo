@@ -181,5 +181,13 @@
             .$promise;
       }
     };
+
+    this.createParticipant = function(user) {
+      if (service.context === 'inventory') {
+        return InventoryParticipant.create({
+          inventory_id: $stateParams.id
+        }, {user_id: user.id}).$promise;
+      }
+    };
   }
 })();

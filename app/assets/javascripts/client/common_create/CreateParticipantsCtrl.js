@@ -5,14 +5,12 @@
       .controller('CreateParticipantsCtrl', CreateParticipantsCtrl);
 
   CreateParticipantsCtrl.$inject = [
-    '$stateParams',
     '$scope',
     'SessionService',
-    'Participant',
     'CreateService'
   ];
 
-  function CreateParticipantsCtrl($stateParams, $scope, SessionService, Participant, CreateService) {
+  function CreateParticipantsCtrl($scope, SessionService, CreateService) {
     var vm = this;
 
     vm.participants = CreateService.loadParticipants();

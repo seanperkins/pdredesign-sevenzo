@@ -5,23 +5,25 @@
       .controller('AddInventoryUsersCtrl', AddInventoryUsersCtrl);
 
   AddInventoryUsersCtrl.$inject = [
-    '$stateParams',
-    'InventoryParticipant'
+    '$scope',
+    'CreateService'
   ];
 
-  function AddInventoryUsersCtrl($stateParams, InventoryParticipant) {
+  function AddInventoryUsersCtrl($scope, CreateService) {
     var vm = this;
 
     vm.loadInvitables = function() {
-      vm.invitables = InventoryParticipant.all({inventory_id: $stateParams.id});
+      CreateService.updateInvitableParticipantList()
+          .then(function(result) {
+            vm.invitables = result;
+            $scope.$emit('update_participants');
+          });
     };
 
     vm.loadInvitables();
 
     vm.addUser = function(user) {
-      InventoryParticipant
-          .create({inventory_id: $stateParams.id}, {user_id: user.id})
-          .$promise
+      CreateService.createParticipant(user)
           .then(function() {
             vm.loadInvitables();
           });
