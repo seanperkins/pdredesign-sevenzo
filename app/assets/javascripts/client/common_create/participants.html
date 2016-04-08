@@ -49,7 +49,8 @@
       <invite-inventory-user-link ng-if="createParticipants.currentContext === 'inventory'"></invite-inventory-user-link>
     </div>
     <div class="col-lg-12">
-      <manage-participants></manage-participants>
+      <manage-participants ng-if="createParticipants.currentContext === 'assessment'"></manage-participants>
+      <manage-inventory-permissions-link ng-if="createParticipants.currentContext === 'inventory'"></manage-inventory-permissions-link>
     </div>
   </div>
 </div>

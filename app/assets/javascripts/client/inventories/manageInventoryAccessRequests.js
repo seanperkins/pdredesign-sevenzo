@@ -6,9 +6,7 @@
   function manageInventoryAccessRequests() {
     return {
       restrict: 'E',
-      scope: {
-        inventoryId: '='
-      },
+      scope: {},
       templateUrl: 'client/inventories/manage_inventory_access_requests.html',
       controller: 'ManageInventoryAccessRequestsCtrl',
       controllerAs: 'manageInventoryAccessRequests',
