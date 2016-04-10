@@ -1,4 +1,4 @@
-<div id='inventory-data-entry-form-modal' class='container'>
+<div class='container modal-form'>
   <h1>Add Data Entry</h1>
   <button class='btn btn-link close-modal' ng-click='inventoryDataEntryModal.closeModal()'>&times;</button>
 
@@ -45,13 +45,13 @@
       </div>
     </div>
     <div class='row'>
-      <div class='col-sm-9'>
+      <div class='col-sm-6'>
         <div class='form-group'>
           <label for='data-entry-data-capture'>
             Data Capture
             <span class='field-info'>Is this data captured? If no, you may leave the remaining questions blank.</span>
           </label>
-          <div class='control-list inline'>
+          <div class='control-list'>
             <label ng-repeat='(id, name) in inventoryDataEntryModal.constants.data_entry.general_data_question.data_capture_options'>
               <fake-radio model='inventoryDataEntryModal.dataEntry.general_data_question.data_capture' value='{{name}}'></fake-radio>
               {{name}}
@@ -127,7 +127,7 @@
       </div>
     </div>
     <div class='row'>
-      <div class='col-sm-8'>
+      <div class='col-sm-12'>
         <div class='form-group'>
           <label for='data-entry-how-data-is-accessed'>
             How Data is Accessed
@@ -142,7 +142,7 @@
       </div>
     </div>
     <div class='row'>
-      <div class='col-sm-8'>
+      <div class='col-sm-12'>
         <div class='form-group'>
           <label for='data-entry-why-data-is-accessed'>
             Why Data is Accessed
@@ -157,7 +157,7 @@
       </div>
     </div>
     <div class='row'>
-      <div class='col-sm-8'>
+      <div class='col-sm-12'>
         <div class='form-group'>
           <label for='data-entry-notes'>
             Notes
