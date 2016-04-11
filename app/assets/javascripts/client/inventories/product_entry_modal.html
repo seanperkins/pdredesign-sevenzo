@@ -1,0 +1,326 @@
+<div id='product-entry-form-modal' class='container'>
+  <h1>Add Product Entry</h1>
+  <button class='btn btn-link close-modal' ng-click='productEntryModal.closeModal()'>&times;</button>
+
+  <hr>
+
+  <form name='form'>
+    <!-- GENERAL INVENTORY QUESTIONS -->
+    <div class='row'>
+      <div class='col-sm-6'>
+        <div class='form-group'>
+          <label for='product-entry-product-name'>Product Name</label>
+          <input
+              type='text'
+              class='form-control'
+              ng-model='productEntryModal.productEntry.general_inventory_question.product_name'
+              id='product-entry-product-name'>
+        </div>
+      </div>
+    </div>
+    <div class='row'>
+      <div class='col-sm-6'>
+        <div class='form-group'>
+          <label for='product-entry-vendor'>Vendor</label>
+          <input
+              type='text'
+              class='form-control'
+              ng-model='productEntryModal.productEntry.general_inventory_question.vendor'
+              id='product-entry-vendor'>
+        </div>
+      </div>
+    </div>
+    <div class='row'>
+      <div class='col-sm-6'>
+        <div class='form-group'>
+          <label for='product-entry-point-of-contact-name'>Point of Contact Name</label>
+          <input
+              type='text'
+              class='form-control'
+              ng-model='productEntryModal.productEntry.general_inventory_question.point_of_contact_name'
+              id='product-entry-point-of-contact-name'>
+        </div>
+      </div>
+    </div>
+    <div class='row'>
+      <div class='col-sm-6'>
+        <div class='form-group'>
+          <label for='product-entry-point-of-contact-department'>Point of Contact Department</label>
+          <input
+              type='text'
+              class='form-control'
+              ng-model='productEntryModal.productEntry.general_inventory_question.point_of_contact_department'
+              id='product-entry-point-of-contact-department'>
+        </div>
+      </div>
+    </div>
+    <div class='row'>
+      <div class='col-sm-6'>
+        <div class='form-group'>
+          <label for='product-entry-pricing-structure'>
+            Pricing Structure
+            <span class='field-info'>How is the pricing structured?</span>
+          </label>
+          <select 
+              class='form-control'
+              ng-model='productEntryModal.productEntry.general_inventory_question.pricing_structure'
+              ng-options='name for (id, name) in productEntryModal.constants.product_entry.general_inventory_question.pricing_structure_options'
+              id='product-entry-pricing-structure'></select>
+        </div>
+      </div>
+    </div>
+    <div class='row'>
+      <div class='col-sm-6'>
+        <div class='form-group'>
+          <label for='product-entry-price-in-cents'>
+            Price
+            <span class='field-info'>How much does the product cost? <em>Please do not use any thousands separators.</em></span>
+          </label>
+          <div class='input-group addon-left'>
+            <div class='input-group-addon'>$</div>
+            <input
+                type='text'
+                class='form-control'
+                float
+                dollars-into-cents
+                ng-model='productEntryModal.productEntry.general_inventory_question.price_in_cents'
+                id='product-entry-price-in-cents'>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class='row'>
+      <div class='col-sm-6'>
+        <div class='form-group'>
+          <label>
+            Type
+            <span class='field-info'>What type of product is it? Check all that apply.</span>
+          </label>
+          <div ng-repeat='selectedProductType in selectedProductTypes' class='control-list'>
+            <label>
+              <fake-checkbox model='selectedProductType.selected'></fake-checkbox>
+              {{selectedProductType.name}}
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class='row'>
+      <div class='col-sm-8'>
+        <div class='form-group'>
+          <label for='product-entry-purpose'>
+            Purpose
+            <span class='field-info'>What is the product currently being used for?</span>
+          </label>
+          <textarea
+              class='form-control'
+              ng-model='productEntryModal.productEntry.general_inventory_question.purpose'
+              id='product-entry-purpose'>
+          </textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- PRODUCT QUESTIONS -->
+    <div class='row'>
+      <div class='col-sm-6'>
+        <div class='form-group'>
+          <label>
+            How it's Assigned
+            <span class='field-info'>How is the product assigned to teachers?</span>
+          </label>
+          <div ng-repeat='selectedAssignmentApproach in selectedAssignmentApproaches' class='control-list'>
+            <label>
+              <fake-checkbox model='selectedAssignmentApproach.selected'></fake-checkbox>
+              {{selectedAssignmentApproach.name}}
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class='row'>
+      <div class='col-sm-6'>
+        <div class='form-group'>
+          <label>
+            How it's Used
+            <span class='field-info'>How is the product used by teachers?</span>
+          </label>
+          <div ng-repeat='selectedUsageFrequency in selectedUsageFrequencies' class='control-list'>
+            <label>
+              <fake-checkbox model='selectedUsageFrequency.selected'></fake-checkbox>
+              {{selectedUsageFrequency.name}}
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class='row'>
+      <div class='col-sm-6'>
+        <div class='form-group'>
+          <label>
+            How it's Accessed
+            <span class='field-info'>How is the product accessed by teachers?</span>
+          </label>
+          <div ng-repeat='selectedAccess in selectedAccesses' class='control-list'>
+            <label>
+              <fake-checkbox model='selectedAccess.selected'></fake-checkbox>
+              {{selectedAccess.name}}
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class='row'>
+      <div class='col-sm-6'>
+        <div class='form-group'>
+          <label>
+            Audience
+            <span class='field-info'>Who is the target audience for the product?</span>
+          </label>
+          <div ng-repeat='selectedAudienceType in selectedAudienceTypes' class='control-list'>
+            <label>
+              <fake-checkbox model='selectedAudienceType.selected'></fake-checkbox>
+              {{selectedAudienceType.name}}
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- USAGE QUESTIONS -->
+    <div class='row'>
+      <div class='col-sm-8'>
+        <div class='form-group'>
+          <label for='product-entry-school-usage'>
+            School Usage
+            <span class='field-info'>How many or which schools are using the product?</span>
+          </label>
+          <textarea
+              class='form-control'
+              ng-model='productEntryModal.productEntry.usage_question.school_usage'
+              id='product-entry-school-usage'>
+          </textarea>
+        </div>
+      </div>
+    </div>
+    <div class='row'>
+      <div class='col-sm-8'>
+        <div class='form-group'>
+          <div class='row'>
+            <div class='col-sm-12'>
+              <label for='product-entry-usage'>
+                Usage
+                <span class='field-info'>What is the estimated percentage of staff that use the product?</span>
+              </label>
+            </div>
+          </div>
+          <div class='row'>
+            <div class='col-sm-4'>
+              <div class='input-group addon-right'>
+                <input
+                    type='text'
+                    class='form-control'
+                    ng-model='productEntryModal.productEntry.usage_question.usage'
+                    integer
+                    maxlength=3
+                    id='product-entry-usage'>
+                <div class='input-group-addon'>%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class='row'>
+      <div class='col-sm-8'>
+        <div class='form-group'>
+          <label for='product-entry-vendor-data'>
+            Vendor Data
+            <span class='field-info'>Does the vendor provide usage data?</span>
+          </label>
+          <textarea
+              class='form-control'
+              ng-model='productEntryModal.productEntry.usage_question.vendor_data'
+              id='product-entry-vendor-data'>
+          </textarea>
+        </div>
+      </div>
+    </div>
+    <div class='row'>
+      <div class='col-sm-8'>
+        <div class='form-group'>
+          <label for='product-entry-notes'>
+            Notes
+            <span class='field-info'>Reflect on strengths and challenges as needed. Are there any known issues? Variations between schools? Training or rollout notes?</span>
+          </label>
+          <textarea
+              class='form-control'
+              ng-model='productEntryModal.productEntry.usage_question.notes'
+              id='product-entry-notes'>
+          </textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- PLATFORM QUESTIONS -->
+    <div class='row'>
+      <div class='col-sm-6'>
+        <div class='form-group'>
+          <label>
+            Platform
+            <span class='field-info'>What platform can be used to access the product?</span>
+          </label>
+          <div ng-repeat='selectedPlatformOption in selectedPlatformOptions' class='control-list'>
+            <label>
+              <fake-checkbox model='selectedPlatformOption.selected'></fake-checkbox>
+              {{selectedPlatformOption.name}}
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class='row'>
+      <div class='col-sm-6'>
+        <div class='form-group'>
+          <label for='product-entry-hosting'>
+            Hosting
+            <span class='field-info'>Where is the data hosted? Onsite or offsite?</span>
+          </label>
+          <div class='control-list'>
+            <label ng-repeat='(id, name) in productEntryModal.constants.product_entry.technical_question.hosting_options'>
+              <fake-radio model='productEntryModal.productEntry.technical_question.hosting' value='{{name}}'></fake-radio>
+              {{name}}
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class='row'>
+      <div class='col-sm-6'>
+        <div class='form-group'>
+          <label for='product-entry-sign-on'>
+            Single Sign-On
+            <span class='field-info'>Does this product have single sign-on?</span>
+          </label>
+          <div class='control-list'>
+            <label ng-repeat='(id, name) in productEntryModal.constants.product_entry.technical_question.single_sign_on_options'>
+              <fake-radio model='productEntryModal.productEntry.technical_question.single_sign_on' value='{{name}}'></fake-radio>
+              {{name}}
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <hr>
+
+    <div class='row actions'>
+      <div class='col-md-12'>
+        <div class='form-group'>
+          <button ng-click='productEntryModal.closeModal()' class='btn btn-default'>Cancel</button>
+          <button ng-click='productEntryModal.save()' class='btn btn-primary'>Save</button>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

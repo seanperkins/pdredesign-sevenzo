@@ -84,6 +84,11 @@ PdrServer::Application.routes.draw do
       resource :permissions, controller: 'inventory_permissions', only: [:show, :update]
       resources :participants, controller: 'inventory_participants', only: [:create, :destroy]
       resources :invitables, controller: 'inventory_invitables', only: [:index]
+      resources :product_entries, only: [:index, :show, :create, :update]
+    end
+
+    scope '/constants' do
+      get 'product_entry', to: 'constants#product_entry'
     end
 
     get 'user', to: 'user#show'
