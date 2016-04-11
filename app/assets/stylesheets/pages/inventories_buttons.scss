@@ -36,6 +36,14 @@
           @include button-variant($btn-primary-color, $primary-color, $primary-color);
           color: $btn-primary-color !important;
           box-shadow: none;
+          &:hover {
+            background: none;
+            background-color: darken($primary-color, 10%);
+            background-image: none;
+            border-color: $primary-color;
+            color: $btn-primary-color;
+            box-shadow: none;
+          }
         }
       }
     }
