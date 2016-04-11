@@ -7,7 +7,7 @@
     return {
       restrict: 'E',
       scope: {
-        inventoryId: '='
+        inventory: '='
       },
       templateUrl: 'client/inventories/inventory_product_entries.html',
       controller: 'InventoryProductEntriesCtrl',

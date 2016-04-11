@@ -13,9 +13,10 @@
 
   function InventoryProductEntriesCtrl($scope, $q, ProductEntry, DTOptionsBuilder, DTColumnBuilder) {
     var vm = this;
+    vm.inventory = $scope.inventory;
     var options = DTOptionsBuilder.fromFnPromise(function() {
       var deferred = $q.defer();
-      ProductEntry.get({inventory_id: $scope.inventoryId}).$promise.then(function(results) {
+      ProductEntry.get({inventory_id: vm.inventory.id}).$promise.then(function(results) {
         deferred.resolve(results.product_entries);
       }, deferred.reject);
       return deferred.promise;
@@ -45,5 +46,9 @@
       DTColumnBuilder.newColumn('technical_question.single_sign_on').withTitle('Single sign on?'),
       DTColumnBuilder.newColumn('usage_question.usage').withTitle('Usage data?')
     ];
+
+    $scope.$on('close-product-entry-modal', function() {
+      vm.dtOptions.reloadData(null, true);
+    });
   }
 })();
