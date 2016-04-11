@@ -37,8 +37,13 @@
       'columnsToggle'
     ]);
     vm.dtColumns = [
-      DTColumnBuilder.newColumn('id').withTitle('ID'),
       DTColumnBuilder.newColumn('general_inventory_question.product_name').withTitle('Name'),
+      DTColumnBuilder.newColumn('general_inventory_question.vendor').withTitle('Vendor'),
+      DTColumnBuilder.newColumn('general_inventory_question.purpose').withTitle('Used for'),
+      DTColumnBuilder.newColumn('technical_question.hosting').withTitle('Hosted'),
+      DTColumnBuilder.newColumn('technical_question.connectivity').withTitle('Connected'),
+      DTColumnBuilder.newColumn('technical_question.single_sign_on').withTitle('Single sign on?'),
+      DTColumnBuilder.newColumn('usage_question.usage').withTitle('Usage data?')
     ];
   }
 })();
