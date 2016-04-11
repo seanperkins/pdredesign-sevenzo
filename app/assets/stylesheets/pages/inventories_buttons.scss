@@ -1,0 +1,43 @@
+.inventory-items-list {
+  a.dt-button {
+    @include button-variant($btn-default-color, $btn-default-bg, $btn-default-border);
+    border-color: #52616D;
+    background-image: none;
+    box-shadow: none;
+    &.active {
+      background-color: $primary-color;
+      background-image: none;
+      border-color: $primary-color;
+      color: $btn-primary-color;
+      box-shadow: none;
+      &:not(.disabled) {
+        &:hover {
+          &:not(.disabled) {
+            background-color: darken($primary-color, 10%);
+            background-image: none;
+            border-color: $primary-color;
+            color: $btn-primary-color;
+            box-shadow: none;
+          }
+        }
+      }
+    }
+    &:hover {
+      background-image: none;
+    }
+  }
+  .dataTables_wrapper {
+    .dataTables_paginate {
+      .paginate_button {
+        background: none;
+        color: $btn-default-color !important;
+        @include button-variant($btn-default-color, $btn-default-bg, $btn-default-border);
+        &.current {
+          @include button-variant($btn-primary-color, $primary-color, $primary-color);
+          color: $btn-primary-color !important;
+          box-shadow: none;
+        }
+      }
+    }
+  }
+}
