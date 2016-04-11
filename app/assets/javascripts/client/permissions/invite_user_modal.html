@@ -1,10 +1,10 @@
 <div class="invite-user-modal">
   <div class="modal-header">
-    <h3 class="modal-title">Add New Participant</h3>
+    <h3 class="modal-title">Invite New Participant</h3>
   </div>
   <div class="modal-body" id="modal-invite-participant">
 
-    <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
+    <alert ng-repeat="alert in inviteUserModal.alerts" type="{{alert.type}}" close="inviteUserModal.closeAlert($index)">{{alert.msg}}</alert>
     <form  name="formInviteParticipant"  novalidate>
       <div class='row'>
         <div class='flush-left col-md-4 col-sm-4'>
@@ -28,7 +28,7 @@
         <input placeholder="Team Role (e.g. Finance, HR)" class="form-control" type="text" ng-model="inviteUser.team_role">
       </div>
 
-      <div class="from-group" ng-init="inviteUser.role=role">
+      <div class="from-group" ng-init="inviteUser.role = role">
         <label class="level_label">Set Permissions Level: </label>
         <select class="btn btn-primary btn-xs"
                 ng-model="inviteUser.role">
@@ -42,7 +42,7 @@
         <div
           class="btn btn-primary pull-right"
           ng-disabled="formInviteParticipant.$invalid"
-          ng-click="createInvitation(inviteUser)"
+          ng-click="inviteUserModal.createInvitation(inviteUser)"
           data-dismiss="modal">
             Add to District
         </div>

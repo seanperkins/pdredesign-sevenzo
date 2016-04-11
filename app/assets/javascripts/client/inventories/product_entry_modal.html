@@ -74,7 +74,7 @@
         <div class='form-group'>
           <label for='product-entry-price-in-cents'>
             Price
-            <span class='field-info'>How much does the product cost?</span>
+            <span class='field-info'>How much does the product cost? <em>Please do not use any thousands separators.</em></span>
           </label>
           <div class='input-group addon-left'>
             <div class='input-group-addon'>$</div>
@@ -82,6 +82,7 @@
                 type='text'
                 class='form-control'
                 float
+                dollars-into-cents
                 ng-model='productEntryModal.productEntry.general_inventory_question.price_in_cents'
                 id='product-entry-price-in-cents'>
           </div>
@@ -220,7 +221,7 @@
                     type='text'
                     class='form-control'
                     ng-model='productEntryModal.productEntry.usage_question.usage'
-                    float
+                    integer
                     maxlength=3
                     id='product-entry-usage'>
                 <div class='input-group-addon'>%</div>

@@ -85,11 +85,11 @@ ActiveRecord::Schema.define(version: 20160406160558) do
   end
 
   create_table "data_access_questions", force: :cascade do |t|
-    t.string   "data_storage"
-    t.string   "who_access_data"
-    t.string   "how_data_is_accessed"
-    t.string   "why_data_is_accessed"
-    t.string   "notes"
+    t.text     "data_storage"
+    t.text     "who_access_data"
+    t.text     "how_data_is_accessed"
+    t.text     "why_data_is_accessed"
+    t.text     "notes"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "data_entry_id"
@@ -106,9 +106,9 @@ ActiveRecord::Schema.define(version: 20160406160558) do
   add_index "data_entries", ["inventory_id"], name: "index_data_entries_on_inventory_id", using: :btree
 
   create_table "data_entry_questions", force: :cascade do |t|
-    t.string   "who_enters_data"
-    t.string   "how_data_is_entered"
-    t.string   "when_data_is_entered"
+    t.text     "who_enters_data"
+    t.text     "how_data_is_entered"
+    t.text     "when_data_is_entered"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "data_entry_id"
@@ -215,10 +215,10 @@ ActiveRecord::Schema.define(version: 20160406160558) do
   end
 
   create_table "general_data_questions", force: :cascade do |t|
-    t.string   "data_type"
-    t.string   "point_of_contact_name"
-    t.string   "point_of_contact_department"
-    t.string   "data_capture"
+    t.text     "data_type"
+    t.text     "point_of_contact_name"
+    t.text     "point_of_contact_department"
+    t.text     "data_capture"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "data_entry_id"
@@ -243,7 +243,7 @@ ActiveRecord::Schema.define(version: 20160406160558) do
   add_index "general_inventory_questions", ["product_entry_id"], name: "index_general_inventory_questions_on_product_entry_id", using: :btree
 
   create_table "inventories", force: :cascade do |t|
-    t.string   "name",        null: false
+    t.text     "name",        null: false
     t.datetime "deadline",    null: false
     t.integer  "district_id", null: false
     t.datetime "created_at",  null: false

@@ -84,6 +84,65 @@ describe V1::InventoriesController do
     end
   end
 
+  describe 'GET #show' do
+    context 'when not authenticated' do
+
+      before(:each) do
+        get :show, id: 1, format: :json
+      end
+
+      it { expect(response).to have_http_status(:unauthorized) }
+    end
+
+    context 'when authenticated' do
+      context 'non existing inventory' do
+        let(:user) { FactoryGirl.create(:user) }
+
+        before(:each) do
+          sign_in user
+          get :show, id: 1, format: :json
+        end
+
+        it { expect(response).to have_http_status(:not_found) }
+      end
+
+      context 'existing inventory' do
+        context 'member user' do
+          let(:inventory) { FactoryGirl.create(:inventory) }
+          let(:user) { inventory.owner }
+
+          before(:each) do
+            sign_in user
+            get :show, id: inventory.id, format: :json
+          end
+
+          it 'renders inventory identifier' do
+            expect(json['id']).to eq inventory.id
+          end
+
+          it 'renders inventory name' do
+            expect(json['name']).to eq inventory.name
+          end
+        end
+
+        context 'non member user' do
+          let(:user) { create(:user) }
+          let(:other_user) { create(:user) }
+          let(:inventory) { FactoryGirl.create(:inventory, owner: other_user) }
+
+          before(:each) do
+            sign_in user
+            get :show, id: inventory.id, format: :json
+          end
+
+          it 'forbidden' do
+            expect(response).to have_http_status(:forbidden)
+          end
+        end
+      end
+    end
+  end
+
   describe 'POST #create' do
     context 'when not authenticated' do
 

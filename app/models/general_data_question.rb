@@ -3,10 +3,10 @@
 # Table name: general_data_questions
 #
 #  id                          :integer          not null, primary key
-#  data_type                   :string
-#  point_of_contact_name       :string
-#  point_of_contact_department :string
-#  data_capture                :string
+#  subcategory                 :text
+#  point_of_contact_name       :text
+#  point_of_contact_department :text
+#  data_capture                :text
 #  created_at                  :datetime
 #  updated_at                  :datetime
 #  data_entry_id               :integer

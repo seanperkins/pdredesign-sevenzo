@@ -6,6 +6,15 @@ class V1::InventoriesController < ApplicationController
     @inventories = current_user.inventories
   end
 
+  def show
+    @inventory = Inventory.where(id: params[:id]).first
+    unless @inventory
+      render nothing:true, status: :not_found
+      return
+    end
+    authorize_action_for @inventory
+  end
+
   def create
     @inventory = Inventory.new
     @inventory.name = inventory_params[:name]

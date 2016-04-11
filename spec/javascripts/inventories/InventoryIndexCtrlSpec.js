@@ -2,11 +2,11 @@
   'use strict';
 
   describe('Controller: InventoryIndex', function() {
-    var controller, SessionService;
+    var controller;
 
     beforeEach(function() {
       module('PDRClient');
-      inject(function(_$controller_, _$rootScope_, _SessionService_) {
+      inject(function(_$controller_, _$rootScope_) {
         var scope = _$rootScope_.$new(true);
         controller = _$controller_('InventoryIndexCtrl', {
           $scope: scope,
@@ -14,7 +14,6 @@
             inventories: [1, 2, 3]
           }
         });
-        SessionService = _SessionService_;
       });
     });
 

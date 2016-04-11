@@ -28,5 +28,26 @@
         }
       }
     });
+
+    $stateProvider.state('inventories_edit', {
+      url: '/inventories/:inventory_id/edit',
+      authenticate: true,
+      views: {
+        '': {
+          resolve: {
+            inventory: ['Inventory', '$stateParams', function(Inventory, $stateParams) {
+              return Inventory.get({inventory_id: $stateParams.inventory_id}).$promise;
+            }]
+          },
+          controller: 'InventoryEditCtrl',
+          controllerAs: 'inventoryEdit',
+          templateUrl: 'client/inventories/inventory_edit.html'
+        },
+        'sidebar': {
+          controller: 'SidebarCtrl',
+          templateUrl: 'client/inventories/edit_sidebar.html'
+        }
+      }
+    });
   }
 })();
