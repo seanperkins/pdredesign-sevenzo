@@ -24,6 +24,7 @@
       CreateService.createParticipant(user)
           .then(function() {
             vm.loadInvitables();
+            $scope.$emit('close-add-participants');
           });
     };
 

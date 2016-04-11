@@ -33,5 +33,9 @@
       return list && list.length > 0;
     };
     vm.loadInvitables();
+
+    $scope.$on('close-add-participants', function() {
+      vm.close();
+    });
   }
 })();
