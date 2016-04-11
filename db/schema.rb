@@ -232,8 +232,8 @@ ActiveRecord::Schema.define(version: 20160404201732) do
     t.text     "point_of_contact_name"
     t.text     "point_of_contact_department"
     t.text     "pricing_structure"
-    t.decimal  "price",                       precision: 9, scale: 2
-    t.text     "data_type",                                           default: [], array: true
+    t.integer  "price_in_cents"
+    t.text     "data_type",                   default: [], array: true
     t.text     "purpose"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -246,9 +246,9 @@ ActiveRecord::Schema.define(version: 20160404201732) do
     t.text     "name",        null: false
     t.datetime "deadline",    null: false
     t.integer  "district_id", null: false
-    t.integer  "owner_id"
     t.datetime "created_at",  null: false
     t.datetime "updated_at",  null: false
+    t.integer  "owner_id"
   end
 
   create_table "inventory_access_requests", force: :cascade do |t|
@@ -470,7 +470,7 @@ ActiveRecord::Schema.define(version: 20160404201732) do
   add_index "scores", ["response_id", "question_id"], name: "index_scores_on_response_id_and_question_id", unique: true, using: :btree
 
   create_table "sessions", force: :cascade do |t|
-    t.string   "session_id", limit: 255, null: false
+    t.string   "session_id", null: false
     t.text     "data"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -480,7 +480,7 @@ ActiveRecord::Schema.define(version: 20160404201732) do
   add_index "sessions", ["updated_at"], name: "index_sessions_on_updated_at", using: :btree
 
   create_table "technical_questions", force: :cascade do |t|
-    t.text     "platform",         default: [], array: true
+    t.text     "platforms",        default: [], array: true
     t.text     "hosting"
     t.text     "connectivity"
     t.text     "single_sign_on"
