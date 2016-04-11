@@ -13,13 +13,6 @@
 #  mandrill_html :text
 #
 
-class Message < ActiveRecord::Base
-	belongs_to :tool, polymorphic: true
-	MAX_LENGTH_TEASER = 220
-
-	def teaser
-	  return content unless content
-    return content if content.length <= MAX_LENGTH_TEASER
-    "#{content[0..MAX_LENGTH_TEASER-1]}..."
-  end
+FactoryGirl.define do
+  factory :message
 end
