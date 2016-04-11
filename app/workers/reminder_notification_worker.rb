@@ -18,7 +18,7 @@ class ReminderNotificationWorker
 
   private
   def create_message_entry(assessment, message)
-    Message.create!(assessment_id: assessment.id,
+    Message.create!(tool: assessment,
                     content: message,
                     category: :reminder,
                     sent_at: Time.now)

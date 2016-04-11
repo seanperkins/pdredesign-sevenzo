@@ -48,7 +48,7 @@ describe ReminderNotificationWorker do
   it 'adds a message entry for the assessment' do
     subject.new.perform(assessment.id, 'the message')
     message = Message
-      .find_by(assessment_id: assessment.id,
+      .find_by(tool_id: assessment.id,
                content: 'the message')
 
     expect(message).not_to be_nil
