@@ -81,6 +81,7 @@ class User < ActiveRecord::Base
 
   def inventories
     Inventory.
+        distinct.
         joins('LEFT OUTER JOIN inventory_members ON inventory_members.inventory_id = inventories.id').
         where('inventory_members.user_id = ?', self.id)
   end

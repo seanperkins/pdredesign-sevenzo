@@ -168,4 +168,23 @@ describe User do
       end
     end
   end
+
+  describe '#inventories' do
+    let(:user) { FactoryGirl.create(:user, first_name: 'John', last_name: 'Doe') }
+    context 'with both a first and last name' do
+      it 'returns a list of distinct inventories of which the user is a member' do
+        # user is owner of this inventory: should appear on the list
+        user_inventory = FactoryGirl.create(:inventory, owner: user)
+        # user is *also* participant of this inventory: shouldn't appear on the list again
+        FactoryGirl.create(:inventory_member, :as_participant, user: user, inventory: user_inventory)
+
+        # user is *only* participant of this *other* inventory: should appear on the list
+        other_inventory = FactoryGirl.create(:inventory)
+        FactoryGirl.create(:inventory_member, :as_participant, user: user, inventory: other_inventory)
+
+        expect(user.inventories).to match_array([user_inventory, other_inventory])
+      end
+    end
+  end
+
 end
