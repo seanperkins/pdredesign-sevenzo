@@ -10,6 +10,7 @@
 
 FactoryGirl.define do
   factory :product_entry do
+    association :inventory
     association :general_inventory_question
     association :product_question
     association :usage_question

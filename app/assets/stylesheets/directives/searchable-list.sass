@@ -1,18 +1,20 @@
+$grey: #EBECF0
+
 .searchable-list
   height: 200px
   display: flex
   flex-direction: column
   overflow: hidden
-  border: 1px solid lightgray
+  border: 1px solid grey
 
   .list-header
     flex: 0 0 auto
     display: flex
     justify-content: space-between
     align-items: center
-    padding: 2px 2px 2px 5px
-    background-color: lightgray
-    border-bottom: 1px solid lightgray
+    padding: 5px
+    background-color: $grey
+    border-bottom: 1px solid grey
 
     .search
       background-color: white !important
@@ -28,4 +30,4 @@
 
       &:not(.javascripted):nth-child(odd),
       &.odd
-        background-color: lightgray
+        background-color: $grey
