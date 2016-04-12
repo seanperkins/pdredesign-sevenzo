@@ -293,5 +293,33 @@
         });
       });
     });
+
+    describe('#save', function() {
+      describe('when the context is set to assessment', function() {
+        beforeEach(function() {
+          subject.context = 'assessment';
+          spyOn(subject, 'saveAssessment');
+
+          subject.save({});
+        });
+
+        it('calls #saveAssessment', function() {
+          expect(subject.saveAssessment).toHaveBeenCalled();
+        });
+      });
+
+      describe('when the context is set to inventory', function() {
+        beforeEach(function() {
+          subject.context = 'inventory';
+          spyOn(subject, 'saveInventory');
+
+          subject.save({});
+        });
+
+        it('calls #saveInventory', function() {
+          expect(subject.saveInventory).toHaveBeenCalled();
+        });
+      });
+    });
   });
 })();

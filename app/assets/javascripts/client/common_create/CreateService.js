@@ -140,6 +140,14 @@
           });
     };
 
+    this.save = function(entity) {
+      if(service.context === 'assessment') {
+        this.saveAssessment(entity);
+      } else if(service.context === 'inventory') {
+        this.saveInventory(entity);
+      }
+    };
+
     this.loadParticipants = function() {
       if (service.context === 'assessment') {
         return Participant.query({assessment_id: $stateParams.id});
