@@ -42,5 +42,4 @@ class AllParticipantsNotificationWorker
   def invited_participant?(participant)
     participant.invited_at
   end
-
 end

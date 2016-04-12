@@ -11,10 +11,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160412162728) do
+ActiveRecord::Schema.define(version: 20160412172312) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+  enable_extension "pg_trgm"
 
   create_table "access_requests", force: :cascade do |t|
     t.integer  "assessment_id"
@@ -250,6 +251,7 @@ ActiveRecord::Schema.define(version: 20160412162728) do
     t.datetime "updated_at",  null: false
     t.integer  "owner_id"
     t.text     "message"
+    t.datetime "assigned_at"
   end
 
   create_table "inventory_access_requests", force: :cascade do |t|
@@ -475,7 +477,7 @@ ActiveRecord::Schema.define(version: 20160412162728) do
   add_index "scores", ["response_id", "question_id"], name: "index_scores_on_response_id_and_question_id", unique: true, using: :btree
 
   create_table "sessions", force: :cascade do |t|
-    t.string   "session_id", null: false
+    t.string   "session_id", limit: 255, null: false
     t.text     "data"
     t.datetime "created_at"
     t.datetime "updated_at"
