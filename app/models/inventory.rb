@@ -13,11 +13,16 @@
 
 class Inventory < ActiveRecord::Base
   include Authority::Abilities
+
   has_many :product_entries
   has_many :data_entries
   has_many :access_requests, class_name: 'InventoryAccessRequest'
+  has_many :messages, foreign_key: :tool_id
+
   belongs_to :district
   belongs_to :owner, class_name: 'User'
+
+
   self.authorizer_name = 'InventoryAuthorizer'
 
   # Exposed alias for test

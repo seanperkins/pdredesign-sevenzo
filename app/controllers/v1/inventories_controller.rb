@@ -56,7 +56,7 @@ class V1::InventoriesController < ApplicationController
 
   private
   def inventory_params
-    params.require(:inventory).permit(:name, :deadline, :district_id, district: [:id])
+    params.require(:inventory).permit(:name, :deadline, :district_id, :message, district: [:id])
   end
 
   def render_error
