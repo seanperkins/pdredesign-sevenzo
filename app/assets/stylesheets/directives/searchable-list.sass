@@ -1,0 +1,31 @@
+.searchable-list
+  height: 200px
+  display: flex
+  flex-direction: column
+  overflow: hidden
+  border: 1px solid lightgray
+
+  .list-header
+    flex: 0 0 auto
+    display: flex
+    justify-content: space-between
+    align-items: center
+    padding: 2px 2px 2px 5px
+    background-color: lightgray
+    border-bottom: 1px solid lightgray
+
+    .search
+      background-color: white !important
+
+  .list
+    overflow: auto
+
+    *
+      margin: 0
+
+    > div
+      padding: 3px 0
+
+      &:not(.javascripted):nth-child(odd),
+      &.odd
+        background-color: lightgray

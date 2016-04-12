@@ -296,6 +296,24 @@
       </div>
     </div>
     <div class='row'>
+      <div class='col-sm-12'>
+        <div class='form-group'>
+          <label>
+            Connectivity
+            <span class='field-info'>What other products or data systems is this connected to?</span>
+          </label>
+          <searchable-list title="{{selectedConnectedProductEntries.length}} Products">
+            <div ng-repeat='selectedConnectedProductEntry in selectedConnectedProductEntries' class='control-list'>
+              <label>
+                <fake-checkbox model='selectedConnectedProductEntry.selected'></fake-checkbox>
+                {{productEntryModal.getProductEntryName(selectedConnectedProductEntry.name)}}
+              </label>
+            </div>
+          </searchable-list>
+        </div>
+      </div>
+    </div>
+    <div class='row'>
       <div class='col-sm-6'>
         <div class='form-group'>
           <label for='product-entry-sign-on'>

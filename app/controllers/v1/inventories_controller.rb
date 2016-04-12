@@ -47,6 +47,16 @@ class V1::InventoriesController < ApplicationController
     end
   end
 
+  def district_product_entries
+    # FIXME extract to service or member mehtods
+    inventory = Inventory.find(params[:id])
+    inventories = Inventory.where(district: inventory.district)
+
+    @product_entries = ProductEntry.where(inventory: inventories)
+
+    render template: 'v1/product_entries/index'
+  end
+
   private
   def inventory_params
     params.require(:inventory).permit(:name, :deadline, :district_id, district: [:id])

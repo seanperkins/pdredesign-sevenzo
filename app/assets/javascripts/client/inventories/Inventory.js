@@ -20,6 +20,10 @@
       },
       'save': {
         method: 'PUT'
+      },
+      'districtProductEntries': {
+        method: 'GET',
+        url: UrlService.url('inventories/:inventory_id/district_product_entries')
       }
     };
 
