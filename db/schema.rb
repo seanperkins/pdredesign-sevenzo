@@ -311,6 +311,7 @@ ActiveRecord::Schema.define(version: 20160404201732) do
 
   add_index "learning_questions", ["created_at"], name: "index_learning_questions_on_created_at", using: :btree
   add_index "learning_questions", ["tool_id"], name: "index_learning_questions_on_tool_id", using: :btree
+  add_index "learning_questions", ["tool_type", "tool_id"], name: "index_learning_questions_on_tool_type_and_tool_id", using: :btree
 
   create_table "messages", force: :cascade do |t|
     t.text     "content"
