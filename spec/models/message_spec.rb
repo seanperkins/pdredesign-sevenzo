@@ -6,11 +6,12 @@
 #  content       :text
 #  category      :string(255)
 #  sent_at       :datetime
-#  assessment_id :integer
+#  tool_id       :integer
 #  created_at    :datetime
 #  updated_at    :datetime
 #  mandrill_id   :string(255)
 #  mandrill_html :text
+#  tool_type     :string
 #
 
 require 'spec_helper'
