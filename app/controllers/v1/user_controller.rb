@@ -7,16 +7,19 @@ class V1::UserController < ApplicationController
   end
 
   def create
-    @user = User.new(user_params.merge(
+    @user = User.create(user_params.merge(
       role: params[:role] || :member,
       district_ids: extract_ids_from_params(:district_ids),
       organization_ids: extract_ids_from_params(:organization_ids)
     ))
 
-    if UserInvitation.find_by(email: user_params[:email]).present?
+    user_invitation = UserInvitation.find_by(email: user_params[:email])
+    if user_invitation.present?
       @user.errors.add(:base, "It seems you have already been invited. Please continue your registration here.")
-      render_errors(@user.errors, 409)
-    elsif @user.create
+      render json: @user.errors.to_h.merge(
+        invitation_token: user_invitation.token
+      )
+    elsif @user.save
       send_notification_email
       render status: 200, nothing: true
     else
@@ -69,9 +72,9 @@ class V1::UserController < ApplicationController
     SecureRandom.hex[0..9]
   end
 
-  def render_errors(errors, error_code: 422)
+  def render_errors(errors)
     @errors = errors
-    render 'v1/shared/errors', status: error_code
+    render 'v1/shared/errors'
   end
 
   def reset_password(user, password)
