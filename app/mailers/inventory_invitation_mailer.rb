@@ -5,10 +5,10 @@ class InventoryInvitationMailer < ApplicationMailer
     inventory = invite.inventory
 
     @first_name = user.first_name
-    @facilitator_name = inventory.owner.first_name
+    @facilitator = inventory.owner
     @inventory_name = inventory.name
     @district_name = inventory.district.name
-    @due_date = inventory.deadline.strftime("%B %d, %Y")
+    @deadline = inventory.deadline.strftime("%B %d, %Y")
     @inventory_link = invite_url(invite.token)
 
     mail(to: invite.email)

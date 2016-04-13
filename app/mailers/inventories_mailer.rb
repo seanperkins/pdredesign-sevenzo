@@ -1,9 +1,10 @@
 class InventoriesMailer < ApplicationMailer
   def assigned(inventory, participant)
-    @participant_name = participant.user.first_name
+    @first_name = participant.user.first_name
+    @facilitator = inventory.owner
     @inventory_name = inventory.name
-    @inventory_link = inventory_url(inventory.id)
     @district_name = inventory.district.name
+    @inventory_link = inventory_url(inventory.id)
     @deadline = inventory.deadline.strftime("%B %d, %Y")
     @message = inventory.message && inventory.message.html_safe
 
