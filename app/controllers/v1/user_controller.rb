@@ -72,9 +72,9 @@ class V1::UserController < ApplicationController
     SecureRandom.hex[0..9]
   end
 
-  def render_errors(errors)
+  def render_errors(errors, error_code: 422)
     @errors = errors
-    render 'v1/shared/errors'
+    render 'v1/shared/errors', status: error_code
   end
 
   def reset_password(user, password)
