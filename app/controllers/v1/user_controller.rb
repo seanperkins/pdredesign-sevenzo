@@ -18,7 +18,7 @@ class V1::UserController < ApplicationController
       @user.errors.add(:base, "It seems you have already been invited. Please continue your registration here.")
       render json: @user.errors.to_h.merge(
         invitation_token: user_invitation.token
-      )
+      ), status: :unprocessable_entity
     elsif @user.save
       send_notification_email
       render status: 200, nothing: true
