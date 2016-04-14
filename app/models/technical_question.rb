@@ -5,7 +5,7 @@
 #  id               :integer          not null, primary key
 #  platforms         :text            default([]), is an Array
 #  hosting          :text
-#  connectivity     :text
+#  connectivity     :integer          default([], is an Array
 #  single_sign_on   :text
 #  created_at       :datetime
 #  updated_at       :datetime

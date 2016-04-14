@@ -8,10 +8,11 @@
     '$scope',
     'ProductEntry',
     'ConstantsService',
-    'CheckboxService'
+    'CheckboxService',
+    'Inventory'
   ];
 
-  function ProductEntryModalCtrl($scope, ProductEntry, ConstantsService, CheckboxService) {
+  function ProductEntryModalCtrl($scope, ProductEntry, ConstantsService, CheckboxService, Inventory) {
     var vm = this;
 
     vm.closeModal = function() {
@@ -79,7 +80,29 @@
         vm.productEntry.technical_question,
         'platforms'
       );
-    }
+
+      Inventory.districtProductEntries({inventory_id: vm.inventory.id})
+          .$promise.then(function (response) {
+            vm.districtProductEntries = response.product_entries;
+
+            var options = _.reduce(response.product_entries, function (result, productEntry) {
+              result[productEntry.id] = productEntry.id;
+              return result;
+            }, {});
+
+            CheckboxService.checkboxize(
+              $scope,
+              'selectedConnectedProductEntries',
+              options,
+              vm.productEntry.technical_question,
+              'connectivity'
+            );
+          });
+    };
+
+    vm.getProductEntryName = function (id) {
+      return _.findWhere(vm.districtProductEntries, {id: id}).general_inventory_question.product_name;
+    };
 
     vm.save = function () {
       var productEntry = angular.copy( vm.productEntry );

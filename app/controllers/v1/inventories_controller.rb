@@ -47,6 +47,12 @@ class V1::InventoriesController < ApplicationController
     end
   end
 
+  def district_product_entries
+    @product_entries = ProductEntry.for_district(params[:id])
+
+    render template: 'v1/product_entries/index'
+  end
+
   private
   def inventory_params
     params.require(:inventory).permit(:name, :deadline, :district_id, district: [:id])

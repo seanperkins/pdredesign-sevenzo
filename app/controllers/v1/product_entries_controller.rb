@@ -65,7 +65,7 @@ class V1::ProductEntriesController < ApplicationController
       technical_question_attributes: [
         {platforms: []},
         :hosting,
-        :connectivity,
+        {connectivity: []},
         :single_sign_on
       ],
       general_inventory_question_attributes: [

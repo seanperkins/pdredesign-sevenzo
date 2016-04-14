@@ -92,6 +92,10 @@ PdrServer::Application.routes.draw do
           get 'exists', to: 'learning_questions#exists'
         end
       end
+
+      member do
+        get :district_product_entries
+      end
     end
 
     scope '/constants' do
