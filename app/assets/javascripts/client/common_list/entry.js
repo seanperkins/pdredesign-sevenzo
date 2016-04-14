@@ -9,6 +9,7 @@
       transclude: true,
       scope: {
         isAssessment: '@',
+        role: '@',
         entity: '='
       },
       templateUrl: 'client/common_list/entry_view.html',

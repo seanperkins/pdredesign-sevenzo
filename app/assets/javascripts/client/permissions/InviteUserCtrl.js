@@ -13,6 +13,7 @@
     var vm = this;
 
     vm.showInviteUserModal = function() {
+      console.log($scope.role);
       vm.modalInstance = $modal.open({
         template: '<invite-user-modal send-invite="' + $scope.sendInvite + '" role="' + $scope.role + '"></invite-user-modal>',
         scope: $scope
