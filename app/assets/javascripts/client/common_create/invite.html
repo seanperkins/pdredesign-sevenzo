@@ -31,7 +31,7 @@
             <textarea placeholder="Add a note (optional)" redactor ng-model="model.message"></textarea>
           </div>
 
-          <h3>Please complete this assessment by {{inviteMessage.formattedDate(model.due_date)}}.</h3>
+          <h3>Please complete this {{ inviteMessage.getToolName() }} by {{inviteMessage.formattedDate(model.due_date)}}.</h3>
           <p>
             PDredesign is a community of educators and designers committed to continuously improving professional
             development systems to better support teachers. Alongside leaders from classrooms, schools, charters,
@@ -46,10 +46,5 @@
         </div>
       </div>
     </div>
-    <button class="btn btn-primary send-btn btn-lg pull-right" name="commit" type="submit" id="assign_assessment"
-            ng-click='inviteMessage.assignAndSave(model)'>
-      <i class="fa fa-spinner fa-spin" ng-show="inviteMessage.saving"></i>
-      <i class="fa fa-envelope-o"></i> Send Invitation
-    </button>
   </div>
 </div>

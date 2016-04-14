@@ -9,7 +9,7 @@
     '$stateParams',
     '$modal',
     'Assessment',
-    'LearningQuestion'
+    'AssessmentLearningQuestion'
   ];
 
   function ResponseCtrl($scope, $timeout, $stateParams, $modal, Assessment, LearningQuestion) {

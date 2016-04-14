@@ -37,7 +37,7 @@
 
     vm.save = function(entity) {
       CreateService.loadDistrict(vm.district);
-      CreateService.saveAssessment(entity);
+      CreateService.save(entity);
     };
 
     vm.formattedDate = function(date) {

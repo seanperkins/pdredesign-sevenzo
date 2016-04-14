@@ -1,16 +1,20 @@
-(function () {
+(function() {
   'use strict';
+
   angular.module('PDRClient')
       .directive('learningQuestionForm', learningQuestionForm);
 
   function learningQuestionForm() {
     return {
       restrict: 'E',
-      templateUrl: 'client/views/directives/learning_questions/form.html',
+      templateUrl: 'client/learning_questions/form.html',
       replace: true,
+      scope: {
+        context: '@'
+      },
       controller: 'LearningQuestionFormCtrl',
       controllerAs: 'learningQuestionForm',
       transclude: true
-    }
+    };
   }
 })();

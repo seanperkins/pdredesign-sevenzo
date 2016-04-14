@@ -37,9 +37,9 @@
     vm.createInventory = function(model) {
       Inventory.create({inventory: model})
           .$promise
-          .then(function() {
+          .then(function(response) {
             vm.close();
-            $location.url('/inventories');
+            $location.url('/inventories/' + response.id + '/assign');
           }, function(response) {
             var errors = response.data.errors;
             angular.forEach(errors, function(error, field) {

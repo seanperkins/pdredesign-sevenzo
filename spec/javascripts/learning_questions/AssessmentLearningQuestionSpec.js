@@ -1,15 +1,18 @@
 (function() {
   'use strict';
-  describe('Resource: LearningQuestion', function() {
+  describe('Resource: AssessmentLearningQuestion', function() {
 
     var subject, $httpBackend, $resource;
 
-    beforeEach(module('PDRClient'));
-    beforeEach(inject(function($injector) {
-      subject = $injector.get('LearningQuestion');
-      $resource = $injector.get('$resource');
-      $httpBackend = $injector.get('$httpBackend');
-    }));
+    beforeEach(function() {
+      module('PDRClient');
+      inject(function(_$resource_, _$httpBackend_, $injector) {
+        $resource = _$resource_;
+        $httpBackend = _$httpBackend_;
+
+        subject = $injector.get('AssessmentLearningQuestion');
+      });
+    });
 
     describe('#GET (all)', function() {
       it('uses the right URL', function() {

@@ -121,7 +121,7 @@
       beforeEach(function() {
         spyOn(SessionService, 'getCurrentUser').and.returnValue({districts: [{id: 1}, {id: 2}, {id: 3}]});
         spyOn(CreateService, 'loadDistrict');
-        spyOn(CreateService, 'saveAssessment');
+        spyOn(CreateService, 'save');
 
         subject = $controller('ToolDetailsCtrl', {
           $scope: $scope,
@@ -135,9 +135,9 @@
         expect(CreateService.loadDistrict).toHaveBeenCalledWith({id: 1});
       });
 
-      it('delegates to CreateService$saveAssessment with the correct entity', function() {
+      it('delegates to CreateService#save with the correct entity', function() {
         subject.save(entity);
-        expect(CreateService.saveAssessment).toHaveBeenCalledWith(entity);
+        expect(CreateService.save).toHaveBeenCalledWith(entity);
       });
     });
 
