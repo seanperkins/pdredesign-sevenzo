@@ -80,7 +80,7 @@
                   district_id: 7
                 }
               })
-              .respond({201: {}});
+              .respond({id: 17});
         });
 
         it('calls the close function', function() {
@@ -103,7 +103,7 @@
             district_id: 7
           });
           $httpBackend.flush();
-          expect($location.url).toHaveBeenCalledWith('/inventories');
+          expect($location.url).toHaveBeenCalledWith('/inventories/17/assign');
         });
 
         afterEach(function() {

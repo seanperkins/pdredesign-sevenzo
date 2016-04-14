@@ -9,27 +9,41 @@
 
   function InventoryRoutes($stateProvider) {
     $stateProvider.state('inventories', {
-      url: '/inventories',
-      authenticate: true,
-      views: {
-        '': {
+          url: '/inventories',
+          authenticate: true,
+          views: {
+            '': {
+              resolve: {
+                inventory_result: ['Inventory', function(Inventory) {
+                  return Inventory.query().$promise;
+                }]
+              },
+              controller: 'InventoryIndexCtrl',
+              controllerAs: 'inventoryIndex',
+              templateUrl: 'client/inventories/inventory_index.html'
+            },
+            'sidebar': {
+              controller: 'SidebarCtrl',
+              templateUrl: 'client/views/sidebar/sidebar_generic.html'
+            }
+          }
+        }).state('inventory_assign', {
+          url: '/inventories/:id/assign',
+          authenticate: true,
+          showFullWidth: true,
           resolve: {
-            inventory_result: ['Inventory', function(Inventory) {
-              return Inventory.query().$promise;
+            current_inventory: ['$stateParams', 'Inventory', function($stateParams, Inventory) {
+              return Inventory.get({inventory_id: $stateParams.id}).$promise;
             }]
           },
-          controller: 'InventoryIndexCtrl',
-          controllerAs: 'inventoryIndex',
-          templateUrl: 'client/inventories/inventory_index.html'
-        },
-        'sidebar': {
-          controller: 'SidebarCtrl',
-          templateUrl: 'client/views/sidebar/sidebar_generic.html'
-        }
-      }
-    });
-
-    $stateProvider.state('inventories_edit', {
+          views: {
+            'full-width': {
+              controller: 'InventoryAssignCtrl',
+              controllerAs: 'inventoryAssign',
+              templateUrl: 'client/inventories/assign_inventory.html'
+            }
+          }
+        }).state('inventories_edit', {
       url: '/inventories/:inventory_id/edit',
       authenticate: true,
       views: {

@@ -74,7 +74,7 @@
 
       it('emits the correct event', function() {
         subject.emitSuccess('w00t');
-        expect($scope.$emit).toHaveBeenCalledWith('add_assessment_alert', {type: 'success', msg: 'w00t'});
+        expect($scope.$emit).toHaveBeenCalledWith('add-assign-alert', {type: 'success', msg: 'w00t'});
       });
     });
 
@@ -90,7 +90,7 @@
 
       it('emits the correct event', function() {
         subject.emitError('oh n0ez');
-        expect($scope.$emit).toHaveBeenCalledWith('add_assessment_alert', {type: 'danger', msg: 'oh n0ez'});
+        expect($scope.$emit).toHaveBeenCalledWith('add-assign-alert', {type: 'danger', msg: 'oh n0ez'});
       });
     });
 
@@ -290,6 +290,34 @@
 
         afterEach(function() {
           inputField.remove();
+        });
+      });
+    });
+
+    describe('#save', function() {
+      describe('when the context is set to assessment', function() {
+        beforeEach(function() {
+          subject.context = 'assessment';
+          spyOn(subject, 'saveAssessment');
+
+          subject.save({});
+        });
+
+        it('calls #saveAssessment', function() {
+          expect(subject.saveAssessment).toHaveBeenCalled();
+        });
+      });
+
+      describe('when the context is set to inventory', function() {
+        beforeEach(function() {
+          subject.context = 'inventory';
+          spyOn(subject, 'saveInventory');
+
+          subject.save({});
+        });
+
+        it('calls #saveInventory', function() {
+          expect(subject.saveInventory).toHaveBeenCalled();
         });
       });
     });

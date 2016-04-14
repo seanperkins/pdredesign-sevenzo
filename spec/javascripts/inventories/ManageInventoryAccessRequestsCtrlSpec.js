@@ -15,24 +15,23 @@
         InventoryAccessRequest = $injector.get('InventoryAccessRequest');
         $window = _$window_;
 
-        $scope.inventoryId = 4
-
         spyOn(InventoryAccessRequest, 'list').and.callFake(function(query, params) {
           var deferred = $q.defer();
           deferred.resolve([{}, {}]);
-          return { $promise: deferred.promise };
+          return {$promise: deferred.promise};
         });
 
         spyOn(InventoryAccessRequest, 'update').and.callFake(function(query, params) {
           var deferred = $q.defer();
           deferred.resolve([{}, {}]);
-          return { $promise: deferred.promise };
+          return {$promise: deferred.promise};
         });
 
         subject = _$controller_('ManageInventoryAccessRequestsCtrl', {
-          $scope: $scope
+          $scope: $scope,
+          $stateParams: {id: 4}
         });
-      })
+      });
     });
 
     describe('#loadList', function() {

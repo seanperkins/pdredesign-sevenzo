@@ -1,5 +1,6 @@
 (function() {
   'use strict';
+
   angular.module('PDRClient')
       .directive('learningQuestionModal', learningQuestionModal);
 
@@ -9,7 +10,7 @@
       scope: {
         reminder: '@'
       },
-      templateUrl: 'client/views/modals/learning_questions/add_learning_question.html',
+      templateUrl: 'add_learning_question.html',
       link: function(scope) {
         scope.closeModal = function() {
           scope.$emit('close-learning-question-modal');

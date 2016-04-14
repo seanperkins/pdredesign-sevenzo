@@ -17,6 +17,7 @@ class V1::InventoriesController < ApplicationController
 
   def create
     @inventory = Inventory.new
+    authorize_action_for @inventory
     @inventory.name = inventory_params[:name]
     unless inventory_params[:deadline].blank?
       begin
@@ -35,9 +36,21 @@ class V1::InventoriesController < ApplicationController
     end
   end
 
+  def update
+    @inventory = Inventory.find(params[:id])
+    authorize_action_for @inventory
+
+    saved = @inventory.update(inventory_params)
+    if saved
+      render nothing: true
+    else
+      render_error
+    end
+  end
+
   private
   def inventory_params
-    params.require(:inventory).permit(:name, :deadline, district: [:id])
+    params.require(:inventory).permit(:name, :deadline, :district_id, district: [:id])
   end
 
   def render_error
