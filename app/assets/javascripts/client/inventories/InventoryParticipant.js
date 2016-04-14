@@ -17,7 +17,10 @@
         url: UrlService.url('inventories/:inventory_id/participants/all')
       },
       create: {
-        method: 'POST'
+        method: 'POST',
+        params: {
+          inventory_id: '@inventory_id'
+        }
       },
       delete: {
         method: 'DELETE',

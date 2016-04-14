@@ -15,7 +15,9 @@
 
     vm.participants = CreateService.loadParticipants();
     vm.user = SessionService.getCurrentUser();
-    $scope.role = vm.user.role;
+    if(vm.user) {
+      $scope.role = vm.user.role;
+    }
 
     // Expose context for view
     vm.currentContext = CreateService.context;
