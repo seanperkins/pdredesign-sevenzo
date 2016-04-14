@@ -86,7 +86,7 @@ PdrServer::Application.routes.draw do
         get 'participants/all', to: 'inventory_participants#all'
       resources :invitables, controller: 'inventory_invitables', only: [:index]
       resources :product_entries, only: [:index, :show, :create, :update]
-
+      resources :data_entries, only: [:index, :show, :create, :update]
       resources :learning_questions, only: [:index, :create, :update, :destroy] do
         collection do
           get 'exists', to: 'learning_questions#exists'
@@ -100,6 +100,7 @@ PdrServer::Application.routes.draw do
 
     scope '/constants' do
       get 'product_entry', to: 'constants#product_entry'
+      get 'data_entry', to: 'constants#data_entry'
     end
 
     get 'user', to: 'user#show'

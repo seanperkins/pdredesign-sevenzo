@@ -1,4 +1,5 @@
 class V1::InventoriesController < ApplicationController
+
   before_action :authenticate_user!
 
   def index

@@ -1,0 +1,186 @@
+<div class='container modal-form'>
+  <h1>Add Data Entry</h1>
+  <button class='btn btn-link close-modal' ng-click='inventoryDataEntryModal.closeModal()'>&times;</button>
+
+  <hr>
+
+  <form name='form'>
+    <!-- GENERAL DATA QUESTIONS -->
+    <div class='row'>
+      <div class='col-sm-6'>
+        <div class='form-group'>
+          <label for='data-entry-data-type'>
+            Data Type
+          </label>
+          <select 
+              class='form-control'
+              ng-model='inventoryDataEntryModal.dataEntry.general_data_question.data_type'
+              ng-options='name for (id, name) in inventoryDataEntryModal.constants.data_entry.general_data_question.data_type_options'
+              id='data-entry-data-type'></select>
+        </div>
+      </div>
+    </div>
+    <div class='row'>
+      <div class='col-sm-6'>
+        <div class='form-group'>
+          <label for='data-entry-point-of-contact-name'>Point of Contact Name</label>
+          <input
+              type='text'
+              class='form-control'
+              ng-model='inventoryDataEntryModal.dataEntry.general_data_question.point_of_contact_name'
+              id='data-entry-point-of-contact-name'>
+        </div>
+      </div>
+    </div>
+    <div class='row'>
+      <div class='col-sm-6'>
+        <div class='form-group'>
+          <label for='data-entry-point-of-contact-department'>Point of Contact Department</label>
+          <input
+              type='text'
+              class='form-control'
+              ng-model='inventoryDataEntryModal.dataEntry.general_data_question.point_of_contact_department'
+              id='data-entry-point-of-contact-department'>
+        </div>
+      </div>
+    </div>
+    <div class='row'>
+      <div class='col-sm-6'>
+        <div class='form-group'>
+          <label for='data-entry-data-capture'>
+            Data Capture
+            <span class='field-info'>Is this data captured? If no, you may leave the remaining questions blank.</span>
+          </label>
+          <div class='control-list'>
+            <label ng-repeat='(id, name) in inventoryDataEntryModal.constants.data_entry.general_data_question.data_capture_options'>
+              <fake-radio model='inventoryDataEntryModal.dataEntry.general_data_question.data_capture' value='{{name}}'></fake-radio>
+              {{name}}
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DATA ENTRY QUESTIONS -->
+    <div class='row'>
+      <div class='col-sm-12'>
+        <div class='form-group'>
+          <label for='data-entry-who-enters-data'>
+            Who Enters Data
+            <span class='field-info'>Who enters the data? Include name or role types.</span>
+          </label>
+          <textarea
+              class='form-control'
+              ng-model='inventoryDataEntryModal.dataEntry.data_entry_question.who_enters_data'
+              id='data-entry-who-enters-data'>
+          </textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class='row'>
+      <div class='col-sm-12'>
+        <div class='form-group'>
+          <label for='data-entry-how-data-is-entered'>
+            How Data is Entered
+            <span class='field-info'>How is data entered?</span>
+          </label>
+          <textarea
+              class='form-control'
+              ng-model='inventoryDataEntryModal.dataEntry.data_entry_question.how_data_is_entered'
+              id='data-entry-how-data-is-entered'>
+          </textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class='row'>
+      <div class='col-sm-6'>
+        <div class='form-group'>
+          <label for='data-entry-when-data-is-entered'>
+            When Data is Entered
+            <span class='field-info'>How frequently is the data updated?</span>
+          </label>
+          <select 
+              class='form-control'
+              ng-model='inventoryDataEntryModal.dataEntry.data_entry_question.when_data_is_entered'
+              ng-options='name for (id, name) in inventoryDataEntryModal.constants.data_entry.data_entry_question.data_entered_frequencies'
+              id='data-entry-when-data-is-entered'></select>
+        </div>
+      </div>
+    </div>
+
+    <!-- DATA ACCESS QUESTIONS -->
+    <div class='row'>
+      <div class='col-sm-6'>
+        <div class='form-group'>
+          <label for='data-entry-who-access-data'>
+            Who Accesses Data
+            <span class='field-info'>Who can access the data? Include all types of individuals.</span>
+          </label>
+          <select 
+              class='form-control'
+              ng-model='inventoryDataEntryModal.dataEntry.data_access_question.who_access_data'
+              ng-options='name for (id, name) in inventoryDataEntryModal.constants.data_entry.data_access_question.data_accessed_bies'
+              id='data-entry-who-access-data'></select>
+        </div>
+      </div>
+    </div>
+    <div class='row'>
+      <div class='col-sm-12'>
+        <div class='form-group'>
+          <label for='data-entry-how-data-is-accessed'>
+            How Data is Accessed
+            <span class='field-info'>How do those individuals access the data?</span>
+          </label>
+          <textarea
+              class='form-control'
+              ng-model='inventoryDataEntryModal.dataEntry.data_access_question.how_data_is_accessed'
+              id='data-entry-how-data-is-accessed'>
+          </textarea>
+        </div>
+      </div>
+    </div>
+    <div class='row'>
+      <div class='col-sm-12'>
+        <div class='form-group'>
+          <label for='data-entry-why-data-is-accessed'>
+            Why Data is Accessed
+            <span class='field-info'>For what purposes is the data accessed? For whom?</span>
+          </label>
+          <textarea
+              class='form-control'
+              ng-model='inventoryDataEntryModal.dataEntry.data_access_question.why_data_is_accessed'
+              id='data-entry-why-data-is-accessed'>
+          </textarea>
+        </div>
+      </div>
+    </div>
+    <div class='row'>
+      <div class='col-sm-12'>
+        <div class='form-group'>
+          <label for='data-entry-notes'>
+            Notes
+            <span class='field-info'>Reflect on strengths and challenges as needed. Are there any known issues? Variations between schools? Training or rollout notes?</span>
+          </label>
+          <textarea
+              class='form-control'
+              ng-model='inventoryDataEntryModal.dataEntry.data_access_question.notes'
+              id='data-entry-notes'>
+          </textarea>
+        </div>
+      </div>
+    </div>
+
+    <hr>
+
+    <div class='row actions'>
+      <div class='col-md-12'>
+        <div class='form-group'>
+          <button ng-click='inventoryDataEntryModal.closeModal()' class='btn btn-default'>Cancel</button>
+          <button ng-click='inventoryDataEntryModal.save()' class='btn btn-primary'>Save</button>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

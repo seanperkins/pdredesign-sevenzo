@@ -24,5 +24,5 @@ class DataEntryQuestion < ActiveRecord::Base
       scheduled: 'Scheduled'
   }
 
-  validates :when_data_is_entered, inclusion: {in: DataEntryQuestion.data_entered_frequencies.values}
+  validates :when_data_is_entered, inclusion: {in: DataEntryQuestion.data_entered_frequencies.values}, allow_blank: true
 end
