@@ -17,13 +17,28 @@ describe V1::ProductEntriesController do
       assert_response :unauthorized
     end
 
-    it "gets an inventory's product entries" do
-      sign_in inventory.owner
-      get :index, inventory_id: inventory.id
-      product_entries = assigns(:product_entries)
+    context "gets an inventory's product entries" do
+      before do
+        sign_in inventory.owner
+      end
 
-      assert_response :success
-      expect(product_entries.count).to eq(inventory.product_entries.count)
+      it 'in json' do
+        get :index, inventory_id: inventory.id
+        product_entries = assigns(:product_entries)
+
+        assert_response :success
+        expect(product_entries.count).to eq(inventory.product_entries.count)
+      end
+
+      it 'in csv' do
+        get :index, inventory_id: inventory.id, format: :csv
+        product_entries = assigns(:product_entries)
+
+        assert_response :success
+        expect(product_entries.count).to eq(inventory.product_entries.count)
+        expect(response.headers["Content-Disposition"]).to eq("attachment; filename=product_entries.csv")
+        expect(response.headers['Content-Type']).to eq('text/csv')
+      end
     end
   end
 

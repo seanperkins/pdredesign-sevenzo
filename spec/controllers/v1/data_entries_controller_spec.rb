@@ -17,13 +17,28 @@ describe V1::DataEntriesController do
       assert_response :unauthorized
     end
 
-    it "gets an inventory's data entries" do
-      sign_in inventory.owner
-      get :index, inventory_id: inventory.id
-      data_entries = assigns(:data_entries)
+    context "gets an inventory's data entries" do
+      before do
+        sign_in inventory.owner
+      end
 
-      assert_response :success
-      expect(data_entries.count).to eq(inventory.data_entries.count)
+      it 'in json' do
+        get :index, inventory_id: inventory.id
+        data_entries = assigns(:data_entries)
+
+        assert_response :success
+        expect(data_entries.count).to eq(inventory.data_entries.count)
+      end
+
+      it 'in csv' do
+        get :index, inventory_id: inventory.id, format: :csv
+        data_entries = assigns(:data_entries)
+
+        assert_response :success
+        expect(data_entries.count).to eq(inventory.data_entries.count)
+        expect(response.headers["Content-Disposition"]).to eq("attachment; filename=data_entries.csv")
+        expect(response.headers['Content-Type']).to eq('text/csv')
+      end
     end
   end
 
