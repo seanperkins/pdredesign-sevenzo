@@ -1,0 +1,26 @@
+<div class="dashboard">
+  <div class="row row-bg row-header">
+    <div class="col-md-12">
+      <h1 class="greeting">{{inventoryDashboard.inventory.name}}</h1>
+      <h4 class="byline">organized by: <a href="#">{{inventoryDashboard.inventory.facilitator.full_name}} </a>
+        on {{inventoryDashboard.inventory.created_at | amDateFormat:'MMMM Do, YYYY'}}
+      </h4>
+    </div>
+  </div>
+
+  <div class="row">
+    <div id="participants" ng-if="inventoryDashboard.inventory.is_facilitator">
+      <div class="row">
+        <div class="col-md-12 header">
+          <h2>
+            <span class="stat">{{ inventoryDashboard.inventory.participant_count }}</span> Participants
+          </h2>
+        </div>
+      </div>
+      <div class="col-md-6 col-sm-6" ng-repeat="user in inventoryDashboard.participants">
+        <participant user="user"></participant>
+      </div>
+
+    </div>
+  </div>
+</div>
