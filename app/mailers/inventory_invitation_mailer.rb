@@ -10,6 +10,7 @@ class InventoryInvitationMailer < ApplicationMailer
     @district_name = inventory.district.name
     @deadline = inventory.deadline.strftime("%B %d, %Y")
     @inventory_link = invite_url(invite.token)
+    @message = inventory.message.try(:html_safe)
 
     mail(to: invite.email)
   end

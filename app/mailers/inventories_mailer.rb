@@ -6,7 +6,7 @@ class InventoriesMailer < ApplicationMailer
     @district_name = inventory.district.name
     @inventory_link = inventory_url(inventory.id)
     @deadline = inventory.deadline.strftime("%B %d, %Y")
-    @message = inventory.message && inventory.message.html_safe
+    @message = inventory.message.try(:html_safe)
 
     subject = 'Invited to Contribute to Inventory'
     mail(subject: subject, to: participant.user.email) do |format|
