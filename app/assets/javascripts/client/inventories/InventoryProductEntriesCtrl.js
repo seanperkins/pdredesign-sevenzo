@@ -35,7 +35,10 @@
     };
     
     vm.dtOptions = options.withPaginationType('full_numbers').withButtons([
-      'columnsToggle'
+      {
+        extend: 'columnsToggle',
+        columns: '1:visible, 2:visible, 3:visible, 4:visible, 5:visible, 6:visible'
+      }
     ]);
     vm.dtColumns = [
       DTColumnBuilder.newColumn('general_inventory_question.product_name').withTitle('Name'),
