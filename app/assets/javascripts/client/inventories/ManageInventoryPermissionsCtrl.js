@@ -13,8 +13,12 @@
   function ManageInventoryPermissionsCtrl($scope, $stateParams, InventoryPermission) {
     var vm = this;
 
+    vm.extractId = function() {
+      return $stateParams.inventory_id || $stateParams.id;
+    };
+
     vm.loadList = function() {
-      vm.list = InventoryPermission.list({inventory_id: $stateParams.id});
+      vm.list = InventoryPermission.list({inventory_id: vm.extractId()});
     };
     vm.loadList();
 
@@ -37,7 +41,7 @@
 
     vm.savePermissions = function(permissions){
       InventoryPermission.update({
-        inventory_id: $stateParams.id
+        inventory_id: vm.extractId()
       }, { permissions: permissions }, function() {
         $scope.$emit('close-modal');
       });
