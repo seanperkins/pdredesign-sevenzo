@@ -16,11 +16,15 @@
   function CreateService($window, $location, $stateParams, Assessment, Inventory, Participant, InventoryParticipant) {
     var service = this;
 
-    this.loadDistrict = function(district) {
-      this.district = district;
+    service.loadDistrict = function(district) {
+      service.district = district;
     };
 
-    this.extractCurrentDistrict = function(user, entity) {
+    service.extractId = function() {
+      return $stateParams.inventory_id || $stateParams.assessment_id || $stateParams.id;
+    };
+
+    service.extractCurrentDistrict = function(user, entity) {
       var result = user.districts[0];
       for (var i = 0; i < user.districts.length; i++) {
         if (entity.district_id === user.districts[i].id) {
@@ -31,40 +35,40 @@
       return result;
     };
 
-    this.setContext = function(context) {
-      this.context = context;
+    service.setContext = function(context) {
+      service.context = context;
     };
 
-    this.formattedDate = function(date) {
+    service.formattedDate = function(date) {
       return moment(date).format('ll');
     };
 
-    this.loadScope = function(scope) {
-      this.scope = scope;
+    service.loadScope = function(scope) {
+      service.scope = scope;
     };
 
-    this.toggleSavingState = function() {
-      this.scope.$emit('toggle-saving-state');
+    service.toggleSavingState = function() {
+      service.scope.$emit('toggle-saving-state');
     };
 
-    this.alertError = false;
+    service.alertError = false;
 
-    this.emitSuccess = function(message) {
-      this.scope.$emit('add-assign-alert', {type: 'success', msg: message});
+    service.emitSuccess = function(message) {
+      service.scope.$emit('add-assign-alert', {type: 'success', msg: message});
     };
 
-    this.emitError = function(message) {
-      this.scope.$emit('add-assign-alert', {type: 'danger', msg: message});
+    service.emitError = function(message) {
+      service.scope.$emit('add-assign-alert', {type: 'danger', msg: message});
     };
 
-    this.assignAndSaveAssessment = function(assessment) {
+    service.assignAndSaveAssessment = function(assessment) {
       if (assessment.message === null || assessment.message === '') {
-        this.alertError = true;
+        service.alertError = true;
         return;
       }
 
       if ($window.confirm('Are you sure you want to send out the assessment and invite all your participants?')) {
-        this.alertError = false;
+        service.alertError = false;
         this
             .saveAssessment(assessment, true)
             .then(function() {
@@ -73,13 +77,13 @@
       }
     };
 
-    this.saveAssessment = function(assessment, assign) {
+    service.saveAssessment = function(assessment, assign) {
       if (assessment.name === '') {
-        this.emitError('Assessment needs a name!');
+        service.emitError('Assessment needs a name!');
         return;
       }
 
-      assessment.district_id = this.district.id;
+      assessment.district_id = service.district.id;
 
       service.toggleSavingState();
       assessment.due_date = moment($("#due-date").val(), 'MM/DD/YYYY').toISOString();
@@ -89,7 +93,7 @@
       }
 
       return Assessment
-          .save({id: assessment.id}, assessment)
+          .save({id: service.extractId()}, assessment)
           .$promise
           .then(function() {
             service.toggleSavingState();
@@ -100,28 +104,28 @@
           });
     };
 
-    this.assignAndSaveInventory = function(inventory) {
+    service.assignAndSaveInventory = function(inventory) {
       if (inventory.message === null || inventory.message === '') {
-        this.alertError = true;
+        service.alertError = true;
         return;
       }
 
       if ($window.confirm('Are you sure you want to start the inventory and invite all your participants?')) {
-        this.alertError = false;
-        this.saveInventory(inventory, true)
+        service.alertError = false;
+        service.saveInventory(inventory, true)
             .then(function() {
               $location.path('/inventories');
             });
       }
     };
 
-    this.saveInventory = function(inventory, assign) {
+    service.saveInventory = function(inventory, assign) {
       if (inventory.name === '') {
-        this.emitError('Inventory needs a name!');
+        service.emitError('Inventory needs a name!');
         return;
       }
 
-      inventory.district_id = this.district.id;
+      inventory.district_id = service.district.id;
       service.toggleSavingState();
       inventory.deadline = moment($('#due-date').val(), 'MM/DD/YYYY').toISOString();
 
@@ -129,7 +133,7 @@
         inventory.assign = true;
       }
 
-      return Inventory.save({inventory_id: inventory.id}, {inventory: inventory})
+      return Inventory.save({inventory_id: service.extractId()}, {inventory: inventory})
           .$promise
           .then(function() {
             service.toggleSavingState();
@@ -140,60 +144,60 @@
           });
     };
 
-    this.save = function(entity) {
+    service.save = function(entity) {
       if(service.context === 'assessment') {
-        this.saveAssessment(entity);
+        service.saveAssessment(entity);
       } else if(service.context === 'inventory') {
-        this.saveInventory(entity);
+        service.saveInventory(entity);
       }
     };
 
-    this.loadParticipants = function() {
+    service.loadParticipants = function() {
       if (service.context === 'assessment') {
-        return Participant.query({assessment_id: $stateParams.id});
+        return Participant.query({assessment_id: service.extractId()});
       } else if (service.context === 'inventory') {
-        return InventoryParticipant.query({inventory_id: $stateParams.id});
+        return InventoryParticipant.query({inventory_id: service.extractId()});
       }
     };
 
-    this.removeParticipant = function(participant) {
+    service.removeParticipant = function(participant) {
       if (service.context === 'assessment') {
         return Participant.delete({
-          assessment_id: $stateParams.id,
+          assessment_id: service.extractId(),
           id: participant.participant_id
         }, {user_id: participant.id}).$promise;
       } else if (service.context === 'inventory') {
         return InventoryParticipant.delete({
-          inventory_id: $stateParams.id,
+          inventory_id: service.extractId(),
           id: participant.participant_id
         }).$promise;
       }
     };
 
-    this.updateParticipantList = function() {
+    service.updateParticipantList = function() {
       if (service.context === 'assessment') {
-        return Participant.query({assessment_id: $stateParams.id})
+        return Participant.query({assessment_id: service.extractId()})
             .$promise;
       } else if (service.context === 'inventory') {
-        return InventoryParticipant.query({inventory_id: $stateParams.id})
+        return InventoryParticipant.query({inventory_id: service.extractId()})
             .$promise;
       }
     };
 
-    this.updateInvitableParticipantList = function() {
+    service.updateInvitableParticipantList = function() {
       if (service.context === 'assessment') {
-        return Participant.all({assessment_id: $stateParams.id})
+        return Participant.all({assessment_id: service.extractId()})
             .$promise;
       } else if (service.context === 'inventory') {
-        return InventoryParticipant.all({inventory_id: $stateParams.id})
+        return InventoryParticipant.all({inventory_id: service.extractId()})
             .$promise;
       }
     };
 
-    this.createParticipant = function(user) {
+    service.createParticipant = function(user) {
       if (service.context === 'inventory') {
         return InventoryParticipant.create({
-          inventory_id: $stateParams.id
+          inventory_id: service.extractId()
         }, {user_id: user.id}).$promise;
       }
     };
