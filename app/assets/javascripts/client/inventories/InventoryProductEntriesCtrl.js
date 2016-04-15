@@ -23,19 +23,22 @@
     });
 
     //HACK: activate datatables.buttons plugin, we'll be able to get rid of this once we migrate to angular-datatables 0.3.x
-		options.withButtons = function(buttonsOptions) {
-			var options = this;
-			var buttonsPrefix = 'B';
-			options.dom = options.dom ? options.dom : $.fn.dataTable.defaults.sDom;
-			if (options.dom.indexOf(buttonsPrefix) === -1) {
-				options.dom = buttonsPrefix + options.dom;
-			}
-			options.buttons = buttonsOptions;
-			return options;
-		};
+    options.withButtons = function(buttonsOptions) {
+      var options = this;
+      var buttonsPrefix = 'B';
+      options.dom = options.dom ? options.dom : $.fn.dataTable.defaults.sDom;
+      if (options.dom.indexOf(buttonsPrefix) === -1) {
+        options.dom = buttonsPrefix + options.dom;
+      }
+      options.buttons = buttonsOptions;
+      return options;
+    };
     
     vm.dtOptions = options.withPaginationType('full_numbers').withButtons([
-      'columnsToggle'
+      {
+        extend: 'columnsToggle',
+        columns: '1:visible, 2:visible, 3:visible, 4:visible, 5:visible, 6:visible'
+      }
     ]);
     vm.dtColumns = [
       DTColumnBuilder.newColumn('general_inventory_question.product_name').withTitle('Name'),
