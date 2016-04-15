@@ -13,14 +13,18 @@
   function ManageInventoryAccessRequestsCtrl($stateParams, $window, InventoryAccessRequest) {
     var vm = this;
 
+    vm.extractId = function() {
+      return $stateParams.inventory_id || $stateParams.id;
+    };
+
     vm.loadList = function() {
-      vm.list = InventoryAccessRequest.list({inventory_id: $stateParams.id});
+      vm.list = InventoryAccessRequest.list({inventory_id: vm.extractId()});
     };
 
     vm.loadList();
 
     vm.performAccessRequestAction = function(id, status) {
-      var params = {inventory_id: $stateParams.id, id: id};
+      var params = {inventory_id: vm.extractId(), id: id};
 
       InventoryAccessRequest.update(params, {status: status})
           .$promise
