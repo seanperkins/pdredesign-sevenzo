@@ -55,6 +55,8 @@ source 'https://rails-assets.org' do
   gem 'rails-assets-angular-file-upload', '~> 1.1.5'
   gem 'rails-assets-rollbar', '1.2.2'
   gem 'rails-assets-angular-shims-placeholder', '0.4.2'
+  gem 'rails-assets-angular-datatables'
+  gem 'rails-assets-datatables-buttons', '~>1.0.0'
 end
 
 group :development, :test do

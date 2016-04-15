@@ -24,7 +24,6 @@
     $scope.answerTitle = ResponseHelper.answerTitle;
 
     $scope.toggleCategoryAnswers = function(category) {
-      console.log($stateParams);
       category.toggled = !category.toggled;
       angular.forEach(category.questions, function(question, key) {
         ResponseHelper.toggleCategoryAnswers(question);

@@ -10,7 +10,8 @@ PDRClient = angular.module("PDRClient", [
   'ui.utils',
   'ui.router',
   'ui.bootstrap',
-  'xeditable'
+  'xeditable',
+  'datatables'
 ]);
 
 angular.module("PDRClient").run(function ($rootScope, $state, $stateParams) {
