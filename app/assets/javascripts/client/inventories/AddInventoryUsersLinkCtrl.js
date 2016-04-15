@@ -12,6 +12,11 @@
 
   function AddInventoryUsersLinkCtrl($modal, $scope, $stateParams, InventoryParticipant) {
     var vm = this;
+
+    vm.extractId = function() {
+      return $stateParams.inventory_id || $stateParams.id;
+    };
+
     vm.open = function() {
       vm.modal = $modal.open({
         templateUrl: 'client/inventories/add_inventory_users_modal.html',
@@ -26,7 +31,7 @@
     };
 
     vm.loadInvitables = function() {
-      vm.invitables = InventoryParticipant.all({inventory_id: $stateParams.id});
+      vm.invitables = InventoryParticipant.all({inventory_id: vm.extractId()});
     };
     vm.invitablesFound = function() {
       var list = vm.invitables;
