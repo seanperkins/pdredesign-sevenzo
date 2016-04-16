@@ -15,7 +15,8 @@ json.has_access inventory.member?(user: current_user) || inventory.owner == curr
 json.participant_count inventory.participants.count
 json.completed_responses 'No'
 json.message inventory.message || default_inventory_message
-json.messages inventory.messages, :id, :category, :teaser, :sent_at do |message|
+
+json.messages @messages, :id, :category, :teaser, :sent_at do |message|
   json.id       message.id
   json.category message.category
   json.teaser   sanitize(message.teaser, tags: [])

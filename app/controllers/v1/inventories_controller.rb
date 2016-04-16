@@ -9,9 +9,10 @@ class V1::InventoriesController < ApplicationController
   def show
     @inventory = Inventory.where(id: params[:id]).first
     unless @inventory
-      render nothing:true, status: :not_found
+      render nothing: true, status: :not_found
       return
     end
+    @messages = messages
     authorize_action_for @inventory
   end
 
@@ -37,13 +38,13 @@ class V1::InventoriesController < ApplicationController
   end
 
   def update
-    inventory = Inventory.find(params[:id])
+    @inventory = inventory
     authorize_action_for inventory
 
-    saved = inventory.update(inventory_params)
+    saved = @inventory.update(inventory_params)
     if saved
       if inventory_params[:assign]
-        AllInventoryParticipantsNotificationWorker.perform_async(inventory.id)
+        AllInventoryParticipantsNotificationWorker.perform_async(@inventory.id)
       end
       render nothing: true
     else
@@ -66,5 +67,22 @@ class V1::InventoriesController < ApplicationController
     render json: {
         errors: @inventory.errors,
     }, status: :bad_request
+  end
+
+  def inventory
+    Inventory.where(id: params[:id]).first
+  end
+
+  def messages
+    messages = []
+    messages.concat inventory.messages
+    messages.push welcome_message
+  end
+
+  def welcome_message
+    OpenStruct.new(id: nil,
+                   category: 'welcome',
+                   sent_at: inventory.updated_at,
+                   teaser: inventory.message)
   end
 end
