@@ -14,6 +14,6 @@
 
     CreateService.setContext('inventory');
     vm.inventory = inventory;
-    vm.participants =  CreateService.loadParticipants();
+    vm.participants = CreateService.loadParticipants();
   }
 })();
