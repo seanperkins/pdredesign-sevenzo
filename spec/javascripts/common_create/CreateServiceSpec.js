@@ -7,7 +7,9 @@
         $location,
         Assessment;
     beforeEach(function() {
-      module('PDRClient');
+      module('PDRClient', function($provide) {
+        $provide.value('$stateParams', {id: 1});
+      });
       inject(function(_$window_, _$location_, _$injector_) {
         $window = _$window_;
         $location = _$location_;
@@ -193,7 +195,6 @@
             inputField.val('08/01/1997');
             _$compile_(inputField)($scope);
           });
-
           subject.district = {id: 1};
           subject.scope = $scope;
         });
@@ -259,7 +260,7 @@
           beforeEach(function() {
 
             unsuccessfulAssessment = {
-              id: 12,
+              id: 1,
               name: 'This is a test',
               district_id: 19,
               due_date: moment('08/01/1997', 'MM/DD/YYYY').toISOString(),
@@ -272,7 +273,7 @@
 
             subject.district = {id: 1};
 
-            $httpBackend.expect('PUT', '/v1/assessments/12', unsuccessfulAssessment).respond(400);
+            $httpBackend.expect('PUT', '/v1/assessments/1', unsuccessfulAssessment).respond(400);
           });
 
           it('invokes #emitError function with the correct parameter', function() {
