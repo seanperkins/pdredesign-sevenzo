@@ -7,13 +7,14 @@
       </h4>
     </div>
   </div>
-
   <div class="row">
     <div id="participants" ng-if="inventoryDashboard.inventory.is_facilitator">
       <div class="row">
         <div class="col-md-12 header">
-          <h2>
-            <span class="stat">{{ inventoryDashboard.inventory.participant_count }}</span> Participants
+          <h2 ng-pluralize count="inventoryDashboard.inventory.participant_count"
+                           when="{'0': 'No Participants',
+                                  '1': '{} Participant',
+                                  'other': '{} Participants'}">
           </h2>
         </div>
       </div>
@@ -42,9 +43,9 @@
     <div id="messages" ng-if="inventoryDashboard.inventory.messages">
       <div class="col-md-12 header">
         <h2 ng-pluralize count="inventoryDashboard.inventory.messages.length"
-                        when="{'0': 'No Sent Messages',
-                               '1': '{} Sent Message',
-                               'other': '{} Sent Messages'}">
+                          when="{'0': 'No Sent Messages',
+                                 '1': '{} Sent Message',
+                                 'other': '{} Sent Messages'}">
 
         </h2>
       </div>
