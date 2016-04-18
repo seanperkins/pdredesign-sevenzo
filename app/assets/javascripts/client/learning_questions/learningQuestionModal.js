@@ -8,9 +8,10 @@
     return {
       restrict: 'E',
       scope: {
-        reminder: '@'
+        reminder: '@',
+        context: '@'
       },
-      templateUrl: 'add_learning_question.html',
+      templateUrl: 'client/learning_questions/add_learning_question.html',
       link: function(scope) {
         scope.closeModal = function() {
           scope.$emit('close-learning-question-modal');
