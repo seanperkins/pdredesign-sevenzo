@@ -21,7 +21,10 @@ describe V1::AnalysesController do
       sign_in inventory.owner
 
       post :create,
-           inventory_id: inventory.id
+           inventory_id: inventory.id,
+           name: "name",
+           district_id: 1,
+           deadline: "11/14/2042"
 
       assert_response 201
     end

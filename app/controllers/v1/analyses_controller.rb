@@ -18,11 +18,14 @@ class V1::AnalysesController < ApplicationController
   end
 
   def render_error
-    @errors = @analyses.errors
+    @errors = @analysis.errors
     render 'v1/shared/errors', status: 422
   end
 
   def analysis_params
+    # converting from US format because that's what the frontend is sending us
+    params[:deadline] = Date.strptime(params[:deadline], '%m/%d/%Y')
+
     params.permit(
       :name,
       :district_id,

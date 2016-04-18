@@ -12,7 +12,18 @@
       scope: {},
       templateUrl: 'client/inventories/analysis_modal.html',
       controller: 'AnalysisModalCtrl',
-      controllerAs: 'analysisModal'
+      controllerAs: 'analysisModal',
+      link: analysisModalLink
     }
+  }
+
+  function analysisModalLink (scope, element, attributes, controller) {
+    var $datetime = element.find('.datetime');
+    var $datetimePicker = $datetime.datetimepicker({pickTime: false});
+    $datetimePicker.on('dp.change', function () {
+      $datetime.find('input').trigger('change');
+    });
+
+    controller.updateData();
   }
 })();

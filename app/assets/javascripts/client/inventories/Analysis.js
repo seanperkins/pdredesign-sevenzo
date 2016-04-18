@@ -8,10 +8,16 @@
   ];
 
   function Analysis($resource, UrlService) {
-    var methodOptions = {
-      method: 'POST'
+    var paramDefaults = {
+      inventory_id: '@inventory_id'
     };
 
-    return $resource(UrlService.url('inventories/:inventory_id/product_entries/:product_entry_id'), null, methodOptions);
+    var methodOptions = {
+      'create': {
+        method: 'POST'
+      }
+    };
+
+    return $resource(UrlService.url('inventories/:inventory_id/analyses'), paramDefaults, methodOptions);
   }
 })();

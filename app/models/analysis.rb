@@ -17,5 +17,5 @@ class Analysis < ActiveRecord::Base
 
   belongs_to :inventory
 
-  validates_presence_of :inventory
+  validates_presence_of :name, :deadline, :inventory
 end

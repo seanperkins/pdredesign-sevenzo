@@ -4,16 +4,51 @@
 
   <hr>
 
-  <form name='form'>
+  <div class='row'>
+    <div class='col-sm-12'>
+      <p>Facilitate the Data &amp; Tech Analysis process for your district by creating a new analysis and selecting an inventory to connect to it. Click here to view current analyses for your district or to participate in an existing analysis.</p>
+    </div>
+  </div>
+
+  <form name='form' ng-submit='analysisModal.save()'>
     <div class='row'>
       <div class='col-sm-6'>
         <div class='form-group'>
-          <label for='analysis-name'>Analysis Name</label>
+          <label for='analysis-name' class="required">Analysis Name</label>
           <input
               type='text'
+              required
               class='form-control'
               ng-model='analysisModal.analysis.name'
               id='analysis-name'>
+        </div>
+      </div>
+      <div class='col-sm-6'>
+        <div class='form-group'>
+          <label for='analysis-deadline' class="required">Due Date</label>
+          <div class="input-group datetime">
+            <input
+                id="analysis-deadline"
+                required
+                ng-model="analysisModal.analysis.deadline"
+                type="text"
+                class="form-control"
+                data-format="dd/MM/yyyy hh:mm:ss">
+            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class='row'>
+      <div class='col-sm-6'>
+        <div class='form-group'>
+          <label for='analysis-inventory-id' class="required">Inventory</label>
+          <select 
+              class='form-control'
+              required
+              ng-model='analysisModal.analysis.inventory_id'
+              ng-options='inventory.id as inventory.name for inventory in analysisModal.inventories'
+              id='analysis-inventory-id'></select>
         </div>
       </div>
     </div>
@@ -24,7 +59,7 @@
       <div class='col-md-12'>
         <div class='form-group'>
           <button ng-click='analysisModal.closeModal()' class='btn btn-default'>Cancel</button>
-          <button ng-click='analysisModal.save()' class='btn btn-primary'>Save</button>
+          <input type="submit" value="Save" class="btn btn-primary">
         </div>
       </div>
     </div>
