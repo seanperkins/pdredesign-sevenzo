@@ -9,5 +9,8 @@
   ];
 
   function InventorySidebarCtrl(inventory) {
+    var vm = this;
+    vm.inventory = inventory;
+
   }
 })();
