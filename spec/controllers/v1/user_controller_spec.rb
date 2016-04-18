@@ -205,7 +205,6 @@ describe V1::UserController do
 
       expect(response).to have_http_status(:unprocessable_entity)
       expect(json['invitation_token']).to eq(invitation.token)
-      expect(json['invitation_type']).to eq('user_invitation')
     end 
 
     it 'returns token to user invite when trying to signup with existing inventory invitation' do 
@@ -220,7 +219,6 @@ describe V1::UserController do
 
       expect(response).to have_http_status(:unprocessable_entity)
       expect(json['invitation_token']).to eq(invitation.token)
-      expect(json['invitation_type']).to eq('inventory_invitation')
     end 
   end
 
