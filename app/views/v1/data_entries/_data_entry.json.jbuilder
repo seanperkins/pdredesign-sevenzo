@@ -1,4 +1,5 @@
 json.id data_entry.id
+json.name data_entry.name
 json.created_at data_entry.created_at
 json.updated_at data_entry.updated_at
 json.inventory_id data_entry.inventory_id

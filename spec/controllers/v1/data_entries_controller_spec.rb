@@ -89,6 +89,7 @@ describe V1::DataEntriesController do
 
       post :create,
            inventory_id: inventory.id,
+           name: 'foo',
            general_data_question_attributes: {
              data_capture: GeneralDataQuestion.data_capture_options.values.first
            },
