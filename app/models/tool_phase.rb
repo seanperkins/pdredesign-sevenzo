@@ -3,7 +3,7 @@
 # Table name: tool_phases
 #
 #  id            :integer          not null, primary key
-#  title         :string(255)
+#  title         :string
 #  description   :text
 #  display_order :integer
 #

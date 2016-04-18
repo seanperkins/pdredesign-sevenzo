@@ -9,6 +9,7 @@
 #  updated_at   :datetime
 #  invited_at   :datetime
 #  role         :string
+#  reminded_at  :datetime
 #
 
 FactoryGirl.define do
