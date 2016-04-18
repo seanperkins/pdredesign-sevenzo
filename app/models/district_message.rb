@@ -3,10 +3,10 @@
 # Table name: district_messages
 #
 #  id           :integer          not null, primary key
-#  name         :string(255)
-#  address      :string(255)
-#  sender_name  :string(255)
-#  sender_email :string(255)
+#  name         :string
+#  address      :string
+#  sender_name  :string
+#  sender_email :string
 #  created_at   :datetime
 #  updated_at   :datetime
 #

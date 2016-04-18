@@ -8,7 +8,7 @@
 #  roles         :string           default([]), is an Array
 #  created_at    :datetime
 #  updated_at    :datetime
-#  token         :string(255)
+#  token         :string
 #
 
 require 'spec_helper'
