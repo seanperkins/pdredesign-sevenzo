@@ -3,7 +3,11 @@ class V1::ProductEntriesController < ApplicationController
 
   def index
     @product_entries = product_entries
-    render template: 'v1/product_entries/index'
+
+    respond_to do |format|
+      format.json { render template: 'v1/product_entries/index' }
+      format.csv  { render csv: 'product_entries', template: 'v1/product_entries/index' }
+    end
   end
 
   def show
