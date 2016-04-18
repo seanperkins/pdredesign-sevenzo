@@ -23,7 +23,7 @@ describe V1::AnalysesController do
       post :create,
            inventory_id: inventory.id,
            name: "name",
-           district_id: 1,
+           district_id: inventory.district.id,
            deadline: "11/14/2042"
 
       assert_response 201
