@@ -5,11 +5,19 @@
       .controller('InventoryScheduleCtrl', InventoryScheduleCtrl);
 
   InventoryScheduleCtrl.$inject = [
-    '$scope'
+    '$scope',
+    '$modal'
   ];
 
-  function InventoryScheduleCtrl($scope) {
+  function InventoryScheduleCtrl($scope, $modal) {
     var vm = this;
+
+    vm.displayLearningQuestions = function () {
+      vm.modal = $modal.open({
+        template: '<learning-question-modal context="inventory" reminder="false" />',
+        scope: $scope
+      });
+    };
 
     $scope.$watch('inventory', function(val) {
       var date = moment(val.due_date);
