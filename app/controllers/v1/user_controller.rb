@@ -13,11 +13,12 @@ class V1::UserController < ApplicationController
       organization_ids: extract_ids_from_params(:organization_ids)
     ))
 
-    user_invitation = UserInvitation.find_by(email: user_params[:email])
+    user_invitation = [UserInvitation.find_by(email: user_params[:email]), InventoryInvitation.find_by(email: user_params[:email])].find{|invitation| !invitation.nil?}
     if user_invitation.present?
       @user.errors.add(:base, "It seems you have already been invited. Please continue your registration here.")
       render json: @user.errors.to_h.merge(
-        invitation_token: user_invitation.token
+        invitation_token: user_invitation.token,
+        invitation_type: user_invitation.class.name.underscore
       ), status: :unprocessable_entity
     elsif @user.save
       send_notification_email
