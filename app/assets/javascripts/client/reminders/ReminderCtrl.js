@@ -14,6 +14,10 @@
 
     ReminderService.setContext($scope.context);
 
+    vm.closeModal = function() {
+      $scope.$emit('close-reminder-modal');
+    };
+
     vm.sendReminder = function(message) {
       ReminderService.sendReminder(message)
           .then(function() {
