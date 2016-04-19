@@ -90,6 +90,7 @@ describe V1::ProductEntriesController do
       post :create,
            inventory_id: inventory.id,
            general_inventory_question_attributes: {
+             product_name: 'foo',
              data_type: [GeneralInventoryQuestion.product_types.first]
            },
            usage_question_attributes: {

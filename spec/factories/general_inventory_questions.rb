@@ -17,5 +17,7 @@
 #
 
 FactoryGirl.define do
-  factory :general_inventory_question
+  factory :general_inventory_question do
+    product_name { Faker::Lorem.word }
+  end
 end
