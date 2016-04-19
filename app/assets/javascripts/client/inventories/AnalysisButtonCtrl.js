@@ -22,5 +22,9 @@
     $scope.$on('close-analysis-modal', function() {
       vm.modalInstance.dismiss('cancel');
     });
+
+    $scope.$on('close-inventory-modal', function() {
+      vm.modalInstance.dismiss('cancel');
+    });
   }
 })();
