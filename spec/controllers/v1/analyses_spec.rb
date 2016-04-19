@@ -23,7 +23,6 @@ describe V1::AnalysesController do
       post :create,
            inventory_id: inventory.id,
            name: "name",
-           district_id: inventory.district.id,
            deadline: "11/14/2042"
 
       expect(response).to have_http_status(:created)

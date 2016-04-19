@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160418161252) do
+ActiveRecord::Schema.define(version: 20160419175011) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -27,14 +27,12 @@ ActiveRecord::Schema.define(version: 20160418161252) do
 
   create_table "analyses", force: :cascade do |t|
     t.text     "name"
-    t.integer  "district_id"
     t.datetime "deadline"
     t.integer  "inventory_id"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
-  add_index "analyses", ["district_id"], name: "index_analyses_on_district_id", using: :btree
   add_index "analyses", ["inventory_id"], name: "index_analyses_on_inventory_id", using: :btree
 
   create_table "answers", force: :cascade do |t|
@@ -587,7 +585,6 @@ ActiveRecord::Schema.define(version: 20160418161252) do
   add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree
   add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
 
-  add_foreign_key "analyses", "districts"
   add_foreign_key "analyses", "inventories"
   add_foreign_key "inventory_access_requests", "inventories", on_update: :cascade, on_delete: :cascade
   add_foreign_key "inventory_access_requests", "users", on_update: :cascade, on_delete: :cascade

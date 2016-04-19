@@ -4,7 +4,6 @@
 #
 #  id           :integer          not null, primary key
 #  name         :text
-#  district_id  :integer
 #  deadline     :datetime
 #  created_at   :datetime
 #  updated_at   :datetime

@@ -28,7 +28,6 @@ class V1::AnalysesController < ApplicationController
 
     params.permit(
       :name,
-      :district_id,
       :deadline
     )
   end
