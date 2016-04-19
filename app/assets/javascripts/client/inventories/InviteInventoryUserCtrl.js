@@ -27,6 +27,7 @@
           .$promise
           .then(function() {
             $scope.$emit('invite-sent');
+            $scope.$emit('update_participants');
           })
           .catch(function(response) {
             var errors = response.data.errors;
