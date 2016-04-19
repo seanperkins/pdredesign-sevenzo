@@ -37,11 +37,14 @@ class V1::InventoriesController < ApplicationController
   end
 
   def update
-    @inventory = Inventory.find(params[:id])
-    authorize_action_for @inventory
+    inventory = Inventory.find(params[:id])
+    authorize_action_for inventory
 
-    saved = @inventory.update(inventory_params)
+    saved = inventory.update(inventory_params)
     if saved
+      if inventory_params[:assign]
+        AllInventoryParticipantsNotificationWorker.perform_async(inventory.id)
+      end
       render nothing: true
     else
       render_error
@@ -56,7 +59,7 @@ class V1::InventoriesController < ApplicationController
 
   private
   def inventory_params
-    params.require(:inventory).permit(:name, :deadline, :district_id, district: [:id])
+    params.require(:inventory).permit(:name, :deadline, :district_id, :message, :assign, district: [:id])
   end
 
   def render_error

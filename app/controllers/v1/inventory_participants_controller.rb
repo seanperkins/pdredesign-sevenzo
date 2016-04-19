@@ -24,9 +24,10 @@ class V1::InventoryParticipantsController < ApplicationController
   end
 
   def all
-    district = inventory.district
-    participant_ids = inventory.members.pluck(:user_id)
-    @users = User.includes(:districts).where(districts: {id: district.id}).where.not(id: participant_ids)
+    participant_ids = inventory.members.select(:user_id).pluck(:user_id)
+    @users = User.joins(:districts)
+                 .where(districts: {id: inventory.district.id})
+                 .where.not(id: participant_ids)
                  .reject { |u| u.role.to_sym == :network_partner }
   end
   authority_actions all: 'update'

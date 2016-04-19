@@ -9,6 +9,8 @@
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
 #  owner_id    :integer
+#  message     :text
+#  assigned_at :datetime
 #
 
 require 'spec_helper'
@@ -19,6 +21,8 @@ describe Inventory do
   it { is_expected.to have_many(:access_requests) }
   it { is_expected.to have_many(:facilitators) }
   it { is_expected.to have_many(:participants) }
+  it { is_expected.to have_many(:messages) }
+
   it { is_expected.to belong_to(:district) }
   it { is_expected.to belong_to(:owner) }
 

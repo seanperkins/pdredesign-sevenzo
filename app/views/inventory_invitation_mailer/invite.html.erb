@@ -1,44 +1,40 @@
 <table class="row">
   <tr>
     <td class="wrapper last">
-
-    <table class="twelve columns">
-      <tr>
-        <td class="left-text-pad">
-          <h2>Hello <%= @first_name %>, </h2>
-          <br>
-
-          <p class="lead">
+      <table class="twelve columns">
+        <tr>
+          <td class="left-text-pad">
+            <h2>Hello <%= @first_name %>,</h2>
+            <br>
             <h6>
-            <b><%= @facilitator_name %></b>
+              <b><%= @facilitator_name %></b>
               has invited you to participate in <%= @inventory_name %> for <%= @district_name %>.
             </h6>
-          </p>
-          <br>
-          <br>
+            <br>
+            <br>
 
-          <p class="lead">
-            <h6><b>Please complete this Tech Audit by <%= @due_date %>.</b></h6>
-          </p>
-          <br>
-          <br>
+            <p class="lead"><%= @message %></p>
+            <h6><b>Please complete this inventory by <%= @deadline %>.</b></h6>
+            <br>
+            <br>
 
-          <p class="lead"> 
             <center>
-              <a href="<%= @inventory_link %>" taget="_blank" class="button">
-                Begin Tech Audit Now
-              </a> 
+              <a href="<%= @inventory_link %>" target="_blank" class="button">
+                Begin Inventory Now
+              </a>
             </center>
-          </p>
-          <br>
-          <br>
-          PDredesign is a community of educators and designers committed to continuously improving professional development systems to better support teachers. Alongside leaders from classrooms, schools, charters, districts, and partner organizations across the country, we are building an open digital toolkit and community of practice to support districts to redesign systems that meet the needs of educators and students.
-          <br>
-        </td>
-        <td class="expander"></td>
-      </tr>
-    </table>
-
+            <br>
+            <br>
+            PDredesign is a digital toolkit dedicated to improving professional development for educators. The
+            PDredesign tools were designed with school districts who wanted to support their teachers through more
+            relevant, flexible, timely and collaborative professional development opportunities. The toolkit is freely
+            available on PDredesign.org and can be used by any school district to transform existing professional
+            development systems to better support teachers in the classroom.
+            <br>
+          </td>
+          <td class="expander"></td>
+        </tr>
+      </table>
     </td>
   </tr>
 </table>
