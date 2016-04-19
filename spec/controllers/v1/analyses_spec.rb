@@ -14,7 +14,7 @@ describe V1::AnalysesController do
       sign_out :user
 
       post :create, inventory_id: inventory.id
-      assert_response :unauthorized
+      expect(response).to have_http_status(:unauthorized)
     end
 
     it 'creates a record' do
@@ -26,7 +26,7 @@ describe V1::AnalysesController do
            district_id: inventory.district.id,
            deadline: "11/14/2042"
 
-      assert_response 201
+      expect(response).to have_http_status(:created)
     end
   end
 end
