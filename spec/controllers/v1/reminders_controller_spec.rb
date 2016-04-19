@@ -26,7 +26,7 @@ describe V1::RemindersController do
 
     it 'calls the ReminderNotificationWorker' do
       expect(ReminderNotificationWorker).to receive(:perform_async)
-        .with(assessment, 'Some reminder')
+        .with(assessment.id, assessment.class.to_s, 'Some reminder')
       post :create, assessment_id: assessment.id, message: 'Some reminder'
     end
   end
