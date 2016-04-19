@@ -14,15 +14,7 @@
       },
       templateUrl: 'client/reminders/reminder_modal.html',
       controller: 'ReminderModalCtrl',
-      controllerAs: 'reminderModal',
-      link: reminderModalLink
+      controllerAs: 'reminderModal'
     }
-  }
-
-  function reminderModalLink(scope, element, attributes, controller) {
-    var parent = scope.$parent;
-    controller.closeModal = function() {
-      parent.modal.dismiss('cancel');
-    };
   }
 })();

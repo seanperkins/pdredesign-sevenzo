@@ -21,7 +21,7 @@ class InventoryInvitationMailer < ApplicationMailer
     @inventory_name = inventory.name
     @district_name = inventory.district.name
     @deadline = inventory.deadline.strftime("%B %d, %Y")
-    @inventory_link = invite_url(invite.token)
+    # @inventory_link = invite_url(invite.token)
     @message = message.try(:html_safe)
 
     mail(subject: 'Inventory Reminder',
