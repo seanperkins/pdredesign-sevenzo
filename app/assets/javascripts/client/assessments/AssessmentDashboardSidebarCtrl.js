@@ -49,6 +49,11 @@
             });
         };
 
+        $scope.$on('close-reminder-modal', function() {
+          $scope.modal.dismiss('cancel');
+        });
+
+
         $scope.close = function () {
             $scope.modal.dismiss('cancel');
         };

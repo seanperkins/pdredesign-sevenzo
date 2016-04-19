@@ -17,6 +17,6 @@ class V1::InventoryRemindersController < ApplicationController
   end
 
   def inventory
-    Inventory.find(params[:assessment_id])
+    Inventory.find(params[:inventory_id])
   end
 end

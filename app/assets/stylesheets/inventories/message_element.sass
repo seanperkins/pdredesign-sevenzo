@@ -1,5 +1,4 @@
 #messages
-
   margin-top: 1.875em
   .header
     font-size: 1.875em
@@ -44,12 +43,12 @@
       padding: 1.25em 0em
 
 .row-even
-  display: table
   background-color: $off-white
+  margin-bottom: 0.6em
+  display: flex
+  flex-direction: row
   .col-even
-    display: table-cell
-    vertical-align: middle
-    float: none
+    flex-grow: 2
     h4
       .subject
         text-transform: capitalize
@@ -67,9 +66,10 @@
       margin-bottom: 0.3125em
 
   .col-icon
-    @extend .col-even
+    display: flex
+    flex-direction: column
+    align-items: center
+    justify-content: center
     background-color: $light-grey
     i
       color: white
-      text-align: center
-      vertical-align: middle
