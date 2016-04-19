@@ -1,6 +1,15 @@
 class ReminderNotificationWorker
   include ::Sidekiq::Worker
 
+  def perform(id, type, message)
+    case type
+      when 'Assessment'
+        perform_for_assessment(id, message)
+      when 'Inventory'
+        perform_for_inventory(id, message)
+    end
+  end
+
   def perform_for_assessment(assessment_id, message)
     assessment = find_assessment(assessment_id)
 

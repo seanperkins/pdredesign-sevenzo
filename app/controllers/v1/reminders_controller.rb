@@ -5,12 +5,13 @@ class V1::RemindersController < ApplicationController
 
   def create
     ReminderNotificationWorker
-      .perform_async(assessment.id, message)
+        .perform_async(assessment.id, assessment.class.to_s, message)
     render nothing: true
   end
+
   authority_actions create: 'update'
 
-  private 
+  private
   def message
     params[:message]
   end
