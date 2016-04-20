@@ -2,15 +2,16 @@
 #
 # Table name: inventories
 #
-#  id          :integer          not null, primary key
-#  name        :text             not null
-#  deadline    :datetime         not null
-#  district_id :integer          not null
-#  created_at  :datetime         not null
-#  updated_at  :datetime         not null
-#  owner_id    :integer
-#  message     :text
-#  assigned_at :datetime
+#  id                          :integer          not null, primary key
+#  name                        :text             not null
+#  deadline                    :datetime         not null
+#  district_id                 :integer          not null
+#  created_at                  :datetime         not null
+#  updated_at                  :datetime         not null
+#  owner_id                    :integer
+#  message                     :text
+#  assigned_at                 :datetime
+#  total_participant_responses :integer          default(0), not null
 #
 
 FactoryGirl.define do

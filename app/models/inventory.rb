@@ -2,15 +2,16 @@
 #
 # Table name: inventories
 #
-#  id          :integer          not null, primary key
-#  name        :text             not null
-#  deadline    :datetime         not null
-#  district_id :integer          not null
-#  created_at  :datetime         not null
-#  updated_at  :datetime         not null
-#  owner_id    :integer
-#  message     :text
-#  assigned_at :datetime
+#  id                          :integer          not null, primary key
+#  name                        :text             not null
+#  deadline                    :datetime         not null
+#  district_id                 :integer          not null
+#  created_at                  :datetime         not null
+#  updated_at                  :datetime         not null
+#  owner_id                    :integer
+#  message                     :text
+#  assigned_at                 :datetime
+#  total_participant_responses :integer          default(0), not null
 #
 
 class Inventory < ActiveRecord::Base
@@ -42,9 +43,9 @@ class Inventory < ActiveRecord::Base
   accepts_nested_attributes_for :product_entries
   accepts_nested_attributes_for :data_entries
 
-  has_many :members, class_name:'InventoryMember'
-  has_many :participants, -> { where(role: 'participant') }, class_name:'InventoryMember'
-  has_many :facilitators, -> { where(role: 'facilitator') }, class_name:'InventoryMember'
+  has_many :members, class_name: 'InventoryMember'
+  has_many :participants, -> { where(role: 'participant') }, class_name: 'InventoryMember'
+  has_many :facilitators, -> { where(role: 'facilitator') }, class_name: 'InventoryMember'
 
   attr_accessor :assign
 
@@ -72,7 +73,10 @@ class Inventory < ActiveRecord::Base
     :assessment
   end
 
-  private
+  def percent_completed
+    (total_participant_responses / participants.count.to_d) * 100
+  end
+
   def add_facilitator_owner
     return unless owner
     facilitators.create(user: owner)
