@@ -1,19 +1,23 @@
 class V1::InventoriesController < ApplicationController
 
-  before_action :authenticate_user!
+  before_action :authenticate_user!, except: :show
 
   def index
     @inventories = Inventory.where(district_id: current_user.districts)
   end
 
   def show
-    @inventory = Inventory.where(id: params[:id]).first
+    id = params[:id]
+    @inventory = Inventory.where('inventories.id = ? OR inventories.share_token = ?', id.to_i, id).first
     unless @inventory
       render nothing: true, status: :not_found
       return
     end
     @messages = messages
-    authorize_action_for @inventory
+    unless @inventory.share_token == id
+      authenticate_user!
+      authorize_action_for @inventory
+    end
   end
 
   def create

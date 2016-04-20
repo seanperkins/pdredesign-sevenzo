@@ -16,10 +16,9 @@ json.consensus do
 end
 json.percent_completed inventory.percent_completed
 json.completed_responses inventory.total_participant_responses
-json.has_access inventory.member?(user: current_user) || inventory.owner == current_user
+json.has_access inventory.member?(user: current_user) || inventory.owner == current_user if current_user
 json.participant_count inventory.participants.count
-json.message inventory.message || default_inventory_message
-
+json.message inventory.message || default_inventory_message if current_user
 json.messages @messages, :id, :category, :teaser, :sent_at do |message|
   json.id       message.id
   json.category message.category

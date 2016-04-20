@@ -89,16 +89,35 @@ describe V1::InventoriesController do
   end
 
   describe 'GET #show' do
-    context 'when not authenticated' do
+    context 'anonymous user' do
+      context 'non existing inventory' do
+        before(:each) do
+          get :show, id: 1, format: :json
+        end
 
-      before(:each) do
-        get :show, id: 1, format: :json
+        it { expect(response).to have_http_status(:not_found) }
       end
 
-      it { expect(response).to have_http_status(:unauthorized) }
+      context 'existing inventory' do
+        let(:inventory) { FactoryGirl.create(:inventory) }
+
+        context 'by id' do
+          before(:each) do
+            get :show, id: inventory.id, format: :json
+          end
+          it { expect(response).to have_http_status(:unauthorized) }
+        end
+
+        context 'by share_token' do
+          before(:each) do
+            get :show, id: inventory.share_token, format: :json
+          end
+          it { expect(response).to have_http_status(:ok) }
+        end
+      end
     end
 
-    context 'when authenticated' do
+    context 'authenticated user' do
       context 'non existing inventory' do
         let(:user) { FactoryGirl.create(:user) }
 
