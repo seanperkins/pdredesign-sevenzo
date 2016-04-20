@@ -291,6 +291,7 @@ ActiveRecord::Schema.define(version: 20160427093012) do
     t.text     "message"
     t.datetime "assigned_at"
     t.integer  "total_participant_responses", default: 0, null: false
+    t.string   "share_token"
   end
 
   create_table "inventory_access_requests", force: :cascade do |t|
@@ -528,7 +529,7 @@ ActiveRecord::Schema.define(version: 20160427093012) do
   add_index "scores", ["response_id", "question_id"], name: "index_scores_on_response_id_and_question_id", unique: true, using: :btree
 
   create_table "sessions", force: :cascade do |t|
-    t.string   "session_id", null: false
+    t.string   "session_id", limit: 255, null: false
     t.text     "data"
     t.datetime "created_at"
     t.datetime "updated_at"
