@@ -1,5 +1,13 @@
 class AnalysisAuthorizer < ApplicationAuthorizer
+  def readable_by?(user)
+    is_owner_or_facilitator_of_inventory?(user)
+  end
+
   def creatable_by?(user)
+    is_owner_or_facilitator_of_inventory?(user)
+  end
+
+  def updatable_by?(user)
     is_owner_or_facilitator_of_inventory?(user)
   end
 

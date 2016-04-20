@@ -10,10 +10,11 @@
     'Assessment',
     'Inventory',
     'Participant',
-    'InventoryParticipant'
+    'InventoryParticipant',
+    'Analysis'
   ];
 
-  function CreateService($window, $location, $stateParams, Assessment, Inventory, Participant, InventoryParticipant) {
+  function CreateService($window, $location, $stateParams, Assessment, Inventory, Participant, InventoryParticipant, Analysis) {
     var service = this;
 
     service.loadDistrict = function(district) {
@@ -144,11 +145,33 @@
           });
     };
 
+    service.saveAnalysis = function(analysis) {
+      if (analysis.name === '') {
+        this.emitError('Analysis needs a name!');
+        return;
+      }
+
+      service.toggleSavingState();
+      analysis.deadline = moment($('#due-date').val(), 'MM/DD/YYYY').toISOString();
+
+      return Analysis.save({inventory_id: analysis.inventory_id}, analysis)
+          .$promise
+          .then(function() {
+            service.toggleSavingState();
+            service.emitSuccess('Analysis Saved!');
+          }, function() {
+            service.toggleSavingState();
+            service.emitError('Could not save analysis');
+          });
+    };
+
     service.save = function(entity) {
       if(service.context === 'assessment') {
         service.saveAssessment(entity);
       } else if(service.context === 'inventory') {
         service.saveInventory(entity);
+      } else if(service.context === 'analysis') {
+        service.saveAnalysis(entity);
       }
     };
 

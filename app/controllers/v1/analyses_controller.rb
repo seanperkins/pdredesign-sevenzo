@@ -1,12 +1,29 @@
 class V1::AnalysesController < ApplicationController
   before_action :authenticate_user!
 
+  def index
+    @analysis = inventory.analysis
+    authorize_action_for @analysis
+    render template: 'v1/analyses/show', status: 200
+  end
+
   def create
     @analysis = inventory.build_analysis(analysis_params)
     authorize_action_for @analysis
 
     if @analysis.save
       render template: 'v1/analyses/show', status: 201
+    else
+      render_error
+    end
+  end
+
+  def update
+    @analysis = inventory.analysis
+    authorize_action_for @analysis
+
+    if @analysis.update(analysis_params)
+      render nothing: true
     else
       render_error
     end
@@ -24,7 +41,12 @@ class V1::AnalysesController < ApplicationController
 
   def analysis_params
     # converting from US format because that's what the frontend is sending us
-    params[:deadline] = Date.strptime(params[:deadline], '%m/%d/%Y')
+    params[:deadline] = begin
+      Date.strptime(params[:deadline], '%m/%d/%Y')
+    rescue
+      # because the frontend sends dates in different ways
+      Date.parse(params[:deadline])
+    end
 
     params.permit(
       :name,

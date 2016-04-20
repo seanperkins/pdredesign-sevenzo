@@ -13,8 +13,14 @@
     };
 
     var methodOptions = {
+      'query': {
+        method: 'GET'
+      },
       'create': {
         method: 'POST'
+      },
+      'save': {
+        method: 'PUT'
       }
     };
 

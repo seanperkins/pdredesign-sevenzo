@@ -96,7 +96,9 @@ PdrServer::Application.routes.draw do
           get 'exists', to: 'learning_questions#exists'
         end
       end
-      resources :analyses, only: [:create]
+      resources :analyses, only: [:index,:create] do
+        put '/', to: "analyses#update", on: :collection
+      end
 
       member do
         get :district_product_entries
