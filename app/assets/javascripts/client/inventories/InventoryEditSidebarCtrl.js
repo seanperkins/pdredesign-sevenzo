@@ -40,13 +40,10 @@
     vm.saveInventoryResponse = function() {
       Inventory.saveResponse({inventory_id: $stateParams.inventory_id})
           .$promise
-          .then(function(body) {
-            console.log(body);
+          .then(function() {
             $state.transitionTo('inventory_dashboard', {
               inventory_id: $stateParams.inventory_id
             });
-          }).catch(function(err) {
-            console.log(err);
           });
     };
 

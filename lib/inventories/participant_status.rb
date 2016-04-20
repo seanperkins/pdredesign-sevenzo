@@ -14,8 +14,9 @@ module Inventories
 
     def date
       return participant.inventory.updated_at if pending?
-      participant.invited_at if invited?
-      # TODO:  In-progress state
+      return participant.invited_at if invited?
+      return participant.inventory_response.updated_at if in_progress?
+      participant.inventory_response.submitted_at
     end
 
     def pending?
@@ -24,6 +25,10 @@ module Inventories
 
     def invited?
       status == :invited
+    end
+
+    def in_progress?
+      status == :in_progress
     end
 
     def to_s

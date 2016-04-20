@@ -74,20 +74,14 @@ class V1::InventoriesController < ApplicationController
 
   def save_response
     member = inventory.members.where(user: current_user).first
-    if member.inventory_response
-      render json: {
-          errors: ['You have already responded to this inventory.']
-      }, status: :bad_request
+    response = InventoryResponse.find_or_create_by(inventory_member: member)
+    if response.save
+      render nothing: true
     else
-      response = InventoryResponse.create(inventory_member: member)
-      if response.save
-        render nothing: true
-      else
-        render json: {
-            errors: response.errors,
-            status: :bad_request
-        }
-      end
+      render json: {
+          errors: response.errors,
+          status: :bad_request
+      }
     end
   end
 
