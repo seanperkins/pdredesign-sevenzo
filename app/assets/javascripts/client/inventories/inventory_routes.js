@@ -58,7 +58,8 @@
           templateUrl: 'client/inventories/inventory_edit.html'
         },
         'sidebar': {
-          controller: 'SidebarCtrl',
+          controller: 'InventoryEditSidebarCtrl',
+          controllerAs: 'inventoryEditSidebar',
           templateUrl: 'client/inventories/edit_sidebar.html'
         }
       }

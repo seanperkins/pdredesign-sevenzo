@@ -14,10 +14,14 @@
 
     vm.displayLearningQuestions = function () {
       vm.modal = $modal.open({
-        template: '<learning-question-modal context="inventory" reminder="false" />',
+        template: '<learning-question-modal context="inventory" reminder="false"></learning-question-modal>',
         scope: $scope
       });
     };
+
+    $scope.$on('close-learning-question-modal', function() {
+      vm.modal.dismiss('cancel');
+    });
 
     $scope.$watch('inventory', function(val) {
       var date = moment(val.due_date);

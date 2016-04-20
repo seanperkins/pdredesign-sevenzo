@@ -24,6 +24,13 @@
       'districtProductEntries': {
         method: 'GET',
         url: UrlService.url('inventories/:inventory_id/district_product_entries')
+      },
+      'markComplete': {
+        method: 'POST',
+        url: UrlService.url('inventories/:inventory_id/mark_complete'),
+        params: {
+          inventory_id: '@inventory_id'
+        }
       }
     };
 
