@@ -37,10 +37,17 @@
       }
     };
 
-    vm.transitionToDashboard = function() {
-      $state.transitionTo('inventory_dashboard', {
-        inventory_id: $stateParams.inventory_id
-      });
+    vm.saveInventoryResponse = function() {
+      Inventory.saveResponse({inventory_id: $stateParams.inventory_id})
+          .$promise
+          .then(function(body) {
+            console.log(body);
+            $state.transitionTo('inventory_dashboard', {
+              inventory_id: $stateParams.inventory_id
+            });
+          }).catch(function(err) {
+            console.log(err);
+          });
     };
 
     $scope.$on('close-learning-question-modal', function() {

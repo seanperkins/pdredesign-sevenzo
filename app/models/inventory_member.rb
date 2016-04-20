@@ -16,7 +16,7 @@ class InventoryMember < ActiveRecord::Base
   belongs_to :user
   belongs_to :inventory
 
-  has_many :inventory_responses
+  has_one :inventory_response
 
   validates_presence_of :user
   validates_presence_of :inventory

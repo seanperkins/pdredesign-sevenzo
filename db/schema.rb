@@ -15,6 +15,7 @@ ActiveRecord::Schema.define(version: 20160419223710) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+  enable_extension "pg_trgm"
 
   create_table "access_requests", force: :cascade do |t|
     t.integer  "assessment_id"
@@ -291,7 +292,7 @@ ActiveRecord::Schema.define(version: 20160419223710) do
 
   create_table "inventory_responses", force: :cascade do |t|
     t.integer  "inventory_member_id"
-    t.datetime "submitted_at",        null: false
+    t.datetime "submitted_at"
     t.datetime "created_at",          null: false
     t.datetime "updated_at",          null: false
   end
@@ -323,7 +324,6 @@ ActiveRecord::Schema.define(version: 20160419223710) do
 
   add_index "learning_questions", ["created_at"], name: "index_learning_questions_on_created_at", using: :btree
   add_index "learning_questions", ["tool_id"], name: "index_learning_questions_on_tool_id", using: :btree
-  add_index "learning_questions", ["tool_type", "tool_id"], name: "index_learning_questions_on_tool_type_and_tool_id", using: :btree
 
   create_table "messages", force: :cascade do |t|
     t.text     "content"
@@ -486,7 +486,7 @@ ActiveRecord::Schema.define(version: 20160419223710) do
   add_index "scores", ["response_id", "question_id"], name: "index_scores_on_response_id_and_question_id", unique: true, using: :btree
 
   create_table "sessions", force: :cascade do |t|
-    t.string   "session_id", null: false
+    t.string   "session_id", limit: 255, null: false
     t.text     "data"
     t.datetime "created_at"
     t.datetime "updated_at"

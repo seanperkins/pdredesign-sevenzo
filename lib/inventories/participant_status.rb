@@ -7,8 +7,8 @@ module Inventories
 
     def status
       return :pending if participant.invited_at.nil?
-      return :invited unless participant.invited_at.nil?
-      # TODO:  In-progress state
+      return :invited if participant.inventory_response.nil?
+      return :in_progress if participant.inventory_response.submitted_at.nil?
       :completed
     end
 
