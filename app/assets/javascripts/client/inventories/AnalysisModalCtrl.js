@@ -12,6 +12,8 @@
 
   function AnalysisModalCtrl($scope, Analysis, Inventory) {
     var vm = this;
+    vm.analysis = {};
+    vm.alerts = [];
 
     vm.closeModal = function() {
       $scope.$emit('close-analysis-modal');
@@ -30,8 +32,14 @@
       });
     };
 
+    vm.addAlert = function(message) {
+      vm.alerts.push({type: 'danger', msg: message});
+    };
 
-    vm.analysis = {};
+    vm.closeAlert = function(index) {
+      vm.alerts.splice(index, 1);
+    };
+
 
     vm.save = function () {
       Analysis.create(null, vm.analysis)
@@ -39,6 +47,10 @@
           .then(function (productEntry){
             vm.closeModal();
           }, function (response) {
+            var errors = response.data.errors;
+            angular.forEach(errors, function(error, field) {
+              vm.addAlert(field + " : " + error);
+            });
           });
     };
   }

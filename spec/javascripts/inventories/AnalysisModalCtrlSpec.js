@@ -58,6 +58,35 @@
         $httpBackend.flush();
         expect(subject.closeModal).toHaveBeenCalled();
       });
+
+      describe('handles errors', function () {
+        beforeEach(function () {
+          inject(function(_$rootScope_, _$controller_, $injector) {
+            subject = _$controller_('AnalysisModalCtrl', {
+              $scope: $scope,
+              Analysis: Analysis
+            });
+          });
+
+          $httpBackend
+              .expectPOST('/v1/inventories/42/analyses')
+              .respond(422, {errors: {foo: 'bar', wat: 'woot'}});
+
+          subject.analysis = {inventory_id: 42}
+          subject.save();
+          $httpBackend.flush();
+        });
+
+        it('populates alerts', function() {
+          expect(subject.alerts).toContain({type: 'danger', msg: 'foo : bar'});
+        });
+
+        it('is dismisses alerts', function() {
+          expect(subject.alerts.length).toBe(2);
+          subject.closeAlert(0);
+          expect(subject.alerts.length).toBe(1);
+        });
+      });
     });
   });
 })();
