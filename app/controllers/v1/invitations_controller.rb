@@ -18,10 +18,16 @@ class V1::InvitationsController < ApplicationController
     not_found    and return unless invitation
     unauthorized and return unless invited_user
 
-    render :show, locals: {
-      user: invited_user,
-      assessment_id: invitation.assessment_id
+    locals =  {
+      user: invited_user
     }
+    if invitation.is_a? InventoryInvitation
+      locals[:inventory_id] =  invitation.inventory_id
+    else
+      locals[:assessment_id] =  invitation.assessment_id
+    end
+
+    render :show, locals: locals
   end
 
   private
@@ -42,7 +48,7 @@ class V1::InvitationsController < ApplicationController
   end
 
   def find_invitation(token)
-    UserInvitation.find_by(token: token)
+    UserInvitation.find_by(token: token) || InventoryInvitation.find_by(token: token)
   end
 
 end
