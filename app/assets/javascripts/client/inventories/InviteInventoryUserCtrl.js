@@ -13,6 +13,10 @@
   function InviteInventoryUserCtrl($scope, $stateParams, InventoryInvitation) {
     var vm = this;
 
+    vm.extractId = function() {
+      return $stateParams.inventory_id || $stateParams.id;
+    };
+
     vm.sendInvitation = function(invitation) {
       vm.alerts = [];
       vm.addAlert = function(message) {
@@ -23,7 +27,7 @@
         vm.alerts.splice(index, 1);
       };
 
-      InventoryInvitation.create({inventory_id: $stateParams.id}, invitation)
+      InventoryInvitation.create({inventory_id: vm.extractId()}, invitation)
           .$promise
           .then(function() {
             $scope.$emit('invite-sent');
