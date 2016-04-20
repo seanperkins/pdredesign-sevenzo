@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160412172312) do
+ActiveRecord::Schema.define(version: 20160418161252) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -19,11 +19,23 @@ ActiveRecord::Schema.define(version: 20160412172312) do
   create_table "access_requests", force: :cascade do |t|
     t.integer  "assessment_id"
     t.integer  "user_id"
-    t.string   "roles",                     default: [], array: true
+    t.string   "roles",         default: [], array: true
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "token",         limit: 255
+    t.string   "token"
   end
+
+  create_table "analyses", force: :cascade do |t|
+    t.text     "name"
+    t.integer  "district_id"
+    t.datetime "deadline"
+    t.integer  "inventory_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "analyses", ["district_id"], name: "index_analyses_on_district_id", using: :btree
+  add_index "analyses", ["inventory_id"], name: "index_analyses_on_inventory_id", using: :btree
 
   create_table "answers", force: :cascade do |t|
     t.integer  "value"
@@ -101,6 +113,7 @@ ActiveRecord::Schema.define(version: 20160412172312) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "inventory_id"
+    t.text     "name"
   end
 
   add_index "data_entries", ["inventory_id"], name: "index_data_entries_on_inventory_id", using: :btree
@@ -140,10 +153,10 @@ ActiveRecord::Schema.define(version: 20160412172312) do
   end
 
   create_table "district_messages", force: :cascade do |t|
-    t.string   "name",         limit: 255
-    t.string   "address",      limit: 255
-    t.string   "sender_name",  limit: 255
-    t.string   "sender_email", limit: 255
+    t.string   "name"
+    t.string   "address"
+    t.string   "sender_name"
+    t.string   "sender_email"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -188,14 +201,14 @@ ActiveRecord::Schema.define(version: 20160412172312) do
   end
 
   create_table "faq_categories", force: :cascade do |t|
-    t.string   "heading",    limit: 255
+    t.string   "heading"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
   create_table "faq_questions", force: :cascade do |t|
-    t.string   "role",        limit: 255
-    t.string   "topic",       limit: 255
+    t.string   "role"
+    t.string   "topic"
     t.integer  "category_id"
     t.text     "content"
     t.text     "answer"
@@ -339,8 +352,8 @@ ActiveRecord::Schema.define(version: 20160412172312) do
   end
 
   create_table "organizations", force: :cascade do |t|
-    t.string "name", limit: 255
-    t.string "logo", limit: 255
+    t.string "name"
+    t.string "logo"
   end
 
   create_table "organizations_users", id: false, force: :cascade do |t|
@@ -498,27 +511,27 @@ ActiveRecord::Schema.define(version: 20160412172312) do
   add_index "technical_questions", ["product_entry_id"], name: "index_technical_questions_on_product_entry_id", using: :btree
 
   create_table "tool_categories", force: :cascade do |t|
-    t.string  "title",         limit: 255
+    t.string  "title"
     t.integer "display_order"
     t.integer "tool_phase_id"
   end
 
   create_table "tool_phases", force: :cascade do |t|
-    t.string  "title",         limit: 255
+    t.string  "title"
     t.text    "description"
     t.integer "display_order"
   end
 
   create_table "tool_subcategories", force: :cascade do |t|
-    t.string  "title",            limit: 255
+    t.string  "title"
     t.integer "display_order"
     t.integer "tool_category_id"
   end
 
   create_table "tools", force: :cascade do |t|
-    t.string  "title",               limit: 255
+    t.string  "title"
     t.text    "description"
-    t.string  "url",                 limit: 255
+    t.string  "url"
     t.boolean "is_default"
     t.integer "display_order"
     t.integer "tool_subcategory_id"
@@ -539,11 +552,11 @@ ActiveRecord::Schema.define(version: 20160412172312) do
   add_index "usage_questions", ["product_entry_id"], name: "index_usage_questions_on_product_entry_id", using: :btree
 
   create_table "user_invitations", force: :cascade do |t|
-    t.string  "first_name",    limit: 255
-    t.string  "last_name",     limit: 255
-    t.string  "email",         limit: 255
-    t.string  "team_role",     limit: 255
-    t.string  "token",         limit: 255
+    t.string  "first_name"
+    t.string  "last_name"
+    t.string  "email"
+    t.string  "team_role"
+    t.string  "token"
     t.integer "assessment_id"
     t.integer "user_id"
   end
@@ -574,6 +587,8 @@ ActiveRecord::Schema.define(version: 20160412172312) do
   add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree
   add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
 
+  add_foreign_key "analyses", "districts"
+  add_foreign_key "analyses", "inventories"
   add_foreign_key "inventory_access_requests", "inventories", on_update: :cascade, on_delete: :cascade
   add_foreign_key "inventory_access_requests", "users", on_update: :cascade, on_delete: :cascade
   add_foreign_key "inventory_invitations", "inventories", on_update: :cascade, on_delete: :cascade
