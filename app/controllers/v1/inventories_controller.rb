@@ -85,6 +85,15 @@ class V1::InventoriesController < ApplicationController
     end
   end
 
+  def participant_has_not_responded
+    member = inventory.members.where(user: current_user).first
+    if member.has_responded?
+      render nothing: true, status: :unauthorized
+    else
+      render nothing: true, status: :no_content
+    end
+  end
+
   private
   def inventory_params
     params.require(:inventory).permit(:name, :deadline, :district_id, :message, :assign, district: [:id])

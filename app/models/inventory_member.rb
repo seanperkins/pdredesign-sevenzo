@@ -20,4 +20,8 @@ class InventoryMember < ActiveRecord::Base
 
   validates_presence_of :user
   validates_presence_of :inventory
+
+  def has_responded?
+    inventory_response && inventory_response.submitted_at.present?
+  end
 end

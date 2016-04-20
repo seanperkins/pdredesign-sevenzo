@@ -38,6 +38,13 @@
         params: {
           inventory_id: '@inventory_id'
         }
+      },
+      'participantHasNotResponded': {
+        method: 'GET',
+        url: UrlService.url('inventories/:inventory_id/participant_has_not_responded'),
+        params: {
+          inventory_id: '@inventory_id'
+        }
       }
     };
 
