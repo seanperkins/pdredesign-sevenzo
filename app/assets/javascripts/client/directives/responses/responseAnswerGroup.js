@@ -9,7 +9,8 @@
       restrict: 'E',
       scope: {
         question: '=',
-        isConsensus: '@'
+        isConsensus: '@',
+        scores: '='
       },
       transclude: true,
       replace: true,
