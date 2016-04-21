@@ -81,6 +81,28 @@ describe AnalysisAuthorizer do
       expect(@analysis).to_not be_updatable_by(other_user)
     end
   end
+
+  context 'delete' do
+    it "is deletable by its inventory's owner" do
+      expect(@analysis).to be_deletable_by(inventory.owner)
+    end
+
+    it "is not deletable by its inventory's members" do
+      expect(@analysis).to_not be_deletable_by(member_user)
+    end
+
+    it "is not deletable by its inventory's participants" do
+      expect(@analysis).to_not be_deletable_by(participant_user)
+    end
+
+    it "is deletable by its inventory's facilitators" do
+      expect(@analysis).to be_deletable_by(facilitator_user)
+    end
+
+    it 'is not deletable by randos' do
+      expect(@analysis).to_not be_deletable_by(other_user)
+    end
+  end
 end
 
 
