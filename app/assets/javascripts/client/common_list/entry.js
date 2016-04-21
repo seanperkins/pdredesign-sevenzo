@@ -8,7 +8,7 @@
       restrict: 'E',
       transclude: true,
       scope: {
-        isAssessment: '@',
+        context: '@',
         role: '@',
         entity: '='
       },
