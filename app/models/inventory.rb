@@ -71,11 +71,19 @@ class Inventory < ActiveRecord::Base
 
   def status
     return :draft if self.assigned_at.nil?
-    :assessment
+    :inventory
+  end
+
+  def is_completed
+    total_participant_responses == participant_count
   end
 
   def percent_completed
-    (total_participant_responses / participants.count.to_d) * 100
+    (total_participant_responses / participant_count.to_d) * 100
+  end
+
+  def participant_count
+    (participants.count + facilitators.count)
   end
 
   def add_facilitator_owner
