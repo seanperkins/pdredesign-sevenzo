@@ -132,7 +132,37 @@
           controllerAs: 'inventoryReportSidebar',
           templateUrl: 'client/inventories/report_sidebar.html'
         }
+      },
+      params: {
+        shared: false
       }
-     });
+    }).state('inventories_shared_report', {
+      url: '/inventories/shared/:inventory_id/report',
+      views: {
+        '': {
+          resolve: {
+            inventory: ['Inventory', '$stateParams', function(Inventory, $stateParams) {
+              return Inventory.get({inventory_id: $stateParams.inventory_id}).$promise;
+            }]
+          },
+          controller: 'InventoryReportCtrl',
+          controllerAs: 'inventoryReport',
+          templateUrl: 'client/inventories/inventory_report.html',
+        },
+        'sidebar': {
+          resolve: {
+            inventory: ['Inventory', '$stateParams', function(Inventory, $stateParams) {
+              return Inventory.get({inventory_id: $stateParams.inventory_id}).$promise;
+            }]
+          },
+          controller: 'InventoryReportSidebarCtrl',
+          controllerAs: 'inventoryReportSidebar',
+          templateUrl: 'client/inventories/report_sidebar.html'
+        }
+      },
+      params: {
+        shared: true
+      }
+    });
   }
 })();

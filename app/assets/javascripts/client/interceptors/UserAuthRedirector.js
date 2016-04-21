@@ -1,4 +1,4 @@
-PDRClient.factory('UserAuthRedirector',[
+/*PDRClient.factory('UserAuthRedirector',[
     '$q', '$location', '$rootScope',
     function($q, $location, $rootScope){
       var sessionRecoverer = {
@@ -16,3 +16,4 @@ PDRClient.factory('UserAuthRedirector',[
 PDRClient.config(['$httpProvider',function($httpProvider) {
   $httpProvider.interceptors.push('UserAuthRedirector');
 }]);
+*/

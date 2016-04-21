@@ -4,11 +4,13 @@
       .controller('InventoryReportCtrl', InventoryReportCtrl);
 
   InventoryReportCtrl.$inject = [
+    '$stateParams',
     'inventory'
   ];
 
-  function InventoryReportCtrl(inventory) {
+  function InventoryReportCtrl($stateParams, inventory) {
     var vm = this;
     vm.inventory = inventory;
+    vm.shared = $stateParams.shared || false;
   }
 })();

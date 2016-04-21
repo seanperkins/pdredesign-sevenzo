@@ -25,3 +25,4 @@ json.messages @messages, :id, :category, :teaser, :sent_at do |message|
   json.teaser   sanitize(message.teaser, tags: [])
   json.sent_at  message.sent_at
 end
+json.share_token inventory.share_token

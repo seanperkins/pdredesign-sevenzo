@@ -8,7 +8,8 @@
       restrict: 'E',
       scope: {
         inventory: '=',
-        readOnly: '='
+        readOnly: '=',
+        shared: '='
       },
       templateUrl: 'client/inventories/inventory_data_entries.html',
       controller: 'InventoryDataEntriesCtrl',

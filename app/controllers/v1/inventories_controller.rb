@@ -1,5 +1,5 @@
 class V1::InventoriesController < ApplicationController
-
+  include SharedInventoryFetch
   before_action :authenticate_user!, except: :show
 
   def index
@@ -7,17 +7,8 @@ class V1::InventoriesController < ApplicationController
   end
 
   def show
-    id = params[:id]
-    @inventory = Inventory.where('inventories.id = ? OR inventories.share_token = ?', id.to_i, id).first
-    unless @inventory
-      render nothing: true, status: :not_found
-      return
-    end
+    @inventory = inventory
     @messages = messages
-    unless @inventory.share_token == id
-      authenticate_user!
-      authorize_action_for @inventory
-    end
   end
 
   def create
@@ -105,10 +96,6 @@ class V1::InventoriesController < ApplicationController
     render json: {
         errors: @inventory.errors,
     }, status: :bad_request
-  end
-
-  def inventory
-    Inventory.where(id: (params[:inventory_id] || params[:id])).first
   end
 
   def messages
