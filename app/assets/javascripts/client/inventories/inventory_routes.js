@@ -47,18 +47,9 @@
       url: '/inventories/:inventory_id/edit',
       authenticate: true,
       resolve: {
-        check: ['$state', '$stateParams', 'Inventory', function($state, $stateParams, Inventory) {
-          Inventory.participantHasNotResponded({inventory_id: $stateParams.inventory_id})
-              .$promise
-              .then(function() {
-                // no-op; let them through
-              })
-              .catch(function(err) {
-                console.log(err);
-                $state.go('inventory_dashboard', {
-                  inventory_id: $stateParams.inventory_id
-                });
-              });
+        currentParticipant: ['$stateParams', 'Inventory', function($stateParams, Inventory) {
+          return Inventory.participantResponse({inventory_id: $stateParams.inventory_id})
+              .$promise;
         }]
       },
       views: {

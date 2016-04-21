@@ -85,13 +85,11 @@ class V1::InventoriesController < ApplicationController
     end
   end
 
-  def participant_has_not_responded
+  def participant_response
     member = inventory.members.where(user: current_user).first
-    if member.has_responded?
-      render nothing: true, status: :unauthorized
-    else
-      render nothing: true, status: :no_content
-    end
+    render json: {
+        hasResponded: member.has_responded?
+    }, status: :ok
   end
 
   private

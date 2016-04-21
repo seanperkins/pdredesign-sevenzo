@@ -39,9 +39,9 @@
           inventory_id: '@inventory_id'
         }
       },
-      'participantHasNotResponded': {
+      'participantResponse': {
         method: 'GET',
-        url: UrlService.url('inventories/:inventory_id/participant_has_not_responded'),
+        url: UrlService.url('inventories/:inventory_id/participant_response'),
         params: {
           inventory_id: '@inventory_id'
         }
