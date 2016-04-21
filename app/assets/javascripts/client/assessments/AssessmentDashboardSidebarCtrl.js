@@ -9,7 +9,7 @@
         '$location',
         'Assessment',
         '$stateParams',
-        'Reminder',
+        'AssessmentReminder',
         'AssessmentService'
     ];
 
@@ -44,10 +44,15 @@
 
         $scope.newReminder = function () {
             $scope.modal = $modal.open({
-                templateUrl: 'client/views/modals/new_reminder.html',
+                template: '<reminder-modal context="assessment"></reminder-modal>',
                 scope: $scope
             });
         };
+
+        $scope.$on('close-reminder-modal', function() {
+          $scope.modal.dismiss('cancel');
+        });
+
 
         $scope.close = function () {
             $scope.modal.dismiss('cancel');

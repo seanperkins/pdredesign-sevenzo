@@ -8,3 +8,19 @@
   border-color: #52616D
 }
 
+.btn-tertiary {
+  @include button-variant($font-color, $off-white, $tertiary-color);
+  &:hover {
+    border-color: #3894C9;
+    background-color: $off-white;
+  }
+
+  &:active {
+    border-color: #6E818F;
+    background-color: $off-white;
+  }
+
+  &:focus {
+    background-color: $off-white;
+  }
+}
