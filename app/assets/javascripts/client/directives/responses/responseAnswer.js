@@ -10,7 +10,8 @@
       scope: {
         question: '=',
         answer: '=',
-        isConsensus: '@'
+        isConsensus: '@',
+        scores: '='
       },
       replace: true,
       templateUrl: 'client/views/directives/responses/answer.html',

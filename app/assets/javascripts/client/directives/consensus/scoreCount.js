@@ -11,7 +11,8 @@
       replace: true,
       scope: {
         question: '=',
-        answer: '='
+        answer: '=',
+        scores: '='
       },
       templateUrl: 'client/views/directives/consensus/score_count.html',
       controller: 'ScoreCountCtrl',

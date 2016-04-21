@@ -34,6 +34,7 @@ PDRClient.directive('consensus', [
             category.toggled = !category.toggled;
             angular.forEach(category.questions, function(question, key) {
               ResponseHelper.toggleCategoryAnswers(question);
+              $scope.$broadcast('question-toggled', question.id);
             });
           };
 
