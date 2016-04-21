@@ -109,6 +109,12 @@ PdrServer::Application.routes.draw do
 
         get 'permissions', to: 'analysis_permissions#show', on: :collection
         patch 'permissions', to: 'analysis_permissions#update', on: :collection
+
+        get 'learning_questions', to: 'learning_questions#index', on: :collection
+        post 'learning_questions', to: 'learning_questions#create', on: :collection
+        patch 'learning_questions/:id', to: 'learning_questions#update', on: :collection
+        delete 'learning_questions/:id', to: 'learning_questions#destroy', on: :collection
+        get 'learning_questions/exists', to: 'learning_questions#exists', on: :collection
       end
 
       member do
