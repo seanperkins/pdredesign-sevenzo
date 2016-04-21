@@ -96,8 +96,19 @@ PdrServer::Application.routes.draw do
           get 'exists', to: 'learning_questions#exists'
         end
       end
-      resources :analyses, only: [:index,:create] do
+
+      resources :analyses, path: '/analysis', only: [:index,:create] do
         put '/', to: "analyses#update", on: :collection
+
+        get 'participants', to: 'analysis_participants#index', on: :collection
+        post 'participants', to: 'analysis_participants#create', on: :collection
+        delete 'participants/:id', to: 'analysis_participants#destroy', on: :collection
+        get 'participants/all', to: 'analysis_participants#all', on: :collection
+
+        post 'invitations', to: 'analysis_invitations#create', on: :collection
+
+        get 'permissions', to: 'analysis_permissions#show', on: :collection
+        patch 'permissions', to: 'analysis_permissions#update', on: :collection
       end
 
       member do

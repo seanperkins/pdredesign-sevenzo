@@ -11,10 +11,11 @@
     'Inventory',
     'Participant',
     'InventoryParticipant',
-    'Analysis'
+    'Analysis',
+    'AnalysisParticipant'
   ];
 
-  function CreateService($window, $location, $stateParams, Assessment, Inventory, Participant, InventoryParticipant, Analysis) {
+  function CreateService($window, $location, $stateParams, Assessment, Inventory, Participant, InventoryParticipant, Analysis, AnalysisParticipant) {
     var service = this;
 
     service.loadDistrict = function(district) {
@@ -70,7 +71,7 @@
 
       if ($window.confirm('Are you sure you want to send out the assessment and invite all your participants?')) {
         service.alertError = false;
-        this
+        service
             .saveAssessment(assessment, true)
             .then(function() {
               $location.path('/assessments');
@@ -145,9 +146,24 @@
           });
     };
 
+    service.assignAndSaveAnalysis = function(analysis) {
+      if (analysis.message === null || analysis.message === '') {
+        service.alertError = true;
+        return;
+      }
+
+      if ($window.confirm('Are you sure you want to start the analysis and invite all your participants?')) {
+        service.alertError = false;
+        service.saveAnalysis(analysis, true)
+            .then(function() {
+              $location.path('/inventories');
+            });
+      }
+    };
+
     service.saveAnalysis = function(analysis) {
       if (analysis.name === '') {
-        this.emitError('Analysis needs a name!');
+        service.emitError('Analysis needs a name!');
         return;
       }
 
@@ -180,6 +196,8 @@
         return Participant.query({assessment_id: service.extractId()});
       } else if (service.context === 'inventory') {
         return InventoryParticipant.query({inventory_id: service.extractId()});
+      } else if (service.context === 'analysis') {
+        return AnalysisParticipant.query({inventory_id: service.extractId()});
       }
     };
 
@@ -194,6 +212,11 @@
           inventory_id: service.extractId(),
           id: participant.participant_id
         }).$promise;
+      } else if (service.context === 'analysis') {
+        return AnalysisParticipant.delete({
+          inventory_id: $stateParams.inventory_id,
+          id: participant.participant_id
+        }).$promise;
       }
     };
 
@@ -203,6 +226,9 @@
             .$promise;
       } else if (service.context === 'inventory') {
         return InventoryParticipant.query({inventory_id: service.extractId()})
+            .$promise;
+      } else if (service.context === 'analysis') {
+        return AnalysisParticipant.query({inventory_id: $stateParams.inventory_id})
             .$promise;
       }
     };
@@ -214,6 +240,9 @@
       } else if (service.context === 'inventory') {
         return InventoryParticipant.all({inventory_id: service.extractId()})
             .$promise;
+      } else if (service.context === 'analysis') {
+        return AnalysisParticipant.all({inventory_id: $stateParams.inventory_id})
+            .$promise;
       }
     };
 
@@ -221,6 +250,10 @@
       if (service.context === 'inventory') {
         return InventoryParticipant.create({
           inventory_id: service.extractId()
+        }, {user_id: user.id}).$promise;
+      } else if (service.context === 'analysis') {
+        return AnalysisParticipant.create({
+          inventory_id: $stateParams.inventory_id
         }, {user_id: user.id}).$promise;
       }
     };

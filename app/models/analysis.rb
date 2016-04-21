@@ -17,4 +17,8 @@ class Analysis < ActiveRecord::Base
   belongs_to :inventory
 
   validates_presence_of :name, :deadline, :inventory
+
+  has_many :members, class_name:'AnalysisMember'
+  has_many :participants, -> { where(role: 'participant') }, class_name:'AnalysisMember'
+  has_many :facilitators, -> { where(role: 'facilitator') }, class_name:'AnalysisMember'
 end

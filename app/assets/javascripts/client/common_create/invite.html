@@ -21,7 +21,7 @@
               <p class="media-heading">
                 <span class="name">{{model.user_name}}</span>
                 <b>{{inviteMessage.user.full_name}}</b> has invited you to participate in {{model.name}} for
-                {{model.district_name}}.
+                {{model.district_name || district.text}}.
               </p>
               <customalert ng-show='inviteMessage.alertError' message="A message is required to send!" type="error"></customalert>
             </div>

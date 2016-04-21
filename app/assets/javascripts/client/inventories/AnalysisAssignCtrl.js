@@ -25,13 +25,12 @@
     vm.currentInventory = current_inventory;
     vm.currentAnalysis = current_analysis;
 
-    /*
-    vm.assignAndSave = function(inventory) {
-      CreateService.assignAndSaveInventory(inventory);
+    vm.assignAndSave = function(analysis) {
+      CreateService.assignAndSaveAnalysis(analysis);
     };
 
-    vm.save = function(inventory) {
-      CreateService.saveInventory(inventory);
+    vm.save = function(analysis) {
+      CreateService.saveAnalysis(analysis);
     };
 
     vm.success = function(message) {
@@ -58,6 +57,5 @@
         vm.error(data['msg']);
       }
     });
-    */
   }
 })();

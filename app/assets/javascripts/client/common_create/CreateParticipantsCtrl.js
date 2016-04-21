@@ -31,6 +31,8 @@
         return 'Readiness Assessment';
       } else if (CreateService.context === 'inventory') {
         return 'Data & Tech Inventory';
+      } else if (CreateService.context === 'analysos') {
+        return 'Analysis';
       }
     };
 
