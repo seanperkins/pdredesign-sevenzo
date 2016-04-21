@@ -28,5 +28,9 @@
     $scope.$on('close-reminder-modal', function() {
       vm.modal.dismiss('cancel');
     });
+
+    $scope.$on('update_participants', function() {
+      vm.participants = CreateService.loadParticipants();
+    });
   }
 })();

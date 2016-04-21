@@ -6,7 +6,10 @@
   function inviteInventoryUserLink() {
     return {
       restrict: 'E',
-      scope: {},
+      scope: {
+        sendInvite: '@',
+        role: '@'
+      },
       templateUrl: 'client/inventories/invite_inventory_user_link.html',
       controller: 'InviteInventoryUserLinkCtrl',
       controllerAs: 'inviteInventoryUserLink',

@@ -55,6 +55,7 @@ class V1::DataEntriesController < ApplicationController
 
   def data_entry_params
     params.permit(
+      :name,
       general_data_question_attributes: [
         :data_type,
         :point_of_contact_name,

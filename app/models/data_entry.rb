@@ -18,6 +18,7 @@ class DataEntry < ActiveRecord::Base
 
   belongs_to :inventory
 
+  validates :name, presence: true
   validates :general_data_question, presence: true
 
   delegate :data_type, :point_of_contact_name, :point_of_contact_department, :data_capture, to: :general_data_question, prefix: false

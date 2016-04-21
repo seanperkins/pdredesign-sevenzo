@@ -24,19 +24,41 @@ describe V1::InvitationsController do
     end
 
     describe '#show' do
-      it 'shows the invitation by the token' do
-        get :show, token: 'expected_token'
-        assert_response :success
+      context 'assessment' do
+        it 'shows the invitation by the token' do
+          get :show, token: 'expected_token'
+          assert_response :success
 
-        expect(json["token"]).to be_nil
-        expect(json["email"]).to eq(@user.email)
+          expect(json["token"]).to be_nil
+          expect(json["email"]).to eq(@user.email)
+        end
+
+        it 'returns an assessment_id' do
+          get :show, token: 'expected_token'
+          assert_response :success
+
+          expect(json["assessment_id"]).to eq(assessment.id)
+        end
       end
 
-      it 'returns an assessment_id' do
-        get :show, token: 'expected_token'
-        assert_response :success
+      context 'inventory' do
+        let!(:user) { FactoryGirl.create(:user) }
+        let!(:invitation) { FactoryGirl.create(:inventory_invitation, user: user, email: user.email) }
 
-        expect(json["assessment_id"]).to eq(assessment.id)
+        before(:each) do
+          get :show, token: invitation.token
+        end
+
+        it{ expect(response).to have_http_status(:success) }
+
+        it 'shows the invitation by the token' do
+          expect(json["token"]).to be_nil
+          expect(json["email"]).to eq(invitation.email)
+        end
+
+        it 'returns an inventory_id' do
+          expect(json["inventory_id"]).to eq(invitation.inventory.id)
+        end
       end
     end
 

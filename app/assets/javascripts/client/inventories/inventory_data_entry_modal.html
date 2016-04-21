@@ -4,7 +4,21 @@
 
   <hr>
 
-  <form name='form'>
+  <form name='form' ng-submit="inventoryDataEntryModal.save()">
+    <div class='row'>
+      <div class='col-sm-6'>
+        <div class='form-group'>
+          <label for='data-entry-name' class='required'>Data Set Name</label>
+          <input
+              type='text'
+              required
+              class='form-control'
+              name='namis'
+              ng-model='inventoryDataEntryModal.dataEntry.name'
+              id='data-entry-name'>
+        </div>
+      </div>
+    </div>
     <!-- GENERAL DATA QUESTIONS -->
     <div class='row'>
       <div class='col-sm-6'>
@@ -178,7 +192,7 @@
       <div class='col-md-12'>
         <div class='form-group'>
           <button ng-click='inventoryDataEntryModal.closeModal()' class='btn btn-default'>Cancel</button>
-          <button ng-click='inventoryDataEntryModal.save()' class='btn btn-primary'>Save</button>
+          <input type="submit" value="Save" class='btn btn-primary'>
         </div>
       </div>
     </div>
