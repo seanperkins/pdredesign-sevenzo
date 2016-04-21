@@ -50,7 +50,8 @@ class V1::AnalysesController < ApplicationController
 
     params.permit(
       :name,
-      :deadline
+      :deadline,
+      :message
     )
   end
 end
