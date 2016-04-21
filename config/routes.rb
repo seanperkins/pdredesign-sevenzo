@@ -96,6 +96,7 @@ PdrServer::Application.routes.draw do
           get 'exists', to: 'learning_questions#exists'
         end
       end
+      resources :analyses, only: [:create]
 
       member do
         get :district_product_entries

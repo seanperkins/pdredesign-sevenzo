@@ -14,7 +14,7 @@
 
     vm.displayLearningQuestions = function () {
       vm.modal = $modal.open({
-        template: '<learning-question-modal context="inventory" reminder="false"></learning-question-modal>',
+        template: '<learning-question-modal context="inventory" reminder="false" />',
         scope: $scope
       });
     };
