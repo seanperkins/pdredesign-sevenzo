@@ -27,6 +27,14 @@
         vm.alerts.splice(index, 1);
       };
 
+      vm.shouldSendInvite = function() {
+        return $scope.sendInvite === 'true';
+      };
+
+      if (vm.shouldSendInvite()) {
+        invitation['send_invite'] = true;
+      }
+
       InventoryInvitation.create({inventory_id: vm.extractId()}, invitation)
           .$promise
           .then(function() {
