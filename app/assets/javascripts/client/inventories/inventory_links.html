@@ -1,5 +1,5 @@
 <div class="links">
-  <div class="repeat">
-
+  <div class="repeat" ng-repeat="link in inventoryLinks.orderLinks(links)">
+    <a class="link pull-right" ng-href="{{ inventoryLinks.location(link) }}">{{ link.title }}</a>
   </div>
 </div>

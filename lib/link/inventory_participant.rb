@@ -1,7 +1,7 @@
 module Link
   class InventoryParticipant
     attr_reader :inventory
-    delegate :completed, to: :inventory, prefix: true
+    delegate :is_completed, to: :inventory, prefix: true
 
     def initialize(inventory, *_)
       @inventory = inventory
@@ -10,9 +10,13 @@ module Link
     def execute
       return nil if draft?
 
-      if inventory_completed
+      if inventory_is_completed
 
       end
+    end
+
+    def draft?
+      inventory.status == :draft
     end
   end
 end
