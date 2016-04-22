@@ -22,11 +22,10 @@
     <input placeholder="Team Role (e.g. Finance, HR)" class="form-control" type="text" ng-model="inviteUser.team_role">
   </div>
 
-  <div class="from-group" ng-init="inviteUser.role=role">
+  <div class="from-group" ng-init="inviteUser.role='participant'">
     <label class="level_label">Set Permissions Level: </label>
-    <select class="btn btn-primary btn-xs"
-            ng-model="inviteUser.role">
-      <option value="participant">Participant</option>
+    <select class="btn btn-primary btn-xs" ng-model="inviteUser.role">
+      <option ng-selected="inviteUser.role" value="participant">Participant</option>
       <option value="facilitator">Facilitator</option>
     </select>
     <permissions-info data-placement="right"></permissions-info>
