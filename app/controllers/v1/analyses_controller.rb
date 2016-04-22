@@ -23,6 +23,7 @@ class V1::AnalysesController < ApplicationController
     authorize_action_for @analysis
 
     if @analysis.update(analysis_params)
+      AllAnalysisParticipantsNotificationWorker.perform_async(@analysis.id)
       render nothing: true
     else
       render_error

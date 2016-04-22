@@ -1,5 +1,5 @@
 class AnalysisAccessGrantedMailer < ApplicationMailer
-  def notify(inventory, user, role)
+  def notify(analysis, user, role)
     subject = "Your access was granted"
     @participant_name = user.name
     @analysis_name  = analysis.name
