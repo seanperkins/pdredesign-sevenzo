@@ -11,7 +11,7 @@
 
   function InventoryScheduleCtrl($scope, $modal) {
     var vm = this;
-
+    vm.onlySchedule = $scope.onlySchedule;
     vm.displayLearningQuestions = function () {
       vm.modal = $modal.open({
         template: '<learning-question-modal context="inventory" reminder="false" />',

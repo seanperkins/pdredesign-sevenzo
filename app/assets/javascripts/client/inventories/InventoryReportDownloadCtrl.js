@@ -7,6 +7,7 @@
   function InventoryReportDownloadCtrl($scope, UrlService) {
     var vm = this;
     vm.inventory = $scope.inventory;
+    console.log("Report sidebar Inventory ", vm.inventory);
     vm.download = function() {
       if(vm.downloadOptions.productEntries) {
         var link = angular.element('<a/>');

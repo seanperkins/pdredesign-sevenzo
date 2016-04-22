@@ -6,11 +6,11 @@ module SharedInventoryFetch
     @inventory = Inventory.where('inventories.id = ? OR inventories.share_token = ?', id.to_i, id).first
     unless @inventory
       render nothing:true, status: :not_found
-      return
+      return nil
     end
     unless @inventory.share_token == id
       authenticate_user!
-      authorize_actions_for @inventory
+      authorize_action_for @inventory
     end
     @inventory
   end

@@ -8,7 +8,7 @@ class V1::InventoriesController < ApplicationController
 
   def show
     @inventory = inventory
-    @messages = messages
+    @messages = messages if @inventory
   end
 
   def create

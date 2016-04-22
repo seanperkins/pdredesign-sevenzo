@@ -1,5 +1,6 @@
 <div class="sidebar inventory-edit-sidebar">
-  <ul>
+  <inventory-schedule only-schedule="true" inventory="inventoryReportSidebar.inventory"></inventory-schedule>
+  <ul ng-hide="inventoryReportSidebar.shared">
     <li>
       <a class="btn btn-primary">Go to Analysis</a>
     </li>
