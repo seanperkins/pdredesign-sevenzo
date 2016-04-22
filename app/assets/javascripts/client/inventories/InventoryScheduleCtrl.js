@@ -19,6 +19,10 @@
       });
     };
 
+    $scope.$on('close-learning-question-modal', function() {
+      vm.modal.dismiss('cancel');
+    });
+
     $scope.$watch('inventory', function(val) {
       var date = moment(val.due_date);
       vm.month = date.format('MMM');

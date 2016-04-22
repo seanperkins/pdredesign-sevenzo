@@ -5,7 +5,13 @@
     var controller;
 
     beforeEach(function() {
-      module('PDRClient');
+      module('PDRClient', function($provide) {
+        $provide.value('currentParticipant', function() {
+          return {
+            hasResponded: false
+          }
+        });
+      });
       inject(function(_$controller_, _$rootScope_) {
         var scope = _$rootScope_.$new(true);
         controller = _$controller_('InventoryEditCtrl', {

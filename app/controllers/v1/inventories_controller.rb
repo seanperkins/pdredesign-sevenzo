@@ -46,7 +46,7 @@ class V1::InventoriesController < ApplicationController
       if inventory_params[:assign]
         AllInventoryParticipantsNotificationWorker.perform_async(@inventory.id)
       end
-      render nothing: true
+      render nothing: true, status: :no_content
     else
       render_error
     end
@@ -58,9 +58,43 @@ class V1::InventoriesController < ApplicationController
     render template: 'v1/product_entries/index'
   end
 
+  def mark_complete
+    member = inventory.members.where(user: current_user).first
+    response = InventoryResponse.find_or_create_by(inventory_member: member)
+    response.submitted_at = Time.parse(params[:submitted_at])
+
+    if response.save
+      render nothing: true
+    else
+      render json: {
+          errors: response.errors,
+      }, status: :bad_request
+    end
+  end
+
+  def save_response
+    member = inventory.members.where(user: current_user).first
+    response = InventoryResponse.find_or_create_by(inventory_member: member)
+    if response.save
+      render nothing: true
+    else
+      render json: {
+          errors: response.errors,
+          status: :bad_request
+      }
+    end
+  end
+
+  def participant_response
+    member = inventory.members.where(user: current_user).first
+    render json: {
+        hasResponded: member.has_responded?
+    }, status: :ok
+  end
+
   private
   def inventory_params
-    params.require(:inventory).permit(:name, :deadline, :district_id, :message, :assign, district: [:id])
+    params.require(:inventory).permit(:name, :deadline, :district_id, :message, :assign, :submitted_at, district: [:id])
   end
 
   def render_error
@@ -70,7 +104,7 @@ class V1::InventoriesController < ApplicationController
   end
 
   def inventory
-    Inventory.where(id: params[:id]).first
+    Inventory.where(id: (params[:inventory_id] || params[:id])).first
   end
 
   def messages

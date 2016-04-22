@@ -24,6 +24,26 @@
       'districtProductEntries': {
         method: 'GET',
         url: UrlService.url('inventories/:inventory_id/district_product_entries')
+      },
+      'markComplete': {
+        method: 'PATCH',
+        params: {
+          inventory_id: '@inventory_id'
+        }
+      },
+      'saveResponse': {
+        method: 'PATCH',
+        url: UrlService.url('inventories/:inventory_id/save_response'),
+        params: {
+          inventory_id: '@inventory_id'
+        }
+      },
+      'participantResponse': {
+        method: 'GET',
+        url: UrlService.url('inventories/:inventory_id/participant_response'),
+        params: {
+          inventory_id: '@inventory_id'
+        }
       }
     };
 

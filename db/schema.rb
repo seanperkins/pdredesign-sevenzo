@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160419175011) do
+ActiveRecord::Schema.define(version: 20160420220452) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -255,14 +255,15 @@ ActiveRecord::Schema.define(version: 20160419175011) do
   add_index "general_inventory_questions", ["product_entry_id"], name: "index_general_inventory_questions_on_product_entry_id", using: :btree
 
   create_table "inventories", force: :cascade do |t|
-    t.text     "name",        null: false
-    t.datetime "deadline",    null: false
-    t.integer  "district_id", null: false
-    t.datetime "created_at",  null: false
-    t.datetime "updated_at",  null: false
+    t.text     "name",                                    null: false
+    t.datetime "deadline",                                null: false
+    t.integer  "district_id",                             null: false
+    t.datetime "created_at",                              null: false
+    t.datetime "updated_at",                              null: false
     t.integer  "owner_id"
     t.text     "message"
     t.datetime "assigned_at"
+    t.integer  "total_participant_responses", default: 0, null: false
   end
 
   create_table "inventory_access_requests", force: :cascade do |t|
@@ -300,6 +301,15 @@ ActiveRecord::Schema.define(version: 20160419175011) do
 
   add_index "inventory_members", ["inventory_id"], name: "index_inventory_members_on_inventory_id", using: :btree
   add_index "inventory_members", ["user_id"], name: "index_inventory_members_on_user_id", using: :btree
+
+  create_table "inventory_responses", force: :cascade do |t|
+    t.integer  "inventory_member_id", null: false
+    t.datetime "submitted_at"
+    t.datetime "created_at",          null: false
+    t.datetime "updated_at",          null: false
+  end
+
+  add_index "inventory_responses", ["inventory_member_id"], name: "index_inventory_responses_on_inventory_member_id", using: :btree
 
   create_table "key_question_points", force: :cascade do |t|
     t.integer  "key_question_question_id"

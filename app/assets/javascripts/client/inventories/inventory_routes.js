@@ -46,6 +46,12 @@
     }).state('inventories_edit', {
       url: '/inventories/:inventory_id/edit',
       authenticate: true,
+      resolve: {
+        currentParticipant: ['$stateParams', 'Inventory', function($stateParams, Inventory) {
+          return Inventory.participantResponse({inventory_id: $stateParams.inventory_id})
+              .$promise;
+        }]
+      },
       views: {
         '': {
           resolve: {
@@ -58,7 +64,8 @@
           templateUrl: 'client/inventories/inventory_edit.html'
         },
         'sidebar': {
-          controller: 'SidebarCtrl',
+          controller: 'InventoryEditSidebarCtrl',
+          controllerAs: 'inventoryEditSidebar',
           templateUrl: 'client/inventories/edit_sidebar.html'
         }
       }
