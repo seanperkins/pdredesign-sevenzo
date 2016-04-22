@@ -13,7 +13,7 @@
     var methodOptions = {
       'query': {
         method: 'GET',
-        isArray: false
+        isArray: true
       },
       'create': {
         method: 'POST'

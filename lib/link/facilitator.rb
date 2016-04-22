@@ -15,7 +15,7 @@ module Link
         links.merge!( {report: report} ) unless links.has_key?(:report)
         links.delete(:response)
       end
-      return links
+      links
     end
 
     private
@@ -73,6 +73,5 @@ module Link
     def draft?
       assessment.status == :draft
     end
-
   end
 end

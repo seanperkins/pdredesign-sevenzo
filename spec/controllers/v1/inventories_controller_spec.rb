@@ -29,7 +29,7 @@ describe V1::InventoriesController do
         end
 
         it 'pulls back an empty list' do
-          expect(json['inventories'].size).to eq 0
+          expect(json.size).to eq 0
         end
       end
 
@@ -50,11 +50,11 @@ describe V1::InventoriesController do
           end
 
           it 'returns an array of size 1' do
-            expect(json['inventories'].size).to eq 1
+            expect(json.size).to eq 1
           end
 
           it 'contains the single entry' do
-            expect(json['inventories'][0]['id']).to eq inventory.id
+            expect(json[0]['id']).to eq inventory.id
           end
         end
 
@@ -77,7 +77,7 @@ describe V1::InventoriesController do
             get :index, format: :json
           end
           it 'pulls back an empty list' do
-            expect(json['inventories'].size).to eq 0
+            expect(json.size).to eq 0
           end
         end
       end
