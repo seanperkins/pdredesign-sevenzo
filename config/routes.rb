@@ -80,7 +80,7 @@ PdrServer::Application.routes.draw do
 
     resources :inventories, only: [:create, :index, :show, :update] do
       post 'reminders', to: 'inventory_reminders#create'
-      post 'mark_complete', to: 'inventories#mark_complete'
+      patch '', to: 'inventories#mark_complete'
       post 'save_response', to: 'inventories#save_response'
       get 'participant_response', to: 'inventories#participant_response'
       resources :inventory_reminders, only: [:create]

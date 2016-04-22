@@ -61,7 +61,7 @@ class V1::InventoriesController < ApplicationController
   def mark_complete
     member = inventory.members.where(user: current_user).first
     response = InventoryResponse.find_or_create_by(inventory_member: member)
-    response.submitted_at = Time.now
+    response.submitted_at = Time.parse(params[:submitted_at])
 
     if response.save
       render nothing: true
@@ -94,7 +94,7 @@ class V1::InventoriesController < ApplicationController
 
   private
   def inventory_params
-    params.require(:inventory).permit(:name, :deadline, :district_id, :message, :assign, district: [:id])
+    params.require(:inventory).permit(:name, :deadline, :district_id, :message, :assign, :submitted_at, district: [:id])
   end
 
   def render_error

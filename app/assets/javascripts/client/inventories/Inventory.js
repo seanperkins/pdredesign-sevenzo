@@ -26,14 +26,13 @@
         url: UrlService.url('inventories/:inventory_id/district_product_entries')
       },
       'markComplete': {
-        method: 'POST',
-        url: UrlService.url('inventories/:inventory_id/mark_complete'),
+        method: 'PATCH',
         params: {
           inventory_id: '@inventory_id'
         }
       },
       'saveResponse': {
-        method: 'POST',
+        method: 'PATCH',
         url: UrlService.url('inventories/:inventory_id/save_response'),
         params: {
           inventory_id: '@inventory_id'

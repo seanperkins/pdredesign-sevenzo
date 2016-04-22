@@ -10,7 +10,7 @@
 #
 
 class InventoryResponse < ActiveRecord::Base
-  belongs_to :inventory_member, dependent: :delete
+  belongs_to :inventory_member
 
   after_save :increment_parent_inventory
   before_destroy :decrement_parent_inventory

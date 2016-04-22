@@ -27,7 +27,7 @@
       var shouldContinue = $window.confirm('Are you sure you wish to mark this inventory as complete?  You will not be able to add any more items to this inventory.');
 
       if (shouldContinue) {
-        Inventory.markComplete({inventory_id: $stateParams.inventory_id})
+        Inventory.markComplete({inventory_id: $stateParams.inventory_id}, {submitted_at: moment()})
             .$promise
             .then(function() {
               $state.transitionTo('inventories_report', {
