@@ -26,6 +26,7 @@
       AnalysisInvitation.create({inventory_id: $stateParams.inventory_id}, invitation)
           .$promise
           .then(function() {
+            $scope.$emit('update_participants');
             $scope.$emit('invite-sent');
           })
           .catch(function(response) {

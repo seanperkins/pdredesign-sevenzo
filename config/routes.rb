@@ -101,7 +101,7 @@ PdrServer::Application.routes.draw do
         put '/', to: "analyses#update", on: :collection
 
         collection do
-          resources :participants, controller: 'analysis_participants', only: [:show, :create, :destroy] do
+          resources :participants, controller: 'analysis_participants', only: [:create, :destroy, :index] do
             get :all, on: :collection
           end
           resources :invitations, controller: 'analysis_invitations', only: [:create]

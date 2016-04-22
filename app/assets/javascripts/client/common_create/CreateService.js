@@ -228,7 +228,7 @@
         return InventoryParticipant.query({inventory_id: service.extractId()})
             .$promise;
       } else if (service.context === 'analysis') {
-        return AnalysisParticipant.query({inventory_id: $stateParams.inventory_id})
+        return AnalysisParticipant.query({inventory_id: service.extractId()})
             .$promise;
       }
     };
@@ -241,7 +241,7 @@
         return InventoryParticipant.all({inventory_id: service.extractId()})
             .$promise;
       } else if (service.context === 'analysis') {
-        return AnalysisParticipant.all({inventory_id: $stateParams.inventory_id})
+        return AnalysisParticipant.all({inventory_id: service.extractId()})
             .$promise;
       }
     };
