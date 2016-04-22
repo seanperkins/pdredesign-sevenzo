@@ -46,6 +46,11 @@
         $rootScope.$broadcast('close-analysis-modal');
         expect(modalInstanceSpy).toHaveBeenCalledWith('cancel');
       });
+
+      it('invokes the dismiss functionality when the inventory modal is closed', function() {
+        $rootScope.$broadcast('close-inventory-modal');
+        expect(modalInstanceSpy).toHaveBeenCalledWith('cancel');
+      });
     });
   });
 })();

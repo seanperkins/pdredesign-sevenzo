@@ -15,6 +15,9 @@
     vm.analysis = {};
     vm.alerts = [];
 
+    vm.inventories = [];
+    vm.hasFetchedInventories = false;
+
     vm.closeModal = function() {
       $scope.$emit('close-analysis-modal');
     };
@@ -28,7 +31,11 @@
         vm.inventories = response.inventories;
 
         // ensure a district is always selected
-        vm.analysis.inventory_id = vm.inventories[0].id;
+        if (_.any(vm.inventories)) {
+          vm.analysis.inventory_id = vm.inventories[0].id;
+        }
+
+        vm.hasFetchedInventories = true;
       });
     };
 
@@ -40,6 +47,13 @@
       vm.alerts.splice(index, 1);
     };
 
+    vm.hasInventories = function () {
+      return vm.hasFetchedInventories && _.any(vm.inventories);
+    };
+
+    vm.hasNoInventories = function () {
+      return vm.hasFetchedInventories && _.isEmpty(vm.inventories);
+    }
 
     vm.save = function () {
       Analysis.create(null, vm.analysis)
