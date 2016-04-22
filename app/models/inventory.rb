@@ -83,7 +83,7 @@ class Inventory < ActiveRecord::Base
   end
 
   def participant_count
-    (participants.count + facilitators.count)
+    participants.count
   end
 
   def add_facilitator_owner
