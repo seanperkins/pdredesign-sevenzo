@@ -8,7 +8,9 @@ class V1::InventoryAccessRequestsController < ApplicationController
 
   def create
     permission = Inventories::Permission.new(inventory: inventory, user: current_user)
-    @request = permission.request_access(role: create_request_params[:roles])
+    # Note:  UI passes a list but the UI will never send back more than one element.
+    # UI has not been changed to preserve compatibility with existing code which assumes the same.
+    @request = permission.request_access(role: create_request_params[:roles][0])
     if @request.new_record?
       @errors = @request.errors
       render 'v1/shared/errors', errors: @errors, status: 422
