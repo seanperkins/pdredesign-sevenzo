@@ -4,7 +4,7 @@ class AnalysisMailer < ApplicationMailer
     @facilitator = analysis.inventory.owner
     @analysis_name = analysis.name
     @district_name = analysis.inventory.district.name
-    @analysis_link = analysis_url(analysis.id)
+    @analysis_link = analysis_url(analysis.inventory.id)
     @deadline = analysis.deadline.strftime("%B %d, %Y")
     @message = analysis.message.try(:html_safe)
 
