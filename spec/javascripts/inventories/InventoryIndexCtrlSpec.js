@@ -10,9 +10,7 @@
         var scope = _$rootScope_.$new(true);
         controller = _$controller_('InventoryIndexCtrl', {
           $scope: scope,
-          inventory_result: {
-            inventories: [1, 2, 3]
-          }
+          inventory_result: [1, 2, 3]
         });
       });
     });

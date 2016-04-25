@@ -4,27 +4,15 @@
   angular.module('PDRClient')
       .controller('AssessmentEntityStatusCtrl', AssessmentEntityStatusCtrl);
 
-  function AssessmentEntityStatusCtrl() {
+  AssessmentEntityStatusCtrl.$inject = [
+    'EntityService'
+  ];
+
+  function AssessmentEntityStatusCtrl(EntityService) {
     var vm = this;
 
-    vm.consensusReportIcon = function(entity) {
-      if (entity.consensus && entity.consensus.is_completed) {
-        return 'fa-check';
-      } else {
-        return 'fa-spinner';
-      }
-    };
-
-    vm.draftStatusIcon = function(entity) {
-      if (entity.has_access) {
-        return 'fa-eye';
-      } else {
-        return 'fa-minus-circle';
-      }
-    };
-
-    vm.roundNumber = function(number) {
-      return Math.floor(number);
-    };
+    vm.consensusReportIcon = EntityService.completedStatusIcon;
+    vm.draftStatusIcon = EntityService.draftStatusIcon;
+    vm.roundNumber = EntityService.roundNumber;
   }
 })();
