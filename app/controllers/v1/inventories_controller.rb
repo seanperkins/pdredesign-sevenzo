@@ -3,7 +3,7 @@ class V1::InventoriesController < ApplicationController
   before_action :authenticate_user!
 
   def index
-    @inventories = current_user.inventories
+    @inventories = Inventory.where(district_id: current_user.districts)
   end
 
   def show
