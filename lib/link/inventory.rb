@@ -18,7 +18,7 @@ module Link
     def target
       return Link::InventoryFacilitator if facilitator?(user: user)
       return Link::InventoryParticipant if participant?(user: user)
-      Link::InventoryPartner if network_partner?
+      Link::Partner
     end
   end
 end

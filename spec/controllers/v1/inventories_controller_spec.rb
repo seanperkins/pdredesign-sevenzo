@@ -36,12 +36,16 @@ describe V1::InventoriesController do
       context 'when there are records' do
         context 'when they belong to the current user' do
 
-          let(:inventory) {
-            create(:inventory)
+          let(:district) {
+            create(:district)
           }
 
           let(:user) {
-            inventory.owner
+            create(:user, districts: [district])
+          }
+
+          let!(:inventory) {
+            create(:inventory, owner: user, district: district)
           }
 
           before(:each) do

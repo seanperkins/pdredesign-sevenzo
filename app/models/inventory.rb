@@ -69,6 +69,10 @@ class Inventory < ActiveRecord::Base
     self.members.where(user: user).exists?
   end
 
+  def network_partner?(user)
+    self.members.joins(:user).where(user_id: user.id, users: {role: 'network_partner'}).exists?
+  end
+
   def status
     return :draft if self.assigned_at.nil?
     :inventory
@@ -93,5 +97,9 @@ class Inventory < ActiveRecord::Base
 
   def set_assigned_at
     self.assigned_at = Time.now if self.assign
+  end
+
+  def pending_requests?(user)
+    access_requests.where(user: user).present?
   end
 end
