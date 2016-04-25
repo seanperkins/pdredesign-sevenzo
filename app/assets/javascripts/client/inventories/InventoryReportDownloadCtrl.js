@@ -10,8 +10,9 @@
     vm.download = function () {
       var buildLink = function (prefix) {
         var link = angular.element('<a/>');
+        var downloadUrl = UrlService.url('/inventories/' + vm.inventory.id + '/' + prefix + '.csv')
         link.attr({
-          href: UrlService.url('/inventories'/ + vm.inventory.id + '/' + prefix + '.csv'),
+          href: downloadUrl,
           target: '_blank',
           download: 'inventory_' + vm.inventory.id + '_' + prefix + '_report.csv'
         })[0].click();
