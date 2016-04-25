@@ -65,7 +65,7 @@
           $scope.requestAccess();
           return;
         default:
-          // I hope I can stop this from breaking ALL of my links
+          return;
       }
     };
 
