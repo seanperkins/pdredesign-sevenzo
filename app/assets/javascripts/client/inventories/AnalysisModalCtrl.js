@@ -41,7 +41,7 @@
         vm.inventories = response;
 
         // ensure an inventory is always selected unless it was pre-selected
-        if(!vm.analysis.inventory_id) {
+        if(!vm.analysis.inventory_id && vm.inventories.length > 0 ) {
           vm.analysis.inventory_id = vm.inventories[0].id;
         }
 
