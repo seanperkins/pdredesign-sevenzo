@@ -27,3 +27,4 @@ json.messages @messages, :id, :category, :teaser, :sent_at do |message|
 end
 json.share_token inventory.share_token
 json.analysis_count inventory.analysis_count
+json.analysis inventory.analysis

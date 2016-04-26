@@ -8,22 +8,32 @@
     '$modal',
     'inventory',
     '$stateParams',
-    'SessionService'
+    'SessionService',
+    '$state'
   ];
 
-  function InventoryReportSidebarCtrl($scope, $modal, inventory, $stateParams, SessionService) {
+  function InventoryReportSidebarCtrl($scope, $modal, inventory, $stateParams, SessionService, $state) {
     var vm = this;
     $scope.inventory = inventory;
     vm.inventory = $scope.inventory;
     vm.shared = $stateParams.shared || false;
     var user = SessionService.getCurrentUser();
     vm.hideAnalysisAccess = inventory.analysis_count == 0 && user.role == 'participant';
+    vm.creatingAnalysis = vm.inventory.analysis_count == 0 && vm.inventory.is_facilitator;
+    vm.createAnalysis = function() {
+      vm.analysisModal = $modal.open({
+        template: '<analysis-modal inventory="inventory"></analysis-modal>',
+        scope: $scope
+      });
+    };
     vm.gotoAnalysis = function() {
-      if(vm.inventory.analysis_count == 0) {
-        vm.analysisModal = $modal.open({
-          template: '<analysis-modal inventory="inventory"></analysis-modal>',
-          scope: $scope
+      if(vm.inventory.analysis_count == 1) {
+        var analysisState = !vm.inventory.analysis.assigned_at ? 'analysis_assign' :'analysis_dashboard' ;
+        $state.go(analysisState, {
+          id: vm.inventory.analysis.id
         });
+      } else {
+        $state.go('analyses');
       }
     };
     vm.downloadReport = function() {

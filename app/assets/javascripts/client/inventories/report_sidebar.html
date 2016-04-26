@@ -1,8 +1,9 @@
 <div class="sidebar inventory-edit-sidebar">
   <inventory-schedule only-schedule="true" inventory="inventoryReportSidebar.inventory"></inventory-schedule>
   <ul ng-hide="inventoryReportSidebar.shared">
-    <li ng-hide="inventoryReportSidebar.hideAnalysisAccess">
-      <a class="btn btn-primary" ng-click="inventoryReportSidebar.gotoAnalysis()">Go to Analysis</a>
+    <li ng-if="!inventoryReportSidebar.hideAnalysisAccess">
+      <a ng-if="!inventoryReportSidebar.creatingAnalysis" class="btn btn-primary" ng-click="inventoryReportSidebar.gotoAnalysis()">Go to analysis</a>
+      <a ng-if="inventoryReportSidebar.creatingAnalysis" class="btn btn-primary" ng-click="inventoryReportSidebar.createAnalysis()">Create analysis</a>
     </li>
     <li>
       <a class="btn btn-secondary" ng-click="inventoryReportSidebar.downloadReport()">Download as .CSV</a>
