@@ -30,7 +30,7 @@
       if(vm.inventory.analysis_count == 1) {
         var analysisState = !vm.inventory.analysis.assigned_at ? 'analysis_assign' :'analysis_dashboard' ;
         $state.go(analysisState, {
-          id: vm.inventory.analysis.id
+          analysis_id: vm.inventory.analysis.id
         });
       } else {
         $state.go('analyses');
