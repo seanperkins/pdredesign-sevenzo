@@ -21,7 +21,7 @@
   </div>
   <div class="inventory-schedule-buttons" ng-hide="inventorySchedule.onlySchedule">
     <button class="btn btn-block btn-tertiary separator-margin" ng-if="inventory.is_facilitator">Modify Schedule</button>
-    <button class="btn btn-block btn-tertiary separator-margin">Go To Report</button>
+    <button ui-sref="inventories_report({inventory_id: inventory.id})" class="btn btn-block btn-tertiary separator-margin">Go To Report</button>
     <button ng-click="inventorySchedule.displayLearningQuestions()"
             class="btn btn-block btn-secondary separator-margin">Add/Review Learning Questions</button>
   </div>

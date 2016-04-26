@@ -9,7 +9,7 @@
       <a class="btn btn-secondary" ng-click="inventoryReportSidebar.downloadReport()">Download as .CSV</a>
     </li>
     <li>
-      <a class="btn btn-default">Dashboard</a>
+      <a ui-sref="inventory_dashboard({inventory_id: inventoryReportSidebar.inventory.id})" class="btn btn-default">Dashboard</a>
     </li>
   </ul>
 </div>
