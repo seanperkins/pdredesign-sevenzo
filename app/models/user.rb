@@ -33,7 +33,6 @@ class User < ActiveRecord::Base
   include Authority::UserAbilities
   has_many :assessments, through: :participants
   has_many :participants
-  has_many :rubrics
   has_many :feedbacks
   has_many :tools
   has_many :inventories
