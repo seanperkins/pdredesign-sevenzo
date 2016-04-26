@@ -6,6 +6,7 @@
 #  created_at   :datetime
 #  updated_at   :datetime
 #  inventory_id :integer
+#  name         :text
 #
 
 require 'spec_helper'

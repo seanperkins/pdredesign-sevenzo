@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160426194250) do
+ActiveRecord::Schema.define(version: 20160426202457) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -510,7 +510,10 @@ ActiveRecord::Schema.define(version: 20160426194250) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.boolean  "enabled"
+    t.string   "tool_type"
   end
+
+  add_index "rubrics", ["tool_type"], name: "index_rubrics_on_tool_type", using: :btree
 
   create_table "scores", force: :cascade do |t|
     t.integer  "value"

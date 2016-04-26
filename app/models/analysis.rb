@@ -5,9 +5,10 @@
 #  id           :integer          not null, primary key
 #  name         :text
 #  deadline     :datetime
+#  inventory_id :integer
 #  created_at   :datetime
 #  updated_at   :datetime
-#  inventory_id :integer
+#  message      :text
 #
 
 class Analysis < ActiveRecord::Base

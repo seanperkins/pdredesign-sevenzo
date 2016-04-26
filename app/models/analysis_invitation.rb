@@ -2,15 +2,15 @@
 #
 # Table name: analysis_invitations
 #
-#  id           :integer          not null, primary key
-#  first_name   :string
-#  last_name    :string
-#  email        :string
-#  team_role    :string
-#  role         :string
-#  token        :string
-#  analysis_id  :integer          not null
-#  user_id      :integer
+#  id          :integer          not null, primary key
+#  first_name  :string
+#  last_name   :string
+#  email       :string
+#  team_role   :string
+#  role        :string
+#  token       :string
+#  analysis_id :integer          not null
+#  user_id     :integer
 #
 
 class AnalysisInvitation < ActiveRecord::Base

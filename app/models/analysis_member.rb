@@ -2,13 +2,13 @@
 #
 # Table name: analysis_members
 #
-#  id           :integer          not null, primary key
-#  analysis_id  :integer          not null
-#  user_id      :integer          not null
-#  created_at   :datetime
-#  updated_at   :datetime
-#  invited_at   :datetime
-#  role         :string
+#  id          :integer          not null, primary key
+#  analysis_id :integer
+#  user_id     :integer
+#  role        :string
+#  invited_at  :datetime
+#  created_at  :datetime
+#  updated_at  :datetime
 #
 
 class AnalysisMember < ActiveRecord::Base
