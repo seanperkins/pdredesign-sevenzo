@@ -7,14 +7,25 @@
     '$scope',
     '$modal',
     'inventory',
-    '$stateParams'
+    '$stateParams',
+    'SessionService'
   ];
 
-  function InventoryReportSidebarCtrl($scope, $modal, inventory, $stateParams) {
+  function InventoryReportSidebarCtrl($scope, $modal, inventory, $stateParams, SessionService) {
     var vm = this;
     $scope.inventory = inventory;
     vm.inventory = $scope.inventory;
     vm.shared = $stateParams.shared || false;
+    var user = SessionService.getCurrentUser();
+    vm.hideAnalysisAccess = inventory.analysis_count == 0 && user.role == 'participant';
+    vm.gotoAnalysis = function() {
+      if(vm.inventory.analysis_count == 0) {
+        vm.modalInstance = $modal.open({
+          template: '<analysis-modal></analysis-modal>',
+          scope: $scope
+        });
+      }
+    };
     vm.downloadReport = function() {
       vm.downloadModal = $modal.open({
         templateUrl: 'client/inventories/inventory_report_download_modal.html',

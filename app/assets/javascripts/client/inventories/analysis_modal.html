@@ -60,12 +60,13 @@
           <div class='form-group'>
             <label for='analysis-inventory-id' class='required'>Inventory</label>
             <select 
+              ng-disabled="analysisModal.preSelectedInventory"
                 class='form-control'
                 required
                 ng-model='analysisModal.analysis.inventory_id'
                 ng-options='inventory.id as inventory.name for inventory in analysisModal.inventories'
                 id='analysis-inventory-id'></select>
-          </div>
+			</div>
         </div>
       </div>
 

@@ -121,4 +121,14 @@ describe Inventory do
       end
     end
   end
+
+  describe '#analyis_count' do
+    let(:inventory) { FactoryGirl.create(:inventory) }
+    let!(:other_analysis) { FactoryGirl.create_list(:analysis, 5) }
+    let!(:inventory_analysis) { FactoryGirl.create_list(:analysis, 6, inventory: inventory) }
+
+    it do
+      expect(inventory.analysis_count).to eq 6
+    end
+  end
 end

@@ -91,6 +91,11 @@ class Inventory < ActiveRecord::Base
     participants.count
   end
 
+  def analysis_count
+    Analysis.where(inventory_id: id).count
+  end
+
+  private
   def add_facilitator_owner
     return unless owner
     facilitators.create(user: owner)

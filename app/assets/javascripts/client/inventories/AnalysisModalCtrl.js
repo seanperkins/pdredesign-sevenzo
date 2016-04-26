@@ -14,6 +14,7 @@
     var vm = this;
     vm.analysis = {};
     vm.alerts = [];
+    vm.preSelectedInventory = $scope.inventory;
 
     vm.inventories = [];
     vm.hasFetchedInventories = false;
