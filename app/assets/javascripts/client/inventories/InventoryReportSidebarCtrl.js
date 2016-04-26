@@ -20,8 +20,8 @@
     vm.hideAnalysisAccess = inventory.analysis_count == 0 && user.role == 'participant';
     vm.gotoAnalysis = function() {
       if(vm.inventory.analysis_count == 0) {
-        vm.modalInstance = $modal.open({
-          template: '<analysis-modal></analysis-modal>',
+        vm.analysisModal = $modal.open({
+          template: '<analysis-modal inventory="inventory"></analysis-modal>',
           scope: $scope
         });
       }
@@ -38,6 +38,9 @@
     };
     $scope.$on('inventory-report-downloaded', function() {
       vm.closeDownloadReportModal();
+    });
+    $scope.$on('close-analysis-modal', function() {
+      vm.analysisModal.dismiss();
     });
   }
 })();

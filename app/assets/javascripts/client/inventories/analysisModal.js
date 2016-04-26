@@ -9,7 +9,9 @@
       restrict: 'E',
       replace: true,
       transclude: true,
-      scope: {},
+      scope: {
+        inventory:'='
+      },
       templateUrl: 'client/inventories/analysis_modal.html',
       controller: 'AnalysisModalCtrl',
       controllerAs: 'analysisModal',

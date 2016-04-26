@@ -7,20 +7,29 @@
   AnalysisModalCtrl.$inject = [
     '$scope',
     'Analysis',
-    'Inventory'
+    'Inventory',
+    '$state'
   ];
 
-  function AnalysisModalCtrl($scope, Analysis, Inventory) {
+  function AnalysisModalCtrl($scope, Analysis, Inventory, $state) {
     var vm = this;
     vm.analysis = {};
     vm.alerts = [];
     vm.preSelectedInventory = $scope.inventory;
+    if(vm.preSelectedInventory) {
+      vm.analysis.inventory_id = vm.preSelectedInventory.id;
+    }
 
     vm.inventories = [];
     vm.hasFetchedInventories = false;
 
     vm.closeModal = function() {
       $scope.$emit('close-analysis-modal');
+    };
+
+    vm.gotoAnalyses = function() {
+      vm.closeModal();
+      $state.go('analyses');
     };
 
     vm.updateData = function () {
@@ -31,8 +40,8 @@
       return Inventory.query().$promise.then(function (response) {
         vm.inventories = response;
 
-        // ensure a district is always selected
-        if (_.any(vm.inventories)) {
+        // ensure an inventory is always selected unless it was pre-selected
+        if(!vm.analysis.inventory_id) {
           vm.analysis.inventory_id = vm.inventories[0].id;
         }
 
@@ -55,7 +64,6 @@
     vm.hasNoInventories = function () {
       return vm.hasFetchedInventories && _.isEmpty(vm.inventories);
     }
-
     vm.save = function () {
       Analysis.create(null, vm.analysis)
           .$promise
