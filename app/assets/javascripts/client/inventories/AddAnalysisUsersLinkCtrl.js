@@ -26,7 +26,7 @@
     };
 
     vm.loadInvitables = function() {
-      vm.invitables = AnalysisParticipant.all({inventory_id: $stateParams.inventory_id});
+      vm.invitables = AnalysisParticipant.all({inventory_id: $stateParams.inventory_id, analysis_id: $stateParams.id});
     };
     vm.invitablesFound = function() {
       var list = vm.invitables;

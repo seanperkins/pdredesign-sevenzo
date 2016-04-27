@@ -24,6 +24,6 @@
       }
     };
 
-    return $resource(UrlService.url('inventories/:inventory_id/analysis'), paramDefaults, methodOptions);
+    return $resource(UrlService.url('inventories/:inventory_id/analyses/:id'), paramDefaults, methodOptions);
   }
 })();

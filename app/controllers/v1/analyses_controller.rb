@@ -2,13 +2,18 @@ class V1::AnalysesController < ApplicationController
   before_action :authenticate_user!
 
   def index
-    @analysis = inventory.analysis
+    @analyses = inventory.analyses
+    render template: 'v1/analyses/index', status: 200
+  end
+
+  def show
+    @analysis = inventory.analyses.find(params[:id])
     authorize_action_for @analysis
     render template: 'v1/analyses/show', status: 200
   end
 
   def create
-    @analysis = inventory.build_analysis(analysis_params)
+    @analysis = inventory.analyses.build(analysis_params)
     authorize_action_for @analysis
 
     if @analysis.save
@@ -19,7 +24,7 @@ class V1::AnalysesController < ApplicationController
   end
 
   def update
-    @analysis = inventory.analysis
+    @analysis = inventory.analyses.find(params[:id])
     authorize_action_for @analysis
 
     if @analysis.update(analysis_params)
@@ -32,7 +37,7 @@ class V1::AnalysesController < ApplicationController
 
   private
   def inventory
-    current_user.inventories.find(params[:inventory_id])
+    @inventory ||= current_user.inventories.find(params[:inventory_id])
   end
 
   def render_error

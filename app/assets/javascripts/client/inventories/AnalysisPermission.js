@@ -18,6 +18,6 @@
         method: 'PATCH',
       }
     };
-    return $resource(UrlService.url('inventories/:inventory_id/analysis/permissions'), null, options);
+    return $resource(UrlService.url('inventories/:inventory_id/analyses/:analysis_id/permissions'), null, options);
   }
 })();

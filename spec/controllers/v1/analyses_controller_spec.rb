@@ -4,6 +4,7 @@ describe V1::AnalysesController do
   render_views
 
   let(:inventory) { FactoryGirl.create(:inventory, :with_analysis) }
+  let(:analysis) { inventory.analyses.first }
 
   before :each do
     request.env['HTTP_ACCEPT'] = 'application/json'
@@ -59,6 +60,7 @@ describe V1::AnalysesController do
 
       put :update,
            inventory_id: inventory.id,
+           id: analysis.id,
            name: "name",
            deadline: "11/14/2042"
 

@@ -36,7 +36,11 @@ class V1::AnalysisParticipantsController < ApplicationController
     params.permit(:user_id)
   end
 
+  def inventory
+     @inventory ||= Inventory.find(params[:inventory_id])
+  end
+
   def analysis
-    Inventory.find(params[:inventory_id]).analysis
+    inventory.analyses.find(params[:analysis_id])
   end
 end

@@ -14,7 +14,10 @@
     var vm = this;
 
     vm.loadList = function() {
-      vm.list = AnalysisPermission.list({inventory_id: $stateParams.inventory_id});
+      vm.list = AnalysisPermission.list({
+         inventory_id: $stateParams.inventory_id,
+         analysis_id: $stateParams.id
+      });
     };
     vm.loadList();
 
@@ -37,7 +40,8 @@
 
     vm.savePermissions = function(permissions){
       AnalysisPermission.update({
-        inventory_id: $stateParams.inventory_id
+        inventory_id: $stateParams.inventory_id,
+        analysis_id: $stateParams.id
       }, { permissions: permissions }, function() {
         $scope.$emit('close-modal');
       });
