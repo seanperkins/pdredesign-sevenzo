@@ -27,9 +27,12 @@ class V1::AnalysesController < ApplicationController
     @analysis = inventory.analyses.find(params[:id])
     authorize_action_for @analysis
 
-    if @analysis.update(analysis_params)
-      AllAnalysisParticipantsNotificationWorker.perform_async(@analysis.id)
-      render nothing: true
+    saved = @analysis.update(analysis_params)
+    if saved
+      if analysis_params[:assign]
+        AllAnalysisParticipantsNotificationWorker.perform_async(@analysis.id)
+      end
+      render nothing: true, status: :no_content
     else
       render_error
     end
@@ -52,12 +55,13 @@ class V1::AnalysesController < ApplicationController
     rescue
       # because the frontend sends dates in different ways
       Date.parse(params[:deadline])
-    end
+    end unless params[:deadline].nil? or params[:deadline].is_a? Date
 
     params.permit(
       :name,
       :deadline,
-      :message
+      :message,
+      :assign
     )
   end
 end

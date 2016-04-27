@@ -161,7 +161,7 @@
       }
     };
 
-    service.saveAnalysis = function(analysis) {
+    service.saveAnalysis = function(analysis, assign) {
       if (analysis.name === '') {
         service.emitError('Analysis needs a name!');
         return;
@@ -169,6 +169,10 @@
 
       service.toggleSavingState();
       analysis.deadline = moment($('#due-date').val(), 'MM/DD/YYYY').toISOString();
+
+      if (assign) {
+        analysis.assign = true;
+      }
 
       return Analysis.save({inventory_id: analysis.inventory_id}, analysis)
           .$promise

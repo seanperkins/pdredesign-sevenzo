@@ -17,9 +17,20 @@ class Analysis < ActiveRecord::Base
 
   belongs_to :inventory
 
+  attr_accessor :assign
+
   validates_presence_of :name, :deadline, :inventory
+	validates :message, presence: true, if: "assigned_at.present?"
 
   has_many :members, class_name:'AnalysisMember'
   has_many :participants, -> { where(role: 'participant') }, class_name:'AnalysisMember'
   has_many :facilitators, -> { where(role: 'facilitator') }, class_name:'AnalysisMember'
+
+  before_save :set_assigned_at
+
+  private
+
+  def set_assigned_at
+    self.assigned_at = Time.now if self.assign
+  end
 end

@@ -59,12 +59,54 @@ describe V1::AnalysesController do
       sign_in inventory.owner
 
       put :update,
-           inventory_id: inventory.id,
-           id: analysis.id,
-           name: "name",
-           deadline: "11/14/2042"
+          inventory_id: inventory.id,
+          id: analysis.id,
+          name: "name",
+          deadline: "11/14/2042"
 
-      expect(response).to have_http_status(:ok)
+      expect(response).to have_http_status(:no_content)
+    end
+
+    it 'does not set :assigned_at' do
+      sign_in inventory.owner
+
+      put :update,
+          inventory_id: inventory.id,
+          id: analysis.id
+
+      expect(response).to have_http_status(:no_content)
+
+      updated_analysis = Analysis.find(analysis.id)
+      expect(updated_analysis.assigned_at).to be_nil
+    end
+
+    it 'sets :assigned_at when :assign present' do
+      sign_in inventory.owner
+
+      put :update,
+          inventory_id: inventory.id,
+          id: analysis.id,
+          assign: true
+
+      expect(response).to have_http_status(:no_content)
+
+      updated_analysis = Analysis.find(analysis.id)
+      expect(updated_analysis.assigned_at).not_to be_nil
+    end
+
+    it 'sends the invitation email to all participants' do
+      sign_in inventory.owner
+
+      expect(AllAnalysisParticipantsNotificationWorker).to receive(:perform_async)
+                                                       .with(analysis.id)
+
+      put :update,
+          inventory_id: inventory.id,
+          id: analysis.id,
+          message: "some custom message here",
+          assign: true
+
+      expect(response).to have_http_status(:no_content)
     end
   end
 end
