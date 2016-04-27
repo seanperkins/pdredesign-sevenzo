@@ -1,6 +1,6 @@
 class V1::ScoresController < ApplicationController
   before_action :authenticate_user!
-  after_action  :flush_assessment_cache, only: [:create]
+  after_action :flush_assessment_cache, only: [:create]
 
   def create
     authorize_action_for user_response
@@ -14,7 +14,7 @@ class V1::ScoresController < ApplicationController
   end
 
   def index
-    @rubric        = assessment.rubric
+    @rubric = resource.rubric
     @user_response = user_response
     @questions = []
 
@@ -28,8 +28,8 @@ class V1::ScoresController < ApplicationController
   private
   def find_or_initialize
     Score.find_or_initialize_by(
-      response_id: params[:response_id],
-      question_id: params[:question_id])
+        response_id: params[:response_id],
+        question_id: params[:question_id])
   end
 
   def score_params
@@ -37,16 +37,19 @@ class V1::ScoresController < ApplicationController
   end
 
   def user_response
-    Response.find(params[:response_id])
+    Response.where(id: params[:response_id]).first
   end
 
-  def assessment
-    Assessment.find(params[:assessment_id])
+  def resource
+    if params[:assessment_id]
+      Assessment.where(id: params[:assessment_id]).first
+    elsif params[:analysis_id]
+      Analysis.where(id: params[:analysis_id]).first
+    end
   end
 
   def flush_assessment_cache
-    assessment.flush_cached_version
+    resource.try(:flush_cached_version)
   end
-
 end
 
