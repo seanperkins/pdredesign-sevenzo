@@ -34,7 +34,7 @@ class Analysis < ActiveRecord::Base
   before_save :set_assigned_at
 
   def facilitator?(user)
-    facilitators.where(user: user).exists?
+    facilitators.where(user_id: user.id).exists?
   end
 
   def team_roles_for_participants
