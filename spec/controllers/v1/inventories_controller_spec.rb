@@ -29,19 +29,23 @@ describe V1::InventoriesController do
         end
 
         it 'pulls back an empty list' do
-          expect(json['inventories'].size).to eq 0
+          expect(json.size).to eq 0
         end
       end
 
       context 'when there are records' do
         context 'when they belong to the current user' do
 
-          let(:inventory) {
-            create(:inventory)
+          let(:district) {
+            create(:district)
           }
 
           let(:user) {
-            inventory.owner
+            create(:user, districts: [district])
+          }
+
+          let!(:inventory) {
+            create(:inventory, owner: user, district: district)
           }
 
           before(:each) do
@@ -50,11 +54,11 @@ describe V1::InventoriesController do
           end
 
           it 'returns an array of size 1' do
-            expect(json['inventories'].size).to eq 1
+            expect(json.size).to eq 1
           end
 
           it 'contains the single entry' do
-            expect(json['inventories'][0]['id']).to eq inventory.id
+            expect(json[0]['id']).to eq inventory.id
           end
         end
 
@@ -77,7 +81,7 @@ describe V1::InventoriesController do
             get :index, format: :json
           end
           it 'pulls back an empty list' do
-            expect(json['inventories'].size).to eq 0
+            expect(json.size).to eq 0
           end
         end
       end

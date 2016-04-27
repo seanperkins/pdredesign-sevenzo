@@ -11,6 +11,10 @@
     background-color: $assessment-color
   .consensus-state
     background-color: $consensus-color
+  .inventory-state
+    @extend .assessment-state
+  .completed-inventory-state
+    @extend .consensus-state
   .overview
     padding-top: 12px
     vertical-align: top

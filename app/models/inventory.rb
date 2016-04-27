@@ -69,13 +69,25 @@ class Inventory < ActiveRecord::Base
     self.members.where(user: user).exists?
   end
 
+  def network_partner?(user)
+    self.members.joins(:user).where(user_id: user.id, users: {role: 'network_partner'}).exists?
+  end
+
   def status
     return :draft if self.assigned_at.nil?
-    :assessment
+    :inventory
+  end
+
+  def is_completed
+    total_participant_responses == participant_count && total_participant_responses > 0
   end
 
   def percent_completed
-    (total_participant_responses / participants.count.to_d) * 100
+    (total_participant_responses / participant_count.to_d) * 100
+  end
+
+  def participant_count
+    participants.count
   end
 
   def add_facilitator_owner
@@ -85,5 +97,9 @@ class Inventory < ActiveRecord::Base
 
   def set_assigned_at
     self.assigned_at = Time.now if self.assign
+  end
+
+  def pending_requests?(user)
+    access_requests.where(user: user).present?
   end
 end

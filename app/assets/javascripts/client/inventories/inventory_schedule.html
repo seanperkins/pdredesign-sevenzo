@@ -13,14 +13,14 @@
         <h4>Inventory Due</h4>
         {{ inventorySchedule.formattedDueDate }}
         <div ng-pluralize count="inventory.participant_count"
-                           when="{'0': 'No Participants',
-                                  '1': '{} Participant',
-                                  'other': '{} Participants'}"></div>
+                          when="{'0': 'No Participants',
+                                 '1': '{} Participant',
+                                 'other': '{} Participants'}"></div>
       </div>
     </div>
   </div>
   <div class="inventory-schedule-buttons">
-    <button class="btn btn-block btn-tertiary separator-margin">Modify Schedule</button>
+    <button class="btn btn-block btn-tertiary separator-margin"  ng-if="inventory.is_facilitator">Modify Schedule</button>
     <button class="btn btn-block btn-tertiary separator-margin">Go To Report</button>
     <button ng-click="inventorySchedule.displayLearningQuestions()"
             class="btn btn-block btn-secondary separator-margin">Add/Review Learning Questions</button>

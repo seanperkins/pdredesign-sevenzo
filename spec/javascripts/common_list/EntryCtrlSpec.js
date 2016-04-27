@@ -94,13 +94,6 @@
       });
     });
 
-    describe('#roundNumber', function() {
-
-      it('rounds down to the nearest integer', function() {
-        expect(controller.roundNumber(50.999)).toEqual(50);
-      });
-    });
-
     describe('#meetingTime', function() {
       var result;
       describe('when the passed time is null', function() {
@@ -124,46 +117,6 @@
       });
     });
 
-    describe('#consensusReportIcon', function() {
-      var result;
-      describe('when there is no consensus', function() {
-        var entity = {};
-        beforeEach(function() {
-          result = controller.consensusReportIcon(entity);
-        });
-
-        it('returns fa-spinner', function() {
-          expect(result).toEqual('fa-spinner');
-        });
-      });
-      describe('when the consensus has not been completed', function() {
-        var entity = {
-          consensus: {
-            is_completed: false
-          }
-        };
-        beforeEach(function() {
-          result = controller.consensusReportIcon(entity);
-        });
-
-        it('returns fa-spinner', function() {
-          expect(result).toEqual('fa-spinner');
-        });
-      });
-      describe('when the consensus has been completed', function() {
-        var entity = {
-          consensus: {
-            is_completed: true
-          }
-        };
-        beforeEach(function() {
-          result = controller.consensusReportIcon(entity);
-        });
-
-        it('returns fa-check', function() {
-          expect(result).toEqual('fa-check');
-        });
-      });
-    });
+    ;
   });
 })();

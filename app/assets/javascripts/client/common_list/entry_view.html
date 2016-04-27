@@ -1,30 +1,6 @@
 <div class="entry">
-  <div class="overview status-background-color disable-entry">
-    <div class="type">
-      {{entity.status}}
-    </div>
-
-    <div class="status" ng-switch on="entity.status">
-      <div ng-switch-when="consensus">
-        <span class="fa-stack fa-2x">
-          <i class="fa fa-circle-thin fa-stack-2x"></i>
-          <i class="fa {{entry.consensusReportIcon(entity)}} fa-stack-1x"></i>
-        </span>
-      </div>
-      <div ng-switch-when="assessment">
-        <span class="fa-stack fa-2x">
-          <i class="fa fa-circle-thin fa-stack-2x"></i>
-          <span class="fa-stack-1x percent-complete">{{entry.roundNumber(entity.percent_completed)}}%</span>
-        </span>
-      </div>
-      <div ng-switch-default>
-        <span class="fa-stack fa-2x">
-          <i class="fa fa-circle-thin fa-stack-2x"></i>
-          <i class="fa {{entry.draftStatusIcon(entity)}} fa-stack-1x"></i>
-        </span>
-      </div>
-    </div>
-  </div>
+  <assessment-entity-status entity="entity" ng-if="context === 'assessment'"></assessment-entity-status>
+  <inventory-entity-status entity="entity" ng-if="context === 'inventory'"></inventory-entity-status>
   <div class="entry-content">
     <div class="entry-details">
       <div class="disable-entry details"
@@ -35,7 +11,7 @@
         </h3>
         <small>Facilitated by: {{entity.facilitator.full_name}}</small>
       </div>
-      <div class="links" ng-if="isAssessment === 'true'">
+      <div class="links" ng-if="context === 'assessment'">
         <div class="repeat" ng-repeat="link in entry.orderLinks(entity.links)">
           <assessment-links
               data-title="{{link.title}}"
@@ -47,6 +23,7 @@
           </assessment-links>
         </div>
       </div>
+      <inventory-links id="{{ entity.id }}" links="entity.links" ng-if="context === 'inventory'"></inventory-links>
     </div>
 
     <div class="entry-footer">
@@ -59,11 +36,11 @@
         <span class="category">Completed</span>
         <span class="stat">{{entity.completed_responses}}</span>
       </div>
-      <div class="meeting" ng-if="isAssessment === 'true'">
+      <div class="meeting" ng-if="context === 'assessment'">
         <span class='category'>Meeting</span>
         <span class='stat'>{{entry.meetingTime(entity.meeting_date)}}</span>
       </div>
-      <div class="meeting" ng-if="isAssessment === 'false'">
+      <div class="meeting" ng-if="context === 'inventory'">
         <span class='category'>Deadline</span>
         <span class='stat'>{{entry.meetingTime(entity.due_date)}}</span>
       </div>

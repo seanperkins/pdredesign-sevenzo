@@ -17,7 +17,7 @@ class InventoryResponse < ActiveRecord::Base
 
   private
   def increment_parent_inventory
-    if self.submitted_at.present?
+    if self.submitted_at.present? && !inventory_member.network_partner?
       inventory = inventory_member.inventory
       inventory.increment(:total_participant_responses, 1)
       inventory.save!
@@ -25,7 +25,7 @@ class InventoryResponse < ActiveRecord::Base
   end
 
   def decrement_parent_inventory
-    if self.submitted_at.present?
+    if self.submitted_at.present? && !inventory_member.network_partner?
       inventory = inventory_member.inventory
       inventory.decrement(:total_participant_responses, 1)
       inventory.save!

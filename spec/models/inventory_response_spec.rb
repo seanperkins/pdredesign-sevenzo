@@ -28,6 +28,23 @@ describe InventoryResponse do
       InventoryResponse.create(inventory_member: inventory_member)
     }
 
+    context 'when user is a network partner' do
+      let(:user) {
+        create(:user, :with_network_partner_role)
+      }
+
+      before(:each) do
+        inventory_member.user = user
+        inventory_member.save!
+
+        subject.save!
+      end
+
+      it 'does not increment the participant responses on its parent inventory' do
+        expect(inventory.total_participant_responses).to eq 0
+      end
+    end
+
     context 'when submitted_at is not present' do
       before(:each) do
         subject.save!
@@ -58,6 +75,24 @@ describe InventoryResponse do
     let(:inventory) {
       subject.inventory_member.inventory
     }
+
+    context 'when user is a network partner' do
+      let(:user) {
+        create(:user, :with_network_partner_role)
+      }
+
+      before(:each) do
+        subject.submitted_at = 5.days.ago
+        subject.save!
+        subject.inventory_member.user = user
+        subject.save!
+        subject.destroy!
+      end
+
+      it 'does not decrement the participant responses on its parent inventory' do
+        expect(inventory.total_participant_responses).to eq 1
+      end
+    end
 
     context 'when submitted_at is not present' do
       before(:each) do

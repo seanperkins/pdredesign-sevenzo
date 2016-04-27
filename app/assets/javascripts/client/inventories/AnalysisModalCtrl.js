@@ -28,7 +28,7 @@
 
     vm.updateInventories = function () {
       return Inventory.query().$promise.then(function (response) {
-        vm.inventories = response.inventories;
+        vm.inventories = response;
 
         // ensure a district is always selected
         if (_.any(vm.inventories)) {

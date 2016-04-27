@@ -8,7 +8,7 @@
     </div>
   </div>
   <div class="row">
-    <div id="participants" ng-if="inventoryDashboard.inventory.is_facilitator">
+    <div id="participants">
       <div class="row">
         <div class="col-md-12 header">
           <h2 class="participant-count"
@@ -24,20 +24,22 @@
         <participant user="user"></participant>
       </div>
     </div>
-    <div class="row">
-      <div class="col-lg-12">
-        <add-inventory-users-link send-invite="true"></add-inventory-users-link>
-      </div>
-      <div class="col-lg-12">
-        <manage-inventory-permissions-link auto-show="false"
-                                           send-invite="true"
-                                           number-of-requests="{{inventoryDashboard.inventory.number_of_requests}}">
-        </manage-inventory-permissions-link>
-      </div>
-      <div class="col-lg-12">
-        <invite-inventory-user-link send-invite="true"
-                                    role="participant">
-        </invite-inventory-user-link>
+    <div class="col-md-12 header" ng-if="inventoryDashboard.inventory.is_facilitator">
+      <div class="row">
+        <div class="col-lg-12">
+          <add-inventory-users-link send-invite="true"></add-inventory-users-link>
+        </div>
+        <div class="col-lg-12">
+          <manage-inventory-permissions-link auto-show="false"
+                                             send-invite="true"
+                                             number-of-requests="{{inventoryDashboard.inventory.number_of_requests}}">
+          </manage-inventory-permissions-link>
+        </div>
+        <div class="col-lg-12">
+          <invite-inventory-user-link send-invite="true"
+                                      role="participant">
+          </invite-inventory-user-link>
+        </div>
       </div>
     </div>
     <div id="messages" ng-if="inventoryDashboard.inventory.messages">
