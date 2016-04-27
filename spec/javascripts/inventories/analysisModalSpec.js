@@ -30,7 +30,7 @@
     describe('renders correct version', function () {
       it('renders no inventories notice', function() {
         $httpBackend.expectGET('/v1/inventories')
-                    .respond({inventories : []});
+                    .respond([]);
         $scope.$digest();
         isolatedScope = element.isolateScope();
         $httpBackend.flush();
@@ -40,7 +40,7 @@
 
       it('renders form', function() {
         $httpBackend.expectGET('/v1/inventories')
-                    .respond({inventories : [{id: 1}]});
+                    .respond([{id: 1}]);
         $scope.$digest();
         isolatedScope = element.isolateScope();
         $httpBackend.flush();
