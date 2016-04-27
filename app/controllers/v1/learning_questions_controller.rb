@@ -70,7 +70,9 @@ class V1::LearningQuestionsController < ApplicationController
   end
 
   def fetch_tool
-    if params[:inventory_id]
+    if params[:analysis_id]
+      @tool = Analysis.find(params[:analysis_id])
+    elsif params[:inventory_id]
       @tool = Inventory.find(params[:inventory_id])
     elsif params[:assessment_id]
       @tool = Assessment.find(params[:assessment_id])
@@ -83,6 +85,8 @@ class V1::LearningQuestionsController < ApplicationController
         @tool.user == current_user || @tool.users.include?(current_user)
       when 'Inventory'
         @tool.member?(user: current_user)
+      when 'Analysis'
+        @tool.inventory.member?(user: current_user)
     end
   end
 end

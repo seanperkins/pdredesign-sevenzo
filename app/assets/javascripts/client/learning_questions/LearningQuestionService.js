@@ -42,7 +42,8 @@
         }).$promise;
       } else if (service.context === 'analysis') {
         return AnalysisLearningQuestion.get({
-          inventory_id: service.extractId()
+          inventory_id: service.extractId(),
+          analysis_id: $stateParams.id
         }).$promise;
       }
     };
@@ -61,6 +62,7 @@
       } else if (service.context === 'analysis') {
         return AnalysisLearningQuestion.delete({
           inventory_id: service.extractId(),
+          analysis_id: $stateParams.id,
           id: model.id
         }).$promise;
       }
@@ -82,6 +84,7 @@
       } else if (service.context === 'analysis') {
         return AnalysisLearningQuestion.update({
           inventory_id: service.extractId(),
+          analysis_id: $stateParams.id,
           id: model.id,
           learning_question: {body: model.body}
         }).$promise;
@@ -99,7 +102,8 @@
         }, {learning_question: {body: model.body}}).$promise;
       } else if(service.context === 'analysis') {
         return AnalysisLearningQuestion.create({
-          inventory_id: service.extractId()
+          inventory_id: service.extractId(),
+          analysis_id: $stateParams.id
         }, {learning_question: {body: model.body}}).$promise;
       }
     };
