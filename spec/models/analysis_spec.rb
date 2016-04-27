@@ -16,7 +16,6 @@
 require 'spec_helper'
 
 describe Analysis do
-
   describe 'validations' do
     it { is_expected.to belong_to(:inventory) }
     it { is_expected.to have_one(:response) }
@@ -25,6 +24,18 @@ describe Analysis do
     it { is_expected.to validate_presence_of :deadline }
     it { is_expected.to validate_presence_of :inventory }
     it { is_expected.to validate_presence_of :rubric }
+
+    context ':assigned_at' do
+      before do
+        @analysis = Analysis.new(assigned_at: Time.now)
+      end
+
+      it 'requires :due_date when assigned_at is present' do
+        expect(@analysis.valid?).to eq(false)
+        expect(@analysis.errors[:message])
+          .to include("can\'t be blank")
+      end
+    end
 
     context ':assigned_at' do
       before do
