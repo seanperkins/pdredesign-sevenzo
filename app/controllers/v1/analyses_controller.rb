@@ -14,6 +14,7 @@ class V1::AnalysesController < ApplicationController
 
   def create
     @analysis = inventory.analyses.build(analysis_params)
+    @analysis.rubric = pick_rubric
     authorize_action_for @analysis
 
     if @analysis.save
@@ -63,5 +64,9 @@ class V1::AnalysesController < ApplicationController
       :message,
       :assign
     )
+  end
+
+  def pick_rubric
+    Rubric.analysis_driven.where.not(version: nil).order(version: :desc).first
   end
 end

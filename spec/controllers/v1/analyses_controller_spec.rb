@@ -28,6 +28,10 @@ describe V1::AnalysesController do
   end
 
   context '#create' do
+    let!(:rubric) {
+      create(:rubric, version: 1, tool_type: 'Analysis')
+    }
+
     it 'requires logged in user' do
       sign_out :user
 

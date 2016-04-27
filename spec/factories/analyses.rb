@@ -9,6 +9,8 @@
 #  created_at   :datetime
 #  updated_at   :datetime
 #  message      :text
+#  assigned_at  :datetime
+#  rubric_id    :integer
 #
 
 FactoryGirl.define do
@@ -16,5 +18,6 @@ FactoryGirl.define do
     name { Faker::Lorem.word }
     deadline { Faker::Date.between(1.day.from_now, 1.year.from_now) }
     association :inventory
+    association :rubric
   end
 end

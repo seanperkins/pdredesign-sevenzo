@@ -9,6 +9,8 @@
 #  created_at   :datetime
 #  updated_at   :datetime
 #  message      :text
+#  assigned_at  :datetime
+#  rubric_id    :integer
 #
 
 class Analysis < ActiveRecord::Base
@@ -16,10 +18,11 @@ class Analysis < ActiveRecord::Base
   self.authorizer_name = 'AnalysisAuthorizer'
 
   belongs_to :inventory
+  belongs_to :rubric
 
   attr_accessor :assign
 
-  validates_presence_of :name, :deadline, :inventory
+  validates_presence_of :name, :deadline, :inventory, :rubric
 	validates :message, presence: true, if: "assigned_at.present?"
 
   has_many :members, class_name:'AnalysisMember'

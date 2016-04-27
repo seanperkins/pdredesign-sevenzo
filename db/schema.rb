@@ -11,10 +11,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160427205124) do
+ActiveRecord::Schema.define(version: 20160427221954) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+  enable_extension "pg_trgm"
 
   create_table "access_requests", force: :cascade do |t|
     t.integer  "assessment_id"
@@ -33,6 +34,7 @@ ActiveRecord::Schema.define(version: 20160427205124) do
     t.datetime "updated_at"
     t.text     "message"
     t.datetime "assigned_at"
+    t.integer  "rubric_id"
   end
 
   add_index "analyses", ["inventory_id"], name: "index_analyses_on_inventory_id", using: :btree
@@ -364,7 +366,6 @@ ActiveRecord::Schema.define(version: 20160427205124) do
 
   add_index "learning_questions", ["created_at"], name: "index_learning_questions_on_created_at", using: :btree
   add_index "learning_questions", ["tool_id"], name: "index_learning_questions_on_tool_id", using: :btree
-  add_index "learning_questions", ["tool_type", "tool_id"], name: "index_learning_questions_on_tool_type_and_tool_id", using: :btree
 
   create_table "messages", force: :cascade do |t|
     t.text     "content"
