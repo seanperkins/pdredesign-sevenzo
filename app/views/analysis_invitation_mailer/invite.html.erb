@@ -1,0 +1,40 @@
+<table class="row">
+  <tr>
+    <td class="wrapper last">
+      <table class="twelve columns">
+        <tr>
+          <td class="left-text-pad">
+            <h2>Hello <%= @first_name %>,</h2>
+            <br>
+            <h6>
+              <b><%= @facilitator_name %></b>
+              has invited you to participate in <%= @analysis_name %> for <%= @district_name %>.
+            </h6>
+            <br>
+            <br>
+
+            <p class="lead"><%= @message %></p>
+            <h6><b>Please complete this analysis by <%= @deadline %>.</b></h6>
+            <br>
+            <br>
+
+            <center>
+              <a href="<%= @analysis_link %>" target="_blank" class="button">
+                Begin Analysis Now
+              </a>
+            </center>
+            <br>
+            <br>
+            PDredesign is a digital toolkit dedicated to improving professional development for educators. The
+            PDredesign tools were designed with school districts who wanted to support their teachers through more
+            relevant, flexible, timely and collaborative professional development opportunities. The toolkit is freely
+            available on PDredesign.org and can be used by any school district to transform existing professional
+            development systems to better support teachers in the classroom.
+            <br>
+          </td>
+          <td class="expander"></td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>

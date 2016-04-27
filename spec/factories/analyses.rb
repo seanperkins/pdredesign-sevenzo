@@ -1,3 +1,16 @@
+# == Schema Information
+#
+# Table name: analyses
+#
+#  id           :integer          not null, primary key
+#  name         :text
+#  deadline     :datetime
+#  inventory_id :integer
+#  created_at   :datetime
+#  updated_at   :datetime
+#  message      :text
+#
+
 FactoryGirl.define do
   factory :analysis do
     name { Faker::Lorem.word }

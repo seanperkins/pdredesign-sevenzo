@@ -21,6 +21,8 @@
         CreateService.saveAssessment(entity, assign);
       } else if(CreateService.context === 'inventory') {
         CreateService.saveInventory(entity, assign);
+      } else if(CreateService.context === 'analysis') {
+        CreateService.saveAnalysis(entity, assign);
       }
     };
 
@@ -29,6 +31,8 @@
         CreateService.assignAndSaveAssessment(entity);
       } else if(CreateService.context === 'inventory') {
         CreateService.assignAndSaveInventory(entity);
+      } else if(CreateService.context === 'analysis') {
+        CreateService.assignAndSaveAnalysis(entity);
       }
     };
 
@@ -37,6 +41,8 @@
         return 'assessment';
       } else if (CreateService.context === 'inventory') {
         return 'inventory';
+      } else if (CreateService.context === 'analysis') {
+        return 'analysis';
       }
     };
 

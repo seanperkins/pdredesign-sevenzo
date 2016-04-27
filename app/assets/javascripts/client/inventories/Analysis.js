@@ -13,11 +13,17 @@
     };
 
     var methodOptions = {
+      'query': {
+        method: 'GET'
+      },
       'create': {
         method: 'POST'
+      },
+      'save': {
+        method: 'PUT'
       }
     };
 
-    return $resource(UrlService.url('inventories/:inventory_id/analyses'), paramDefaults, methodOptions);
+    return $resource(UrlService.url('inventories/:inventory_id/analysis'), paramDefaults, methodOptions);
   }
 })();

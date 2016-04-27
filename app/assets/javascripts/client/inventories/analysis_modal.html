@@ -4,7 +4,7 @@
 
   <hr>
 
-  <div ng-if='analysisModal.hasNoInventories()'>
+  <div ng-show='analysisModal.hasNoInventories()'>
     <div class='row'>
       <div class='col-sm-12'>
         <div class='notice'>
@@ -15,13 +15,11 @@
       </div>
     </div>
 
-  <alert ng-repeat="alert in analysisModal.alerts" type="{{alert.type}}" close="analysisModal.closeAlert($index)">{{alert.msg}}</alert>
-  <form name='form' ng-submit='analysisModal.save()'>
-    <div class='row'>
-      <div class='col-sm-6'>
     <hr>
-  </div>
-  <div ng-if='analysisModal.hasInventories()'>
+   </div>
+
+  <div ng-show='analysisModal.hasInventories()'>
+    <alert ng-repeat="alert in analysisModal.alerts" type="{{alert.type}}" close="analysisModal.closeAlert($index)">{{alert.msg}}</alert>
     <div class='row'>
       <div class='col-sm-12'>
         <p>Facilitate the Data &amp; Tech Analysis process for your district by creating a new analysis and selecting an inventory to connect to it. Click here to view current analyses for your district or to participate in an existing analysis.</p>

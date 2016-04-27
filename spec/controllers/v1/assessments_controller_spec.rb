@@ -299,8 +299,8 @@ describe V1::AssessmentsController do
     end
 
     it 'sets the newest rubric if one is not provided' do
-      @rubric = Rubric.create!(version: 99)
-      Rubric.create!(version: 95)
+      @rubric = create(:rubric, :as_assessment_rubric, version: 99)
+      create(:rubric, :as_assessment_rubric, version: 95)
 
       create_struct
 

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160420220452) do
+ActiveRecord::Schema.define(version: 20160426202457) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -32,9 +32,36 @@ ActiveRecord::Schema.define(version: 20160420220452) do
     t.integer  "inventory_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.text     "message"
   end
 
   add_index "analyses", ["inventory_id"], name: "index_analyses_on_inventory_id", using: :btree
+
+  create_table "analysis_invitations", force: :cascade do |t|
+    t.string  "first_name"
+    t.string  "last_name"
+    t.string  "email"
+    t.string  "team_role"
+    t.string  "role"
+    t.string  "token"
+    t.integer "analysis_id", null: false
+    t.integer "user_id"
+  end
+
+  add_index "analysis_invitations", ["analysis_id"], name: "index_analysis_invitations_on_analysis_id", using: :btree
+  add_index "analysis_invitations", ["user_id"], name: "index_analysis_invitations_on_user_id", using: :btree
+
+  create_table "analysis_members", force: :cascade do |t|
+    t.integer  "analysis_id"
+    t.integer  "user_id"
+    t.string   "role"
+    t.datetime "invited_at"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "analysis_members", ["analysis_id"], name: "index_analysis_members_on_analysis_id", using: :btree
+  add_index "analysis_members", ["user_id"], name: "index_analysis_members_on_user_id", using: :btree
 
   create_table "answers", force: :cascade do |t|
     t.integer  "value"
@@ -480,11 +507,13 @@ ActiveRecord::Schema.define(version: 20160420220452) do
   create_table "rubrics", force: :cascade do |t|
     t.string   "name",       limit: 255
     t.decimal  "version"
-    t.integer  "user_id"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.boolean  "enabled"
+    t.string   "tool_type"
   end
+
+  add_index "rubrics", ["tool_type"], name: "index_rubrics_on_tool_type", using: :btree
 
   create_table "scores", force: :cascade do |t|
     t.integer  "value"
@@ -597,6 +626,10 @@ ActiveRecord::Schema.define(version: 20160420220452) do
   add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
 
   add_foreign_key "analyses", "inventories"
+  add_foreign_key "analysis_invitations", "analyses", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "analysis_invitations", "users", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "analysis_members", "analyses"
+  add_foreign_key "analysis_members", "users"
   add_foreign_key "inventory_access_requests", "inventories", on_update: :cascade, on_delete: :cascade
   add_foreign_key "inventory_access_requests", "users", on_update: :cascade, on_delete: :cascade
   add_foreign_key "inventory_invitations", "inventories", on_update: :cascade, on_delete: :cascade

@@ -10,10 +10,12 @@
     'Assessment',
     'Inventory',
     'Participant',
-    'InventoryParticipant'
+    'InventoryParticipant',
+    'Analysis',
+    'AnalysisParticipant'
   ];
 
-  function CreateService($window, $location, $stateParams, Assessment, Inventory, Participant, InventoryParticipant) {
+  function CreateService($window, $location, $stateParams, Assessment, Inventory, Participant, InventoryParticipant, Analysis, AnalysisParticipant) {
     var service = this;
 
     service.loadDistrict = function(district) {
@@ -69,7 +71,7 @@
 
       if ($window.confirm('Are you sure you want to send out the assessment and invite all your participants?')) {
         service.alertError = false;
-        this
+        service
             .saveAssessment(assessment, true)
             .then(function() {
               $location.path('/assessments');
@@ -144,11 +146,48 @@
           });
     };
 
+    service.assignAndSaveAnalysis = function(analysis) {
+      if (analysis.message === null || analysis.message === '') {
+        service.alertError = true;
+        return;
+      }
+
+      if ($window.confirm('Are you sure you want to start the analysis and invite all your participants?')) {
+        service.alertError = false;
+        service.saveAnalysis(analysis, true)
+            .then(function() {
+              $location.path('/inventories');
+            });
+      }
+    };
+
+    service.saveAnalysis = function(analysis) {
+      if (analysis.name === '') {
+        service.emitError('Analysis needs a name!');
+        return;
+      }
+
+      service.toggleSavingState();
+      analysis.deadline = moment($('#due-date').val(), 'MM/DD/YYYY').toISOString();
+
+      return Analysis.save({inventory_id: analysis.inventory_id}, analysis)
+          .$promise
+          .then(function() {
+            service.toggleSavingState();
+            service.emitSuccess('Analysis Saved!');
+          }, function() {
+            service.toggleSavingState();
+            service.emitError('Could not save analysis');
+          });
+    };
+
     service.save = function(entity) {
       if(service.context === 'assessment') {
         service.saveAssessment(entity);
       } else if(service.context === 'inventory') {
         service.saveInventory(entity);
+      } else if(service.context === 'analysis') {
+        service.saveAnalysis(entity);
       }
     };
 
@@ -157,6 +196,8 @@
         return Participant.query({assessment_id: service.extractId()});
       } else if (service.context === 'inventory') {
         return InventoryParticipant.query({inventory_id: service.extractId()});
+      } else if (service.context === 'analysis') {
+        return AnalysisParticipant.query({inventory_id: service.extractId()});
       }
     };
 
@@ -171,6 +212,11 @@
           inventory_id: service.extractId(),
           id: participant.participant_id
         }).$promise;
+      } else if (service.context === 'analysis') {
+        return AnalysisParticipant.delete({
+          inventory_id: $stateParams.inventory_id,
+          id: participant.participant_id
+        }).$promise;
       }
     };
 
@@ -180,6 +226,9 @@
             .$promise;
       } else if (service.context === 'inventory') {
         return InventoryParticipant.query({inventory_id: service.extractId()})
+            .$promise;
+      } else if (service.context === 'analysis') {
+        return AnalysisParticipant.query({inventory_id: service.extractId()})
             .$promise;
       }
     };
@@ -191,6 +240,9 @@
       } else if (service.context === 'inventory') {
         return InventoryParticipant.all({inventory_id: service.extractId()})
             .$promise;
+      } else if (service.context === 'analysis') {
+        return AnalysisParticipant.all({inventory_id: service.extractId()})
+            .$promise;
       }
     };
 
@@ -198,6 +250,10 @@
       if (service.context === 'inventory') {
         return InventoryParticipant.create({
           inventory_id: service.extractId()
+        }, {user_id: user.id}).$promise;
+      } else if (service.context === 'analysis') {
+        return AnalysisParticipant.create({
+          inventory_id: $stateParams.inventory_id
         }, {user_id: user.id}).$promise;
       }
     };

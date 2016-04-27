@@ -8,10 +8,11 @@
     '$stateParams',
     '$rootScope',
     'AssessmentLearningQuestion',
-    'InventoryLearningQuestion'
+    'InventoryLearningQuestion',
+    'AnalysisLearningQuestion'
   ];
 
-  function LearningQuestionService($stateParams, $rootScope, AssessmentLearningQuestion, InventoryLearningQuestion) {
+  function LearningQuestionService($stateParams, $rootScope, AssessmentLearningQuestion, InventoryLearningQuestion, AnalysisLearningQuestion) {
     var service = this;
 
     service.extractId = function() {
@@ -39,6 +40,10 @@
         return InventoryLearningQuestion.get({
           inventory_id: service.extractId()
         }).$promise;
+      } else if (service.context === 'analysis') {
+        return AnalysisLearningQuestion.get({
+          inventory_id: service.extractId()
+        }).$promise;
       }
     };
 
@@ -50,6 +55,11 @@
         }).$promise;
       } else if (service.context === 'inventory') {
         return InventoryLearningQuestion.delete({
+          inventory_id: service.extractId(),
+          id: model.id
+        }).$promise;
+      } else if (service.context === 'analysis') {
+        return AnalysisLearningQuestion.delete({
           inventory_id: service.extractId(),
           id: model.id
         }).$promise;
@@ -69,6 +79,12 @@
           id: model.id,
           learning_question: {body: model.body}
         }).$promise;
+      } else if (service.context === 'analysis') {
+        return AnalysisLearningQuestion.update({
+          inventory_id: service.extractId(),
+          id: model.id,
+          learning_question: {body: model.body}
+        }).$promise;
       }
     };
 
@@ -79,6 +95,10 @@
         }, {learning_question: {body: model.body}}).$promise;
       } else if(service.context === 'inventory') {
         return InventoryLearningQuestion.create({
+          inventory_id: service.extractId()
+        }, {learning_question: {body: model.body}}).$promise;
+      } else if(service.context === 'analysis') {
+        return AnalysisLearningQuestion.create({
           inventory_id: service.extractId()
         }, {learning_question: {body: model.body}}).$promise;
       }

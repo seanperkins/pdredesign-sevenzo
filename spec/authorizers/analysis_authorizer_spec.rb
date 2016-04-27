@@ -16,6 +16,28 @@ describe AnalysisAuthorizer do
     FactoryGirl.create(:inventory_member, :as_facilitator, user: facilitator_user, inventory: inventory)
   end
 
+  context 'read' do
+    it "is readable by its inventory's owner" do
+      expect(@analysis).to be_readable_by(inventory.owner)
+    end
+
+    it "is not readable by its inventory's members" do
+      expect(@analysis).to_not be_readable_by(member_user)
+    end
+
+    it "is not readable by its inventory's participants" do
+      expect(@analysis).to_not be_readable_by(participant_user)
+    end
+
+    it "is readable by its inventory's facilitators" do
+      expect(@analysis).to be_readable_by(facilitator_user)
+    end
+
+    it 'is not readable by randos' do
+      expect(@analysis).to_not be_readable_by(other_user)
+    end
+  end
+
   context 'create' do
     it "is creatable by its inventory's owner" do
       expect(@analysis).to be_creatable_by(inventory.owner)
@@ -35,6 +57,50 @@ describe AnalysisAuthorizer do
 
     it 'is not creatable by randos' do
       expect(@analysis).to_not be_creatable_by(other_user)
+    end
+  end
+
+  context 'update' do
+    it "is updatable by its inventory's owner" do
+      expect(@analysis).to be_updatable_by(inventory.owner)
+    end
+
+    it "is not updatable by its inventory's members" do
+      expect(@analysis).to_not be_updatable_by(member_user)
+    end
+
+    it "is not updatable by its inventory's participants" do
+      expect(@analysis).to_not be_updatable_by(participant_user)
+    end
+
+    it "is updatable by its inventory's facilitators" do
+      expect(@analysis).to be_updatable_by(facilitator_user)
+    end
+
+    it 'is not updatable by randos' do
+      expect(@analysis).to_not be_updatable_by(other_user)
+    end
+  end
+
+  context 'delete' do
+    it "is deletable by its inventory's owner" do
+      expect(@analysis).to be_deletable_by(inventory.owner)
+    end
+
+    it "is not deletable by its inventory's members" do
+      expect(@analysis).to_not be_deletable_by(member_user)
+    end
+
+    it "is not deletable by its inventory's participants" do
+      expect(@analysis).to_not be_deletable_by(participant_user)
+    end
+
+    it "is deletable by its inventory's facilitators" do
+      expect(@analysis).to be_deletable_by(facilitator_user)
+    end
+
+    it 'is not deletable by randos' do
+      expect(@analysis).to_not be_deletable_by(other_user)
     end
   end
 end

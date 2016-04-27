@@ -70,7 +70,7 @@ def create_magic_assessments
   @user3        = Application::create_sample_user(districts: [@district], role: :district_member)
   @participant  = Participant.create!(user: @user)
   @participant2 = Participant.create!(user: @user2)
-  @rubric       = Rubric.create!
+  @rubric       = create(:rubric, :as_assessment_rubric, version: 98)
 
   3.times do |i|
     Assessment.create!(
