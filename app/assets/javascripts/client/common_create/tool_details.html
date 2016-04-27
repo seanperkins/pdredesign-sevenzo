@@ -19,6 +19,7 @@
       <select
           id="district"
           required
+          ng-disabled="disableDistrict"
           class="form-control"
           ng-model="toolDetails.district"
           ng-options="district.text for district in toolDetails.user.districts">
