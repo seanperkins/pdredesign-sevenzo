@@ -77,7 +77,7 @@ describe V1::AnalysisPermissionsController do
       it { expect(response).to have_http_status(:success) }
 
       it 'changed all roles' do 
-        expect(analysis.facilitators.count).to be(2)
+        expect(analysis.facilitators.count).to be(inventory.members.count + 2)
         expect(analysis.facilitators.map(&:user).map(&:email)).to include *original_participant_emails
       end
     end

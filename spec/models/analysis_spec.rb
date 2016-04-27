@@ -45,4 +45,12 @@ describe Analysis do
 
     it { expect(subject.new_record?).to be false }
   end
+
+  describe '#create' do
+    let(:inventory) { FactoryGirl.create(:inventory, :with_participants, :with_facilitators, participants: 2, facilitators: 2) }
+    subject { FactoryGirl.create(:analysis, inventory: inventory ) }
+
+    it { expect(subject.members.count).to be inventory.members.count }
+    it { expect(subject.members.pluck(:role)).to match_array inventory.members.pluck(:role) }
+  end
 end
