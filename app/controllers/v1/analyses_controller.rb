@@ -16,6 +16,7 @@ class V1::AnalysesController < ApplicationController
     @analysis = inventory.analyses.build(analysis_params)
     @analysis.rubric = pick_rubric
     authorize_action_for @analysis
+    @analysis.owner = current_user
 
     if @analysis.save
       render template: 'v1/analyses/show', status: 201

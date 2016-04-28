@@ -35,9 +35,11 @@ ActiveRecord::Schema.define(version: 20160428193020) do
     t.text     "message"
     t.datetime "assigned_at"
     t.integer  "rubric_id"
+    t.integer  "owner_id"
   end
 
   add_index "analyses", ["inventory_id"], name: "index_analyses_on_inventory_id", using: :btree
+  add_index "analyses", ["owner_id"], name: "index_analyses_on_owner_id", using: :btree
 
   create_table "analysis_invitations", force: :cascade do |t|
     t.string  "first_name"

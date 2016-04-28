@@ -19,6 +19,7 @@ class Analysis < ActiveRecord::Base
 
   belongs_to :inventory
   belongs_to :rubric
+  belongs_to :owner, class_name: 'User'
 
   attr_accessor :assign
 
