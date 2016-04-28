@@ -181,9 +181,9 @@
           templateUrl: 'client/inventories/analysis_dashboard.html'
         },
         'sidebar': {
-          controller: 'InventorySidebarCtrl',
-          controllerAs: 'inventorySidebar',
-          templateUrl: 'client/inventories/sidebar.html'
+          controller: 'AnalysisSidebarCtrl',
+          controllerAs: 'analysisSidebar',
+          templateUrl: 'client/inventories/analysis_dashboard_sidebar.html'
         }
       }
     });

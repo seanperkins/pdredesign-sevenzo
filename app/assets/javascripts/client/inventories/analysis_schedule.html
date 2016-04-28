@@ -1,0 +1,28 @@
+<div class="inventory-schedule-container">
+  <div class="inventory-schedule">
+    <div class="row date-container">
+      <div class="col-sm-3 calendar">
+        <div class="date-month">
+          {{ analysisSchedule.month }}
+        </div>
+        <h1 class="date-day">
+          {{ analysisSchedule.day }}
+        </h1>
+      </div>
+      <div class="col-sm-8 date-info">
+        <h4>Analysis Due</h4>
+        {{ analysisSchedule.formattedDueDate }}
+        <div ng-pluralize count="inventory.participant_count"
+                           when="{'0': 'No Participants',
+                                  '1': '{} Participant',
+                                  'other': '{} Participants'}"></div>
+      </div>
+    </div>
+  </div>
+  <div class="inventory-schedule-buttons" ng-if="!analysisSchedule.onlySchedule">
+    <button class="btn btn-block btn-tertiary separator-margin">Modify Schedule</button>
+    <button class="btn btn-block btn-tertiary separator-margin">Go To Report</button>
+    <button ng-click="analysisSchedule.displayLearningQuestions()"
+            class="btn btn-block btn-secondary separator-margin">Add/Review Learning Questions</button>
+  </div>
+</div>

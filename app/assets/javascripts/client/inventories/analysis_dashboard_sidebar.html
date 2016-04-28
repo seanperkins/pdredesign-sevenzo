@@ -1,0 +1,8 @@
+<div class="sidebar analysis-dashboard-sidebar">
+  <analysis-schedule only-schedule="true" analysis="analysisSidebar.currentAnalysis"></analysis-schedule>
+  <div class="schedule-buttons">
+    <button class="btn btn-block btn-secondary separator-margin" ui-sref="inventory_analysis_dashboard({inventory_id: analysisSidebar.currentAnalysis.inventory_id, id: analysisSidebar.currentAnalysis.id})">Dashboard</button>
+    <button class="btn btn-block btn-tertiary separator-margin" ui-sref="inventory_dashboard({inventory_id: analysisSidebar.currentAnalysis.inventory_id})">Go to inventory</button>
+    <button ui-sref="inventory_analysis_dashboard({inventory_id: analysisSidebar.currentAnalysis.inventory_id, id: analysisSidebar.currentAnalysis.id})" class="btn btn-block btn-tertiary separator-margin">Go to analysis</button>
+  </div>
+</div>
