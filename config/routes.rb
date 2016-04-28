@@ -107,6 +107,7 @@ PdrServer::Application.routes.draw do
         resources :learning_questions, only: [:index, :create, :update, :destroy] do
           get :exists, on: :collection
         end
+        resources :analysis_responses, except: [:delete]
       end
 
       member do

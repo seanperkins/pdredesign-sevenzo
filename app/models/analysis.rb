@@ -45,4 +45,8 @@ class Analysis < ActiveRecord::Base
   def set_assigned_at
     self.assigned_at = Time.now if self.assign
   end
+
+  def facilitator?(user:)
+    facilitators.where(user: user).exists?
+  end
 end
