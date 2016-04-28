@@ -32,7 +32,7 @@
         }
       },
       'saveResponse': {
-        method: 'PATCH',
+        method: 'POST',
         url: UrlService.url('inventories/:inventory_id/save_response'),
         params: {
           inventory_id: '@inventory_id'

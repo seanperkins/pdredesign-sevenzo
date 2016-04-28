@@ -67,6 +67,8 @@ class V1::InventoriesController < ApplicationController
     end
   end
 
+  authority_actions mark_complete: :update
+
   def save_response
     member = inventory.members.where(user: current_user).first
     response = InventoryResponse.find_or_create_by(inventory_member: member)
@@ -80,12 +82,16 @@ class V1::InventoriesController < ApplicationController
     end
   end
 
+  authority_actions save_response: :update
+
   def participant_response
     member = inventory.members.where(user: current_user).first
     render json: {
         hasResponded: member.has_responded?
     }, status: :ok
   end
+
+  authority_actions participant_response: :create
 
   private
   def inventory_params
