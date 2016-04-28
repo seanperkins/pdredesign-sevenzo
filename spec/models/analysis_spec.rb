@@ -19,6 +19,7 @@ describe Analysis do
 
   describe 'validations' do
     it { is_expected.to belong_to(:inventory) }
+    it { is_expected.to have_one(:response) }
 
     it { is_expected.to validate_presence_of :name }
     it { is_expected.to validate_presence_of :deadline }

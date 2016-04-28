@@ -2,13 +2,15 @@ class V1::AnalysisResponsesController < ApplicationController
   before_action :authenticate_user!
 
   def create
-    @response = Response.find_or_initialize_by(responder_id: participant_from_user.id,
-                                               responder_type: 'Analysis')
+    @response = Response.find_or_create_by(responder: analysis)
     authorize_action_for @response
+
     @response.rubric = analysis.rubric
     if @response.save
       create_empty_scores(@response)
       render nothing: true, status: :created
+    else
+      render nothing: true, status: :bad_request
     end
   end
 
@@ -21,5 +23,4 @@ class V1::AnalysisResponsesController < ApplicationController
   def analysis
     Analysis.where(id: params[:analysis_id]).first
   end
-
 end

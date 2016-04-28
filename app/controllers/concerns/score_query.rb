@@ -13,6 +13,7 @@ module ScoreQuery
       .find_by(question: question)
   end
 
+  private
   def scores(response)
     @scores ||= Score.where(response: response)
   end
