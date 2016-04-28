@@ -14,6 +14,13 @@ class V1::AnalysisResponsesController < ApplicationController
     end
   end
 
+  def show
+    @response = Response.where(id: params[:id]).first
+    @rubric = @response.rubric
+    @categories = @response.categories
+    authorize_action_for @response
+  end
+
   private
   def participant_from_user(user = current_user)
     AnalysisMember.where(user_id: user.id,
