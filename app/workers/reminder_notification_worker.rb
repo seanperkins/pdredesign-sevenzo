@@ -4,13 +4,15 @@ class ReminderNotificationWorker
   def perform(id, type, message)
     case type
       when 'Assessment'
-        perform_for_assessment(id, message)
+        perform_for_assessment(assessment_id: id, message: message)
       when 'Inventory'
-        perform_for_inventory(id, message)
+        perform_for_inventory(inventory_id: id, message: message)
+      when 'Analysis'
+        perform_for_analysis(analysis_id: id, message: message)
     end
   end
 
-  def perform_for_assessment(assessment_id, message)
+  def perform_for_assessment(assessment_id:, message:)
     assessment = find_assessment(assessment_id)
 
     create_message_entry(assessment, message)
@@ -25,7 +27,7 @@ class ReminderNotificationWorker
     end
   end
 
-  def perform_for_inventory(inventory_id, message)
+  def perform_for_inventory(inventory_id:, message:)
     inventory = Inventory.where(id: inventory_id).first
     create_message_entry(inventory, message)
 
@@ -33,6 +35,20 @@ class ReminderNotificationWorker
       # TODO:  Need to guard against those who have already been reminded
       InventoryInvitationMailer
           .reminder(inventory, message, participant)
+          .deliver_now
+
+      participant.update(reminded_at: Time.now)
+    end
+  end
+
+  def perform_for_analysis(analysis_id:, message:)
+    analysis = Analysis.where(id: analysis_id).first
+    create_message_entry(analysis, message)
+
+    analysis.participants.each do |participant|
+      # TODO:  Need to guard against those who have already been reminded
+      AnalysisInvitationMailer
+          .reminder(analysis, message, participant)
           .deliver_now
 
       participant.update(reminded_at: Time.now)

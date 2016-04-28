@@ -106,6 +106,7 @@ PdrServer::Application.routes.draw do
         end
         resources :invitations, controller: 'analysis_invitations', only: [:create]
         resource :permissions, controller: 'analysis_permissions', only: [:show, :update]
+        resource :reminders, controller: 'analysis_reminders', only: [:create]
         resources :learning_questions, only: [:index, :create, :update, :destroy] do
           get :exists, on: :collection
         end

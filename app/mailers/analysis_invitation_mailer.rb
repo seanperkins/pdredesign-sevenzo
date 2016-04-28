@@ -15,6 +15,19 @@ class AnalysisInvitationMailer < ApplicationMailer
     mail(to: invite.email)
   end
 
+  def reminder(analysis, message, participant)
+    @first_name = participant.user.first_name
+    @facilitator = analysis.owner
+    @analysis_name = analysis.name
+    @district_name = analysis.district.name
+    @deadline = analysis.deadline.strftime("%B %d, %Y")
+    @analysis_link = "#{ENV['BASE_URL']}/#/inventories/#{@analysis.inventory_id}/analyses/#{@analysis.id}/responses"
+    @message = message.try(:html_safe)
+
+    mail(subject: 'Analysis Reminder',
+          to: participant.user.email)
+  end
+
   private
   def invite_url(token)
     "#{ENV['BASE_URL']}/#/inventories/#{@analysis.inventory_id}/analyses/#{@analysis.id}/invitations/#{token}"
