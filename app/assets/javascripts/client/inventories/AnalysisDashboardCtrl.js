@@ -21,7 +21,7 @@
 
     vm.createReminder = function() {
       vm.modal = $modal.open({
-        template: '<reminder-modal context="inventory"></reminder-modal>',
+        template: '<reminder-modal context="analysis"></reminder-modal>',
         scope: $scope
       });
     };
