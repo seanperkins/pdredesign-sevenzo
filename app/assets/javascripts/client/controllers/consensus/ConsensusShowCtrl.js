@@ -8,15 +8,19 @@
     'SessionService',
     'Assessment',
     'ConsensusHelper',
-    '$stateParams'
+    '$stateParams',
+    'ConsensusService',
+    'current_context',
+    'current_entity',
+    'consensus'
   ];
 
-  function ConsensusShowCtrl($scope, SessionService, Assessment, ConsensusHelper, $stateParams) {
+  function ConsensusShowCtrl($scope, SessionService, Assessment, ConsensusHelper, $stateParams, ConsensusService, current_context, current_entity, consensus) {
     $scope.user = SessionService.getCurrentUser();
 
-    $scope.assessmentId = $stateParams.assessment_id;
-    $scope.responseId = $stateParams.response_id;
-    $scope.assessment = Assessment.get({id: $scope.assessmentId});
+    ConsensusService.setContext(current_context);
+    $scope.entity = current_entity;
+    $scope.consensus = consensus;
 
     $scope.exportToPDF = function() {
       ConsensusHelper.consensuToPDF($scope.assessmentId, $scope.responseId);

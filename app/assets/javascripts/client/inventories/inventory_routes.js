@@ -162,6 +162,28 @@
       },
       params: {
         shared: true
+    }).state('inventory_analysis_consensus', {
+      url: '/inventories/:inventory_id/analyses/:analysis_id/consensus/:id',
+      authenticate: true,
+      resolve: {
+        current_context: function () { return "analysis"; },
+        current_entity: ['$stateParams', 'Analysis', function($stateParams, Analysis) {
+          return Analysis.get({inventory_id: $stateParams.inventory_id, id: $stateParams.analysis_id}).$promise;
+        }],
+        consensus: ['$stateParams', 'Consensus', function($stateParams, Consensus) {
+          return {id: 104, responder_id: 7, responder_type: "Analysis", rubric_id: 1};
+        }]
+      },
+      views: {
+        '': {
+          controller: 'ConsensusShowCtrl',
+          //controllerAs: 'consensusShow',
+          templateUrl: 'client/views/consensus/show.html'
+        },
+        'sidebar': {
+          controller: 'SidebarResponseCardCtrl',
+          templateUrl: 'client/views/sidebar/response_card.html'
+        }
       }
     });
   }

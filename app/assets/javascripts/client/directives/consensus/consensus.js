@@ -5,21 +5,21 @@ PDRClient.directive('consensus', [
       replace: true,
       scope: {
         assessmentId:  '@',
-        responseId:    '@'
+        responseId:    '@',
+        entity:        '=',
+        consensus:     '='
       },
       templateUrl: 'client/views/directives/consensus/consensus_questions.html',
       controller: [
         '$scope',
-        '$http',
         '$timeout',
-        '$stateParams',
         '$location',
-        'SessionService',
         'Consensus',
         'Score',
         'ResponseHelper',
         'ConsensusStateService',
-        function($scope, $http, $timeout, $stateParams, $location, SessionService, Consensus, Score, ResponseHelper, ConsensusStateService) {
+        'ConsensusService',
+        function($scope, $timeout, $location, Consensus, Score, ResponseHelper, ConsensusStateService, ConsensusService) {
 
           $scope.isConsensus        = true;
           $scope.isReadOnly         = true;
@@ -69,29 +69,23 @@ PDRClient.directive('consensus', [
           };
 
           $scope.$on('submit_consensus', function() {
-            Consensus
-              .submit({assessment_id: $scope.assessmentId, id: $scope.responseId}, {submit: true})
-              .$promise
-              .then(function(data){
+            ConsensusService
+              .submitConsensus($scope.consensus.id)
+              .then(function (data) {
                 $scope.redirectToReport($scope.assessmentId);
               });
           });
 
           $scope.updateConsensus = function(){
-             return Consensus
-              .get({assessment_id: $scope.assessmentId,
-                    id: $scope.responseId,
-                    team_role: $scope.teamRole})
-              .$promise
-              .then(function(data) {
-                $scope.updateConsensusState(data);
+            return ConsensusService
+              .loadConsensus($scope.consensus.id, $scope.teamRole)
+              .then(function (data) {
                 $scope.scores     = data.scores;
                 $scope.data       = data.categories;
                 $scope.categories = data.categories;
                 $scope.teamRoles  = data.team_roles;
                 $scope.isReadOnly = data.is_completed || false;
                 $scope.participantCount = data.participant_count;
-                return true;
               });
           };
 
@@ -124,7 +118,6 @@ PDRClient.directive('consensus', [
           };
 
           $timeout(function(){ $scope.updateConsensus(); });
-
         }]
     };
 }]);

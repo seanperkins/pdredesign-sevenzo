@@ -19,6 +19,10 @@
       return $stateParams.assessment_id || $stateParams.inventory_id || $stateParams.id;
     };
 
+    service.extractContextId = function () {
+      return $stateParams[this.context + "_id"] || $stateParams.id;
+    };
+
     service.setContext = function(context) {
       this.context = context;
     };
@@ -43,7 +47,7 @@
       } else if (service.context === 'analysis') {
         return AnalysisLearningQuestion.get({
           inventory_id: service.extractId(),
-          analysis_id: $stateParams.id
+          analysis_id: service.extractContextId()
         }).$promise;
       }
     };
@@ -62,7 +66,7 @@
       } else if (service.context === 'analysis') {
         return AnalysisLearningQuestion.delete({
           inventory_id: service.extractId(),
-          analysis_id: $stateParams.id,
+          analysis_id: service.extractContextId(),
           id: model.id
         }).$promise;
       }
@@ -84,7 +88,7 @@
       } else if (service.context === 'analysis') {
         return AnalysisLearningQuestion.update({
           inventory_id: service.extractId(),
-          analysis_id: $stateParams.id,
+          analysis_id: service.extractContextId(),
           id: model.id,
           learning_question: {body: model.body}
         }).$promise;
@@ -103,7 +107,7 @@
       } else if(service.context === 'analysis') {
         return AnalysisLearningQuestion.create({
           inventory_id: service.extractId(),
-          analysis_id: $stateParams.id
+          analysis_id: service.extractContextId()
         }, {learning_question: {body: model.body}}).$promise;
       }
     };

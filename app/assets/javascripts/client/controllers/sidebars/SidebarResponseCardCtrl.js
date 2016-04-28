@@ -11,25 +11,37 @@ PDRClient.controller('SidebarResponseCardCtrl', [
   'Consensus',
   'Response',
   'ResponseHelper',
-  'Assessment',
+  'ConsensusService',
+  'current_context',
+  'consensus',
   function($modal, $scope, $rootScope, $stateParams, $location,
            $anchorScroll, $timeout, SessionService, Score,
-           Consensus, Response, ResponseHelper, Assessment) {
+           Consensus, Response, ResponseHelper, ConsensusService, current_context, consensus) {
+
+    $scope.consensus = consensus;
 
     $scope.skipped      = ResponseHelper.skipped;
-    $scope.assessmentId = $stateParams.assessment_id;
     $scope.responseId   = $stateParams.response_id;
     $scope.questions    = [];
-    $scope.assessment   = {};
 
     $timeout(function(){
-      $scope.assessment = Assessment.get({id: $scope.assessmentId});
-      $scope.subject()
-        .get({assessment_id: $scope.assessmentId, id: $scope.responseId})
-        .$promise
-        .then(function(data){
-          $scope.isReadOnly = data.is_completed || false;
-      });
+
+      
+      if ($scope.isResponse()) {
+        // XXX what is this???
+        Response
+          .get({assessment_id: $stateParams.assessment_id, id: $scope.responseId})
+          .$promise
+          .then(function(data){
+            $scope.isReadOnly = data.is_completed || false;
+          });
+      } else {
+        ConsensusService
+          .loadConsensus($scope.consensus.id)
+          .then(function(data){
+            $scope.isReadOnly = data.is_completed || false;
+          });
+      }
 
       $scope.updateScores();
     });
@@ -43,13 +55,11 @@ PDRClient.controller('SidebarResponseCardCtrl', [
     };
 
     $scope.updateScores = function() {
-      Score.query({
-        assessment_id: $scope.assessmentId,
-        response_id:   $scope.responseId
-      }).$promise
-      .then(function(questions) {
-        $scope.questions = questions;
-      });
+      ConsensusService.updateScores($scope.consensus.id)
+        .then(function(questions) {
+          console.log("updateScores", questions);
+          $scope.questions = questions;
+        });
     };
 
     $rootScope.$on('response_updated', function(){
@@ -108,11 +118,6 @@ PDRClient.controller('SidebarResponseCardCtrl', [
       return $scope.isReadOnly;
     };
 
-    $scope.subject = function() {
-      if($scope.isResponse()) return Response;
-      return Consensus;
-    };
-
     $scope.submitResponseModal = function() {
      $scope.modalInstance =  $modal.open({
         templateUrl: 'client/views/modals/response_submit_modal.html',
@@ -124,8 +129,8 @@ PDRClient.controller('SidebarResponseCardCtrl', [
       $scope.modalInstance.dismiss('cancel');
     };
 
-    $scope.redirectToAssessmentsIndex = function() {
-      $location.path("/assessments");
+    $scope.redirectToEntityIndex = function() {
+      ConsensusService.redirectToIndex();
     };
 
     $scope.submitResponse = function() {
@@ -136,7 +141,7 @@ PDRClient.controller('SidebarResponseCardCtrl', [
 
     $scope.addLearningQuestion = function () {
       $scope.modal = $modal.open({
-        template: '<learning-question-modal reminder="false" />',
+        template: '<learning-question-modal context="' + current_context + '" reminder="false" />',
         scope: $scope
       });
     };
