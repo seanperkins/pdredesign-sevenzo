@@ -11,7 +11,9 @@
       replace: true,
       scope: {
         model: '=',
-        disableDistrict: '='
+        disableDistrict: '=',
+        showInventory: '=',
+        disableInventory: '='
       },
       link: entityDetailsLink,
       templateUrl: 'client/common_create/tool_details.html',

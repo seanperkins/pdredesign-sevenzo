@@ -7,16 +7,23 @@
   ToolDetailsCtrl.$inject = [
     '$scope',
     'SessionService',
-    'CreateService'
+    'CreateService',
+    'Inventory'
   ];
 
-  function ToolDetailsCtrl($scope, SessionService, CreateService) {
+  function ToolDetailsCtrl($scope, SessionService, CreateService, Inventory) {
     var vm = this;
 
     vm.saving = false;
     vm.user = SessionService.getCurrentUser();
     if(vm.user) {
       vm.district = vm.user.districts[0];
+    }
+
+    if ($scope.showInventory) {
+      Inventory.get({inventory_id: $scope.model.inventory_id}).$promise.then(function (inventory) {
+        vm.inventory = inventory;
+      });
     }
 
     vm.defaultDate = function(model) {

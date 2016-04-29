@@ -51,4 +51,19 @@
       </div>
     </div>
   </div>
+
+  <div class="row" ng-if="showInventory">
+    <br>
+    <div class="col-md-6 col-sm-6">
+      <label for="inventory">Inventory</label>
+      <select
+          id="inventory"
+          required
+          ng-disabled="disableInventory"
+          class="form-control"
+          ng-model="model.inventory_id">
+        <option value={{toolDetails.inventory.id}} ng-selected=true>{{toolDetails.inventory.name}}</option>
+      </select>
+    </div>
+  </div>
 </div>
