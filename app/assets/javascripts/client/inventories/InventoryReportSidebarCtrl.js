@@ -18,8 +18,8 @@
     vm.inventory = $scope.inventory;
     vm.shared = $stateParams.shared || false;
     var user = SessionService.getCurrentUser();
-    vm.hideAnalysisAccess = inventory.analysis_count == 0 && user.role == 'participant';
-    vm.creatingAnalysis = vm.inventory.analysis_count == 0 && vm.inventory.is_facilitator;
+    vm.hideAnalysisAccess = inventory.analysis_count === 0 && !vm.inventory.is_facilitator;
+    vm.creatingAnalysis = vm.inventory.analysis_count === 0 && vm.inventory.is_facilitator;
     vm.createAnalysis = function() {
       vm.analysisModal = $modal.open({
         template: '<analysis-modal inventory="inventory"></analysis-modal>',
