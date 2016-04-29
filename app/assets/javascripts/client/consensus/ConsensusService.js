@@ -5,13 +5,14 @@
 
   ConsensusService.$inject = [
     '$stateParams',
+    '$location',
     'Consensus',
     'AnalysisConsensus',
     'Score',
     'AnalysisConsensusScore'
   ];
 
-  function ConsensusService($stateParams, Consensus, AnalysisConsensus, Score, AnalysisConsensusScore) {
+  function ConsensusService($stateParams, $location, Consensus, AnalysisConsensus, Score, AnalysisConsensusScore) {
     var service = this;
 
     service.setContext = function(context) {
@@ -27,6 +28,14 @@
         $location.path("/assessments");
       } else if (service.context === "analysis") {
         $location.path("/inventory/" + $stateParams.inventory_id + "/analyses");
+      }
+    };
+
+    service.redirectToReport = function () {
+      if (service.context === "assessment") {
+        $location.path("/assessments/" + service.extractId() + "/report");
+      } else if (service.context === "analysis") {
+        $location.path("/inventory/" + $stateParams.inventory_id + "/analyses/" + service.extractId() + "/report");
       }
     };
 

@@ -4,8 +4,10 @@ describe('Directive: consensus', function() {
       $location,
       $rootScope,
       $httpBackend,
+      $q,
       isolatedScope,
-      element;
+      element,
+      ConsensusService;
 
   var score1    = {id: 1, evidence: "hello", value: 1, editMode: null};
   var question1 = {id: 1, score: score1 };
@@ -14,14 +16,18 @@ describe('Directive: consensus', function() {
   beforeEach(module('PDRClient'));
 
   beforeEach(inject(function($injector) {
-    var $compile = $injector.get('$compile');
-    $rootScope   = $injector.get('$rootScope');
-    $timeout     = $injector.get('$timeout');
-    $location    = $injector.get('$location');
-    $httpBackend = $injector.get('$httpBackend');
-    $scope       = $rootScope.$new();
+    var $compile      = $injector.get('$compile');
+    $rootScope        = $injector.get('$rootScope');
+    $timeout          = $injector.get('$timeout');
+    $location         = $injector.get('$location');
+    $stateParams      = $injector.get('$stateParams');
+    $httpBackend      = $injector.get('$httpBackend');
+    $q                = $injector.get('$q');
+    $scope            = $rootScope.$new();
+    ConsensusService  = $injector.get('ConsensusService');
 
-    element    = angular.element('<consensus data-assessment-id=1 data-response-id=1>'
+    $rootScope.consensus = {id: 1};
+    element    = angular.element('<consensus consensus="consensus">'
                                + '</consensus>');
 
     $compile(element)($scope);
@@ -90,21 +96,24 @@ describe('Directive: consensus', function() {
 
   describe('#updateConsensus', function() {
     beforeEach(inject(function($injector) {
-      $httpBackend.when('GET', '/v1/assessments/1/consensus/1')
-        .respond({
-          scores: [score1],
-          categories: [1,2,3],
-          team_roles: ['some', 'role'],
-          is_completed: true,
-          participant_count: 5
-        });
-
+      spyOn(ConsensusService, 'loadConsensus').and.callFake(function () {
+        return {
+          then: function (callback) {
+            return callback({
+              scores: [score1],
+              categories: [1,2,3],
+              team_roles: ['some', 'role'],
+              is_completed: true,
+              participant_count: 5
+            });
+          }
+        };
+      });
     }));
 
     it('gets data on callback and sets scores, data,' +
        ' categories, isReadOnly, and participantCount', function() {
       isolatedScope.updateConsensus();
-      $httpBackend.flush();
 
       expect(isolatedScope.scores).toEqual([score1]);
       expect(isolatedScope.categories).toEqual([1,2,3]);
@@ -114,17 +123,19 @@ describe('Directive: consensus', function() {
     });
 
     it('sends the teamRole when its set', function() {
-      $httpBackend.expectGET('/v1/assessments/1/consensus/1?team_role=some_role')
-        .respond({});
-
       isolatedScope.teamRole = 'some_role';
       isolatedScope.updateConsensus();
-      $httpBackend.flush();
+
+      expect(ConsensusService.loadConsensus).toHaveBeenCalledWith(1, 'some_role');
     });
 
   });
 
   describe('#updateTeamRole', function(){
+    beforeEach(inject(function($injector) {
+      spyOn(isolatedScope, 'updateConsensus').and.returnValue($q.when());
+    }));
+
     it('updates the $scope.teamRole var', function(){
       isolatedScope.teamRole = null;
       isolatedScope.updateTeamRole("some_role");
@@ -138,7 +149,6 @@ describe('Directive: consensus', function() {
     });
 
     it('triggers a consensus update', function(){
-      spyOn(isolatedScope, 'updateConsensus').and.callThrough();
       isolatedScope.updateTeamRole("some_role");
       expect(isolatedScope.updateConsensus).toHaveBeenCalled();
     });
@@ -147,16 +157,30 @@ describe('Directive: consensus', function() {
   describe('#submit_consensus', function() {
 
     it('calls function redirectToReport()', function(){
-      spyOn(isolatedScope, 'redirectToReport');
-      $httpBackend.expectPUT("/v1/assessments/1/consensus/1").respond({});
+      spyOn(ConsensusService, 'submitConsensus').and.callFake(function () {
+        return {
+          then: function (callback) {
+            return callback({
+              scores: [score1],
+              categories: [1,2,3],
+              team_roles: ['some', 'role'],
+              is_completed: true,
+              participant_count: 5
+            });
+          }
+        };
+      });
+      spyOn(ConsensusService, 'redirectToReport');
       $rootScope.$broadcast("submit_consensus");
 
-      $httpBackend.flush();
-      expect(isolatedScope.redirectToReport).toHaveBeenCalledWith('1');
+      expect(ConsensusService.redirectToReport).toHaveBeenCalled();
     });
 
     it('redirects to assessment correct report', function() {
-      isolatedScope.redirectToReport(1);
+      ConsensusService.setContext("assessment");
+      $stateParams.assessment_id = 1;
+
+      ConsensusService.redirectToReport();
       expect($location.path()).toEqual('/assessments/1/report')
     });
 

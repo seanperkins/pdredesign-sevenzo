@@ -64,15 +64,11 @@ PDRClient.directive('consensus', [
           $scope.viewModes = [{label: "Category"}, {label: "Variance"}];
           $scope.viewMode  = $scope.viewModes[0];
 
-          $scope.redirectToReport = function(assessmentId) {
-            $location.path("/assessments/" + assessmentId + "/report");
-          };
-
           $scope.$on('submit_consensus', function() {
             ConsensusService
               .submitConsensus($scope.consensus.id)
-              .then(function (data) {
-                $scope.redirectToReport($scope.assessmentId);
+              .then( function () {
+                ConsensusService.redirectToReport();
               });
           });
 
@@ -80,12 +76,15 @@ PDRClient.directive('consensus', [
             return ConsensusService
               .loadConsensus($scope.consensus.id, $scope.teamRole)
               .then(function (data) {
+                $scope.updateConsensusState(data);
                 $scope.scores     = data.scores;
                 $scope.data       = data.categories;
                 $scope.categories = data.categories;
                 $scope.teamRoles  = data.team_roles;
                 $scope.isReadOnly = data.is_completed || false;
                 $scope.participantCount = data.participant_count;
+
+                return true;
               });
           };
 

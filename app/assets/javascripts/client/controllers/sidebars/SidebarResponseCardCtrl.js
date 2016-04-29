@@ -57,7 +57,6 @@ PDRClient.controller('SidebarResponseCardCtrl', [
     $scope.updateScores = function() {
       ConsensusService.updateScores($scope.consensus.id)
         .then(function(questions) {
-          console.log("updateScores", questions);
           $scope.questions = questions;
         });
     };
