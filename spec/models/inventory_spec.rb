@@ -122,13 +122,10 @@ describe Inventory do
     end
   end
 
-  describe '#analyis_count' do
+  describe '#current_analysis' do
     let(:inventory) { FactoryGirl.create(:inventory) }
-    let!(:other_analysis) { FactoryGirl.create_list(:analysis, 5) }
-    let!(:inventory_analysis) { FactoryGirl.create_list(:analysis, 6, inventory: inventory) }
+    let!(:last_analysis) { FactoryGirl.create_list(:analysis, 6, inventory: inventory).last }
 
-    it do
-      expect(inventory.analysis_count).to eq 6
-    end
+    it { expect(inventory.current_analysis).to eq last_analysis }
   end
 end

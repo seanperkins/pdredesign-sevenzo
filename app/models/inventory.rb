@@ -91,8 +91,8 @@ class Inventory < ActiveRecord::Base
     participants.count
   end
 
-  def analysis_count
-    Analysis.where(inventory_id: id).count
+  def current_analysis
+    analyses.last
   end
 
   private
