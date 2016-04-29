@@ -14,9 +14,13 @@
   function InventoryProductEntriesCtrl($scope, $q, ProductEntry, DTOptionsBuilder, DTColumnBuilder) {
     var vm = this;
     vm.inventory = $scope.inventory;
+    vm.readOnly = $scope.readOnly;
+    vm.shared = $scope.shared;
+    var inventoryId = vm.shared ? vm.inventory.share_token : vm.inventory.id;
+
     var options = DTOptionsBuilder.fromFnPromise(function() {
       var deferred = $q.defer();
-      ProductEntry.get({inventory_id: vm.inventory.id}).$promise.then(function(results) {
+      ProductEntry.get({inventory_id: inventoryId}).$promise.then(function(results) {
         deferred.resolve(results.product_entries);
       }, deferred.reject);
       return deferred.promise;

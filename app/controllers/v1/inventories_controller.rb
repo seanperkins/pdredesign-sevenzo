@@ -1,19 +1,14 @@
 class V1::InventoriesController < ApplicationController
-
-  before_action :authenticate_user!
+  include SharedInventoryFetch
+  before_action :authenticate_user!, except: :show
 
   def index
     @inventories = Inventory.where(district_id: current_user.districts)
   end
 
   def show
-    @inventory = Inventory.where(id: params[:id]).first
-    unless @inventory
-      render nothing: true, status: :not_found
-      return
-    end
-    @messages = messages
-    authorize_action_for @inventory
+    @inventory = inventory
+    @messages = messages if @inventory
   end
 
   def create
@@ -72,6 +67,8 @@ class V1::InventoriesController < ApplicationController
     end
   end
 
+  authority_actions mark_complete: :update
+
   def save_response
     member = inventory.members.where(user: current_user).first
     response = InventoryResponse.find_or_create_by(inventory_member: member)
@@ -85,12 +82,16 @@ class V1::InventoriesController < ApplicationController
     end
   end
 
+  authority_actions save_response: :update
+
   def participant_response
     member = inventory.members.where(user: current_user).first
     render json: {
         hasResponded: member.has_responded?
     }, status: :ok
   end
+
+  authority_actions participant_response: :create
 
   private
   def inventory_params
@@ -101,10 +102,6 @@ class V1::InventoriesController < ApplicationController
     render json: {
         errors: @inventory.errors,
     }, status: :bad_request
-  end
-
-  def inventory
-    Inventory.where(id: (params[:inventory_id] || params[:id])).first
   end
 
   def messages

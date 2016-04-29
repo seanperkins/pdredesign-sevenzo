@@ -28,6 +28,7 @@ class Inventory < ActiveRecord::Base
   belongs_to :owner, class_name: 'User'
 
   has_many :analyses
+  before_save :ensure_share_token
 
   self.authorizer_name = 'InventoryAuthorizer'
 
@@ -90,6 +91,11 @@ class Inventory < ActiveRecord::Base
     participants.count
   end
 
+  def current_analysis
+    analyses.last
+  end
+
+  private
   def add_facilitator_owner
     return unless owner
     facilitators.create(user: owner)
@@ -101,5 +107,9 @@ class Inventory < ActiveRecord::Base
 
   def pending_requests?(user)
     access_requests.where(user: user).present?
+  end
+  
+  def ensure_share_token
+    self.share_token ||= SecureRandom.hex(32)
   end
 end

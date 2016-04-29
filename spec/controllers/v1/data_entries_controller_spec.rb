@@ -55,7 +55,7 @@ describe V1::DataEntriesController do
       get :show, inventory_id: inventory.id, id: inventory.data_entries.first.id
       data_entry = assigns(:data_entry)
 
-      assert_response :success
+      expect(response).to have_http_status(:success)
       expect(data_entry.id).to eq(inventory.data_entries.first.id)
     end
   end
@@ -124,7 +124,7 @@ describe V1::DataEntriesController do
             data_capture: 'derp'
           }
 
-      assert_response 422
+      expect(response).to have_http_status(422)
       expect(json['errors'].values.flatten).to include("'derp' not permissible")
     end
 

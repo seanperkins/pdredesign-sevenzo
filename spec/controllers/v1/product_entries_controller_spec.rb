@@ -124,7 +124,7 @@ describe V1::ProductEntriesController do
             data_type: ['derp']
           }
 
-      assert_response 422
+      expect(response).to have_http_status(422)
       expect(json['errors'].values.flatten).to include('derp is not permissible')
     end
 

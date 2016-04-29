@@ -10,7 +10,8 @@
       replace: true,
       transclude: true,
       scope: {
-        inventory: '='
+        inventory: '=',
+        onlySchedule: '='
       },
       templateUrl: 'client/inventories/inventory_schedule.html',      
       controller: 'InventoryScheduleCtrl',

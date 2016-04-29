@@ -66,6 +66,23 @@ describe Inventory do
     end
   end
 
+  describe '#share_token' do
+    let(:inventory) { FactoryGirl.create(:inventory) }
+    let!(:original_share_token) { inventory.share_token }
+    it do
+      expect(inventory.share_token).not_to be_empty
+    end
+
+    describe 'when saved again' do 
+      before do
+        inventory.save!
+      end
+      it do
+        expect(inventory.share_token).to eq original_share_token
+      end
+    end
+  end
+
   describe '#owner?' do
     context 'owner is current user' do
       let(:inventory) { FactoryGirl.create(:inventory) }
@@ -103,5 +120,12 @@ describe Inventory do
         expect(inventory.member?(user: user)).to be false
       end
     end
+  end
+
+  describe '#current_analysis' do
+    let(:inventory) { FactoryGirl.create(:inventory) }
+    let!(:last_analysis) { FactoryGirl.create_list(:analysis, 6, inventory: inventory).last }
+
+    it { expect(inventory.current_analysis).to eq last_analysis }
   end
 end

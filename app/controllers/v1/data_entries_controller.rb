@@ -1,5 +1,7 @@
 class V1::DataEntriesController < ApplicationController
-  before_action :authenticate_user!
+  include SharedInventoryFetch
+  before_action :authenticate_user!, except: :index
+  before_action :inventory, except: :index
 
   def index
     @data_entries = data_entries
@@ -39,11 +41,6 @@ class V1::DataEntriesController < ApplicationController
   end
 
   private
-  def inventory
-    current_user.inventories.find(params[:inventory_id])
-    #Inventory.find(params[:inventory_id])
-  end
-
   def data_entries
     inventory.data_entries
   end
