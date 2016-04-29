@@ -540,16 +540,16 @@ ActiveRecord::Schema.define(version: 20160427221954) do
   add_index "sessions", ["updated_at"], name: "index_sessions_on_updated_at", using: :btree
 
   create_table "supporting_inventory_responses", force: :cascade do |t|
-    t.integer  "response_id"
-    t.integer  "inventory_id"
-    t.integer  "product_entries", default: [], null: false, array: true
-    t.integer  "data_entries",    default: [], null: false, array: true
-    t.datetime "created_at",                   null: false
-    t.datetime "updated_at",                   null: false
+    t.integer  "score_id"
+    t.integer  "product_entries",        default: [], null: false, array: true
+    t.integer  "data_entries",           default: [], null: false, array: true
+    t.text     "product_entry_evidence"
+    t.text     "data_entry_evidence"
+    t.datetime "created_at",                          null: false
+    t.datetime "updated_at",                          null: false
   end
 
-  add_index "supporting_inventory_responses", ["inventory_id"], name: "index_supporting_inventory_responses_on_inventory_id", using: :btree
-  add_index "supporting_inventory_responses", ["response_id"], name: "index_supporting_inventory_responses_on_response_id", using: :btree
+  add_index "supporting_inventory_responses", ["score_id"], name: "index_supporting_inventory_responses_on_score_id", using: :btree
 
   create_table "technical_questions", force: :cascade do |t|
     t.text     "platforms",        default: [], array: true

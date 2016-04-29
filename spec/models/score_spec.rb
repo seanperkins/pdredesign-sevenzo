@@ -17,7 +17,7 @@ describe Score do
   describe 'Skipped answer' do
     it 'allows a skipped answer' do
       Score.create.tap do |score|
-        score.value    = nil
+        score.value = nil
         score.evidence = 'Some evidence'
 
         expect(score.save).to eq(true)
@@ -37,4 +37,11 @@ describe Score do
     end
   end
 
+  describe 'when response is an Analysis' do
+    before(:each) do
+      subject.response = create(:response, :as_analysis_response)
+    end
+
+    it { is_expected.to validate_presence_of(:supporting_inventory_response) }
+  end
 end

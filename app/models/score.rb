@@ -14,6 +14,7 @@
 class Score < ActiveRecord::Base
   belongs_to :response
   belongs_to :question
+  has_one :supporting_inventory_response
 
   has_one :participant,
           through: :response,
@@ -21,4 +22,7 @@ class Score < ActiveRecord::Base
           source_type: Participant
 
   has_one :user, through: :participant
+
+  validates_presence_of :supporting_inventory_response, if: 'response.present? && response.responder_type == Analysis.to_s'
+
 end

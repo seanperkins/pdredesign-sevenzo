@@ -16,9 +16,13 @@ class V1::AnalysisResponsesController < ApplicationController
 
   def show
     @response = Response.where(id: params[:id]).first
-    @rubric = @response.rubric
-    @categories = @response.categories
-    authorize_action_for @response
+    if @response
+      authorize_action_for @response
+      @rubric = @response.rubric
+      @categories = @response.categories
+    else
+      not_found
+    end
   end
 
   private

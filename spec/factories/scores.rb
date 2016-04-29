@@ -13,4 +13,8 @@
 
 FactoryGirl.define do
   factory :score
+
+  trait :with_supporting_inventory_response do
+    association :supporting_inventory_response
+  end
 end
