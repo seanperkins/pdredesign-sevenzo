@@ -3,7 +3,7 @@ class V1::AnalysisPermissionsController < ApplicationController
   before_action :inventory, :analysis
 
   def show
-    @users = inventory.analysis.members.includes(:user).map(&:user)
+    @users = analysis.members.includes(:user).map(&:user)
   end
 
   def update
@@ -18,7 +18,7 @@ class V1::AnalysisPermissionsController < ApplicationController
     user = User.find_by(email: permission["email"])
     role = permission["role"]
     role = "facilitator" if user.network_partner?
-    permission = Analyses::Permission.new(analysis: inventory.analysis, user: user)
+    permission = Analyses::Permission.new(analysis: analysis, user: user)
     permission.role = role
   end
 
@@ -27,6 +27,6 @@ class V1::AnalysisPermissionsController < ApplicationController
   end
 
   def analysis
-    @analysis ||= inventory.analysis
+    @analysis ||= inventory.analyses.find(params[:analysis_id])
   end
 end

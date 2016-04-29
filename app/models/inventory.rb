@@ -27,7 +27,7 @@ class Inventory < ActiveRecord::Base
   belongs_to :district
   belongs_to :owner, class_name: 'User'
 
-  has_one :analysis
+  has_many :analyses
 
   self.authorizer_name = 'InventoryAuthorizer'
 

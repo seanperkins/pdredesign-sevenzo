@@ -32,7 +32,7 @@
         });
 
         $httpBackend
-            .expectPOST('/v1/inventories/42/analysis')
+            .expectPOST('/v1/inventories/42/analyses')
             .respond({});
 
         subject.analysis = {inventory_id: 42}
@@ -50,7 +50,7 @@
 
         spyOn(subject, 'closeModal');
         $httpBackend
-            .expectPOST('/v1/inventories/42/analysis')
+            .expectPOST('/v1/inventories/42/analyses')
             .respond({});
 
         subject.analysis = {inventory_id: 42}
@@ -69,7 +69,7 @@
           });
 
           $httpBackend
-              .expectPOST('/v1/inventories/42/analysis')
+              .expectPOST('/v1/inventories/42/analyses')
               .respond(422, {errors: {foo: 'bar', wat: 'woot'}});
 
           subject.analysis = {inventory_id: 42}

@@ -23,7 +23,7 @@
         vm.alerts.splice(index, 1);
       };
 
-      AnalysisInvitation.create({inventory_id: $stateParams.inventory_id}, invitation)
+      AnalysisInvitation.create({inventory_id: $stateParams.inventory_id, analysis_id: $stateParams.id}, invitation)
           .$promise
           .then(function() {
             $scope.$emit('update_participants');

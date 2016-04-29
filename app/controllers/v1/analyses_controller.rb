@@ -2,13 +2,18 @@ class V1::AnalysesController < ApplicationController
   before_action :authenticate_user!
 
   def index
-    @analysis = inventory.analysis
+    @analyses = inventory.analyses
+    render template: 'v1/analyses/index', status: 200
+  end
+
+  def show
+    @analysis = inventory.analyses.find(params[:id])
     authorize_action_for @analysis
     render template: 'v1/analyses/show', status: 200
   end
 
   def create
-    @analysis = inventory.build_analysis(analysis_params)
+    @analysis = inventory.analyses.build(analysis_params)
     authorize_action_for @analysis
 
     if @analysis.save
@@ -19,12 +24,15 @@ class V1::AnalysesController < ApplicationController
   end
 
   def update
-    @analysis = inventory.analysis
+    @analysis = inventory.analyses.find(params[:id])
     authorize_action_for @analysis
 
-    if @analysis.update(analysis_params)
-      AllAnalysisParticipantsNotificationWorker.perform_async(@analysis.id)
-      render nothing: true
+    saved = @analysis.update(analysis_params)
+    if saved
+      if analysis_params[:assign]
+        AllAnalysisParticipantsNotificationWorker.perform_async(@analysis.id)
+      end
+      render nothing: true, status: :no_content
     else
       render_error
     end
@@ -32,7 +40,7 @@ class V1::AnalysesController < ApplicationController
 
   private
   def inventory
-    current_user.inventories.find(params[:inventory_id])
+    @inventory ||= current_user.inventories.find(params[:inventory_id])
   end
 
   def render_error
@@ -47,12 +55,13 @@ class V1::AnalysesController < ApplicationController
     rescue
       # because the frontend sends dates in different ways
       Date.parse(params[:deadline])
-    end
+    end unless params[:deadline].nil? or params[:deadline].is_a? Date
 
     params.permit(
       :name,
       :deadline,
-      :message
+      :message,
+      :assign
     )
   end
 end

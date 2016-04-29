@@ -161,7 +161,7 @@
       }
     };
 
-    service.saveAnalysis = function(analysis) {
+    service.saveAnalysis = function(analysis, assign) {
       if (analysis.name === '') {
         service.emitError('Analysis needs a name!');
         return;
@@ -169,6 +169,10 @@
 
       service.toggleSavingState();
       analysis.deadline = moment($('#due-date').val(), 'MM/DD/YYYY').toISOString();
+
+      if (assign) {
+        analysis.assign = true;
+      }
 
       return Analysis.save({inventory_id: analysis.inventory_id}, analysis)
           .$promise
@@ -197,7 +201,7 @@
       } else if (service.context === 'inventory') {
         return InventoryParticipant.query({inventory_id: service.extractId()});
       } else if (service.context === 'analysis') {
-        return AnalysisParticipant.query({inventory_id: service.extractId()});
+        return AnalysisParticipant.query({inventory_id: service.extractId(), analysis_id: $stateParams.id});
       }
     };
 
@@ -215,6 +219,7 @@
       } else if (service.context === 'analysis') {
         return AnalysisParticipant.delete({
           inventory_id: $stateParams.inventory_id,
+          analysis_id: $stateParams.id,
           id: participant.participant_id
         }).$promise;
       }
@@ -228,7 +233,7 @@
         return InventoryParticipant.query({inventory_id: service.extractId()})
             .$promise;
       } else if (service.context === 'analysis') {
-        return AnalysisParticipant.query({inventory_id: service.extractId()})
+        return AnalysisParticipant.query({inventory_id: service.extractId(), analysis_id: $stateParams.id})
             .$promise;
       }
     };
@@ -241,7 +246,7 @@
         return InventoryParticipant.all({inventory_id: service.extractId()})
             .$promise;
       } else if (service.context === 'analysis') {
-        return AnalysisParticipant.all({inventory_id: service.extractId()})
+        return AnalysisParticipant.all({inventory_id: service.extractId(), analysis_id: $stateParams.id})
             .$promise;
       }
     };
@@ -253,7 +258,8 @@
         }, {user_id: user.id}).$promise;
       } else if (service.context === 'analysis') {
         return AnalysisParticipant.create({
-          inventory_id: $stateParams.inventory_id
+          inventory_id: $stateParams.inventory_id,
+          analysis_id: $stateParams.id
         }, {user_id: user.id}).$promise;
       }
     };

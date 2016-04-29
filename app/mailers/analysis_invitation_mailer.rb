@@ -17,7 +17,7 @@ class AnalysisInvitationMailer < ApplicationMailer
 
   private
   def invite_url(token)
-    "#{ENV['BASE_URL']}/#/inventories/#{@analysis.inventory_id}/analysis/invitations/#{token}"
+    "#{ENV['BASE_URL']}/#/inventories/#{@analysis.inventory_id}/analyses/#{@analysis.id}/invitations/#{token}"
   end
 
   def default_avatar

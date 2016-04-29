@@ -6,10 +6,11 @@ describe V1::AnalysisInvitationsController do
   describe '#create' do
     context 'without user' do
       let(:inventory) { FactoryGirl.create(:inventory, :with_analysis) }
+      let(:analysis) { inventory.analyses.first }
 
       before(:each) do
         sign_out :user
-        post :create, inventory_id: inventory.id, format: :json
+        post :create, inventory_id: inventory.id, analysis_id: analysis, format: :json
       end
 
       it 'requires logged in user' do
@@ -19,6 +20,7 @@ describe V1::AnalysisInvitationsController do
 
     context 'with user' do
       let(:inventory) { FactoryGirl.create(:inventory, :with_analysis) }
+      let(:analysis) { inventory.analyses.first }
       let(:email) { 'john_doe@gmail.com' }
 
       context 'inviting user' do
@@ -28,6 +30,7 @@ describe V1::AnalysisInvitationsController do
           sign_in inventory.owner
           post :create,
             inventory_id: inventory.id,
+            analysis_id: analysis,
             first_name: 'john',
             last_name: 'doe',
             email: email,
@@ -41,12 +44,13 @@ describe V1::AnalysisInvitationsController do
       end
 
       context 'inviting user for second time' do
-        let(:existing_invitation) { FactoryGirl.create(:analysis_invitation, analysis: inventory.analysis) }
+        let(:existing_invitation) { FactoryGirl.create(:analysis_invitation, analysis: analysis) }
 
         before(:each) do
           sign_in inventory.owner
           post :create,
             inventory_id: inventory.id,
+            analysis_id: analysis,
             first_name: 'john',
             last_name: 'doe',
             email: existing_invitation.email,
