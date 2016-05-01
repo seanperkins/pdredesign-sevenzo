@@ -6,17 +6,24 @@
   ConsensusService.$inject = [
     '$stateParams',
     '$location',
+    '$q',
     'Consensus',
     'AnalysisConsensus',
     'Score',
-    'AnalysisConsensusScore'
+    'AnalysisConsensusScore',
+    'ProductEntry',
+    'DataEntry'
   ];
 
-  function ConsensusService($stateParams, $location, Consensus, AnalysisConsensus, Score, AnalysisConsensusScore) {
+  function ConsensusService($stateParams, $location, $q, Consensus, AnalysisConsensus, Score, AnalysisConsensusScore, ProductEntry, DataEntry) {
     var service = this;
 
     service.setContext = function(context) {
       service.context = context;
+    };
+
+    service.getContext = function (context) {
+      return service.context;
     };
 
     service.extractId = function() {
@@ -85,6 +92,20 @@
           submit: true
         }).$promise;
       }
+    };
+
+    service.getInventoryProductAndDataEntries = function () {
+      var inventory = {};
+
+      var product_entries = ProductEntry
+        .get({inventory_id: $stateParams.inventory_id})
+        .$promise;
+
+      var data_entries = DataEntry
+        .get({inventory_id: $stateParams.inventory_id})
+        .$promise;
+
+      return $q.all([product_entries, data_entries]);
     };
   }
 })();

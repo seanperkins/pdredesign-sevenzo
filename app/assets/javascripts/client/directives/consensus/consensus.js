@@ -117,6 +117,24 @@ PDRClient.directive('consensus', [
           };
 
           $timeout(function(){ $scope.updateConsensus(); });
+
+          
+          // FIXME $scope.resource will be something like
+          // question[0].score.whatever.product_entry_ids or so.
+          // Also, this will only be done if we're in an analysis context.
+          $scope.product_entries = [{id: 1, general_inventory_question: {product_name: 'derp'}},{id: 2, general_inventory_question: {product_name: 'herp'}}];
+          $scope.data_entries = [{id: 1, name: 'derp data'},{id: 2, name: 'data herp'}];
+          if (ConsensusService.getContext() === "analysis") {
+            ConsensusService
+              .getInventoryProductAndDataEntries()
+              .then(function (data) {
+                $scope.product_entries = data[0].product_entries;
+                $scope.data_entries = data[1].data_entries;
+               });
+          }
+
+          $scope.resource = {product_entry_ids : [1,3], data_entry_ids : [2]};
+          $scope.$watch("resource", function (x) { console.log("ps: ", x.product_entry_ids); console.log("ds: ", x.data_entry_ids);}, true);
         }]
     };
 }]);
