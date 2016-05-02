@@ -25,10 +25,14 @@ class V1::ScoresController < ApplicationController
     end
   end
 
+  def fetch_score(question:, response:)
+    Score.includes(:supporting_inventory_response).where(question: question, response: response).first
+  end
+
   private
   def find_or_initialize
     Score.find_or_initialize_by(
-        response_id: params[:response_id],
+        response_id: response_id,
         question_id: params[:question_id])
   end
 
@@ -36,8 +40,12 @@ class V1::ScoresController < ApplicationController
     params.permit(:response_id, :question_id, :value, :evidence)
   end
 
+  def response_id
+    params[:response_id] || params[:analysis_response_id]
+  end
+
   def user_response
-    Response.where(id: params[:response_id]).first
+    Response.where(id: response_id).first
   end
 
   def resource
