@@ -1,6 +1,7 @@
 json.id score.id
 json.value score.value
-json.evidence do
+json.evidence score.evidence
+json.supporting_inventory_response do
   json.partial! 'v1/analysis_responses/supporting_inventory_response',
                 supporting_inventory_response: score.supporting_inventory_response
 end
