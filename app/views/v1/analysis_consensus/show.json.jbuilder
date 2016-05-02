@@ -15,7 +15,9 @@ json.categories @categories do |category|
     json.content question.content
     json.headline question.headline
     json.category_id question.category_id
-    json.score controller.score_for(@response, question)
+    json.score do
+      json.partial! 'v1/analysis_responses/score', score: controller.score_for(@response, question)
+    end
     json.answers question.ordered_answers
   end
 end

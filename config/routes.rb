@@ -108,6 +108,7 @@ PdrServer::Application.routes.draw do
           get :exists, on: :collection
         end
         resources :analysis_responses, except: [:delete]
+        resources :analysis_consensus, except: [:delete, :index]
       end
 
       member do

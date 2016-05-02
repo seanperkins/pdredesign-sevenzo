@@ -1,12 +1,14 @@
 class V1::AnalysisConsensusController < ApplicationController
+  before_action :authenticate_user!
+
   def create
-    @response = Response.find_or_initialize_by(responder: analysis)
-    authorize_action_for @response
-    @response.save
+    response = Response.find_or_initialize_by(responder: fetch_analysis, rubric: fetch_analysis.rubric)
+    authorize_action_for response
+    response.save
   end
 
   def update
-    authorize_action_for analysis
+    authorize_action_for fetch_analysis
     @response = response
 
     if consensus_params[:submit]
@@ -17,15 +19,15 @@ class V1::AnalysisConsensusController < ApplicationController
   end
 
   def show
-    @response = response
-    authorize_action_for @response
-    if @response
-      @rubric = response.responder.rubric
-      @categories = response.categories
+    @response = fetch_response
+    if @response.present?
+      authorize_action_for @response
+      @rubric = fetch_response.responder.rubric
+      @categories = fetch_response.categories
       @team_role = params[:team_role]
-      @team_roles = []
+      @team_roles = fetch_response.responder.team_roles_for_participants
     else
-      not_found
+      render nothing: true, status: :not_found
     end
   end
 
@@ -34,11 +36,11 @@ class V1::AnalysisConsensusController < ApplicationController
     params.permit(:submit)
   end
 
-  def response
-    Response.where(responder: analysis).first
+  def fetch_response
+    @response ||= Response.where(id: params[:id]).first
   end
 
-  def analysis
-    Analysis.where(id: params[:analysis_id]).first
+  def fetch_analysis
+    @analysis ||= Analysis.where(id: params[:analysis_id]).first
   end
 end
