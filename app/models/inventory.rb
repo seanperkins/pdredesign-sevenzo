@@ -95,6 +95,10 @@ class Inventory < ActiveRecord::Base
     analyses.last
   end
 
+  def pending_requests?(user)
+    access_requests.where(user: user).present?
+  end
+
   private
   def add_facilitator_owner
     return unless owner
@@ -103,10 +107,6 @@ class Inventory < ActiveRecord::Base
 
   def set_assigned_at
     self.assigned_at = Time.now if self.assign
-  end
-
-  def pending_requests?(user)
-    access_requests.where(user: user).present?
   end
   
   def ensure_share_token
