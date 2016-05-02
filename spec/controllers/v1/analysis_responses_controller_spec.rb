@@ -42,19 +42,19 @@ describe V1::AnalysisResponsesController do
         create(:user)
       }
 
-      let(:inventory) {
+      let!(:inventory) {
         create(:inventory, members: create_list(:inventory_member, 1, :as_facilitator, user: user))
       }
 
-      let(:analysis_member) {
+      let!(:analysis_member) {
         create(:analysis_member, :as_facilitator, user: user)
       }
 
-      let(:rubric) {
+      let!(:rubric) {
         create(:rubric, :as_analysis_rubric)
       }
 
-      let(:analysis) {
+      let!(:analysis) {
         create(:analysis, inventory: inventory, members: [analysis_member], rubric: rubric)
       }
 
@@ -64,9 +64,11 @@ describe V1::AnalysisResponsesController do
       end
 
       it 'creates the response entity' do
-        response = Response.where(responder_id: analysis_member.id, responder_type: 'Analysis').first
-        expect(response).to_not be_nil
-        expect(response.rubric.id).to eq rubric.id
+        expect(Response.where(responder_id: analysis.id, responder_type: 'Analysis').first).to_not be_nil
+      end
+
+      it 'uses the parent analysis\' rubric' do
+        expect(Response.where(responder_id: analysis.id, responder_type: 'Analysis').first.rubric.id).to eq rubric.id
       end
     end
   end

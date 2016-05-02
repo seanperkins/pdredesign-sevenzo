@@ -292,8 +292,8 @@ ActiveRecord::Schema.define(version: 20160427221954) do
     t.integer  "owner_id"
     t.text     "message"
     t.datetime "assigned_at"
-    t.string   "share_token"
     t.integer  "total_participant_responses", default: 0, null: false
+    t.string   "share_token"
   end
 
   create_table "inventory_access_requests", force: :cascade do |t|
