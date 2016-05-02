@@ -42,19 +42,19 @@ describe V1::AnalysisResponsesController do
         create(:user)
       }
 
-      let!(:inventory) {
+      let(:inventory) {
         create(:inventory, members: create_list(:inventory_member, 1, :as_facilitator, user: user))
       }
 
-      let!(:analysis_member) {
+      let(:analysis_member) {
         create(:analysis_member, :as_facilitator, user: user)
       }
 
-      let!(:rubric) {
+      let(:rubric) {
         create(:rubric, :as_analysis_rubric)
       }
 
-      let!(:analysis) {
+      let(:analysis) {
         create(:analysis, inventory: inventory, members: [analysis_member], rubric: rubric)
       }
 

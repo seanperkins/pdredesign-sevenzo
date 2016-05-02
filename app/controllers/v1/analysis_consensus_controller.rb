@@ -2,16 +2,16 @@ class V1::AnalysisConsensusController < ApplicationController
   before_action :authenticate_user!
 
   def create
-    response = Response.find_or_initialize_by(responder: fetch_analysis, rubric: fetch_analysis.rubric)
-    authorize_action_for response
-    response.save
+    @response = Response.find_or_initialize_by(responder: fetch_analysis, rubric: fetch_analysis.rubric)
+    authorize_action_for @response
+    @response.save
   end
 
   def update
     authorize_action_for fetch_analysis
-    @response = response
+    @response = fetch_response
 
-    if consensus_params[:submit]
+    if consensus_params[:submit].present?
       @response.update(submitted_at: Time.now)
     end
 
