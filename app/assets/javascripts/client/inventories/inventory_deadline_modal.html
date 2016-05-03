@@ -1,0 +1,22 @@
+<div id="modify-schedule">
+  <button ng-click="inventoryDeadlineModal.closeModal()" type="button" class="close" aria-hidden="true">×</button>
+  <div class="control-group">
+    <label for="assessment_Due Date">Due date</label>
+    <div class="due-date input-group date datetime">
+      <input
+        class="form-control"
+        data-date-format="MM/DD/YYYY"
+        ng-model="modal_due_date"
+        id="due-date">
+      <span class="input-group-addon">
+        <i class="fa fa-calendar"></i>
+      </span>
+    </div>
+  </div>
+  <button
+    ng-click="updateInventory()"
+    class="btn btn-primary">
+    Submit
+  </button>
+</div>
+

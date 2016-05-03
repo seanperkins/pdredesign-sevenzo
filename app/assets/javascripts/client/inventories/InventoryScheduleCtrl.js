@@ -29,5 +29,16 @@
       vm.day = date.format('DD');
       vm.formattedDueDate = date.format('dddd MMMM Do');
     }).bind(vm);
+
+    vm.modifyDeadline = function () {
+      vm.deadlineModal = $modal.open({
+        template: '<inventory-deadline-modal inventory="inventory"></inventory-deadline-modal>',
+        scope: $scope
+      });
+    };
+
+    $scope.$on('close-deadline-modal', function() {
+      vm.deadlineModal.dismiss('cancel');
+    });
   }
 })();
