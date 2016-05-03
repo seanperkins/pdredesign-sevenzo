@@ -58,7 +58,7 @@ PdrServer::Application.routes.draw do
       end
 
       resources :responses, except: [:delete] do
-        resources :scores, only: [:update, :create, :index]
+        resources :scores, only: [:create, :index]
       end
 
       get 'participants/all', to: 'participants#all', as: :all_participants
@@ -108,7 +108,7 @@ PdrServer::Application.routes.draw do
           get :exists, on: :collection
         end
         resources :analysis_responses, except: [:delete] do
-          resources :scores, only: [:update, :create, :index]
+          resources :scores, only: [:create, :index]
         end
         resources :analysis_consensus, except: [:delete, :index]
       end

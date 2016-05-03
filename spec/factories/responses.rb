@@ -29,5 +29,12 @@ FactoryGirl.define do
         response.responder = create(:analysis)
       end
     end
+
+    trait :as_participant_response do
+      association :rubric, :as_assessment_rubric
+      after(:create) do |response, _|
+        response.responder = create(:participant)
+      end
+    end
   end
 end

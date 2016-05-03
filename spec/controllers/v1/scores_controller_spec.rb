@@ -1,133 +1,158 @@
 require 'spec_helper'
 
 describe V1::ScoresController do
-  before :each do
-    request.env["HTTP_ACCEPT"] = 'application/json'
-  end
   render_views
-
-  before do 
-    create_magic_assessments
-    create_struct
-    Score.all.destroy_all
+  before(:each) do
+    request.env['HTTP_ACCEPT'] = 'application/json'
   end
 
-  before { sign_in @user }
-  let(:assessment) { @assessment_with_participants }
+  describe 'POST #create' do
+    context 'when unauthenticated' do
+      before(:each) do
+        post :create, assessment_id: 9000,
+             response_id: 9001,
+             question_id: 9001,
+             value: 4,
+             evidence: 'foo'
+      end
 
-  context '#create' do
-    it 'can create a score, and flush cached assessment version' do 
-      question = Question.first
-
-      expect_flush_cached_assessment
-
-      post :create, assessment_id: assessment.id, 
-                    response_id: 99,
-                    question_id: question.id,
-                    value: 1,
-                    evidence: 'new score' 
-
-      score = Score.find_by(response_id: 99, question_id: question.id) 
-      expect(score.evidence).to eq('new score')
+      it { expect(response.status).to eq 401 }
     end
 
-    it 'renders errors' do
-      question = Question.first
+    context 'when authenticated' do
+      let(:user) {
+        create(:user)
+      }
 
-      double = double("Score").as_null_object
-      allow(double).to receive(:save).and_return(false)
-      allow(double).to receive(:errors).and_return([{'value' => 'is bad'}])
-      allow(controller).to receive(:find_or_initialize).and_return(double)
+      let(:tool) {
+        create(:assessment, :with_participants, user: user)
+      }
 
-      post :create, assessment_id: assessment.id, 
-                    response_id: 99,
-                    question_id: question.id,
-                    value: 1,
-                    evidence: 'new score' 
+      let(:response_obj) {
+        create(:response, responder: tool)
+      }
 
+      let(:question) {
+        create(:question)
+      }
 
-      expect(response.status).to eq(422)
-      expect(json["errors"]).not_to be_empty
-    end
+      context 'when the score does not exist' do
+        before(:each) do
+          sign_in user
+          post :create, assessment_id: tool.id,
+               response_id: response_obj.id,
+               question_id: question.id,
+               value: 1,
+               evidence: 'new score'
+        end
 
-    it 'does not allow a non-owner to create a score' do
-      sign_in @user2
-      question = Question.first
-      post :create, assessment_id: assessment.id, 
-                    response_id: 99,
-                    question_id: question.id,
-                    value: 1,
-                    evidence: 'new score' 
+        it 'creates a score' do
+          expect(Score.where(response_id: response_obj.id, question_id: question.id, evidence: 'new score').first).to_not be_nil
+        end
 
-      assert_response :forbidden
-    end
+        it { is_expected.to use_after_action(:flush_assessment_cache) }
+      end
 
-    it 'allows for a skipped answer' do
-      question = Question.first
-      post :create, assessment_id: assessment.id, 
-        response_id: 99,
-        question_id: question.id,
-        value: nil,
-        evidence: 'new score' 
+      context 'when the evidence is blank' do
+        before(:each) do
+          sign_in user
+          post :create, assessment_id: tool.id,
+               response_id: response_obj.id,
+               question_id: question.id,
+               value: 1,
+               evidence: nil
+        end
 
-      assert_response :success
-    end
+        it 'creates a score' do
+          expect(Score.where(response_id: response_obj.id, question_id: question.id, evidence: nil).first).to_not be_nil
+        end
 
-    it 'updates an existing score' do
-      question = Question.first
-      score = Score.create(response_id: 99, 
-                   question_id: question.id, 
-                   value: 2, 
-                   evidence: 'test')
+        it { is_expected.to use_after_action(:flush_assessment_cache) }
+      end
 
-      post :create, assessment_id: assessment.id, 
-                    response_id: 99,
-                    question_id: question.id,
-                    value: 1,
-                    evidence: 'new score' 
-      score = Score.find(score.id)
+      context 'when the score already exists' do
+        let!(:existing_score) {
+          create(:score, value: 1, response: response_obj, question: question, evidence: 'old score')
+        }
 
-      expect(score.value).to eq(1)
-      expect(score.evidence).to eq('new score')
-    end
+        before(:each) do
+          sign_in user
+          post :create, assessment_id: tool.id,
+               response_id: response_obj.id,
+               question_id: question.id,
+               value: 3,
+               evidence: 'overwriting score'
+        end
 
-    it 'allows a facilitator access to make changes to a consensus' do
-      assessment.facilitators << @facilitator
-      sign_in @facilitator
+        it 'updates the score' do
+          expect(Score.where(response_id: response_obj.id, question_id: question.id).first.evidence).to eq 'overwriting score'
+          expect(Score.where(response_id: response_obj.id, question_id: question.id).first.value).to eq 3
+        end
 
-      Response.find(99).update(responder: assessment,
-                               responder_type: 'Assessment')
+        it 'returns no content' do
+          expect(response.status).to eq 204
+        end
 
-      question = Question.first
-      post :create, assessment_id: assessment.id,
-                    response_id: 99,
-                    question_id: question.id,
-                    value: 1,
-                    evidence: 'new score'
-
-      assert_response :success
+        it { is_expected.to use_after_action(:flush_assessment_cache) }
+      end
     end
   end
 
-  context '#index' do
-    it 'gives a list of scores for each question' do
-      get :index, assessment_id: assessment.id,
-                  response_id: 99
+  describe 'GET #index' do
+    context 'when unauthenticated' do
+      before(:each) do
+        post :create, assessment_id: 9000,
+             response_id: 9001
+      end
 
-      expect(json.count).to eq(9)
+      it { expect(response.status).to eq 401 }
     end
 
-    it 'gives a score for each question' do
-      question = Question.first
-      score = Score.create(response_id: 99,
-        question_id: question.id,
-        value: 2,
-        evidence: 'test')
+    context 'when authenticated' do
+      let(:user) {
+        create(:user)
+      }
 
-      get :index, assessment_id: assessment.id,
-                  response_id: 99
-      first = json.detect { |q| q["id"] == question.id }
-      expect(first["score"]["id"]).to eq(score.id)
+      let(:tool) {
+        create(:assessment, :with_participants, user: user, rubric: rubric)
+      }
+
+      let(:response_obj) {
+        create(:response, responder: tool, rubric: rubric)
+      }
+
+      let!(:rubric) {
+        create(:rubric, :as_assessment_rubric)
+      }
+
+      let(:category) {
+        create(:category)
+      }
+
+      let!(:scores) {
+        scores = create_list(:score, 9, response: response_obj)
+        scores.each {|score|
+          score.question = create(:question, rubrics: [rubric], category: category)
+          rubric.questions << score.question
+          score.save!
+        }
+        scores
+      }
+
+      before(:each) do
+        sign_in user
+        get :index, assessment_id: tool.id,
+            response_id: response_obj.id
+      end
+
+      it 'gives a list of scores for each question' do
+        expect(json.count).to eq(9)
+      end
+
+      it 'gives a score for each question' do
+        first = json.detect { |q| q["id"] == scores.first.question.id }
+        expect(first["score"]["id"]).to eq(scores.first.id)
+      end
     end
   end
 end

@@ -23,6 +23,7 @@ class Score < ActiveRecord::Base
 
   has_one :user, through: :participant
 
-  validates_presence_of :supporting_inventory_response, if: 'response.present? && response.responder_type == Analysis.to_s'
+  validates_presence_of :supporting_inventory_response,
+                        if: -> { self.response.present? && self.response.responder_type == Analysis.to_s }
 
 end

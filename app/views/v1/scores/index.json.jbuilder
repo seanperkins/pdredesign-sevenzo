@@ -1,5 +1,5 @@
 json.array! @questions do |question|
-  score = controller.fetch_score(question: question, response: @user_response)
+  score = controller.fetch_score(question: question, response: @response)
 
   json.id question.id
   json.category_id question.id
