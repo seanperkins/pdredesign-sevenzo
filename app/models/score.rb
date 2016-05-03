@@ -26,4 +26,6 @@ class Score < ActiveRecord::Base
   validates_presence_of :supporting_inventory_response,
                         if: -> { self.response.present? && self.response.responder_type == Analysis.to_s }
 
+  accepts_nested_attributes_for :supporting_inventory_response
+
 end

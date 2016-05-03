@@ -9,7 +9,7 @@ json.array! @questions do |question|
       json.value score.value
       json.evidence score.evidence
       if score.supporting_inventory_response.present?
-        json.supporting_inventory_responses do
+        json.supporting_inventory_response do
           json.partial! 'v1/analysis_responses/supporting_inventory_response', supporting_inventory_response: score.supporting_inventory_response
         end
       end

@@ -43,5 +43,6 @@ describe Score do
     end
 
     it { is_expected.to validate_presence_of(:supporting_inventory_response) }
+    it { is_expected.to accept_nested_attributes_for(:supporting_inventory_response) }
   end
 end

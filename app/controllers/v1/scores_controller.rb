@@ -34,7 +34,16 @@ class V1::ScoresController < ApplicationController
 
   private
   def score_params
-    params.permit(:response_id, :question_id, :value, :evidence)
+    params.permit(:response_id,
+                  :question_id,
+                  :value,
+                  :evidence,
+                  supporting_inventory_response_attributes: [
+                      {product_entries: []},
+                      {data_entries: []},
+                      :product_entry_evidence,
+                      :data_entry_evidence
+                  ])
   end
 
   def response_id
