@@ -18,14 +18,14 @@
     }
 
     $timeout(function() {
-      if($scope.inventory.due_date != null) {
+      if(vm.inventory.due_date != null) {
         $scope.modal_due_date = moment($scope.inventory.due_date).format("MM/DD/YYYY");
       }
 
       $('.datetime').datetimepicker({pickTime: false});
     });
 
-    $scope.updateInventory = function() {
+    vm.updateInventory = function() {
       vm.inventory.deadline = moment($('#due-date').val(), 'MM/DD/YYYY').toISOString();
 
       Inventory.save({inventory_id: vm.inventory.id}, {inventory: vm.inventory}).$promise.then(function(){
