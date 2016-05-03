@@ -19,7 +19,7 @@
 
     $timeout(function() {
       if($scope.inventory.due_date != null) {
-        $scope.modal_due_date = moment($scope.inventory.deadline).format("MM/DD/YYYY");
+        $scope.modal_due_date = moment($scope.inventory.due_date).format("MM/DD/YYYY");
       }
 
       $('.datetime').datetimepicker({pickTime: false});
