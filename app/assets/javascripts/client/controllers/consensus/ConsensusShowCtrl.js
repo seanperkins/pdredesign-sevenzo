@@ -18,9 +18,13 @@
   function ConsensusShowCtrl($scope, SessionService, Assessment, ConsensusHelper, $stateParams, ConsensusService, current_context, current_entity, consensus) {
     $scope.user = SessionService.getCurrentUser();
 
-    ConsensusService.setContext(current_context);
     $scope.entity = current_entity;
     $scope.consensus = consensus;
+    $scope.context = current_context;
+
+    ConsensusService.setContext($scope.context);
+
+    $scope.instructionParagraphs = ConsensusService.instructionParagraphs;
 
     $scope.exportToPDF = function() {
       ConsensusHelper.consensuToPDF($scope.assessmentId, $scope.responseId);

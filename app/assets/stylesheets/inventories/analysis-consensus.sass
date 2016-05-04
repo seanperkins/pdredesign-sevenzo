@@ -1,0 +1,105 @@
+$grey1: #F7F9FA
+$grey2: #EBECF0
+$grey3: #9DAAB5
+$blue: #007AB0
+
+$gutter: 1em
+
+.analysis-consensus-question
+  .question-content
+    padding: 0
+    border: 1px solid $grey3
+
+    .question-header
+      padding: $gutter
+      background: $grey2
+
+    .answers
+      padding: $gutter
+      background: $grey1
+      border-top: 1px solid $grey3
+
+      .supporting-material
+        margin-bottom: $gutter*2
+
+        > div
+          display: flex
+          align-items: stretch
+          justify-content: space-between
+
+          &:first-of-type
+            margin-bottom: 1em
+
+          > div
+            flex-basis: 0
+            flex-grow: 1
+
+          .supporting-list
+            display: flex
+            flex-direction: column
+            margin-right: $gutter
+
+            .supporting-list-header
+              display: flex
+              justify-content: space-between
+              margin-bottom: 0.5em
+              font-weight: bold
+
+            .supporting-list-contents
+              overflow: auto
+              background: white
+              border: 1px solid $grey3
+              padding: $gutter/2
+              height: 200px
+
+          .notes
+            display: flex
+            flex-direction: column
+
+            .notes-header
+              margin-bottom: 0.5em
+              font-weight: bold
+
+            textarea
+              border: 1px solid $grey3
+              padding: $gutter/2
+              resize: none
+              height: 200px
+
+      .score
+        display: flex
+        border: 1px solid $grey3
+        margin-bottom: $gutter*2
+        font-weight: bold
+
+        > div
+          flex-basis: 0
+          flex-grow: 1
+          height: 80px
+
+          &:not(:last-of-type)
+            border-right: 1px solid $grey3
+
+          > span, label
+            display: flex
+            justify-content: center
+            align-items: center
+            height: 50%
+            text-align: center
+
+          > span
+            border-bottom: 1px solid $grey3
+            font-size: 0.8em
+
+          > label
+            cursor: pointer
+            font-size: 0.9em
+
+            input[type='radio'] + span
+              border-color: $blue
+
+            input[type='radio']:checked + span
+              background: $blue
+
+      .save
+        text-align: right

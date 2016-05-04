@@ -16,12 +16,7 @@
     <div class="media">
       <div class="media-body">
           <h2>Instructions</h2>
-          <p class='instructions-content'>
-            The Readiness Assessment consists of questions across the 8 categories of the <readiness-assessment-modal title="PD System Map"></readiness-assessment-modal>. As the assessment facilitator, use this page to guide and document the conversation during the in-person consensus meeting.
-          </p>
-          <p class='instructions-content'>
-            For each question, discuss the individual responses as a group to collectively decide a consensus score, including notes for reference. You may sort or skip questions to support a targeted discussion. Save each completed response as you move through the consensus meeting.
-          </p>
+          <p class='instructions-content' ng-repeat='paragraph in instructionParagraphs()' bind-html-compile='paragraph'></p>
         </div>
       </div>
       <div class="export-buttons">

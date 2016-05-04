@@ -12,7 +12,7 @@
   function InventoryDataEntryListModalCtrl($scope, CheckboxService) {
     var vm = this;
 
-    vm.selectedDataEntryIds = angular.copy($scope.resource.data_entry_ids);
+    vm.selectedDataEntryIds = angular.copy($scope.resource.data_entries);
 
     var preparedDataEntries = _.reduce($scope.inventoryDataEntries, function (result, dataEntry) {
       result[dataEntry.id] = dataEntry.id;
@@ -36,7 +36,7 @@
     };
 
     vm.save = function () {
-      $scope.resource.data_entry_ids = vm.selectedDataEntryIds;
+      $scope.resource.data_entries = vm.selectedDataEntryIds;
       vm.closeModal();
     };
   }

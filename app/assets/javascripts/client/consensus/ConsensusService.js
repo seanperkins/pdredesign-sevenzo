@@ -22,10 +22,6 @@
       service.context = context;
     };
 
-    service.getContext = function (context) {
-      return service.context;
-    };
-
     service.extractId = function() {
       return $stateParams.assessment_id || $stateParams.analysis_id;
     };
@@ -106,6 +102,19 @@
         .$promise;
 
       return $q.all([product_entries, data_entries]);
+    };
+
+    service.instructionParagraphs = function () {
+      if (service.context === "assessment") {
+        return [
+          'The Readiness Assessment consists of questions across the 8 categories of the <readiness-assessment-modal title="PD System Map"></readiness-assessment-modal>. As the assessment facilitator, use this page to guide and document the conversation during the in-person consensus meeting.',
+          'For each question, discuss the individual responses as a group to collectively decide a consensus score, including notes for reference. You may sort or skip questions to support a targeted discussion. Save each completed response as you move through the consensus meeting.'
+        ];
+      } else if (service.context === "analysis") {
+        return [
+          'Data & Tech Analysis Consensus instructions.'
+        ];
+      }
     };
   }
 })();

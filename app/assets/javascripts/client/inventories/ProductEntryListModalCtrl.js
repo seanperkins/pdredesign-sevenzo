@@ -12,9 +12,7 @@
   function ProductEntryListModalCtrl($scope, CheckboxService) {
     var vm = this;
 
-    vm.selectedProductEntryIds = angular.copy($scope.resource.product_entry_ids);
-
-    console.log("DERP", $scope.productEntries);
+    vm.selectedProductEntryIds = angular.copy($scope.resource.product_entries);
 
     var preparedProductEntries = _.reduce($scope.productEntries, function (result, productEntry) {
       result[productEntry.id] = productEntry.id;
@@ -38,7 +36,7 @@
     };
 
     vm.save = function () {
-      $scope.resource.product_entry_ids = vm.selectedProductEntryIds;
+      $scope.resource.product_entries = vm.selectedProductEntryIds;
       vm.closeModal();
     };
   }

@@ -1,6 +1,4 @@
 <div class="categories">
-  <product-entry-list-link product-entries="product_entries" resource="resource"></product-entry-list-link>
-  <inventory-data-entry-list-link inventory-data-entries="data_entries" resource="resource"></inventory-data-entry-list-link>
   <div class="row sort-by">
     <div>
       <sort-by categories="categories" data="data" />
@@ -16,7 +14,10 @@
         <i class="fa fa-chevron-right" ng-class="{'fa-chevron-down' : category.toggled === true}"></i>
         {{category.name}}
       </p>
-      <div class="question-container question-{{question.id}}" ng-repeat="question in category.questions">
+      <div
+        class="question-container question-{{question.id}}" 
+        ng-class="{'analysis-consensus-question': isAnalysis}"
+        ng-repeat="question in category.questions">
         <div class="question-row" ng-click="toggleAnswers(question, $event)">
           <div class="question">
             <p class="question-id scored-{{question.score.value}}" ng-show="question.loading">
@@ -29,11 +30,12 @@
             </p>
           </div>
           <div class="question-content">
-            <p class="question-headline">
-              {{question.headline}}
-            </p>
-            <p class="content">{{question.content}}</p>
-            <response-answer-group question="question" is-consensus="true" />
+            <div class="question-header">
+              <p class="question-headline">{{question.headline}}</p>
+              <p class="content">{{question.content}}</p>
+             </div>
+            <response-answer-group question="question" is-consensus="true" ng-if="isAssessment"></response-answer-group>
+            <analysis-consensus-answer question="question" ng-if="isAnalysis" product-entries="productEntries" inventory-data-entries="dataEntries"></analysis-consensus-answer>
           </div>
         </div>
       </div>
