@@ -7,19 +7,9 @@
       <start-assessment></start-assessment>
       <!--<analysis-button></analysis-button>-->
       <div ng-if="isNetworkPartner()">
-        <div class="plus-button">
-          <a href="#/settings">
-            <span class="fa-stack">
-              <i class="fa fa-circle fa-stack-2x"></i>
-              <i class="fa fa-plus fa-stack-1x"></i>
-            </span>
-            <div class="heading">
-              Add Districts
-            </div>
-          </a>
-        </div>
+        <primary-button icon="fa-plus" link="#/settings" text="Add Districts"></primary-button>
       </div>
-      <!-- <start-inventory></start-inventory> -->
+      <start-inventory></start-inventory>
     </div>
   </div>
 
