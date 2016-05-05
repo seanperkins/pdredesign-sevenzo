@@ -25,7 +25,6 @@ PdrServer::Application.routes.draw do
     end
     resources  :district_messages, only: [:create]
     resources  :tools, only: [:index, :create]
-    resources  :rubrics, only: :index
     resources  :categories, only: :index
     resources  :prospective_users, only: :create
     resources  :assessments, only: [:index, :show, :update, :create] do
@@ -59,7 +58,7 @@ PdrServer::Application.routes.draw do
       end
 
       resources :responses, except: [:delete] do
-        resources :scores, only: [:update, :create, :index]
+        resources :scores, only: [:create, :index]
       end
 
       get 'participants/all', to: 'participants#all', as: :all_participants
@@ -108,6 +107,10 @@ PdrServer::Application.routes.draw do
         resources :learning_questions, only: [:index, :create, :update, :destroy] do
           get :exists, on: :collection
         end
+        resources :analysis_responses, except: [:delete] do
+          resources :scores, only: [:create, :index]
+        end
+        resources :analysis_consensus, except: [:delete, :index]
       end
 
       member do

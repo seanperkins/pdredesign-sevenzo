@@ -56,7 +56,7 @@ class Response < ActiveRecord::Base
       responder.flush_cached_version
     else
       unless responder.nil?
-        responder.assessment.flush_cached_version if responder.assessment
+        responder.try(:assessment).try(:flush_cached_version)
       end
     end
   end

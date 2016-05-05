@@ -9,6 +9,8 @@
 #  created_at   :datetime
 #  updated_at   :datetime
 #  message      :text
+#  assigned_at  :datetime
+#  rubric_id    :integer
 #
 
 require 'spec_helper'
@@ -17,10 +19,12 @@ describe Analysis do
 
   describe 'validations' do
     it { is_expected.to belong_to(:inventory) }
+    it { is_expected.to have_one(:response) }
 
     it { is_expected.to validate_presence_of :name }
     it { is_expected.to validate_presence_of :deadline }
     it { is_expected.to validate_presence_of :inventory }
+    it { is_expected.to validate_presence_of :rubric }
 
     context ':assigned_at' do
       before do

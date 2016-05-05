@@ -9,6 +9,8 @@
 #  created_at   :datetime
 #  updated_at   :datetime
 #  message      :text
+#  assigned_at  :datetime
+#  rubric_id    :integer
 #
 
 class Analysis < ActiveRecord::Base
@@ -16,21 +18,34 @@ class Analysis < ActiveRecord::Base
   self.authorizer_name = 'AnalysisAuthorizer'
 
   belongs_to :inventory
+  belongs_to :rubric
 
   attr_accessor :assign
 
-  validates_presence_of :name, :deadline, :inventory
-	validates :message, presence: true, if: "assigned_at.present?"
+  validates_presence_of :name, :deadline, :inventory, :rubric
+  validates :message, presence: true, if: "assigned_at.present?"
 
-  has_many :members, class_name:'AnalysisMember'
-  has_many :participants, -> { where(role: 'participant') }, class_name:'AnalysisMember'
-  has_many :facilitators, -> { where(role: 'facilitator') }, class_name:'AnalysisMember'
+  has_many :members, class_name: 'AnalysisMember'
+  has_many :participants, -> { where(role: 'participant') }, class_name: 'AnalysisMember'
+  has_many :facilitators, -> { where(role: 'facilitator') }, class_name: 'AnalysisMember'
+  has_one :response, as: :responder, dependent: :destroy
 
   after_create :set_members_from_inventory
   before_save :set_assigned_at
 
-  private
+  def facilitator?(user)
+    facilitators.where(user: user).exists?
+  end
 
+  def team_roles_for_participants
+    self.members
+        .joins(:user)
+        .pluck('users.team_role')
+        .uniq
+        .compact
+  end
+
+  private
   def set_members_from_inventory
     %i|participants facilitators|.each do |member_type|
       self.inventory.send(member_type).each do |inventory_member|

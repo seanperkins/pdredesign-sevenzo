@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160427093012) do
+ActiveRecord::Schema.define(version: 20160427221954) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -33,6 +33,7 @@ ActiveRecord::Schema.define(version: 20160427093012) do
     t.datetime "updated_at"
     t.text     "message"
     t.datetime "assigned_at"
+    t.integer  "rubric_id"
   end
 
   add_index "analyses", ["inventory_id"], name: "index_analyses_on_inventory_id", using: :btree
@@ -290,8 +291,8 @@ ActiveRecord::Schema.define(version: 20160427093012) do
     t.integer  "owner_id"
     t.text     "message"
     t.datetime "assigned_at"
-    t.string   "share_token"
     t.integer  "total_participant_responses", default: 0, null: false
+    t.string   "share_token"
   end
 
   create_table "inventory_access_requests", force: :cascade do |t|
@@ -529,7 +530,7 @@ ActiveRecord::Schema.define(version: 20160427093012) do
   add_index "scores", ["response_id", "question_id"], name: "index_scores_on_response_id_and_question_id", unique: true, using: :btree
 
   create_table "sessions", force: :cascade do |t|
-    t.string   "session_id", limit: 255, null: false
+    t.string   "session_id", null: false
     t.text     "data"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -537,6 +538,18 @@ ActiveRecord::Schema.define(version: 20160427093012) do
 
   add_index "sessions", ["session_id"], name: "index_sessions_on_session_id", unique: true, using: :btree
   add_index "sessions", ["updated_at"], name: "index_sessions_on_updated_at", using: :btree
+
+  create_table "supporting_inventory_responses", force: :cascade do |t|
+    t.integer  "score_id"
+    t.integer  "product_entries",        default: [], null: false, array: true
+    t.integer  "data_entries",           default: [], null: false, array: true
+    t.text     "product_entry_evidence"
+    t.text     "data_entry_evidence"
+    t.datetime "created_at",                          null: false
+    t.datetime "updated_at",                          null: false
+  end
+
+  add_index "supporting_inventory_responses", ["score_id"], name: "index_supporting_inventory_responses_on_score_id", using: :btree
 
   create_table "technical_questions", force: :cascade do |t|
     t.text     "platforms",        default: [], array: true

@@ -13,7 +13,7 @@
 
 FactoryGirl.define do
   factory :rubric do
-    name { Faker::Internet.name }
+    name { Faker::Hacker.noun }
     sequence(:version)
     enabled true
 

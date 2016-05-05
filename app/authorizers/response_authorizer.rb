@@ -10,13 +10,13 @@ class ResponseAuthorizer < ApplicationAuthorizer
 
   def readable_by?(user)
     return false unless resource.responder
-    return true  if resource.responder_type == 'Assessment'
+    return true if %w(Assessment Analysis).include? resource.responder_type
     resource.responder.user_id == user.id
   end
 
   private
   def is_facilitator_or_owner(user)
-    if resource.responder && resource.responder_type == "Assessment"
+    if resource.responder && %w(Assessment Analysis).include?(resource.responder_type)
       resource.responder.facilitator?(user)
     else
       resource.responder.user_id == user.id

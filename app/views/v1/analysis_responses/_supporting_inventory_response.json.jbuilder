@@ -1,0 +1,8 @@
+json.id supporting_inventory_response.id
+json.score_id supporting_inventory_response.score_id
+json.product_entries supporting_inventory_response.product_entries
+json.data_entries supporting_inventory_response.data_entries
+json.product_entry_evidence supporting_inventory_response.product_entry_evidence
+json.data_entry_evidence supporting_inventory_response.data_entry_evidence
+json.created_at supporting_inventory_response.created_at
+json.updated_at supporting_inventory_response.updated_at
