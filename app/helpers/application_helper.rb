@@ -4,10 +4,6 @@ module ApplicationHelper
     assessment.answered_scores
   end
 
-  def scores_for_analysis(analysis, team_role=nil)
-
-  end
-
   def timestamp(date_time)
     return unless date_time
     date_time.to_datetime.strftime("%s")

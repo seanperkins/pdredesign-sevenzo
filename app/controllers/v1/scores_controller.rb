@@ -3,6 +3,8 @@ class V1::ScoresController < ApplicationController
   before_action :fetch_response
   after_action :flush_assessment_cache, only: [:create]
 
+  helper_method :fetch_score
+
   def create
     authorize_action_for @response
 

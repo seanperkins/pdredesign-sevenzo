@@ -2,8 +2,6 @@ json.id @response.id
 json.submitted_at @response.submitted_at
 json.is_completed @response.submitted_at.present?
 
-json.partial! 'v1/analysis_consensus/consensus'
-
 json.categories @categories do |category|
   json.id category.id
   json.name category.name
