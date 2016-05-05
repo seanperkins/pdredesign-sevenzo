@@ -15,6 +15,7 @@
       views: {
         'sidebar': {
           controller: 'AboutSidebarCtrl',
+          controllerAs: 'aboutSidebar',
           templateUrl: 'client/about/about_sidebar.html'
         }
       }

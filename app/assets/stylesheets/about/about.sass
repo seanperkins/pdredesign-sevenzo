@@ -1,0 +1,85 @@
+.about-header
+  background-color: $primary-color
+  color: white
+  padding: 1em
+
+  h1
+    margin-top: 0
+
+  h2
+    margin-bottom: 0
+
+.about-body
+  h3
+    font-size: 1.2em
+    color: $secondary-color
+
+  ul
+    padding-left: 1em
+
+  ul.components
+    display: flex
+    justify-content: space-between
+    padding-right: 1em
+    margin: 2em 0
+    list-style: none
+
+    li
+      text-align: center
+
+      &.faded
+        opacity: 0.5
+
+      a
+        color: $font-color
+
+        &:hover, &:active, &:focus
+          text-decoration: none
+
+        > *
+          display: block
+
+        span:first-of-type
+          font-weight: bold
+
+        span:last-of-type
+          font-size: 0.9em
+
+        img
+          margin: 0.5em auto
+
+  h4
+    font-size: 1.1em
+    margin: 2em 0 1.5em
+
+  ol.process
+    list-style: none
+    padding: 0
+
+    li
+      display: flex
+      align-items: flex-start
+      counter-increment: step-counter
+
+      &::before
+        $size: 40px
+
+        content: counter(step-counter)
+        margin-right: 1em
+        border: 3px solid $secondary-color
+        border-radius: 50%
+        width: $size
+        height: $size
+        font-size: 1.5em
+        font-weight: bold
+        color: $secondary-color
+        flex-shrink: 0
+        display: flex
+        align-items: center
+        justify-content: center
+
+      > div
+        margin-top: 0.5em
+          
+        p:first-of-type
+          font-weight: bold
