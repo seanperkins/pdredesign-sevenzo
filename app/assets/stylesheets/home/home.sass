@@ -23,7 +23,7 @@
     // Requires precise knowledge of the image dimensions.
     $calculated-padding: (740 / 380 * 100)
     background: asset-url('home_bg.png') no-repeat
-    background-size: 100% auto
+    background-size: 400% auto
     color: $secondary-font-color
     padding-bottom: #{$calculated-padding}px
     margin-bottom: #{-$calculated-padding}px
@@ -50,9 +50,12 @@
         text-decoration: underline
     h2
       margin-top: 0
-    hr
-      border: 1px solid $light-grey
+    .hr-line
+      border-bottom: 1px solid $light-grey
       width: 95%
+      margin-left: 2.5%
+      margin-right: 2.5%
+      display: inline-block
 
   .design-principles
     background-color: #C5DCE2
