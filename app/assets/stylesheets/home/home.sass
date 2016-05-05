@@ -1,3 +1,12 @@
+.welcome-backdrop
+  // With credit to http://stackoverflow.com/a/22211990
+  // Requires precise knowledge of the image dimensions.
+  $calculated-padding: (740 / 380 * 100)
+  background-image: asset-url('home_bg.png')
+  color: $secondary-font-color
+  padding-bottom: #{$calculated-padding}px
+  margin-bottom: #{-$calculated-padding}px
+
 .home-controller
   .popover
     width: 100%
