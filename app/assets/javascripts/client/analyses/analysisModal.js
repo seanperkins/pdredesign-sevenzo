@@ -12,7 +12,7 @@
       scope: {
         inventory:'='
       },
-      templateUrl: 'client/inventories/analysis_modal.html',
+      templateUrl: 'client/analyses/analysis_modal.html',
       controller: 'AnalysisModalCtrl',
       controllerAs: 'analysisModal',
       link: analysisModalLink

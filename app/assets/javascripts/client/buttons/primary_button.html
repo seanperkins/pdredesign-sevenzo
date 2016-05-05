@@ -1,11 +1,9 @@
-<div class="primary-button" ng-click="clickFn()">
-  <a ng-href="{{ link }}">
-    <span class="fa-stack fa-2x">
-      <i class="fa fa-circle fa-stack-2x"></i>
-      <i class="fa fa-stack-1x icon-color" ng-class="icon"></i>
-    </span>
-    <div class="heading">
-      {{ text }}
-    </div>
+<div class="primary-button">
+  <span data-icon-stack class="fa-stack fa-2x">
+    <i class="fa fa-circle fa-stack-2x"></i>
+    <i class="fa fa-stack-1x icon-color" ng-class="icon"></i>
+  </span>
+  <a ng-href="{{ link }}" ng-click="clickFn()">
+    {{ text }}
   </a>
 </div>

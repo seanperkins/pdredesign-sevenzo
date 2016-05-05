@@ -1,12 +1,13 @@
 .primary-button
-  display: inline-block
+  display: flex
+  flex-direction: row
+  align-items: center
+  span
+    &[data-icon-stack]
+      margin-right: 3%
+      color: $primary-color
+      .icon-color
+        color: $secondary-font-color
   a
     color: $primary-color
-    &:hover
-      text-decoration: none
-    .icon-color
-      color: $secondary-font-color
   margin: 1em 0
-
-  .heading
-    display: inline-block

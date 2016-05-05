@@ -2,13 +2,13 @@
   'use strict';
 
   angular.module('PDRClient')
-      .directive('analysisButton', analysisButton);
+      .directive('startAnalysis', startAnalysis);
 
-  function analysisButton() {
+  function startAnalysis() {
     return {
       restrict: 'E',
       replace: true,
-      templateUrl: 'client/inventories/analysis_button.html',
+      templateUrl: 'client/home/start_analysis.html',
       scope: {},
       controller: 'AnalysisButtonCtrl',
       controllerAs: 'analysisButton'
