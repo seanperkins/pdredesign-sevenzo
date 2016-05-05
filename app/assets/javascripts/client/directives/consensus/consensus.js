@@ -100,7 +100,7 @@ PDRClient.directive('consensus', [
                         "category_id": 14,
                         "score": {
                           "id": 2965,
-                          "value": null,
+                          "value": 2,
                           "evidence" : null,
                           "supporting_inventory_response": {
                             "id": 1,

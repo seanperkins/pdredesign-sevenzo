@@ -29,7 +29,7 @@
               {{question.number}}
             </p>
           </div>
-          <div class="question-content">
+          <div class="question-content" ng-class="{expanded: question.answersVisible}">
             <div class="question-header">
               <p class="question-headline">{{question.headline}}</p>
               <p class="content">{{question.content}}</p>

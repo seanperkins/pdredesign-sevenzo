@@ -41,13 +41,13 @@
     <div ng-repeat="answer in question.answers">
       <span class="score-title">{{analysisConsensusAnswer.answerTitle(answer.value)}}</span>
       <label class="score-checkbox scored-{{answer.value}}">
-        <fake-radio model="question.score.value" value="answer.value"></fake-radio>
+        <fake-radio proxy-ng-model="question.score.value" proxy-ng-value="answer.value"></fake-radio>
       </label>
     </div>
     <div>
       <span class="score-title">Skip</span>
       <label class="score-checkbox skipped">
-        <fake-radio model="question.score.value" value="null"></fake-radio>
+        <fake-radio proxy-ng-model="question.score.value" proxy-ng-value="null"></fake-radio>
       </label>
     </div>
   </div>
