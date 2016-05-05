@@ -6,10 +6,10 @@ class AddNewQuestionsForAnalysis < ActiveRecord::Migration
   end
 
   def down
-    headlines.each_with_index { |headline, idx|
-      question = Question.where(headline: headline, content: content[idx]).first
+    headlines_and_content.each { |entry|
+      question = Question.where(headline: entry[0], content: entry[1]).first
       question.try(:answers).try(:destroy_all)
-      question.destroy!
+      question.try(:destroy!)
     }
     Category.where(name: 'Data & Tech Analysis Category').first.try(:destroy!)
     Axis.where(name: 'Data & Tech Analysis').first.try(:destroy!)
@@ -19,10 +19,10 @@ class AddNewQuestionsForAnalysis < ActiveRecord::Migration
   private
   def build_questions(category)
     rubric = Rubric.create!(name: 'Data & Tech Analysis Rubric', version: 1, enabled: true, tool_type: Analysis.to_s)
-    headlines.each_with_index { |headline, idx|
-      question = Question.create!(headline: headline,
+    headlines_and_content.each_with_index { |entry, idx|
+      question = Question.create!(headline: entry[0],
                                   order: idx,
-                                  content: content[idx],
+                                  content: entry[1],
                                   category: category,
                                   rubrics: [rubric])
       build_blank_answers(question)
@@ -35,8 +35,8 @@ class AddNewQuestionsForAnalysis < ActiveRecord::Migration
     }
   end
 
-  def headlines
-    [
+  def headlines_and_content
+    headlines = [
         'Established a Shared Vision for PD',
         'Identify PD Needs',
         'Personalize PD Plan',
@@ -49,10 +49,8 @@ class AddNewQuestionsForAnalysis < ActiveRecord::Migration
         'Evaluate PD Resources',
         'Improve PD Program'
     ]
-  end
 
-  def content
-    [
+    content = [
         'PD programs are developed based on a shared vision for teaching and learning.',
         'Teacher PD needs are identified based on a clear, common framework for effectiveness.',
         'Teacher PD plans are personalized in terms of prioritization, content, and timing to meet identified PD needs.',
@@ -65,5 +63,7 @@ class AddNewQuestionsForAnalysis < ActiveRecord::Migration
         'PD resources are continuously evaluated based on teacher satisfaction, usage data, and impact on effectiveness.',
         'PD programs are evaluated for effectiveness and fidelity of implementation, with support for improvements as needed.'
     ]
+
+    headlines.zip content
   end
 end
