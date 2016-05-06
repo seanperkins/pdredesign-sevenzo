@@ -5,26 +5,24 @@
       .controller('AnalysisButtonCtrl', AnalysisButtonCtrl);
 
   AnalysisButtonCtrl.$inject = [
-    '$scope',
-    '$modal'
+    '$modal',
+    'Inventory'
   ];
 
-  function AnalysisButtonCtrl($scope, $modal) {
+  function AnalysisButtonCtrl($modal) {
     var vm = this;
 
     vm.showAnalysisModal = function() {
       vm.modalInstance = $modal.open({
-        template: '<analysis-modal></analysis-modal>',
-        scope: $scope
+        templateUrl: 'client/analyses/analysis_modal.html',
+        controller: 'AnalysisModalCtrl',
+        controllerAs: 'analysisModal',
+        resolve: {
+          preSelectedInventory: function() {
+            return null;
+          }
+        }
       });
     };
-
-    $scope.$on('close-analysis-modal', function() {
-      vm.modalInstance.dismiss('cancel');
-    });
-
-    $scope.$on('close-inventory-modal', function() {
-      vm.modalInstance.dismiss('cancel');
-    });
   }
 })();

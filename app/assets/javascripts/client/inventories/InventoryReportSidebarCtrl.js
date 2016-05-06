@@ -17,7 +17,6 @@
     $scope.inventory = inventory;
     vm.inventory = $scope.inventory;
     vm.shared = $stateParams.shared || false;
-    var user = SessionService.getCurrentUser();
     vm.hideAnalysisAccess = inventory.analysis_count === 0 && !vm.inventory.is_facilitator;
     vm.creatingAnalysis = vm.inventory.analysis_count === 0 && vm.inventory.is_facilitator;
     vm.createAnalysis = function() {
@@ -27,10 +26,11 @@
       });
     };
     vm.gotoAnalysis = function() {
-      if(vm.inventory.analysis_count == 1) {
-        var analysisState = !vm.inventory.analysis.assigned_at ? 'analysis_assign' :'analysis_dashboard' ;
+      if(vm.inventory.analysis_count === 1) {
+        var analysisState = !vm.inventory.analysis.assigned_at ? 'inventory_analysis_assign' :'analysis_dashboard' ;
         $state.go(analysisState, {
-          analysis_id: vm.inventory.analysis.id
+          inventory_id: vm.inventory.id,
+          id: vm.inventory.analysis.id
         });
       } else {
         $state.go('analyses');
