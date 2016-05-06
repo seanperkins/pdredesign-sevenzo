@@ -162,6 +162,7 @@
       },
       params: {
         shared: true
+      }
     }).state('inventory_analysis_consensus', {
       url: '/inventories/:inventory_id/analyses/:analysis_id/consensus/:id',
       authenticate: true,
