@@ -5,22 +5,18 @@
       .controller('StartInventoryCtrl', StartInventoryCtrl);
 
   StartInventoryCtrl.$inject = [
-    '$modal',
-    '$scope'
+    '$modal'
   ];
 
-  function StartInventoryCtrl($modal, $scope) {
+  function StartInventoryCtrl($modal) {
     var vm = this;
 
     vm.openInventoryModal = function() {
       vm.modal = $modal.open({
-        template: '<inventory-modal></inventory-modal>',
-        scope: $scope
+        templateUrl: 'client/home/inventory_modal.html',
+        controller: 'InventoryModalCtrl',
+        controllerAs: 'inventoryModal'
       })
     };
-
-    $scope.$on('close-inventory-modal', function() {
-      vm.modal.close('cancel');
-    });
   }
 })();

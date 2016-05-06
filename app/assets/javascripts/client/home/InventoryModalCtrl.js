@@ -5,13 +5,14 @@
       .controller('InventoryModalCtrl', InventoryModalCtrl);
 
   InventoryModalCtrl.$inject = [
-    '$scope',
+    '$modalInstance',
+    '$timeout',
     '$location',
     'SessionService',
     'Inventory'
   ];
 
-  function InventoryModalCtrl($scope, $location, SessionService, Inventory) {
+  function InventoryModalCtrl($modalInstance, $timeout, $location, SessionService, Inventory) {
     var vm = this;
 
     vm.alerts = [];
@@ -19,7 +20,7 @@
     vm.inventory = {};
 
     vm.close = function() {
-      $scope.$emit('close-inventory-modal');
+      $modalInstance.close('cancel');
     };
 
     vm.error = function(message) {
@@ -46,6 +47,16 @@
               vm.error(field + " : " + error);
             });
           });
-    }
+    };
+
+    $timeout(function() {
+      vm.datetime = $('.datetime').datetimepicker({
+        pickTime: false
+      });
+
+      vm.datetime.on('dp.change', function() {
+        $('#deadline').trigger('change');
+      });
+    });
   }
 })();
