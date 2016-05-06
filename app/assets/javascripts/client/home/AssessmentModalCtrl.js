@@ -5,12 +5,13 @@
       .controller('AssessmentModalCtrl', AssessmentModalCtrl);
 
   AssessmentModalCtrl.$inject = [
-    '$scope',
     '$location',
+    '$modalInstance',
+    '$timeout',
     'AssessmentService'
   ];
 
-  function AssessmentModalCtrl($scope, $location, AssessmentService) {
+  function AssessmentModalCtrl($location, $modalInstance, $timeout, AssessmentService) {
     var vm = this;
 
     vm.alerts = [];
@@ -29,7 +30,7 @@
     };
 
     vm.hideModal = function() {
-      $scope.$emit('close-assessment-modal');
+      $modalInstance.close('cancel');
     };
 
     vm.success = function(message) {
@@ -43,7 +44,6 @@
     vm.closeAlert = function(index) {
       vm.alerts.splice(index, 1);
     };
-
 
     vm.create = function(assessment) {
       assessment.due_date = moment($("#due-date").val(), 'MM-DD-YYYY').toISOString();
@@ -61,5 +61,15 @@
             });
           });
     };
+
+    $timeout(function() {
+      vm.datetime = $('.datetime').datetimepicker({
+        pickTime: false
+      });
+
+      vm.datetime.on('dp.change', function() {
+        $('#due-date').trigger('change');
+      });
+    })
   }
 })();

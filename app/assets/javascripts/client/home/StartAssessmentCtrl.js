@@ -4,13 +4,12 @@
       .controller('StartAssessmentCtrl', StartAssessmentCtrl);
 
   StartAssessmentCtrl.$inject = [
-    '$scope',
     '$modal',
     'SessionService',
     'AssessmentService'
   ];
 
-  function StartAssessmentCtrl($scope,  $modal, SessionService, AssessmentService) {
+  function StartAssessmentCtrl($modal, SessionService, AssessmentService) {
     var vm = this;
 
     vm.text = AssessmentService.text;
@@ -18,14 +17,11 @@
 
     vm.openAssessmentModal = function() {
       vm.assessmentModal = $modal.open({
-        template: '<assessment-modal></assessment-modal>',
-        scope: $scope
+        templateUrl: 'client/home/assessment_modal.html',
+        controller: 'AssessmentModalCtrl',
+        controllerAs: 'assessmentModal'
       });
     };
-
-    $scope.$on('close-assessment-modal', function() {
-      vm.assessmentModal.close('cancel');
-    });
 
     SessionService.syncUser();
   }

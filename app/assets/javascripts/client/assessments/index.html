@@ -7,7 +7,8 @@
 </div>
 <div class="row tertiary">
   <div class="col-md-12">
-    <start-assessment></start-assessment>
+    <primary-button icon="fa-bullhorn" text="{{ text() }}"
+                    click-fn="openAssessmentModal()"></primary-button>
     <div class="row">
       <div class="assessments-filter">
         <div ng-show="isNetworkPartner()">

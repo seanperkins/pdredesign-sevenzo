@@ -1,6 +1,6 @@
-<div class="modal-content">
+<div class="modal-content assessment-modal">
   <div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <button type="button" class="close" ng-click="assessmentModal.hideModal()">&times;</button>
     <h4 class="modal-title">{{assessmentModal.modalTitle()}}</h4>
   </div>
   <div class="modal-body">
@@ -53,7 +53,7 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-default" ng-click="assessmentModal.hideModal();">Close</button>
         <button type="submit"
                 ng-disabled="assessmentModalForm.$invalid"
                 ng-click="assessmentModal.create(assessmentModal.assessment)"
