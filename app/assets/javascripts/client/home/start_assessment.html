@@ -8,11 +8,11 @@
     <div class="row">
       <div class="col-md-6 tool-link-container">
         <primary-button icon="fa-info-circle" text="About the Readiness Assessment"></primary-button>
-        <primary-button icon="fa-list" link="#/assessments" text="Go to Assessment List"></primary-button>
-      </div>
-      <div class="col-md-6 tool-link-container">
         <primary-button icon="fa-bullhorn" text="{{ startAssessment.text() }}"
                         click-fn="startAssessment.openAssessmentModal()"></primary-button>
+      </div>
+      <div class="col-md-6 tool-link-container">
+        <primary-button icon="fa-list" link="#/assessments" text="Go to Assessment List"></primary-button>
         <primary-button icon="fa-plus" link="#/settings" text="Add Districts"
                         ng-if="startAssessment.userIsNetworkPartner"></primary-button>
       </div>
