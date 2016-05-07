@@ -14,7 +14,10 @@
   function AssessmentService($state, SessionService, MailtoHelper, Assessment) {
     var service = this;
 
-    service.userIsNetworkPartner = SessionService.isNetworkPartner();
+    service.userIsNetworkPartner = function() {
+      return SessionService.isNetworkPartner();
+    };
+
     service.currentUser = SessionService.getCurrentUser();
 
     service.text = function() {

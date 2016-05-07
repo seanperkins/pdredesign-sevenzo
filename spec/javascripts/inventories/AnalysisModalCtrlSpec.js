@@ -3,51 +3,64 @@
 
   describe('Controller: AnalysisModal', function() {
     var subject,
-        $scope,
+        $state,
+        $timeout,
+        $modalInstance,
+        modalInstanceClose,
         Analysis,
-        ConstantsService;
+        Inventory,
+        preSelectedInventory;
 
     beforeEach(function() {
-      module('PDRClient');
-      inject(function(_$rootScope_, _$controller_, $injector) {
+      modalInstanceClose = jasmine.createSpy('modalInstanceClose');
+      $modalInstance = {
+        close: modalInstanceClose
+      };
+      preSelectedInventory = jasmine.createSpy('preSelectedInventory');
+      module('PDRClient', function($provide) {
+        $provide.value('$modalInstance', function() {
+          return $modalInstance;
+        });
+
+        $provide.value('preSelectedInventory', function() {
+          return preSelectedInventory;
+        });
+      });
+
+      inject(function(_$state_, _$timeout_, $injector) {
+        $state = _$state_;
+        $timeout = _$timeout_;
         Analysis = $injector.get('Analysis');
-        $scope = _$rootScope_.$new(true);
+        Inventory = $injector.get('Inventory');
       });
     });
 
     describe('with mock request', function() {
       var $httpBackend;
+
       beforeEach(function() {
-        inject(function(_$httpBackend_) {
+        inject(function(_$httpBackend_, _$controller_) {
           $httpBackend = _$httpBackend_;
+          subject = _$controller_('AnalysisModalCtrl', {
+            Analysis: Analysis,
+            Inventory: Inventory,
+            $modalInstance: $modalInstance
+          });
         });
       });
 
       it('creates an Analysis', function() {
-        inject(function(_$rootScope_, _$controller_, $injector) {
-          subject = _$controller_('AnalysisModalCtrl', {
-            $scope: $scope,
-            Analysis: Analysis
-          });
-        });
-
+        expect(modalInstanceClose).toHaveBeenCalledWith('cancel');
         $httpBackend
             .expectPOST('/v1/inventories/42/analyses')
             .respond({});
 
-        subject.analysis = {inventory_id: 42}
+        subject.analysis = {inventory_id: 42};
         subject.save();
         $httpBackend.flush();
       });
 
       it('closes the modal', function() {
-        inject(function(_$rootScope_, _$controller_, $injector) {
-          subject = _$controller_('AnalysisModalCtrl', {
-            $scope: $scope,
-            Analysis: Analysis
-          });
-        });
-
         spyOn(subject, 'closeModal');
         $httpBackend
             .expectPOST('/v1/inventories/42/analyses')
@@ -59,12 +72,13 @@
         expect(subject.closeModal).toHaveBeenCalled();
       });
 
-      describe('handles errors', function () {
-        beforeEach(function () {
-          inject(function(_$rootScope_, _$controller_, $injector) {
+      describe('handles errors', function() {
+        beforeEach(function() {
+          inject(function(_$controller_) {
             subject = _$controller_('AnalysisModalCtrl', {
-              $scope: $scope,
-              Analysis: Analysis
+              Analysis: Analysis,
+              Inventory: Inventory,
+              $modalInstance: $modalInstance
             });
           });
 

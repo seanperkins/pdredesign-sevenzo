@@ -18,7 +18,10 @@
     vm.modalTitle = AssessmentService.text;
     vm.user = AssessmentService.currentUser;
     vm.district = vm.user.districts[0];
-    vm.userIsNetworkPartner = AssessmentService.userIsNetworkPartner;
+    
+    vm.userIsNetworkPartner = function() {
+      return AssessmentService.userIsNetworkPartner();
+    };
 
     vm.noDistrict = function() {
       return _.isEmpty(vm.user.district_ids);

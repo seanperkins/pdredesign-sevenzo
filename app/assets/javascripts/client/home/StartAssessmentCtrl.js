@@ -12,8 +12,13 @@
   function StartAssessmentCtrl($modal, SessionService, AssessmentService) {
     var vm = this;
 
-    vm.text = AssessmentService.text;
-    vm.userIsNetworkPartner = AssessmentService.userIsNetworkPartner;
+    vm.text = function() {
+      return AssessmentService.text();
+    };
+
+    vm.userIsNetworkPartner = function() {
+      return AssessmentService.userIsNetworkPartner();
+    };
 
     vm.openAssessmentModal = function() {
       vm.assessmentModal = $modal.open({
