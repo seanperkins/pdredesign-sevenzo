@@ -1,15 +1,13 @@
-<div ng-show="success" id="ajax_message" class="alert alert-dismissable alert-success" style="display: block;">
+<div ng-if="success" class="alert alert-dismissable alert-success" style="display: block;">
   {{success}}
   <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
 </div>
-<div ng-show="errors" id="ajax_message" class="alert alert-dismissable alert-danger" style="display: block;">
-  <div ng-repeat="(field, errorList) in errors">
+<div ng-if="errors" class="alert alert-dismissable alert-danger" style="display: block;">
+  <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+  <div ng-repeat="errorList in errors">
     <div ng-repeat="error in errorList">
-      <span>
-        {{field}}: {{error}}
-      </span>
+      <span ng-bind-html="error"></span>
     </div>
   </div>
-  <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
 </div>
 

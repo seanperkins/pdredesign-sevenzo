@@ -14,8 +14,12 @@ class V1::UserController < ApplicationController
     ))
 
     user_invitation = [UserInvitation, InventoryInvitation].map{|i| i.find_by(email: user_params[:email])}.compact.first
-    if user_invitation.present?
-      @user.errors.add(:base, "It seems you have already been invited. Please continue your registration here.")
+
+    if user_invitation.user.sign_in_count > 0
+      user_invitation.user.errors.add(:base, "You have already signed in with this account.  If you have forgotten your password, please click <a href='#/reset'>HERE</a> to reset it.")
+      render_errors user_invitation.user.errors
+    elsif user_invitation.present?
+      @user.errors.add(:base, 'It seems you have already been invited. Please continue your registration here.')
       render json: @user.errors.to_h.merge(
         invitation_token: user_invitation.token
       ), status: :unprocessable_entity
@@ -23,7 +27,7 @@ class V1::UserController < ApplicationController
       send_notification_email
       render status: 200, nothing: true
     else
-      render_errors(@user.errors)
+      render_errors @user.errors
     end
   end
 
