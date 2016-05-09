@@ -18,6 +18,7 @@ class AddNewQuestionsForAnalysis < ActiveRecord::Migration
 
   private
   def build_questions(category)
+    Rubric.reset_column_information
     rubric = Rubric.create!(name: 'Data & Tech Analysis Rubric', version: 1, enabled: true, tool_type: Analysis.to_s)
     headlines_and_content.each_with_index { |entry, idx|
       question = Question.create!(headline: entry[0],
