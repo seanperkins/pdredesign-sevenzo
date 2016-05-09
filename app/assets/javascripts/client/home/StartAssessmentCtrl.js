@@ -6,18 +6,18 @@
   StartAssessmentCtrl.$inject = [
     '$modal',
     'SessionService',
-    'AssessmentService'
+    'RecommendationTextService'
   ];
 
-  function StartAssessmentCtrl($modal, SessionService, AssessmentService) {
+  function StartAssessmentCtrl($modal, SessionService, RecommendationTextService) {
     var vm = this;
 
     vm.text = function() {
-      return AssessmentService.text();
+      return RecommendationTextService.assessmentText();
     };
 
     vm.userIsNetworkPartner = function() {
-      return AssessmentService.userIsNetworkPartner();
+      return SessionService.isNetworkPartner();
     };
 
     vm.openAssessmentModal = function() {

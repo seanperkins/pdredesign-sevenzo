@@ -8,19 +8,20 @@
     '$location',
     '$modalInstance',
     '$timeout',
-    'AssessmentService'
+    'RecommendationTextService',
+    'SessionService'
   ];
 
-  function AssessmentModalCtrl($location, $modalInstance, $timeout, AssessmentService) {
+  function AssessmentModalCtrl($location, $modalInstance, $timeout, RecommendationTextService, SessionService) {
     var vm = this;
 
     vm.alerts = [];
-    vm.modalTitle = AssessmentService.text;
-    vm.user = AssessmentService.currentUser;
+    vm.modalTitle = RecommendationTextService.assessmentText();
+    vm.user = SessionService.getCurrentUser();
     vm.district = vm.user.districts[0];
-    
+
     vm.userIsNetworkPartner = function() {
-      return AssessmentService.userIsNetworkPartner();
+      return SessionService.isNetworkPartner();
     };
 
     vm.noDistrict = function() {

@@ -10,8 +10,8 @@
       replace: true,
       templateUrl: 'client/home/start_analysis.html',
       scope: {},
-      controller: 'AnalysisButtonCtrl',
-      controllerAs: 'analysisButton'
+      controller: 'StartAnalysisCtrl',
+      controllerAs: 'startAnalysis'
     }
   }
 })();

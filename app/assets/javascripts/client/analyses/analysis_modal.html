@@ -1,5 +1,5 @@
 <div class='container modal-form'>
-  <h1>Create a New Analysis</h1>
+  <h1>{{analysisModal.titleText()}}</h1>
   <button class='btn btn-link close-modal' ng-click='analysisModal.closeModal()'>&times;</button>
   <hr>
   <div ng-if='analysisModal.hasNoInventories()'>
@@ -19,14 +19,14 @@
     <hr>
   </div>
 
-  <div ng-show='analysisModal.hasInventories()'>
+  <div ng-show="analysisModal.hasInventories()">
     <alert ng-repeat="alert in analysisModal.alerts" type="{{alert.type}}" close="analysisModal.closeAlert($index)">
       {{alert.msg}}
     </alert>
   </div>
-  <div ng-show='analysisModal.hasInventories()'>
-    <div class='row'>
-      <div class='col-sm-12'>
+  <div ng-show="analysisModal.hasInventories()">
+    <div class="row" ng-if="!analysisModal.userIsNetworkPartner()">
+      <div class="col-sm-12">
         <p>Facilitate the Data &amp; Tech Analysis process for your district by creating a new analysis and selecting an
           inventory to connect to it. Click <a href="#/analyses" ng-click="analysisModal.gotoAnalyses()">here</a> to
           view current analyses for your district or to participate in an existing analysis.</p>

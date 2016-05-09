@@ -2,15 +2,19 @@
   'use strict';
 
   angular.module('PDRClient')
-      .controller('AnalysisButtonCtrl', AnalysisButtonCtrl);
+      .controller('StartAnalysisCtrl', StartAnalysisCtrl);
 
-  AnalysisButtonCtrl.$inject = [
+  StartAnalysisCtrl.$inject = [
     '$modal',
-    'Inventory'
+    'RecommendationTextService'
   ];
 
-  function AnalysisButtonCtrl($modal) {
+  function StartAnalysisCtrl($modal, RecommendationTextService) {
     var vm = this;
+
+    vm.text = function() {
+      return RecommendationTextService.analysisText();
+    };
 
     vm.showAnalysisModal = function() {
       vm.modalInstance = $modal.open({

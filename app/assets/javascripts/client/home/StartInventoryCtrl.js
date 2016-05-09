@@ -5,11 +5,16 @@
       .controller('StartInventoryCtrl', StartInventoryCtrl);
 
   StartInventoryCtrl.$inject = [
-    '$modal'
+    '$modal',
+    'RecommendationTextService'
   ];
 
-  function StartInventoryCtrl($modal) {
+  function StartInventoryCtrl($modal, RecommendationTextService) {
     var vm = this;
+
+    vm.text = function() {
+      return RecommendationTextService.inventoryText();
+    };
 
     vm.openInventoryModal = function() {
       vm.modal = $modal.open({

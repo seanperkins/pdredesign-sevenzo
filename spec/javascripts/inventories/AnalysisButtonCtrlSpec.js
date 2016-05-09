@@ -11,7 +11,7 @@
       inject(function(_$controller_, _$rootScope_, _$modal_) {
         $scope = _$rootScope_.$new(true);
         $modal = _$modal_;
-        subject = _$controller_('AnalysisButtonCtrl', {
+        subject = _$controller_('StartAnalysisCtrl', {
           $scope: $scope,
           $modal: $modal
         });

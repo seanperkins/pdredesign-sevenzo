@@ -8,12 +8,14 @@
     '$state',
     '$timeout',
     '$modalInstance',
+    'RecommendationTextService',
+    'SessionService',
     'Analysis',
     'Inventory',
     'preSelectedInventory'
   ];
 
-  function AnalysisModalCtrl($state, $timeout, $modalInstance, Analysis, Inventory, preSelectedInventory) {
+  function AnalysisModalCtrl($state, $timeout, $modalInstance, RecommendationTextService, SessionService, Analysis, Inventory, preSelectedInventory) {
     var vm = this;
     vm.analysis = {};
     vm.alerts = [];
@@ -24,6 +26,14 @@
 
     vm.inventories = [];
     vm.hasFetchedInventories = false;
+
+    vm.userIsNetworkPartner = function() {
+      return SessionService.isNetworkPartner();
+    };
+
+    vm.titleText = function() {
+      return RecommendationTextService.analysisText();
+    };
 
     vm.closeModal = function() {
       $modalInstance.close('cancel');

@@ -1,10 +1,10 @@
 <div class="modal-content assessment-modal">
   <div class="modal-header">
     <button type="button" class="close" ng-click="assessmentModal.hideModal()">&times;</button>
-    <h4 class="modal-title">{{assessmentModal.modalTitle()}}</h4>
+    <h4 class="modal-title">{{assessmentModal.modalTitle}}</h4>
   </div>
   <div class="modal-body">
-    <p ng-if="!assessmentModal.userIsNetworkPartner">Facilitate the Readiness Assessment process for your district
+    <p ng-if="!assessmentModal.userIsNetworkPartner()">Facilitate the Readiness Assessment process for your district
       by creating a
       new assessment.<a ng-click="assessmentModal.hideModal()"
                         href="#/assessments"> Click here</a> to view current assessments for your district or to

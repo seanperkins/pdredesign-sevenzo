@@ -6,27 +6,12 @@
 
   AssessmentService.$inject = [
     '$state',
-    'SessionService',
     'MailtoHelper',
     'Assessment'
   ];
 
-  function AssessmentService($state, SessionService, MailtoHelper, Assessment) {
+  function AssessmentService($state, MailtoHelper, Assessment) {
     var service = this;
-
-    service.userIsNetworkPartner = function() {
-      return SessionService.isNetworkPartner();
-    };
-
-    service.currentUser = SessionService.getCurrentUser();
-
-    service.text = function() {
-      if (service.userIsNetworkPartner) {
-        return 'Recommend Assessment';
-      } else {
-        return 'Facilitate New Assessment';
-      }
-    };
 
     service.sharedUrl = function(token) {
       return $state.href('shared_assessment_report', {token: token}, {absolute: true});

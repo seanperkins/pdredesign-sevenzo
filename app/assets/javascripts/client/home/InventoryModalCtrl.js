@@ -9,15 +9,24 @@
     '$timeout',
     '$location',
     'SessionService',
+    'RecommendationTextService',
     'Inventory'
   ];
 
-  function InventoryModalCtrl($modalInstance, $timeout, $location, SessionService, Inventory) {
+  function InventoryModalCtrl($modalInstance, $timeout, $location, SessionService, RecommendationTextService, Inventory) {
     var vm = this;
 
     vm.alerts = [];
     vm.user = SessionService.getCurrentUser();
     vm.inventory = {};
+
+    vm.userIsNetworkPartner = function() {
+      return SessionService.isNetworkPartner();
+    };
+
+    vm.titleText = function() {
+      return RecommendationTextService.inventoryText();
+    };
 
     vm.close = function() {
       $modalInstance.close('cancel');
