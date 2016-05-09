@@ -6,6 +6,10 @@ describe V1::UserController do
     FactoryGirl.create(:user, :with_district)
   }
 
+  let!(:magic_assessments) {
+    create_magic_assessments
+  }
+
   before do
     request.env['HTTP_ACCEPT'] = 'application/json'
     sign_in user
@@ -28,7 +32,7 @@ describe V1::UserController do
     end
 
     it 'does not break when email param is nil' do
-      expect{ post :request_reset }.not_to raise_error
+      expect { post :request_reset }.not_to raise_error
       assert_response 422
     end
 
@@ -48,7 +52,7 @@ describe V1::UserController do
 
     it 'queues up an email to be sent to user' do
       expect(PasswordResetNotificationWorker).to receive(:perform_async)
-        .with(user.id)
+                                                     .with(user.id)
 
       post :request_reset, email: 'some_user@gmail.com'
     end
@@ -81,7 +85,7 @@ describe V1::UserController do
 
     it 'resets the password token and sent_at' do
       user.update(reset_password_token: 'expected_token',
-                   reset_password_sent_at: Time.now)
+                  reset_password_sent_at: Time.now)
 
       post :reset, token: 'expected_token', password: 'xyz1235'
       assert_response :success
@@ -105,17 +109,17 @@ describe V1::UserController do
   end
 
   context '#create' do
-    before { @district  = District.create! }
+    before { @district = District.create! }
     before { @district2 = District.create! }
     before { sign_out :user }
 
     def post_create_user(options = {})
-      opts = { first_name: 'kim',
-               email: 'kim@gov.nk',
-               last_name: 'jong',
-               district_ids: @district.id,
-               password: 'some_password',
-               team_role: 'leader'}
+      opts = {first_name: 'kim',
+              email: 'kim@gov.nk',
+              last_name: 'jong',
+              district_ids: @district.id,
+              password: 'some_password',
+              team_role: 'leader'}
 
       post :create, opts.merge(options)
     end
@@ -142,7 +146,7 @@ describe V1::UserController do
     end
 
     it 'returns errors' do
-      post_create_user(email: 'some_invalid-email!!1one') 
+      post_create_user(email: 'some_invalid-email!!1one')
 
       assert_response 422
       expect(json["errors"]).not_to be_nil
@@ -184,7 +188,7 @@ describe V1::UserController do
       kim = User.find_by(email: 'kim@gov.nk')
       expect(kim.organizations.count).to eq(2)
     end
-    
+
     it 'can find and update an existing user' do
       user.update(email: 'kim@gov.nk')
 
@@ -194,37 +198,109 @@ describe V1::UserController do
 
     context 'when signing up with existing assessment invitation' do
       context 'when the account has not previously signed in' do
-        it 'returns token to user' do
-          create_magic_assessments
+        let!(:user_invitation) {
+          create(:user_invitation,
+                 email: 'kim@gov.nk',
+                 assessment: @assessment_with_participants,
+                 first_name: 'Kim',
+                 last_name: 'Possible',
+                 team_role: 'role;')
+        }
+
+        before(:each) do
           user.update(email: 'kim@gov.nk')
-          invitation = UserInvitation.create!(email: 'kim@gov.nk',
-                                              assessment: @assessment_with_participants,
-                                              first_name: 'Kim',
-                                              last_name: 'Possible',
-                                              team_role: 'role;')
-
           post_create_user(first_name: 'New')
+        end
 
+        it 'returns token to user' do
           expect(response).to have_http_status(:unprocessable_entity)
-          expect(json['invitation_token']).to eq(invitation.token)
+          expect(json['invitation_token']).to eq(user_invitation.token)
+        end
+      end
+
+      context 'when the account has previously signed in' do
+        let!(:user_invitation) {
+          create(:user_invitation,
+                 email: 'kim@gov.nk',
+                 assessment: @assessment_with_participants,
+                 first_name: 'Kim',
+                 last_name: 'Possible',
+                 team_role: 'role;',
+                 user: user)
+        }
+
+        before(:each) do
+          user.update(email: 'kim@gov.nk',
+                      sign_in_count: 1)
+          post_create_user(first_name: 'New')
+        end
+
+        it {
+          expect(response).to have_http_status :unprocessable_entity
+        }
+
+        it 'contains the appropriate error message' do
+          expect(json['errors']['base'][0]).to eq "You have already signed in with this account.  If you have forgotten your password, please click <a href='#/reset'>HERE</a> to reset it."
+        end
+
+        it 'does not contain an invitation token' do
+          expect(json['invitation_token']).to be_nil
         end
       end
     end
 
-    context 'when signinig up with existing inventory invitation' do
+    context 'when signing up with existing inventory invitation' do
+      let(:inventory) {
+        create(:inventory)
+      }
+
       context 'when the account has not previously signed in' do
-        it 'returns token to user' do
-          inventory = FactoryGirl.create(:inventory)
-          invitation = InventoryInvitation.create!(email: 'kim@gov.nk',
-                                                   inventory: inventory,
-                                                   first_name: 'Kim',
-                                                   last_name: 'Possible',
-                                                   team_role: 'role;')
+        let!(:inventory_invitation) {
+          create(:inventory_invitation,
+                 email: 'kim@gov.nk',
+                 inventory: inventory,
+                 first_name: 'Kim',
+                 last_name: 'Possible',
+                 team_role: 'role;',
+                 user: user)
+        }
 
+        before(:each) do
           post_create_user(first_name: 'New')
+        end
 
+        it 'returns token to user' do
           expect(response).to have_http_status(:unprocessable_entity)
-          expect(json['invitation_token']).to eq(invitation.token)
+          expect(json['invitation_token']).to eq(inventory_invitation.token)
+        end
+      end
+
+      context 'when the account has previously signed in' do
+        let!(:inventory_invitation) {
+          create(:inventory_invitation,
+                 email: 'kim@gov.nk',
+                 inventory: inventory,
+                 first_name: 'Kim',
+                 last_name: 'Possible',
+                 team_role: 'role;',
+                 user: user)
+        }
+
+        before(:each) do
+          user.update(sign_in_count: 1)
+          post_create_user(first_name: 'New')
+        end
+
+        it {
+          expect(response).to have_http_status :unprocessable_entity
+        }
+
+        it 'contains the appropriate error message' do
+          expect(json['errors']['base'][0]).to eq "You have already signed in with this account.  If you have forgotten your password, please click <a href='#/reset'>HERE</a> to reset it."
+        end
+
+        it 'does not contain an invitation token' do
+          expect(json['invitation_token']).to be_nil
         end
       end
     end
@@ -245,21 +321,21 @@ describe V1::UserController do
 
   context '#update' do
     it 'updates a users fields' do
-      put :update, { first_name: 'updated', last_name: 'user' }
+      put :update, {first_name: 'updated', last_name: 'user'}
 
       expect(json["first_name"]).to eq('updated')
     end
 
     it 'can take multiple districts' do
-      district  = District.create!
+      district = District.create!
       district2 = District.create!
 
-      put :update, { district_ids: "#{district.id}, #{district2.id}"}
+      put :update, {district_ids: "#{district.id}, #{district2.id}"}
       expect(json["district_ids"].count).to eq(2)
     end
 
     it 'returns errors on ActiveRecord failure' do
-      put :update, { email: 'asdfasdf' }
+      put :update, {email: 'asdfasdf'}
 
       expect(response.status).to eq(422)
       expect(json["errors"]).to_not be_nil
@@ -270,7 +346,7 @@ describe V1::UserController do
         district = District.create!
         user.update(districts: [district])
 
-        put :update, {email: 'some@user.com'} 
+        put :update, {email: 'some@user.com'}
 
         user.reload
         expect(user.district_ids).to eq([district.id])
@@ -280,7 +356,7 @@ describe V1::UserController do
         org = Organization.create!(name: 'test')
         user.update(organizations: [org])
 
-        put :update, {email: 'some@user.com'} 
+        put :update, {email: 'some@user.com'}
 
         user.reload
         expect(user.organization_ids).to eq([org.id])
@@ -290,7 +366,7 @@ describe V1::UserController do
         district = District.create!
         user.update(districts: [district])
 
-        put :update, {email: 'some@user.com', district_ids: nil} 
+        put :update, {email: 'some@user.com', district_ids: nil}
 
         user.reload
         expect(user.district_ids).to be_empty
@@ -300,7 +376,7 @@ describe V1::UserController do
         org = Organization.create!(name: 'test')
         user.update(organizations: [org])
 
-        put :update, {email: 'some@user.com', organization_ids: nil} 
+        put :update, {email: 'some@user.com', organization_ids: nil}
 
         user.reload
         expect(user.organization_ids).to be_empty
