@@ -25,4 +25,5 @@ class DataAccessQuestion < ActiveRecord::Base
       other: 'Other'
   }
 
+  validates :who_access_data, inclusion: {in: DataAccessQuestion.data_accessed_bies.values, message: "'%{value}' not permissible" }, allow_blank: true
 end

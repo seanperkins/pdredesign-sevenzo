@@ -10,9 +10,20 @@ class ArrayEnumValidator < ActiveModel::EachValidator
       return
     end
 
-    if options[:flat]
-      unless options[:enum].values.include?(value)
-        record.errors.add(attribute, "#{value} is not permissible")
+    if value.uniq.size != value.size
+      record.errors.add(attribute, "#{value} is not permissible: contains duplicate entries")
+    end
+
+    if options[:allow_wildcard]
+      wildcard_used = nil
+      value.each do |type|
+        unless options[:enum].values.include?(type)
+          if wildcard_used.present?
+            record.errors.add(attribute, "#{type} is not permissible: wildcard '#{wildcard_used}' already used")
+          else
+            wildcard_used = type
+          end
+        end
       end
     else
       value.each do |type|

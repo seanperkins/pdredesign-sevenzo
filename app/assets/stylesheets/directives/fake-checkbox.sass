@@ -1,0 +1,27 @@
+.fake-checkbox
+  display: inline-block
+
+  input[type='checkbox']
+    display: none
+
+  input[type='checkbox'] + span
+    cursor: pointer
+    position: relative
+    border: 2px solid $secondary-color
+    border-radius: 4px
+    display: inline-block
+    width: 1.3em
+    height: 1.3em
+    margin-bottom: -0.2em
+    i
+      display: none
+      font-size: 0.9em
+      position: absolute
+      top: 15%
+      left: 10%
+      color: white
+
+  input[type='checkbox']:checked + span
+    background: $secondary-color
+    i
+      display: block

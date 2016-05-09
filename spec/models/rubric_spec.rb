@@ -5,10 +5,10 @@
 #  id         :integer          not null, primary key
 #  name       :string(255)
 #  version    :decimal(, )
-#  user_id    :integer
 #  created_at :datetime
 #  updated_at :datetime
 #  enabled    :boolean
+#  tool_type  :string
 #
 
 require 'spec_helper'

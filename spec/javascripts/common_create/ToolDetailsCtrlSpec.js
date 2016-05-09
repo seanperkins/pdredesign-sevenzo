@@ -6,7 +6,8 @@
         $controller,
         subject,
         SessionService,
-        CreateService;
+        CreateService,
+        Inventory;
 
     beforeEach(function() {
       module('PDRClient');
@@ -15,6 +16,7 @@
         $controller = _$controller_;
         SessionService = $injector.get('SessionService');
         CreateService = $injector.get('CreateService');
+        Inventory = $injector.get('Inventory');
       });
     });
 
@@ -30,6 +32,26 @@
 
       it('sends the scope to the CreateService', function() {
         expect(CreateService.loadScope).toHaveBeenCalledWith($scope);
+      });
+    });
+
+    describe('showInventory', function() {
+      beforeEach(function() {
+        spyOn(Inventory, 'get').and.callThrough();
+      });
+
+      it('does not get the inventory', function() {
+        $scope.showInventory = true;
+        $scope.model = {inventory_id: 1};
+
+        subject = $controller('ToolDetailsCtrl', {
+          $scope: $scope,
+          SessionService: SessionService,
+          CreateService: CreateService,
+          Inventory: Inventory
+        });
+
+        expect(Inventory.get).toHaveBeenCalledWith({inventory_id: 1});
       });
     });
 
@@ -121,7 +143,7 @@
       beforeEach(function() {
         spyOn(SessionService, 'getCurrentUser').and.returnValue({districts: [{id: 1}, {id: 2}, {id: 3}]});
         spyOn(CreateService, 'loadDistrict');
-        spyOn(CreateService, 'saveAssessment');
+        spyOn(CreateService, 'save');
 
         subject = $controller('ToolDetailsCtrl', {
           $scope: $scope,
@@ -135,9 +157,9 @@
         expect(CreateService.loadDistrict).toHaveBeenCalledWith({id: 1});
       });
 
-      it('delegates to CreateService$saveAssessment with the correct entity', function() {
+      it('delegates to CreateService#save with the correct entity', function() {
         subject.save(entity);
-        expect(CreateService.saveAssessment).toHaveBeenCalledWith(entity);
+        expect(CreateService.save).toHaveBeenCalledWith(entity);
       });
     });
 

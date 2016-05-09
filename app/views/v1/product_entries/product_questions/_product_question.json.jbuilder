@@ -1,0 +1,7 @@
+json.id product_question.id
+json.created_at product_question.created_at
+json.updated_at product_question.updated_at
+json.how_its_assigned product_question.how_its_assigned
+json.how_its_used product_question.how_its_used
+json.how_its_accessed product_question.how_its_accessed
+json.audience product_question.audience

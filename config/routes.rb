@@ -25,7 +25,6 @@ PdrServer::Application.routes.draw do
     end
     resources  :district_messages, only: [:create]
     resources  :tools, only: [:index, :create]
-    resources  :rubrics, only: :index
     resources  :categories, only: :index
     resources  :prospective_users, only: :create
     resources  :assessments, only: [:index, :show, :update, :create] do
@@ -61,7 +60,7 @@ PdrServer::Application.routes.draw do
 
       resources :responses, except: [:delete] do
         get '/slim', to: 'responses#show_slimmed'
-        resources :scores, only: [:update, :create, :index]
+        resources :scores, only: [:create, :index]
       end
 
       get 'participants/all', to: 'participants#all', as: :all_participants
@@ -80,15 +79,51 @@ PdrServer::Application.routes.draw do
 
     end
 
-    scope '/inventories/:inventory_id' do
+    resources :inventories, only: [:create, :index, :show, :update] do
+      post 'reminders', to: 'inventory_reminders#create'
+      patch '', to: 'inventories#mark_complete'
+      post 'save_response', to: 'inventories#save_response'
+      get 'participant_response', to: 'inventories#participant_response'
+      resources :inventory_reminders, only: [:create]
       resources :invitations, controller: 'inventory_invitations', only: [:create]
       resources :access_requests, controller: 'inventory_access_requests', only: [:index, :create, :update]
       resource :permissions, controller: 'inventory_permissions', only: [:show, :update]
-      resources :participants, controller: 'inventory_participants', only: [:create, :destroy]
-      resources :invitables, controller: 'inventory_invitables', only: [:index]
+      resources :participants, controller: 'inventory_participants', only: [:create, :destroy, :index]
+        get 'participants/all', to: 'inventory_participants#all'
+      resources :product_entries, only: [:index, :show, :create, :update]
+      resources :data_entries, only: [:index, :show, :create, :update]
+      resources :learning_questions, only: [:index, :create, :update, :destroy] do
+        collection do
+          get 'exists', to: 'learning_questions#exists'
+        end
+      end
+
+      resources :analyses, only: [:index,:show,:create] do
+        put '/', to: "analyses#update", on: :collection
+
+        resources :participants, controller: 'analysis_participants', only: [:create, :destroy, :index] do
+          get :all, on: :collection
+        end
+        resources :invitations, controller: 'analysis_invitations', only: [:create]
+        resource :permissions, controller: 'analysis_permissions', only: [:show, :update]
+        resources :learning_questions, only: [:index, :create, :update, :destroy] do
+          get :exists, on: :collection
+        end
+        resources :analysis_responses, except: [:delete] do
+          resources :scores, only: [:create, :index]
+        end
+        resources :analysis_consensus, except: [:delete, :index]
+      end
+
+      member do
+        get :district_product_entries
+      end
     end
 
-    resources :inventories, only: [:create, :index]
+    scope '/constants' do
+      get 'product_entry', to: 'constants#product_entry'
+      get 'data_entry', to: 'constants#data_entry'
+    end
 
     get 'user', to: 'user#show'
     put 'user', to: 'user#update'

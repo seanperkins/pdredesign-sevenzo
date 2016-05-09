@@ -24,6 +24,5 @@ class DataEntryQuestion < ActiveRecord::Base
       scheduled: 'Scheduled'
   }
 
-  validates :when_data_is_entered, array_enum: {enum: DataEntryQuestion.data_entered_frequencies, flat: true}
-
+  validates :when_data_is_entered, inclusion: {in: DataEntryQuestion.data_entered_frequencies.values}, allow_blank: true
 end

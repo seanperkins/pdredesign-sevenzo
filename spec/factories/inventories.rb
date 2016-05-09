@@ -2,13 +2,16 @@
 #
 # Table name: inventories
 #
-#  id          :integer          not null, primary key
-#  name        :text             not null
-#  deadline    :datetime         not null
-#  district_id :integer          not null
-#  created_at  :datetime         not null
-#  updated_at  :datetime         not null
-#  owner_id    :integer
+#  id                          :integer          not null, primary key
+#  name                        :text             not null
+#  deadline                    :datetime         not null
+#  district_id                 :integer          not null
+#  created_at                  :datetime         not null
+#  updated_at                  :datetime         not null
+#  owner_id                    :integer
+#  message                     :text
+#  assigned_at                 :datetime
+#  total_participant_responses :integer          default(0), not null
 #
 
 FactoryGirl.define do
@@ -45,6 +48,36 @@ FactoryGirl.define do
 
       after(:create) do |inventory, evaluator|
         FactoryGirl.create_list(:inventory_member, evaluator.participants, :as_participant, inventory: inventory)
+      end
+    end
+
+    trait :with_product_entries do
+      transient do
+        product_entries 1
+      end
+
+      after(:create) do |inventory, evaluator|
+        FactoryGirl.create_list(:product_entry, evaluator.product_entries, inventory: inventory)
+      end
+    end
+
+    trait :with_data_entries do
+      transient do
+        data_entries 1
+      end
+
+      after(:create) do |inventory, evaluator|
+        FactoryGirl.create_list(:data_entry, evaluator.data_entries, inventory: inventory)
+      end
+    end
+
+    trait :with_analysis do
+      transient do
+        analysis 1
+      end
+
+      after(:create) do |inventory, evaluator|
+        FactoryGirl.create_list(:analysis, evaluator.analysis, inventory: inventory)
       end
     end
   end

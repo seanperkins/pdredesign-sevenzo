@@ -46,7 +46,7 @@
     };
 
     vm.performPermissionsAction = function(action, id, email) {
-      var params = {assessment_id: vm.assessmentId, id: id};
+      var params = {assessment_id: $stateParams.id, id: id};
 
       action(params, {email: email})
           .$promise

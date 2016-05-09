@@ -8,7 +8,8 @@
       restrict: 'E',
       transclude: true,
       scope: {
-        isAssessment: '@',
+        context: '@',
+        role: '@',
         entity: '='
       },
       templateUrl: 'client/common_list/entry_view.html',

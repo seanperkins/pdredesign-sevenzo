@@ -19,6 +19,12 @@ PDRClient.controller('InvitationCtrl', [
         sessionStorage.removeItem('invitation_message');
       }
 
+      var invitation_message = sessionStorage.getItem('invitation_message');
+      if(invitation_message) {
+        $scope.alerts.push({type: 'info', msg: invitation_message});
+        sessionStorage.removeItem('invitation_message');
+      }
+
       $scope.showError = function(msg) {
         $scope.alerts.push({type: 'danger', msg: msg});
       };
@@ -52,8 +58,13 @@ PDRClient.controller('InvitationCtrl', [
               .authenticate($scope.inviteObject.email, $scope.inviteObject.password)
               .then(function(){
                 $rootScope.$broadcast('session_updated');
-                SessionService
-                  .syncAndRedirect('/assessments/' + $scope.invitedUser.assessment_id + '/responses');
+                var redirectUrl = null;
+                if($scope.invitedUser.inventory_id) {
+                  redirectUrl = '/inventories/' + $scope.invitedUser.inventory_id + '/edit';
+                } else {
+                  redirectUrl = '/assessments/' + $scope.invitedUser.assessment_id + '/responses';
+                }
+                SessionService.syncAndRedirect(redirectUrl);
               });
           }, function(response){
             $scope.populateErrors(response.data.errors)

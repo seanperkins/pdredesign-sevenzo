@@ -1,20 +1,33 @@
 (function() {
   'use strict';
 
-  angular.module('PDRClient').controller('AddInventoryUsersCtrl', AddInventoryUsersCtrl);
+  angular.module('PDRClient')
+      .controller('AddInventoryUsersCtrl', AddInventoryUsersCtrl);
 
-  AddInventoryUsersCtrl.$inject = ['$scope', 'InventoryInvitable', 'InventoryParticipant'];
-  function AddInventoryUsersCtrl($scope, InventoryInvitable, InventoryParticipant) {
+  AddInventoryUsersCtrl.$inject = [
+    '$scope',
+    'CreateService'
+  ];
+
+  function AddInventoryUsersCtrl($scope, CreateService) {
     var vm = this;
+
     vm.loadInvitables = function() {
-      vm.invitables = InventoryInvitable.list({ inventory_id: $scope.inventoryId });
+      CreateService.updateInvitableParticipantList()
+          .then(function(result) {
+            vm.invitables = result;
+            $scope.$emit('update_participants');
+          });
     };
-    vm.loadInvitables();
 
     vm.addUser = function(user) {
-      InventoryParticipant.create({ inventory_id: $scope.inventoryId }, { user_id: user.id }).$promise.then(function() {
-        vm.loadInvitables();
-      });
+      CreateService.createParticipant(user)
+          .then(function() {
+            vm.loadInvitables();
+            $scope.$emit('close-add-participants');
+          });
     };
+
+    vm.loadInvitables();
   }
 })();

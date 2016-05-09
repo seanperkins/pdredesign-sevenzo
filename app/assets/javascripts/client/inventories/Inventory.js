@@ -13,10 +13,37 @@
     var methodOptions = {
       'query': {
         method: 'GET',
-        isArray: false
+        isArray: true
       },
       'create': {
         method: 'POST'
+      },
+      'save': {
+        method: 'PUT'
+      },
+      'districtProductEntries': {
+        method: 'GET',
+        url: UrlService.url('inventories/:inventory_id/district_product_entries')
+      },
+      'markComplete': {
+        method: 'PATCH',
+        params: {
+          inventory_id: '@inventory_id'
+        }
+      },
+      'saveResponse': {
+        method: 'POST',
+        url: UrlService.url('inventories/:inventory_id/save_response'),
+        params: {
+          inventory_id: '@inventory_id'
+        }
+      },
+      'participantResponse': {
+        method: 'GET',
+        url: UrlService.url('inventories/:inventory_id/participant_response'),
+        params: {
+          inventory_id: '@inventory_id'
+        }
       }
     };
 

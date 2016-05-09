@@ -1,10 +1,10 @@
 class V1::LearningQuestionsController < ApplicationController
   before_action :authenticate_user!
-  before_action :fetch_assessment, only: [:index, :create, :exists]
+  before_action :fetch_tool, only: [:index, :create, :exists]
 
   def index
-    if assessment_includes_current_user?
-      @learning_questions = LearningQuestion.where(assessment: @assessment).order(created_at: :asc)
+    if tool_includes_current_user?
+      @learning_questions = LearningQuestion.where(tool: @tool).order(created_at: :asc)
       render 'v1/learning_questions/index'
     else
       @errors = 'You are not a part of this assessment, so you cannot see any learning questions.'
@@ -13,9 +13,9 @@ class V1::LearningQuestionsController < ApplicationController
   end
 
   def create
-    if assessment_includes_current_user?
+    if tool_includes_current_user?
       @learning_question = LearningQuestion.new(learning_question_params)
-      @learning_question.assessment = @assessment
+      @learning_question.tool = @tool
       @learning_question.user = current_user
       if @learning_question.save
         render 'v1/learning_questions/show'
@@ -56,7 +56,7 @@ class V1::LearningQuestionsController < ApplicationController
   end
 
   def exists
-    has_created_question = LearningQuestion.where(user: current_user, assessment: @assessment).exists?
+    has_created_question = LearningQuestion.where(user: current_user, tool: @tool).exists?
     if has_created_question
       render nothing: true, status: :ok
     else
@@ -69,11 +69,24 @@ class V1::LearningQuestionsController < ApplicationController
     params.require(:learning_question).permit(:body)
   end
 
-  def fetch_assessment
-    @assessment = Assessment.find(params[:assessment_id])
+  def fetch_tool
+    if params[:analysis_id]
+      @tool = Analysis.find(params[:analysis_id])
+    elsif params[:inventory_id]
+      @tool = Inventory.find(params[:inventory_id])
+    elsif params[:assessment_id]
+      @tool = Assessment.find(params[:assessment_id])
+    end
   end
 
-  def assessment_includes_current_user?
-    @assessment.user == current_user || @assessment.users.include?(current_user)
+  def tool_includes_current_user?
+    case @tool.class.to_s
+      when 'Assessment'
+        @tool.user == current_user || @tool.users.include?(current_user)
+      when 'Inventory'
+        @tool.member?(user: current_user)
+      when 'Analysis'
+        @tool.inventory.member?(user: current_user)
+    end
   end
 end

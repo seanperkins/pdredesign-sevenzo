@@ -1,6 +1,6 @@
 <div class='col-md-10'>
   <h2>Participants</h2>
-  <p ng-if="createParticipants.isNetworkPartner()" class='section-subheader'>Recommend the Readiness Assessment to
+  <p ng-if="createParticipants.isNetworkPartner()" class='section-subheader'>Recommend the {{ createParticipants.displayToolType() }} to
     district staff. We
     recommend inviting 1-2 representatives from different roles and functions involved with PD, including: Teaching
     & Learning, Human Resources, Curriculum & Instruction, Data & Accountability, Finance, IT, teachers, and
@@ -8,7 +8,7 @@
 
   <p ng-if="!createParticipants.isNetworkPartner()" class='section-subheader'>Invite a team of colleagues from your
     district to
-    participate in the assessment. We recommend inviting 1-2 representatives from different roles and functions
+    participate in the {{ createParticipants.displayToolType() }}. We recommend inviting 1-2 representatives from different roles and functions
     involved with PD, including: Teaching & Learning, Human Resources, Curriculum & Instruction, Data &
     Accountability, Finance, IT, teachers, and principals. You may add participants later on from the dashboard.</p>
 
@@ -41,13 +41,19 @@
   </div>
   <div class="row">
     <div class="col-lg-12">
-      <add-new-participants></add-new-participants>
+      <add-new-participants ng-if="createParticipants.currentContext === 'assessment'"></add-new-participants>
+      <add-inventory-users-link ng-if="createParticipants.currentContext === 'inventory'"></add-inventory-users-link>
+      <add-analysis-users-link ng-if="createParticipants.currentContext === 'analysis'"></add-analysis-users-link>
     </div>
     <div class="col-lg-12">
-      <invite-user></invite-user>
+      <invite-user role="{{ role }}" ng-if="createParticipants.currentContext === 'assessment'"></invite-user>
+      <invite-inventory-user-link role="{{ role }}" ng-if="createParticipants.currentContext === 'inventory'"></invite-inventory-user-link>
+      <invite-analysis-user-link role="{{ role }}" ng-if="createParticipants.currentContext === 'analysis'"></invite-analysis-user-link>
     </div>
     <div class="col-lg-12">
-      <manage-participants></manage-participants>
+      <manage-participants ng-if="createParticipants.currentContext === 'assessment'"></manage-participants>
+      <manage-inventory-permissions-link ng-if="createParticipants.currentContext === 'inventory'"></manage-inventory-permissions-link>
+      <manage-analysis-permissions-link ng-if="createParticipants.currentContext === 'analysis'"></manage-analysis-permissions-link>
     </div>
   </div>
 </div>

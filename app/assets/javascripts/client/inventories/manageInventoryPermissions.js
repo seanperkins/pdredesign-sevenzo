@@ -6,9 +6,7 @@
   function manageInventoryPermissions() {
     return {
       restrict: 'E',
-      scope: {
-        inventoryId: '='
-      },
+      scope: {},
       templateUrl: 'client/inventories/manage_inventory_permissions.html',
       controller: 'ManageInventoryPermissionsCtrl',
       controllerAs: 'manageInventoryPermissions',

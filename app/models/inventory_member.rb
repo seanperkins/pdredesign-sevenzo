@@ -9,12 +9,21 @@
 #  updated_at   :datetime
 #  invited_at   :datetime
 #  role         :string
+#  reminded_at  :datetime
 #
 
 class InventoryMember < ActiveRecord::Base
   belongs_to :user
   belongs_to :inventory
 
+  has_one :inventory_response
+
   validates_presence_of :user
   validates_presence_of :inventory
+
+  delegate :network_partner?, to: :user
+
+  def has_responded?
+    inventory_response && inventory_response.submitted_at.present?
+  end
 end

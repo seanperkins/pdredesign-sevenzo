@@ -299,7 +299,7 @@
       });
     });
 
-    describe('$on: add_assessment_alert', function() {
+    describe('$on: add-assign-alert', function() {
       var $rootScope;
       beforeEach(function() {
         inject(function(_$rootScope_) {
@@ -322,7 +322,7 @@
       describe('when the data type is success', function() {
         it('invokes success with the right parameters', function() {
           spyOn($scope, 'success');
-          $rootScope.$broadcast('add_assessment_alert', {type: 'success', msg: 'This is a success!'});
+          $rootScope.$broadcast('add-assign-alert', {type: 'success', msg: 'This is a success!'});
           expect($scope.success).toHaveBeenCalledWith('This is a success!');
         });
       });
@@ -330,7 +330,7 @@
       describe('when the data type is danger', function() {
         it('invokes error with the right parameters', function() {
           spyOn($scope, 'error');
-          $rootScope.$broadcast('add_assessment_alert', {type: 'danger', msg: 'This is a warning!'});
+          $rootScope.$broadcast('add-assign-alert', {type: 'danger', msg: 'This is a warning!'});
           expect($scope.error).toHaveBeenCalledWith('This is a warning!');
         });
       });
@@ -339,7 +339,7 @@
         it('invokes no methods', function() {
           spyOn($scope, 'success');
           spyOn($scope, 'error');
-          $rootScope.$broadcast('add_assessment_alert', {type: 'error', msg: 'This really will not be invoked'});
+          $rootScope.$broadcast('add-assign-alert', {type: 'error', msg: 'This really will not be invoked'});
           expect($scope.success).not.toHaveBeenCalled();
           expect($scope.error).not.toHaveBeenCalled();
         });

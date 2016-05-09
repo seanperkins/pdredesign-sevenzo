@@ -1,0 +1,41 @@
+<table class="row">
+  <tr>
+    <td class="wrapper last">
+      <table class="twelve columns">
+        <tr>
+          <td class="left-text-pad">
+            <h2>Inventory Reminder</h2>
+            <br>
+            <p class="lead">
+              Hi <b><%= @participant_name %></b>, your response on <%= @inventory_name %> is
+              due on <b><%= @deadline %></b>.
+            </p>
+            <br>
+            <br>
+            <p class="lead">
+              <%= @message %>
+            </p>
+            <br>
+            <br>
+            <p class="lead">
+              <center>
+                <a href="<%= @inventory_link %>" target="_blank" class="button">View Inventory</a>
+              </center>
+            </p>
+            <br>
+            <br>
+            <p class="lead">
+              <b><%= @facilitator_name %></b> is waiting for you to complete your response on
+              <%= @inventory_name %> for <%= @district_name %>.
+            </p>
+            <br>
+            <br>
+          </td>
+          <td class="expander"></td>
+        </tr>
+      </table>
+
+    </td>
+  </tr>
+</table>
+

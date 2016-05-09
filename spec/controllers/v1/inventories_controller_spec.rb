@@ -29,19 +29,23 @@ describe V1::InventoriesController do
         end
 
         it 'pulls back an empty list' do
-          expect(json['inventories'].size).to eq 0
+          expect(json.size).to eq 0
         end
       end
 
       context 'when there are records' do
         context 'when they belong to the current user' do
 
-          let(:inventory) {
-            create(:inventory)
+          let(:district) {
+            create(:district)
           }
 
           let(:user) {
-            inventory.owner
+            create(:user, districts: [district])
+          }
+
+          let!(:inventory) {
+            create(:inventory, owner: user, district: district)
           }
 
           before(:each) do
@@ -50,11 +54,11 @@ describe V1::InventoriesController do
           end
 
           it 'returns an array of size 1' do
-            expect(json['inventories'].size).to eq 1
+            expect(json.size).to eq 1
           end
 
           it 'contains the single entry' do
-            expect(json['inventories'][0]['id']).to eq inventory.id
+            expect(json[0]['id']).to eq inventory.id
           end
         end
 
@@ -77,7 +81,85 @@ describe V1::InventoriesController do
             get :index, format: :json
           end
           it 'pulls back an empty list' do
-            expect(json['inventories'].size).to eq 0
+            expect(json.size).to eq 0
+          end
+        end
+      end
+    end
+  end
+
+  describe 'GET #show' do
+    context 'anonymous user' do
+      context 'non existing inventory' do
+        before(:each) do
+          get :show, id: 1, format: :json
+        end
+
+        it { expect(response).to have_http_status(:not_found) }
+      end
+
+      context 'existing inventory' do
+        let(:inventory) { FactoryGirl.create(:inventory) }
+
+        context 'by id' do
+          before(:each) do
+            get :show, id: inventory.id, format: :json
+          end
+          it { expect(response).to have_http_status(:unauthorized) }
+        end
+
+        context 'by share_token' do
+          before(:each) do
+            get :show, id: inventory.share_token, format: :json
+          end
+          it { expect(response).to have_http_status(:ok) }
+        end
+      end
+    end
+
+    context 'authenticated user' do
+      context 'non existing inventory' do
+        let(:user) { FactoryGirl.create(:user) }
+
+        before(:each) do
+          sign_in user
+          get :show, id: 1, format: :json
+        end
+
+        it { expect(response).to have_http_status(:not_found) }
+      end
+
+      context 'existing inventory' do
+        context 'member user' do
+          let(:inventory) { FactoryGirl.create(:inventory) }
+          let(:user) { inventory.owner }
+
+          before(:each) do
+            sign_in user
+            get :show, id: inventory.id, format: :json
+          end
+
+          it 'renders inventory identifier' do
+            expect(json['id']).to eq inventory.id
+          end
+
+          it 'renders inventory name' do
+            expect(json['name']).to eq inventory.name
+          end
+        end
+
+        context 'non member user' do
+          let(:user) { create(:user) }
+          let(:other_user) { create(:user) }
+          let(:inventory) { FactoryGirl.create(:inventory, owner: other_user) }
+
+          before(:each) do
+            sign_in user
+            get :show, id: inventory.id, format: :json
+          end
+
+          it 'forbidden' do
+            expect(response).to have_http_status(:forbidden)
           end
         end
       end
@@ -167,7 +249,7 @@ describe V1::InventoriesController do
         end
 
         it { expect(json['id']).to_not be_nil }
-        it { expect(Time.parse(json['deadline'])).to eq DateTime.strptime(deadline, '%m/%d/%Y') }
+        it { expect(Time.parse(json['due_date'])).to eq DateTime.strptime(deadline, '%m/%d/%Y') }
         it { expect(json['district_id']).to eq district.id }
         it { expect(json['owner_id']).to eq user.id }
         it { expect(json['name']).to_not be_nil }

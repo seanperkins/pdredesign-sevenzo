@@ -16,12 +16,34 @@
     vm.user = SessionService.getCurrentUser();
     vm.saving = false;
 
-    vm.save = function(assessment, assign) {
-      CreateService.saveAssessment(assessment, assign);
+    vm.save = function(entity, assign) {
+      if(CreateService.context === 'assessment') {
+        CreateService.saveAssessment(entity, assign);
+      } else if(CreateService.context === 'inventory') {
+        CreateService.saveInventory(entity, assign);
+      } else if(CreateService.context === 'analysis') {
+        CreateService.saveAnalysis(entity, assign);
+      }
     };
 
-    vm.assignAndSave = function(assessment) {
-      CreateService.assignAndSaveAssessment(assessment);
+    vm.assignAndSave = function(entity) {
+      if(CreateService.context === 'assessment') {
+        CreateService.assignAndSaveAssessment(entity);
+      } else if(CreateService.context === 'inventory') {
+        CreateService.assignAndSaveInventory(entity);
+      } else if(CreateService.context === 'analysis') {
+        CreateService.assignAndSaveAnalysis(entity);
+      }
+    };
+
+    vm.getToolName = function() {
+      if (CreateService.context === 'assessment') {
+        return 'assessment';
+      } else if (CreateService.context === 'inventory') {
+        return 'inventory';
+      } else if (CreateService.context === 'analysis') {
+        return 'analysis';
+      }
     };
 
     vm.formattedDate = function(date) {

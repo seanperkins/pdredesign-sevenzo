@@ -4,10 +4,27 @@ json.owner_id inventory.owner_id
 json.facilitator do
   json.partial! 'v1/shared/user', user: inventory.owner
 end
-json.deadline inventory.deadline
+json.is_facilitator inventory.facilitator?(user: current_user)
+json.due_date inventory.deadline
 json.district_id inventory.district_id
 json.district_name inventory.district.name
 json.created_at inventory.created_at
 json.updated_at inventory.updated_at
-json.status 'draft'
-json.has_access inventory.member?(user: current_user) || inventory.owner == current_user
+json.status inventory.status
+json.consensus do
+  json.is_completed inventory.is_completed
+end
+json.percent_completed inventory.percent_completed
+json.completed_responses inventory.total_participant_responses
+json.has_access inventory.member?(user: current_user) || inventory.owner == current_user if current_user
+json.participant_count inventory.participants.count
+json.message inventory.message || default_inventory_message if current_user
+json.messages @messages, :id, :category, :teaser, :sent_at do |message|
+  json.id       message.id
+  json.category message.category
+  json.teaser   sanitize(message.teaser, tags: [])
+  json.sent_at  message.sent_at
+end
+json.share_token inventory.share_token
+json.analysis_count inventory.analyses.count
+json.analysis inventory.current_analysis

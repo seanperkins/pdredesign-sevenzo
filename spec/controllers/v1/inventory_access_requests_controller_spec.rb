@@ -37,7 +37,7 @@ describe V1::InventoryAccessRequestsController do
         before(:each) do 
           post :create,
             inventory_id: inventory.id,
-            role: 'facilitator', format: :json
+            roles: ['facilitator'], format: :json
         end
 
         it { expect(response).to have_http_status(:success) }

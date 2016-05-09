@@ -3,7 +3,7 @@ class InventoryAccessRequestMailer < ApplicationMailer
     @access_link = access_link(request.token)
     @requestor_name = request.user.name
     @role = request.role
-    @nventory_name = request.inventory.name
+    @inventory_name = request.inventory.name
     mail(to: email)
   end
 

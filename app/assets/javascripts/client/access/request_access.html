@@ -1,0 +1,24 @@
+<div class="request-access-modal">
+  <div class="modal-header">
+    <button ng-click="close()" type="button" class="close" aria-hidden="true">×</button>
+    <h2>Request Access</h2>
+  </div>
+  <div class="modal-body">
+    <span class="question-holder">Select the role you would like to request in this assessment.</span>
+    <permissions-info placement="right"></permissions-info>
+
+    <div class="btn-group">
+      <span class="btn btn-primary" ng-model="accessLevel" btn-radio="'facilitator'">
+        <i class="fa fa-bullhorn"></i><span>Facilitator</span>
+      </span>
+      <span class="btn btn-primary" ng-model="accessLevel" btn-radio="'participant'">
+        <i class="fa fa-edit"></i><span>Participant</span>
+      </span>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button ng-click="submitAccessRequest(accessLevel)" class="btn btn-success">
+      <span>Done</span>
+    </button>
+  </div>
+</div>

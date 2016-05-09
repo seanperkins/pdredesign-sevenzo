@@ -12,7 +12,7 @@
     var vm = this;
 
     vm.user = SessionService.getCurrentUser();
-    vm.inventories = inventory_result.inventories;
+    vm.inventories = inventory_result;
 
   }
 })();

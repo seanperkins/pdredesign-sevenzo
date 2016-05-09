@@ -14,7 +14,7 @@ describe ReminderNotificationWorker do
       .and_return(double)
 
     expect(double).to receive(:deliver_now).twice
-    subject.new.perform(assessment.id, 'the message')
+    subject.new.perform(assessment.id, assessment.class.to_s, 'the message')
   end
 
   it 'does not send an email to users that have completed a response' do
@@ -29,12 +29,12 @@ describe ReminderNotificationWorker do
       .exactly(1).times
       .with(anything, anything, @participant2).and_return(double)
 
-    subject.new.perform(assessment.id, 'the message')
+    subject.new.perform(assessment.id, assessment.class.to_s, 'the message')
 
   end
 
   it 'sets the :reminded_at field' do
-    subject.new.perform(assessment.id, 'the message')
+    subject.new.perform(assessment.id, assessment.class.to_s, 'the message')
     @participant.update(reminded_at: nil)
     @participant2.update(reminded_at: nil)
 
@@ -46,13 +46,11 @@ describe ReminderNotificationWorker do
   end
 
   it 'adds a message entry for the assessment' do
-    subject.new.perform(assessment.id, 'the message')
+    subject.new.perform(assessment.id, assessment.class.to_s, 'the message')
     message = Message
-      .find_by(assessment_id: assessment.id,
+      .find_by(tool_id: assessment.id,
                content: 'the message')
 
     expect(message).not_to be_nil
   end
-
-
 end

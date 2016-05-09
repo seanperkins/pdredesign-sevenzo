@@ -33,7 +33,7 @@ class V1::AssessmentsController < ApplicationController
     @assessment.district_id = current_user.district_ids.first
     @assessment.rubric_id   = pick_rubric unless @assessment.rubric_id
 
-    if(assessment_create_params[:district_id])
+    if assessment_create_params[:district_id]
       @assessment.district_id = assessment_create_params[:district_id]
     end
 
@@ -58,7 +58,7 @@ class V1::AssessmentsController < ApplicationController
   end
 
   def pick_rubric
-    Rubric.where.not(version: nil).order(version: :desc).first.id
+    Rubric.assessment_driven.where.not(version: nil).order(version: :desc).first.id
   end
 
   def user_role

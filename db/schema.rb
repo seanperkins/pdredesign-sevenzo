@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160401210935) do
+ActiveRecord::Schema.define(version: 20160427221954) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -25,6 +25,45 @@ ActiveRecord::Schema.define(version: 20160401210935) do
     t.datetime "updated_at"
     t.string   "token"
   end
+
+  create_table "analyses", force: :cascade do |t|
+    t.text     "name"
+    t.datetime "deadline"
+    t.integer  "inventory_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.text     "message"
+    t.datetime "assigned_at"
+    t.integer  "rubric_id"
+  end
+
+  add_index "analyses", ["inventory_id"], name: "index_analyses_on_inventory_id", using: :btree
+
+  create_table "analysis_invitations", force: :cascade do |t|
+    t.string  "first_name"
+    t.string  "last_name"
+    t.string  "email"
+    t.string  "team_role"
+    t.string  "role"
+    t.string  "token"
+    t.integer "analysis_id", null: false
+    t.integer "user_id"
+  end
+
+  add_index "analysis_invitations", ["analysis_id"], name: "index_analysis_invitations_on_analysis_id", using: :btree
+  add_index "analysis_invitations", ["user_id"], name: "index_analysis_invitations_on_user_id", using: :btree
+
+  create_table "analysis_members", force: :cascade do |t|
+    t.integer  "analysis_id"
+    t.integer  "user_id"
+    t.string   "role"
+    t.datetime "invited_at"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "analysis_members", ["analysis_id"], name: "index_analysis_members_on_analysis_id", using: :btree
+  add_index "analysis_members", ["user_id"], name: "index_analysis_members_on_user_id", using: :btree
 
   create_table "answers", force: :cascade do |t|
     t.integer  "value"
@@ -102,6 +141,7 @@ ActiveRecord::Schema.define(version: 20160401210935) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "inventory_id"
+    t.text     "name"
   end
 
   add_index "data_entries", ["inventory_id"], name: "index_data_entries_on_inventory_id", using: :btree
@@ -216,7 +256,7 @@ ActiveRecord::Schema.define(version: 20160401210935) do
   end
 
   create_table "general_data_questions", force: :cascade do |t|
-    t.text     "subcategory"
+    t.text     "data_type"
     t.text     "point_of_contact_name"
     t.text     "point_of_contact_department"
     t.text     "data_capture"
@@ -233,8 +273,8 @@ ActiveRecord::Schema.define(version: 20160401210935) do
     t.text     "point_of_contact_name"
     t.text     "point_of_contact_department"
     t.text     "pricing_structure"
-    t.decimal  "price",                       precision: 9, scale: 2
-    t.text     "data_type",                                           default: [], array: true
+    t.integer  "price_in_cents"
+    t.text     "data_type",                   default: [], array: true
     t.text     "purpose"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -244,12 +284,16 @@ ActiveRecord::Schema.define(version: 20160401210935) do
   add_index "general_inventory_questions", ["product_entry_id"], name: "index_general_inventory_questions_on_product_entry_id", using: :btree
 
   create_table "inventories", force: :cascade do |t|
-    t.text     "name",        null: false
-    t.datetime "deadline",    null: false
-    t.integer  "district_id", null: false
-    t.datetime "created_at",  null: false
-    t.datetime "updated_at",  null: false
+    t.text     "name",                                    null: false
+    t.datetime "deadline",                                null: false
+    t.integer  "district_id",                             null: false
+    t.datetime "created_at",                              null: false
+    t.datetime "updated_at",                              null: false
     t.integer  "owner_id"
+    t.text     "message"
+    t.datetime "assigned_at"
+    t.integer  "total_participant_responses", default: 0, null: false
+    t.string   "share_token"
   end
 
   create_table "inventory_access_requests", force: :cascade do |t|
@@ -282,10 +326,20 @@ ActiveRecord::Schema.define(version: 20160401210935) do
     t.datetime "updated_at"
     t.datetime "invited_at"
     t.string   "role"
+    t.datetime "reminded_at"
   end
 
   add_index "inventory_members", ["inventory_id"], name: "index_inventory_members_on_inventory_id", using: :btree
   add_index "inventory_members", ["user_id"], name: "index_inventory_members_on_user_id", using: :btree
+
+  create_table "inventory_responses", force: :cascade do |t|
+    t.integer  "inventory_member_id", null: false
+    t.datetime "submitted_at"
+    t.datetime "created_at",          null: false
+    t.datetime "updated_at",          null: false
+  end
+
+  add_index "inventory_responses", ["inventory_member_id"], name: "index_inventory_responses_on_inventory_member_id", using: :btree
 
   create_table "key_question_points", force: :cascade do |t|
     t.integer  "key_question_question_id"
@@ -302,26 +356,31 @@ ActiveRecord::Schema.define(version: 20160401210935) do
   end
 
   create_table "learning_questions", force: :cascade do |t|
-    t.integer  "assessment_id"
+    t.integer  "tool_id"
     t.integer  "user_id"
     t.text     "body"
-    t.datetime "created_at",    null: false
-    t.datetime "updated_at",    null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string   "tool_type"
   end
 
-  add_index "learning_questions", ["assessment_id"], name: "index_learning_questions_on_assessment_id", using: :btree
   add_index "learning_questions", ["created_at"], name: "index_learning_questions_on_created_at", using: :btree
+  add_index "learning_questions", ["tool_id"], name: "index_learning_questions_on_tool_id", using: :btree
+  add_index "learning_questions", ["tool_type", "tool_id"], name: "index_learning_questions_on_tool_type_and_tool_id", using: :btree
 
   create_table "messages", force: :cascade do |t|
     t.text     "content"
     t.string   "category",      limit: 255
     t.datetime "sent_at"
-    t.integer  "assessment_id"
+    t.integer  "tool_id"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "mandrill_id",   limit: 255
     t.text     "mandrill_html"
+    t.string   "tool_type"
   end
+
+  add_index "messages", ["tool_type", "tool_id"], name: "index_messages_on_tool_type_and_tool_id", using: :btree
 
   create_table "network_partners", force: :cascade do |t|
     t.string  "first_name",   limit: 255
@@ -452,11 +511,13 @@ ActiveRecord::Schema.define(version: 20160401210935) do
   create_table "rubrics", force: :cascade do |t|
     t.string   "name",       limit: 255
     t.decimal  "version"
-    t.integer  "user_id"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.boolean  "enabled"
+    t.string   "tool_type"
   end
+
+  add_index "rubrics", ["tool_type"], name: "index_rubrics_on_tool_type", using: :btree
 
   create_table "scores", force: :cascade do |t|
     t.integer  "value"
@@ -479,10 +540,22 @@ ActiveRecord::Schema.define(version: 20160401210935) do
   add_index "sessions", ["session_id"], name: "index_sessions_on_session_id", unique: true, using: :btree
   add_index "sessions", ["updated_at"], name: "index_sessions_on_updated_at", using: :btree
 
+  create_table "supporting_inventory_responses", force: :cascade do |t|
+    t.integer  "score_id"
+    t.integer  "product_entries",        default: [], null: false, array: true
+    t.integer  "data_entries",           default: [], null: false, array: true
+    t.text     "product_entry_evidence"
+    t.text     "data_entry_evidence"
+    t.datetime "created_at",                          null: false
+    t.datetime "updated_at",                          null: false
+  end
+
+  add_index "supporting_inventory_responses", ["score_id"], name: "index_supporting_inventory_responses_on_score_id", using: :btree
+
   create_table "technical_questions", force: :cascade do |t|
-    t.text     "platform",         default: [], array: true
+    t.text     "platforms",        default: [], array: true
     t.text     "hosting"
-    t.text     "connectivity"
+    t.integer  "connectivity",     default: [], array: true
     t.text     "single_sign_on"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -568,6 +641,11 @@ ActiveRecord::Schema.define(version: 20160401210935) do
   add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree
   add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
 
+  add_foreign_key "analyses", "inventories"
+  add_foreign_key "analysis_invitations", "analyses", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "analysis_invitations", "users", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "analysis_members", "analyses"
+  add_foreign_key "analysis_members", "users"
   add_foreign_key "inventory_access_requests", "inventories", on_update: :cascade, on_delete: :cascade
   add_foreign_key "inventory_access_requests", "users", on_update: :cascade, on_delete: :cascade
   add_foreign_key "inventory_invitations", "inventories", on_update: :cascade, on_delete: :cascade

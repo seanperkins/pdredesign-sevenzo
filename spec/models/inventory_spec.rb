@@ -2,13 +2,16 @@
 #
 # Table name: inventories
 #
-#  id          :integer          not null, primary key
-#  name        :text             not null
-#  deadline    :datetime         not null
-#  district_id :integer          not null
-#  created_at  :datetime         not null
-#  updated_at  :datetime         not null
-#  owner_id    :integer
+#  id                          :integer          not null, primary key
+#  name                        :text             not null
+#  deadline                    :datetime         not null
+#  district_id                 :integer          not null
+#  created_at                  :datetime         not null
+#  updated_at                  :datetime         not null
+#  owner_id                    :integer
+#  message                     :text
+#  assigned_at                 :datetime
+#  total_participant_responses :integer          default(0), not null
 #
 
 require 'spec_helper'
@@ -19,6 +22,8 @@ describe Inventory do
   it { is_expected.to have_many(:access_requests) }
   it { is_expected.to have_many(:facilitators) }
   it { is_expected.to have_many(:participants) }
+  it { is_expected.to have_many(:messages) }
+
   it { is_expected.to belong_to(:district) }
   it { is_expected.to belong_to(:owner) }
 
@@ -61,6 +66,23 @@ describe Inventory do
     end
   end
 
+  describe '#share_token' do
+    let(:inventory) { FactoryGirl.create(:inventory) }
+    let!(:original_share_token) { inventory.share_token }
+    it do
+      expect(inventory.share_token).not_to be_empty
+    end
+
+    describe 'when saved again' do 
+      before do
+        inventory.save!
+      end
+      it do
+        expect(inventory.share_token).to eq original_share_token
+      end
+    end
+  end
+
   describe '#owner?' do
     context 'owner is current user' do
       let(:inventory) { FactoryGirl.create(:inventory) }
@@ -98,5 +120,12 @@ describe Inventory do
         expect(inventory.member?(user: user)).to be false
       end
     end
+  end
+
+  describe '#current_analysis' do
+    let(:inventory) { FactoryGirl.create(:inventory) }
+    let!(:last_analysis) { FactoryGirl.create_list(:analysis, 6, inventory: inventory).last }
+
+    it { expect(inventory.current_analysis).to eq last_analysis }
   end
 end

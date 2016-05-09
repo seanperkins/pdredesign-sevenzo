@@ -20,8 +20,7 @@ module Link
     def target
       return Link::Facilitator if facilitator?(user)
       return Link::Participant if participant?(user)
-      return Link::Partner     if network_partner? && !viewer?(user)
-      Link::Viewer
+      Link::Partner
     end
   end
 end

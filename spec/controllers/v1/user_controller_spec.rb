@@ -191,6 +191,35 @@ describe V1::UserController do
       post_create_user
       assert_response 422
     end
+    
+    it 'returns token to user invite when trying to signup with existing assessment invitation' do
+      create_magic_assessments
+      user.update(email: 'kim@gov.nk')
+      invitation = UserInvitation.create!(email: 'kim@gov.nk',
+                            assessment: @assessment_with_participants,
+                            first_name: 'Kim',
+                            last_name: 'Possible',
+                            team_role: 'role;')
+
+      post_create_user(first_name: 'New')
+
+      expect(response).to have_http_status(:unprocessable_entity)
+      expect(json['invitation_token']).to eq(invitation.token)
+    end
+
+    it 'returns token to user invite when trying to signup with existing inventory invitation' do
+      inventory = FactoryGirl.create(:inventory)
+      invitation = InventoryInvitation.create!(email: 'kim@gov.nk',
+                            inventory: inventory,
+                            first_name: 'Kim',
+                            last_name: 'Possible',
+                            team_role: 'role;')
+
+      post_create_user(first_name: 'New')
+
+      expect(response).to have_http_status(:unprocessable_entity)
+      expect(json['invitation_token']).to eq(invitation.token)
+    end 
   end
 
   context '#show' do

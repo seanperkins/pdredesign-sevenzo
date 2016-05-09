@@ -3,9 +3,9 @@
 # Table name: technical_questions
 #
 #  id               :integer          not null, primary key
-#  platform         :text             default([]), is an Array
+#  platforms        :text             default([]), is an Array
 #  hosting          :text
-#  connectivity     :text
+#  connectivity     :integer          default([]), is an Array
 #  single_sign_on   :text
 #  created_at       :datetime
 #  updated_at       :datetime
@@ -16,7 +16,7 @@ class TechnicalQuestion < ActiveRecord::Base
 
   belongs_to :product_entry
 
-  enum platform: {
+  enum platform_option: {
       browser: 'Browser Based',
       iphone: 'Native iPhone App',
       ipad: 'Native iPad App',
@@ -29,14 +29,18 @@ class TechnicalQuestion < ActiveRecord::Base
       custom: 'Custom Hardware'
   }
 
-  enum hosting: {
+  enum hosting_option: {
     onsite: 'Onsite',
     offsite: 'Offsite'
   }
 
-  enum single_sign_on: {
+  enum single_sign_on_option: {
       yes: 'Yes',
       no: 'No'
   }
+
+  validates :platforms, array_enum: { enum: TechnicalQuestion.platform_options, allow_wildcard: true }
+  validates :hosting, inclusion: { in: TechnicalQuestion.hosting_options.values, message: "'%{value}' not permissible" }, allow_blank: true
+  validates :single_sign_on, inclusion: { in: TechnicalQuestion.single_sign_on_options.values, message: "'%{value}' not permissible" }, allow_blank: true
 
 end

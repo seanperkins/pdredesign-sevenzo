@@ -13,7 +13,7 @@ class V1::UserController < ApplicationController
       organization_ids: extract_ids_from_params(:organization_ids)
     ))
 
-    user_invitation = UserInvitation.find_by(email: user_params[:email])
+    user_invitation = [UserInvitation, InventoryInvitation].map{|i| i.find_by(email: user_params[:email])}.compact.first
     if user_invitation.present?
       @user.errors.add(:base, "It seems you have already been invited. Please continue your registration here.")
       render json: @user.errors.to_h.merge(

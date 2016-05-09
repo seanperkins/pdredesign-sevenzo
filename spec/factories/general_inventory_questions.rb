@@ -8,7 +8,7 @@
 #  point_of_contact_name       :text
 #  point_of_contact_department :text
 #  pricing_structure           :text
-#  price                       :decimal(9, 2)
+#  price_in_cents              :integer
 #  data_type                   :text             default([]), is an Array
 #  purpose                     :text
 #  created_at                  :datetime
@@ -17,5 +17,7 @@
 #
 
 FactoryGirl.define do
-  factory :general_inventory_question
+  factory :general_inventory_question do
+    product_name { Faker::Lorem.word }
+  end
 end

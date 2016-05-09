@@ -258,30 +258,5 @@ describe V1::ResponsesController do
 
       assert_response :forbidden
     end
-
-    it 'creates scores for each question for the rubric' do
-      3.times { @rubric.questions.create! }
-
-      post :create, assessment_id: assessment.id
-      expect(json["scores"].count).to eq(3)
-    end
-
-    it 'does not create scores for a response that already has them' do
-      3.times { @rubric.questions.create! }
-
-      response = Response.create(
-                  rubric_id:      @rubric.id,
-                  responder_id:   @participant.id,
-                  responder_type: 'Participant',
-                  id: 42)
-
-
-      controller.create_empty_scores(response)
-      post :create, assessment_id: assessment.id
-
-      assert_response :success
-      expect(json["scores"].count).to eq(3)
-    end
-
   end
 end

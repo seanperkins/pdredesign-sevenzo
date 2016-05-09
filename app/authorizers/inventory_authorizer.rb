@@ -4,7 +4,7 @@ class InventoryAuthorizer < ApplicationAuthorizer
   end
 
   def updatable_by?(user)
-    resource.facilitator?(user: user)
+    resource.member?(user: user)
   end
 
   def readable_by?(user)

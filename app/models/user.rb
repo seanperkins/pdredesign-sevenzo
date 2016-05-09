@@ -33,7 +33,6 @@ class User < ActiveRecord::Base
   include Authority::UserAbilities
   has_many :assessments, through: :participants
   has_many :participants
-  has_many :rubrics
   has_many :feedbacks
   has_many :tools
   has_many :inventories
@@ -77,5 +76,12 @@ class User < ActiveRecord::Base
   def ensure_district(district:)
     return if district_ids.include? district.id
     districts << district
+  end
+
+  def inventories
+    Inventory.
+        distinct.
+        joins('LEFT OUTER JOIN inventory_members ON inventory_members.inventory_id = inventories.id').
+        where('inventory_members.user_id = ?', self.id)
   end
 end
