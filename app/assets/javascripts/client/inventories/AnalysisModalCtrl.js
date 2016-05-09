@@ -7,6 +7,7 @@
   AnalysisModalCtrl.$inject = [
     '$state',
     '$timeout',
+    '$modal',
     '$modalInstance',
     'RecommendationTextService',
     'SessionService',
@@ -15,7 +16,7 @@
     'preSelectedInventory'
   ];
 
-  function AnalysisModalCtrl($state, $timeout, $modalInstance, RecommendationTextService, SessionService, Analysis, Inventory, preSelectedInventory) {
+  function AnalysisModalCtrl($state, $timeout, $modal, $modalInstance, RecommendationTextService, SessionService, Analysis, Inventory, preSelectedInventory) {
     var vm = this;
     vm.analysis = {};
     vm.alerts = [];
@@ -35,8 +36,21 @@
       return RecommendationTextService.analysisText();
     };
 
+    vm.inventoryText = function() {
+      return RecommendationTextService.inventoryText();
+    };
+
     vm.closeModal = function() {
       $modalInstance.close('cancel');
+    };
+
+    vm.openInventoryModal = function() {
+      vm.closeModal('cancel');
+      vm.inventoryModal = $modal.open({
+        templateUrl: 'client/home/inventory_modal.html',
+        controller: 'InventoryModalCtrl',
+        controllerAs: 'inventoryModal'
+      });
     };
 
     vm.gotoAnalyses = function() {

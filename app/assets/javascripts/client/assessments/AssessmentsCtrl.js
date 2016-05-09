@@ -7,11 +7,11 @@
     '$scope',
     '$modal',
     'SessionService',
-    'AssessmentService',
+    'RecommendationTextService',
     'assessments'
   ];
 
-  function AssessmentsCtrl($scope, $modal, SessionService, AssessmentService, assessments) {
+  function AssessmentsCtrl($scope, $modal, SessionService, RecommendationTextService, assessments) {
 
     $scope.assessments = assessments;
     $scope.user = SessionService.getCurrentUser();
@@ -22,7 +22,9 @@
     $scope.selectedStatus = '';
     $scope.permissionTypes = ['Organizer', 'Observer'];
 
-    $scope.text = AssessmentService.text;
+    $scope.text = function() {
+      return RecommendationTextService.assessmentText();
+    };
 
     $scope.$watch('user', function() {
       if (!$scope.user) {

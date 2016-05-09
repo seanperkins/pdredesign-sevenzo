@@ -1,18 +1,17 @@
-<div class='container modal-form'>
+<div class="container modal-form">
   <h1>{{analysisModal.titleText()}}</h1>
   <button class='btn btn-link close-modal' ng-click='analysisModal.closeModal()'>&times;</button>
   <hr>
   <div ng-if='analysisModal.hasNoInventories()'>
-    <div class='row'>
-      <div class='col-sm-12'>
-        <div class='notice'>
+    <div class="row">
+      <div class="col-sm-12">
+        <div class="notice">
           <h2>You need to have an Inventory to create an Analysis</h2>
           <p>The Data &amp; Tech Analysis needs to be linked to a Data &amp; Tech Inventory to be most effective. If
             you've already built an inventory, check to make sure you are a facilitator of that inventory in order to
             create an analysis. You can also start a new inventory by clicking below.</p>
-          <p>
-            <start-inventory></start-inventory>
-          </p>
+          <primary-button icon="fa-bullhorn" click-fn="analysisModal.openInventoryModal()"
+                          text="{{ analysisModal.inventoryText() }}"></primary-button>
         </div>
       </div>
     </div>

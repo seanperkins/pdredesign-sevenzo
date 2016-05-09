@@ -20,7 +20,7 @@
         templateUrl: 'client/home/inventory_modal.html',
         controller: 'InventoryModalCtrl',
         controllerAs: 'inventoryModal'
-      })
+      });
     };
   }
 })();
