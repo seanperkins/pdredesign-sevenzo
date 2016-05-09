@@ -12,12 +12,11 @@
   .secondary-color
     color: $secondary-color
 
-  section.hero
+  .hero
     // background-color set for IE9
     // linear-gradient is ignored by IE9
-    background-color: rgba(12, 105, 159, 0.9)
-    background: linear-gradient(to bottom, $gradient-top 0%, $gradient-bottom 100%), image-url('rose.jpg') no-repeat
-    background-size: auto 100%
+    background: image-url('hero_header.png') no-repeat
+    background-size: auto auto
     background-position: center
     padding-top: 3em
     padding-bottom: 5em
@@ -26,9 +25,16 @@
       font-size: 1em
       color: $primary-color
       background-color: $navbar-color
-
     h1, p
       color: #fff
+    .hero-top-banner
+      display: flex
+      flex-direction: column
+      justify-content: center
+      align-items: center
+      p
+        text-align: center
+      padding: 0 30% 0 30%
   section.body
     padding-top: 3em
     padding-bottom: 1em
