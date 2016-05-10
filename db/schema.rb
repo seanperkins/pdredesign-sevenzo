@@ -11,11 +11,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160428193020) do
+ActiveRecord::Schema.define(version: 20160510232403) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-  enable_extension "pg_trgm"
 
   create_table "access_requests", force: :cascade do |t|
     t.integer  "assessment_id"
@@ -62,6 +61,7 @@ ActiveRecord::Schema.define(version: 20160428193020) do
     t.datetime "invited_at"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.datetime "reminded_at"
   end
 
   add_index "analysis_members", ["analysis_id"], name: "index_analysis_members_on_analysis_id", using: :btree
@@ -294,8 +294,8 @@ ActiveRecord::Schema.define(version: 20160428193020) do
     t.integer  "owner_id"
     t.text     "message"
     t.datetime "assigned_at"
-    t.integer  "total_participant_responses", default: 0, null: false
     t.string   "share_token"
+    t.integer  "total_participant_responses", default: 0, null: false
   end
 
   create_table "inventory_access_requests", force: :cascade do |t|
