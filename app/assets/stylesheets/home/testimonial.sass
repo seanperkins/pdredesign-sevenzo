@@ -11,22 +11,36 @@
     flex-direction: column
   .testimonial-column-text
     @extend %testimonial-column
+    .quote
+      border: 0
+      padding: 10px 20px
+      margin-bottom: 0
+      q
+        quotes: "\201C" "\201D" "\2018" "\2019"
+        font-size: 1.35em
+        &:before
+          content: open-quote
+          font-size: 1em
+        &:after
+          content: close-quote
+          font-size: 1em
+      .quote-footer
+        font-size: 100%
+        color: $primary-color
+        margin-top: 1.25em
+        cite
+          font-style: normal
+    button
+      align-self: center
+    .subtext
+      font-size: 70%
+      padding: 10px 20px
   .testimonial-column-picture
     @extend %testimonial-column
     justify-content: center
     align-items: center
     margin: 0 auto
-  .quote
-    border: 0
-    q
-      quotes: "\201C" "\201D" "\2018" "\2019"
-      font-size: 1.35em
-      &:before
-        content: open-quote
-        font-size: 1em
-      &:after
-        content: close-quote
-        font-size: 1em
+
 .testimonial-background
   background: $off-white
 .testimonial-background-alt
