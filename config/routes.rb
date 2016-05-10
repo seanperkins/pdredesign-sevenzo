@@ -35,6 +35,7 @@ PdrServer::Application.routes.draw do
         end
       end
       get 'report', to: 'report#show'
+      get 'evidence/:question_id', to: 'consensus#evidence'
       resources :reminders, only: [:create]
       resources :access_request, only: [:create]
       resources :priorities, only: [:create, :index]
@@ -58,6 +59,7 @@ PdrServer::Application.routes.draw do
       end
 
       resources :responses, except: [:delete] do
+        get '/slim', to: 'responses#show_slimmed'
         resources :scores, only: [:create, :index]
       end
 

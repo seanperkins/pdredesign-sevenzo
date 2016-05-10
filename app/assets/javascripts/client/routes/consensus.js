@@ -1,6 +1,14 @@
-PDRClient.config(['$stateProvider', '$urlRouterProvider',
-  function($stateProvider, $urlRouterProvider) {
+(function() {
+  'use strict';
 
+  angular.module('PDRClient')
+      .config(ConsensusRouteConfig);
+
+  ConsensusRouteConfig.$inject = [
+    '$stateProvider'
+  ];
+
+  function ConsensusRouteConfig($stateProvider) {
     $stateProvider.state('consensus_show', {
       url: '/assessments/:assessment_id/consensus/:response_id',
       authenticate: true,
@@ -39,5 +47,4 @@ PDRClient.config(['$stateProvider', '$urlRouterProvider',
      }
    });
   }
-]);
-
+})();

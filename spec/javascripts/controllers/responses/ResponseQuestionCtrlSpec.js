@@ -24,7 +24,7 @@
 
     describe('on initialization', function() {
       it('gets data on callback and sets categories', function() {
-        $httpBackend.when('GET', '/v1/assessments/1/responses/1').respond({categories: [1, 2, 3]});
+        $httpBackend.when('GET', '/v1/assessments/1/responses/1/slim').respond({categories: [1, 2, 3]});
         $timeout.flush();
         $httpBackend.flush();
         expect($scope.categories).toEqual([1, 2, 3]);
@@ -36,7 +36,7 @@
       var question1 = {id: 1, score: score1};
 
       beforeEach(function() {
-        $httpBackend.when('GET', '/v1/assessments/1/responses/1').respond({categories: [1, 2, 3]});
+        $httpBackend.when('GET', '/v1/assessments/1/responses/1/slim').respond({categories: [1, 2, 3]});
       });
 
       it('isConsensus will be false by default ', function() {

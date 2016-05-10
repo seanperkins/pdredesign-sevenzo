@@ -1,5 +1,6 @@
 (function() {
   'use strict';
+
   angular.module('PDRClient')
       .config(ResponsesConfig);
 
@@ -34,4 +35,3 @@
         });
   }
 })();
-

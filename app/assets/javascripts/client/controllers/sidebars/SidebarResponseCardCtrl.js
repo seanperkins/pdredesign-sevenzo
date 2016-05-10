@@ -1,24 +1,29 @@
-PDRClient.controller('SidebarResponseCardCtrl', [
-  '$modal',
-  '$scope',
-  '$rootScope',
-  '$stateParams',
-  '$location',
-  '$anchorScroll',
-  '$timeout',
-  'SessionService',
-  'Score',
-  'Consensus',
-  'Response',
-  'ResponseHelper',
-  'ConsensusService',
-  'current_context',
-  'current_entity',
-  'consensus',
-  function($modal, $scope, $rootScope, $stateParams, $location,
-           $anchorScroll, $timeout, SessionService, Score,
-           Consensus, Response, ResponseHelper, ConsensusService,
-           current_context, current_entity, consensus) {
+(function() {
+  'use strict';
+
+  angular.module('PDRClient')
+      .controller('SidebarResponseCardCtrl', SidebarResponseCardCtrl);
+
+  SidebarResponseCardCtrl.$inject = [
+    '$modal',
+    '$scope',
+    '$rootScope',
+    '$stateParams',
+    '$location',
+    '$anchorScroll',
+    '$timeout',
+    'Response',
+    'ResponseHelper',
+    'ConsensusService',
+    'current_context',
+    'current_entity',
+    'consensus'
+  ];
+
+  function SidebarResponseCardCtrl ($modal, $scope, $rootScope, $stateParams,
+                                    $location, $anchorScroll, $timeout,
+                                    Response, ResponseHelper, ConsensusService,
+                                    current_context, current_entity, consensus) {
 
     $scope.current_entity = current_entity;
     $scope.consensus = consensus;
@@ -28,10 +33,7 @@ PDRClient.controller('SidebarResponseCardCtrl', [
     $scope.questions    = [];
 
     $timeout(function(){
-
-      
       if ($scope.isResponse()) {
-        // XXX what is this???
         Response
           .get({assessment_id: $stateParams.assessment_id, id: $scope.responseId})
           .$promise
@@ -50,8 +52,10 @@ PDRClient.controller('SidebarResponseCardCtrl', [
     });
 
     $scope.questionScoreValue = function(question) {
-      if(!question || !question.score) return null;
-      if(question.score.value == null && question.score.evidence != null) {
+      if (!question || !question.score) {
+        return null;
+      }
+      if (question.score.value == null && question.score.evidence != null) {
         return 'skipped';
       }
       return question.score.value;
@@ -64,18 +68,18 @@ PDRClient.controller('SidebarResponseCardCtrl', [
         });
     };
 
-    $rootScope.$on('response_updated', function(){
+    $rootScope.$on('response_updated', function() {
       $scope.updateScores();
     });
 
     $scope.isAnswered = function(question) {
-      switch(true) {
+      switch (true) {
         case !question.score:
         case !question.score.evidence == null:
           return false;
         case $scope.skipped(question):
-        case question.score.skipped  == true:
-        case question.score.value    != null:
+        case question.score.skipped == true:
+        case question.score.value != null:
           return true;
         default:
           return false;
@@ -85,7 +89,9 @@ PDRClient.controller('SidebarResponseCardCtrl', [
     $scope.answeredQuestions = function() {
       var count = 0;
       angular.forEach($scope.questions, function(question) {
-        if($scope.isAnswered(question)) count++;
+        if ($scope.isAnswered(question)) {
+          count++;
+        }
       });
 
       return count;
@@ -93,7 +99,7 @@ PDRClient.controller('SidebarResponseCardCtrl', [
 
     $scope.unansweredQuestions = function() {
       window.questions = $scope.questions;
-      window.scope     = $scope;
+      window.scope = $scope;
       return $scope.questions.length - $scope.answeredQuestions();
     };
 
@@ -102,17 +108,23 @@ PDRClient.controller('SidebarResponseCardCtrl', [
       $anchorScroll();
     };
 
-    $scope.responseTitle = function(){
-      if($scope.isResponse()) return "Response";
-      if(!$scope.isResponse()) return "Consensus";
+    $scope.responseTitle = function() {
+      if ($scope.isResponse()) {
+        return "Response";
+      }
+      if (!$scope.isResponse()) {
+        return "Consensus";
+      }
     };
 
-    $scope.isResponse = function(){
+    $scope.isResponse = function() {
       return $location.url().indexOf("responses") > -1;
     };
 
     $scope.canSubmit = function() {
-      if($scope.isResponse()) return true;
+      if ($scope.isResponse()) {
+        return true;
+      }
       return !$scope.isReadOnly;
     };
 
@@ -121,13 +133,13 @@ PDRClient.controller('SidebarResponseCardCtrl', [
     };
 
     $scope.submitResponseModal = function() {
-     $scope.modalInstance =  $modal.open({
+      $scope.modalInstance = $modal.open({
         templateUrl: 'client/views/modals/response_submit_modal.html',
         scope: $scope
       });
     };
 
-    $scope.cancel = function () {
+    $scope.cancel = function() {
       $scope.modalInstance.dismiss('cancel');
     };
 
@@ -152,4 +164,5 @@ PDRClient.controller('SidebarResponseCardCtrl', [
       $scope.modal.close('cancel');
     });
   }
-]);
+})();
+

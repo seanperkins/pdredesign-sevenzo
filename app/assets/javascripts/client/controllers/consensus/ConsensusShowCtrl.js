@@ -1,5 +1,6 @@
 (function() {
   'use strict';
+
   angular.module('PDRClient')
       .controller('ConsensusShowCtrl', ConsensusShowCtrl);
 

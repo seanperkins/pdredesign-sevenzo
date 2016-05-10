@@ -27,6 +27,9 @@ module PdrServer
     # config.i18n.default_locale = :de
     config.assets.initialize_on_precompile = false
 
+    config.assets.enabled = true
+    config.assets.paths << Rails.root.join('app', 'assets', 'resources', 'pdf')
+
     config.active_record.raise_in_transactional_callbacks = true
     config.angular_templates.module_name    = 'templates'
     config.angular_templates.inside_paths   = [Rails.root.join('app', 'assets', 'javascripts', 'client', 'views'),

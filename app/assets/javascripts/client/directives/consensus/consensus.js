@@ -37,6 +37,7 @@ PDRClient.directive('consensus', [
             category.toggled = !category.toggled;
             angular.forEach(category.questions, function(question, key) {
               ResponseHelper.toggleCategoryAnswers(question);
+              $scope.$broadcast('question-toggled', question.id);
             });
           };
 
@@ -50,6 +51,11 @@ PDRClient.directive('consensus', [
           $scope.editAnswer             = ResponseHelper.editAnswer;
           $scope.answerTitle            = ResponseHelper.answerTitle;
           $scope.percentageByResponse   = ResponseHelper.percentageByResponse;
+
+          $scope.toggleAnswers = function(question, $event) {
+            $scope.$broadcast('question-toggled', question.id);
+            ResponseHelper.toggleAnswers(question, $event);
+          };
 
           $scope.assignAnswerToQuestion = function (answer, question) {
             switch(true) {
@@ -105,18 +111,6 @@ PDRClient.directive('consensus', [
               .then(function(){
                 $scope.loading = false;
               });
-          };
-
-          $scope.scoreValue = function(score) {
-            if(!score || score <= 0)
-              return "S";
-            return "" + score;
-          };
-
-          $scope.scoreClass = function(score) {
-            if(!score || score <= 0)
-              return "skipped";
-            return "scored-" + score;
           };
 
           $timeout(function(){ $scope.updateConsensus(); });
