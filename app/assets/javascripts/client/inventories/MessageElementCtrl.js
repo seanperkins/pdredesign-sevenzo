@@ -9,9 +9,10 @@
   function MessageElementCtrl($scope) {
     var vm = this;
     vm.message = $scope.message;
+    var kind = $scope.kind || 'Inventory';
     vm.title = {
       'welcome': 'Welcome Invite',
-      'reminder': 'Individual ' + $scope.kind + ' Reminder',
+      'reminder': 'Individual ' + kind + ' Reminder',
     }[vm.message.category] || 'General Message';
     vm.icon = {
       'welcome': 'fa-envelope-o',
