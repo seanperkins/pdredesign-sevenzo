@@ -12,14 +12,9 @@
   .secondary-color
     color: $secondary-color
 
-  .hero
-    // background-color set for IE9
-    // linear-gradient is ignored by IE9
-    background: image-url('hero_header.png') no-repeat
-    background-size: auto auto
-    background-position: center
-    padding-top: 3em
-    padding-bottom: 5em
+  .hero-header
+    background: image-url('hero_header.png') no-repeat center
+    padding: 3em 0 5em 0
     button
       font-weight: bold
       font-size: 1em
@@ -27,7 +22,7 @@
       background-color: $navbar-color
     h1, p
       color: #fff
-    .hero-top-banner
+    .hero-banner
       display: flex
       flex-direction: column
       justify-content: center
@@ -35,11 +30,20 @@
       p
         text-align: center
       padding: 0 30% 0 30%
-  section.body
+
+  .hero-footer
+    @extend .hero-header
+    background: image-url('hero_footer.png') no-repeat center
+    .hero-footer-banner
+      @extend .hero-banner
+      padding: 0 15% 0 15%
+
+
+  div.body
     padding-top: 3em
     padding-bottom: 1em
 
-  section.stats
+  div.stats
     padding-top: 3em
     padding-bottom: 5em
     .legal
@@ -49,7 +53,7 @@
       width: 100%
       max-width: 35em
 
-  section.path
+  div.path
     background-color: $navbar-color
     padding-top: 1em
     h2
@@ -65,7 +69,7 @@
       img
         width: 100%
 
-  section.action
+  div.action
     padding-top: 2em
     padding-bottom: 4em
 
