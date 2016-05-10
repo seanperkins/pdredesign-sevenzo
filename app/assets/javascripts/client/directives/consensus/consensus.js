@@ -76,7 +76,6 @@ PDRClient.directive('consensus', [
           });
 
           $scope.updateConsensus = function(){
-            /*
             return ConsensusService
               .loadConsensus($scope.consensus.id, $scope.teamRole)
               .then(function (data) {
@@ -84,215 +83,12 @@ PDRClient.directive('consensus', [
                 $scope.scores     = data.scores;
                 $scope.data       = data.categories;
                 $scope.categories = data.categories;
-                */
-                $scope.categories = [
-                  {
-                    "id": 14,
-                    "name": "Data & Tech Analysis Category",
-                    "axis_id": 12,
-                    "questions": [
-                      {
-                        "id": 103,
-                        "order": 0,
-                        "variance": 1,
-                        "content": "PD programs are developed based on a shared vision for teaching and learning.",
-                        "headline": "Established a Shared Vision for PD",
-                        "category_id": 14,
-                        "score": {
-                          "id": 2965,
-                          "value": 2,
-                          "evidence" : null,
-                          "supporting_inventory_response": {
-                            "id": 1,
-                            "score_id": 2965,
-                            "product_entries": [1],
-                            "data_entries": [2],
-                            "product_entry_evidence": "sure",
-                            "data_entry_evidence": null,
-                            "created_at": "2016-04-29T22:28:57.567Z",
-                            "updated_at": "2016-04-29T22:29:15.180Z"
-                          },
-                          "response_id": 123,
-                          "question_id": 103,
-                          "created_at": "2016-04-29T22:29:15.174Z",
-                          "updated_at": "2016-04-29T22:29:15.174Z"
-                        },
-                        "answers": [
-                          {
-                            "id": 409,
-                            "value": 1,
-                            "content": null,
-                            "question_id": 103,
-                            "created_at": "2016-04-27T21:19:17.140Z",
-                            "updated_at": "2016-04-27T21:19:17.140Z"
-                          },
-                          {
-                            "id": 410,
-                            "value": 2,
-                            "content": null,
-                            "question_id": 103,
-                            "created_at": "2016-04-27T21:19:17.141Z",
-                            "updated_at": "2016-04-27T21:19:17.141Z"
-                          },
-                          {
-                            "id": 411,
-                            "value": 3,
-                            "content": null,
-                            "question_id": 103,
-                            "created_at": "2016-04-27T21:19:17.142Z",
-                            "updated_at": "2016-04-27T21:19:17.142Z"
-                          },
-                          {
-                            "id": 412,
-                            "value": 4,
-                            "content": null,
-                            "question_id": 103,
-                            "created_at": "2016-04-27T21:19:17.143Z",
-                            "updated_at": "2016-04-27T21:19:17.143Z"
-                          }
-                        ]
-                      },
-                      {
-                        "id": 104,
-                        "order": 1,
-                        "variance": 20,
-                        "content": "Teacher PD needs are identified based on a clear, common framework for effectiveness.",
-                        "headline": "Identify PD Needs",
-                        "category_id": 14,
-                        "score": {
-                          "id": 2966,
-                          "value": null,
-                          "evidence": null,
-                          "supporting_inventory_response": {
-                            "id": 2,
-                            "score_id": 2966,
-                            "product_entries": [],
-                            "data_entries": [],
-                            "product_entry_evidence": null,
-                            "data_entry_evidence": null,
-                            "created_at": "2016-04-29T22:29:15.188Z",
-                            "updated_at": "2016-04-29T22:29:33.876Z"
-                          },
-                          "response_id": 123,
-                          "question_id": 104,
-                          "created_at": "2016-04-29T22:29:33.871Z",
-                          "updated_at": "2016-04-29T22:29:33.871Z"
-                        },
-                        "answers" : [
-                          {
-                            "id": 409,
-                            "value": 1,
-                            "content": null,
-                            "question_id": 103,
-                            "created_at": "2016-04-27T21:19:17.140Z",
-                            "updated_at": "2016-04-27T21:19:17.140Z"
-                          },
-                          {
-                            "id": 410,
-                            "value": 2,
-                            "content": null,
-                            "question_id": 103,
-                            "created_at": "2016-04-27T21:19:17.141Z",
-                            "updated_at": "2016-04-27T21:19:17.141Z"
-                          },
-                          {
-                            "id": 411,
-                            "value": 3,
-                            "content": null,
-                            "question_id": 103,
-                            "created_at": "2016-04-27T21:19:17.142Z",
-                            "updated_at": "2016-04-27T21:19:17.142Z"
-                          },
-                          {
-                            "id": 412,
-                            "value": 4,
-                            "content": null,
-                            "question_id": 103,
-                            "created_at": "2016-04-27T21:19:17.143Z",
-                            "updated_at": "2016-04-27T21:19:17.143Z"
-                          }
-                        ]
-                      }
-                    ]
-                  },
-                  {
-                    "id": 15,
-                    "name": "Data & Tech Analysis Category",
-                    "axis_id": 12,
-                    "questions": [
-                      {
-                        "id": 103,
-                        "order": 0,
-                        "variance": 5,
-                        "content": "PD programs are developed based on a shared vision for teaching and learning.",
-                        "headline": "Established a Shared Vision for PD",
-                        "category_id": 15,
-                        "score": {
-                          "id": 2965,
-                          "value": null,
-                          "evidence" : null,
-                          "supporting_inventory_response": {
-                            "id": 1,
-                            "score_id": 2965,
-                            "product_entries": [1],
-                            "data_entries": [2],
-                            "product_entry_evidence": "sure",
-                            "data_entry_evidence": null,
-                            "created_at": "2016-04-29T22:28:57.567Z",
-                            "updated_at": "2016-04-29T22:29:15.180Z"
-                          },
-                          "response_id": 123,
-                          "question_id": 103,
-                          "created_at": "2016-04-29T22:29:15.174Z",
-                          "updated_at": "2016-04-29T22:29:15.174Z"
-                        },
-                        "answers": [
-                          {
-                            "id": 409,
-                            "value": 1,
-                            "content": null,
-                            "question_id": 103,
-                            "created_at": "2016-04-27T21:19:17.140Z",
-                            "updated_at": "2016-04-27T21:19:17.140Z"
-                          },
-                          {
-                            "id": 410,
-                            "value": 2,
-                            "content": null,
-                            "question_id": 103,
-                            "created_at": "2016-04-27T21:19:17.141Z",
-                            "updated_at": "2016-04-27T21:19:17.141Z"
-                          },
-                          {
-                            "id": 411,
-                            "value": 3,
-                            "content": null,
-                            "question_id": 103,
-                            "created_at": "2016-04-27T21:19:17.142Z",
-                            "updated_at": "2016-04-27T21:19:17.142Z"
-                          },
-                          {
-                            "id": 412,
-                            "value": 4,
-                            "content": null,
-                            "question_id": 103,
-                            "created_at": "2016-04-27T21:19:17.143Z",
-                            "updated_at": "2016-04-27T21:19:17.143Z"
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ];
-                $scope.data = angular.copy($scope.categories);
-                /*
                 $scope.teamRoles  = data.team_roles;
                 $scope.isReadOnly = data.is_completed || false;
                 $scope.participantCount = data.participant_count;
 
                 return true;
               });
-                */
           };
 
           $scope.updateConsensusState = function(data) {
@@ -325,18 +121,12 @@ PDRClient.directive('consensus', [
 
           $timeout(function(){ $scope.updateConsensus(); });
 
-          
-          // FIXME $scope.resource will be something like
-          // question[0].score.whatever.product_entry_ids or so.
-          // Also, this will only be done if we're in an analysis context.
-          $scope.productEntries = [{id: 1, general_inventory_question: {product_name: 'derp'}},{id: 2, general_inventory_question: {product_name: 'herp'}}];
-          $scope.dataEntries = [{id: 1, name: 'derp data'},{id: 2, name: 'data herp'}];
           if ($scope.context === "analysis") {
             ConsensusService
               .getInventoryProductAndDataEntries()
               .then(function (data) {
-                $scope.product_entries = data[0].product_entries;
-                $scope.data_entries = data[1].data_entries;
+                $scope.productEntries = data[0].product_entries;
+                $scope.dataEntries = data[1].data_entries;
                });
           }
         }]

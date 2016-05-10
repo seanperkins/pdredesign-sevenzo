@@ -53,13 +53,16 @@
 
     vm.saveScore = function () {
       var params = {
+        inventory_id: $stateParams.inventory_id,
         response_id: $scope.$parent.consensus.id,
         analysis_id: $scope.$parent.entity.id
       }
 
-      var score = $scope.question.score;
+      var score = angular.copy($scope.question.score);
+      score.supporting_inventory_response_attributes = score.supporting_inventory_response;
+      delete score.supporting_inventory_response;
 
-      AnalysisConsensusScore.save(params, $scope.question.score)
+      AnalysisConsensusScore.save(params, score)
     };
   }
 })();

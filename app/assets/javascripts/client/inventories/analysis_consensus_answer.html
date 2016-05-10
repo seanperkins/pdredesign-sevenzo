@@ -44,7 +44,8 @@
         <fake-radio proxy-ng-model="question.score.value" proxy-ng-value="answer.value"></fake-radio>
       </label>
     </div>
-    <div>
+    <!-- Temporary hack for hiding "skip". -->
+    <div ng-if="0 == 1">
       <span class="score-title">Skip</span>
       <label class="score-checkbox skipped">
         <fake-radio proxy-ng-model="question.score.value" proxy-ng-value="null"></fake-radio>

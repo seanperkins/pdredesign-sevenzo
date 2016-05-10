@@ -9,17 +9,19 @@
     '$q',
     'Consensus',
     'AnalysisConsensus',
+    'AnalysisResponse',
     'Score',
     'AnalysisConsensusScore',
     'ProductEntry',
     'DataEntry'
   ];
 
-  function ConsensusService($stateParams, $location, $q, Consensus, AnalysisConsensus, Score, AnalysisConsensusScore, ProductEntry, DataEntry) {
+  function ConsensusService($stateParams, $location, $q, Consensus, AnalysisConsensus, AnalysisResponse, Score, AnalysisConsensusScore, ProductEntry, DataEntry) {
     var service = this;
 
     service.setContext = function(context) {
       service.context = context;
+      return service;
     };
 
     service.extractId = function() {
@@ -30,7 +32,7 @@
       if (service.context === "assessment") {
         $location.path("/assessments");
       } else if (service.context === "analysis") {
-        $location.path("/inventory/" + $stateParams.inventory_id + "/analyses");
+        $location.path("/inventories/" + $stateParams.inventory_id + "/analyses");
       }
     };
 
@@ -38,7 +40,34 @@
       if (service.context === "assessment") {
         $location.path("/assessments/" + service.extractId() + "/report");
       } else if (service.context === "analysis") {
-        $location.path("/inventory/" + $stateParams.inventory_id + "/analyses/" + service.extractId() + "/report");
+        $location.path("/inventories/" + $stateParams.inventory_id + "/analyses/" + service.extractId() + "/report");
+      }
+    };
+
+    service.redirectToCreatedConsensus = function (consensusId) {
+      if (service.context === "assessment") {
+        $location.path("/assessments/" + service.extractId() + "/consensus/" + consensusId);
+      } else if (service.context === "analysis") {
+        $location.path("/inventories/" + $stateParams.inventory_id + "/analyses/" + service.extractId() + "/consensus/" + consensusId);
+      }
+    };
+
+    service.createConsensus = function () {
+      if (service.context === "assessment") {
+        return Consensus.create({
+          assessment_id: service.extractId()
+        }, {}).$promise;
+      } else if (service.context === "analysis") {
+        return AnalysisResponse.save({
+          inventory_id: $stateParams.inventory_id,
+          analysis_id: service.extractId()
+        }, {}).$promise
+        .then(function () {
+          return AnalysisConsensus.create({
+            inventory_id: $stateParams.inventory_id,
+            analysis_id: service.extractId()
+          }, {}).$promise;
+        });
       }
     };
 
@@ -51,6 +80,7 @@
         }).$promise;
       } else if (service.context === "analysis") {
         return AnalysisConsensus.get({
+          inventory_id: $stateParams.inventory_id,
           analysis_id: service.extractId(),
           id: consensusId,
           teamRole: teamRole
@@ -66,6 +96,7 @@
         }).$promise;
       } else if (service.context === "analysis") {
         return AnalysisConsensusScore.query({
+          inventory_id: $stateParams.inventory_id,
           analysis_id: service.extractId(),
           response_id: consensusId
         }).$promise;
@@ -82,6 +113,7 @@
         }).$promise;
       } else if (service.context === "analysis") {
         return AnalysisConsensus.submit({
+          inventory_id: $stateParams.inventory_id,
           analysis_id: service.extractId(),
           id: consensusId
         }, {

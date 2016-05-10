@@ -22,6 +22,7 @@ describe('Controller: SidebarResponseCardCtrl', function() {
       subject  = $controller('SidebarResponseCardCtrl', {
         $scope: $scope,
         current_context: "assessment",
+        current_entity: {name: "test"},
         consensus: {id: 2}
       });
 

@@ -13,11 +13,14 @@ PDRClient.controller('SidebarResponseCardCtrl', [
   'ResponseHelper',
   'ConsensusService',
   'current_context',
+  'current_entity',
   'consensus',
   function($modal, $scope, $rootScope, $stateParams, $location,
            $anchorScroll, $timeout, SessionService, Score,
-           Consensus, Response, ResponseHelper, ConsensusService, current_context, consensus) {
+           Consensus, Response, ResponseHelper, ConsensusService,
+           current_context, current_entity, consensus) {
 
+    $scope.current_entity = current_entity;
     $scope.consensus = consensus;
 
     $scope.skipped      = ResponseHelper.skipped;

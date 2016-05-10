@@ -163,6 +163,17 @@
       params: {
         shared: true
       }
+    }).state('inventory_analysis_consensus_create', {
+      url: '/inventories/:inventory_id/analyses/:analysis_id/consensus',
+      authenticate: true,
+      resolve: {
+        current_context: function () { return "analysis"; }
+      },
+      views: {
+        '': {
+          controller: 'ConsensusCreateCtrl',
+        }
+      }
     }).state('inventory_analysis_consensus', {
       url: '/inventories/:inventory_id/analyses/:analysis_id/consensus/:id',
       authenticate: true,
@@ -171,8 +182,8 @@
         current_entity: ['$stateParams', 'Analysis', function($stateParams, Analysis) {
           return Analysis.get({inventory_id: $stateParams.inventory_id, id: $stateParams.analysis_id}).$promise;
         }],
-        consensus: ['$stateParams', 'Consensus', function($stateParams, Consensus) {
-          return {id: 104, responder_id: 7, responder_type: "Analysis", rubric_id: 1};
+        consensus: ['$stateParams', 'AnalysisConsensus', function($stateParams, AnalysisConsensus) {
+          return AnalysisConsensus.get({inventory_id: $stateParams.inventory_id, analysis_id: $stateParams.analysis_id, id: $stateParams.id}).$promise;
         }]
       },
       views: {
