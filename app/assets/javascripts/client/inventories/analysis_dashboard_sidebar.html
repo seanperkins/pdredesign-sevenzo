@@ -5,7 +5,7 @@
       <a ui-sref="inventory_analysis_assign({inventory_id: analysisSidebar.currentAnalysis.inventory_id, id: analysisSidebar.currentAnalysis.id})" class="btn btn-primary">Go to Analysis</a>
     </li>
     <li>
-      <a class="btn btn-default">Modify calendar</a>
+      <a ng-click="analysisSidebar.modifyCalendar()" class="btn btn-default">Modify calendar</a>
     </li>
     <li>
       <a ui-sref="inventories_edit({inventory_id: analysisSidebar.currentAnalysis.inventory_id})" class="btn btn-default">Go to Inventory</a>

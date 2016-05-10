@@ -22,6 +22,17 @@
       });
     };
 
+    vm.modifyCalendar = function () {
+      vm.deadlineModal = $modal.open({
+        template: '<analysis-deadline-modal analysis="analysis"></analysis-deadline-modal>',
+        scope: $scope
+      });
+    };
+
+    $scope.$on('close-deadline-modal', function() {
+      vm.deadlineModal.dismiss('cancel');
+    });
+
     $scope.$on('close-learning-question-modal', function() {
       vm.questionsModal.dismiss('cancel');
     });
