@@ -6,12 +6,13 @@
 
   function MessageElementCtrl() {
     var vm = this;
-    vm.messageTitle = function(category) {
+    vm.messageTitle = function(category, kind) {
+      var subjectKind = kind || 'Inventory';
       switch (category) {
         case 'welcome':
           return 'Welcome Invite';
         case 'reminder':
-          return 'Individual Inventory Reminder';
+          return 'Individual ' + subjectKind + ' Reminder';
         default:
           return 'General Message';
       }
