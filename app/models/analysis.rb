@@ -25,6 +25,7 @@ class Analysis < ActiveRecord::Base
 
   validates_presence_of :name, :deadline, :inventory, :rubric
   validates :message, presence: true, if: "assigned_at.present?"
+  has_many :messages, as: :tool
 
   has_many :members, class_name: 'AnalysisMember'
   has_many :participants, -> { where(role: 'participant') }, class_name: 'AnalysisMember'

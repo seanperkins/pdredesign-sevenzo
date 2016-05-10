@@ -8,6 +8,7 @@ class V1::AnalysesController < ApplicationController
 
   def show
     @analysis = inventory.analyses.find(params[:id])
+    @messages = messages if current_user
     authorize_action_for @analysis
     render template: 'v1/analyses/show', status: 200
   end
@@ -69,5 +70,18 @@ class V1::AnalysesController < ApplicationController
 
   def pick_rubric
     Rubric.analysis_driven.where.not(version: nil).order(version: :desc).first
+  end
+
+  def messages
+    messages = []
+    messages.concat @analysis.messages
+    messages.push welcome_message
+  end
+
+  def welcome_message
+    OpenStruct.new(id: nil,
+                   category: 'welcome',
+                   sent_at: @analysis.updated_at,
+                   teaser: @analysis.message)
   end
 end
