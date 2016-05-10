@@ -4,12 +4,10 @@
       <table class="twelve columns">
         <tr>
           <td class="left-text-pad">
-            <h2> Reminder</h2>
+            <h2>Reminder</h2>
             <br>
             <p class="lead">
-              Hi <b><%= @participant_name %></b>, your response on <%= @analysis_name %> is
-              due on <b><%= @deadline %></b>.
-            </p>
+            Hi <b><%= @first_name %></b>, This is a reminder that the Data &amp; Tech Analysis meeting for <b><%= @analysis_name %></b> will take place on <b><%= @deadline %></b>. Please remember to bring any information that may be helpful with you.</p>
             <br>
             <br>
             <p class="lead">
@@ -21,12 +19,6 @@
               <center>
                 <a href="<%= @analysis_link %>" target="_blank" class="button">View Analysis</a>
               </center>
-            </p>
-            <br>
-            <br>
-            <p class="lead">
-              <b><%= @facilitator_name %></b> is waiting for you to complete your response on
-              <%= @analysis_name %> for <%= @district_name %>.
             </p>
             <br>
             <br>

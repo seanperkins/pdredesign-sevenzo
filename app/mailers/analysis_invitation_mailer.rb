@@ -17,9 +17,7 @@ class AnalysisInvitationMailer < ApplicationMailer
 
   def reminder(analysis, message, participant)
     @first_name = participant.user.first_name
-    @facilitator = analysis.owner
     @analysis_name = analysis.name
-    @district_name = analysis.inventory.district.name
     @deadline = analysis.deadline.strftime("%B %d, %Y")
     @analysis_link = "#{ENV['BASE_URL']}/#/inventories/#{analysis.inventory_id}/analyses/#{analysis.id}/responses"
     @message = message.try(:html_safe)
