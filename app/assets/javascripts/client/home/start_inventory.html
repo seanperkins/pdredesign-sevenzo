@@ -1,11 +1,18 @@
-<div class="inventory-start plus-button">
-  <a ng-click="startInventory.openInventoryModal()">
-    <span class="fa-stack">
-      <i class="fa fa-circle fa-stack-2x"></i>
-      <i class="fa fa-plus fa-stack-1x fa-icon"></i>
-    </span>
-    <div class="heading">
-      Start Data &amp; Tech Audit
+<div class="row tool-container">
+  <div class="col-lg-12 tool-container-header">
+    <h2>2.  Data &amp; Tech Landscape Inventory</h2>
+    <span class="quick-actions">Quick Actions</span>
+  </div>
+  <div class="hr-line"></div>
+  <div class="col-lg-12">
+    <div class="row">
+      <div class="col-md-6 tool-link-container">
+        <primary-button icon="fa-info-circle" link="#/about/dt/inventory" text="About the Data & Tech Landscape Inventory"></primary-button>
+        <primary-button icon="fa-bullhorn" click-fn="startInventory.openInventoryModal()" text="{{startInventory.text()}}"></primary-button>
+      </div>
+      <div class="col-md-6 tool-link-container">
+        <primary-button icon="fa-list" link="#/inventories" text="Go to Inventory List"></primary-button>
+      </div>
     </div>
-  </a>
+  </div>
 </div>
