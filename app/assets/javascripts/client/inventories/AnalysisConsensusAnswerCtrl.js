@@ -34,23 +34,6 @@
 
     vm.answerTitle = ResponseHelper.answerTitle;
 
-    vm.assignAnswerToQuestion = function(answer, question) {
-      if ($scope.isConsensus === 'true') {
-        if (!(question && question.score) || (question.score.evidence === null || question.score.evidence === '')) {
-          question.isAlert = true;
-          return;
-        }
-        ResponseHelper.assignAnswerToQuestion($scope, answer, question);
-      } else {
-        if (ResponseValidationService.invalidEvidence(question)) {
-          return;
-        }
-        question.skipped = false;
-        question.score.value = answer.value;
-        ResponseHelper.assignAnswerToQuestion($scope, answer, question);
-      }
-    };
-
     vm.saveScore = function () {
       var params = {
         inventory_id: $stateParams.inventory_id,
@@ -62,7 +45,12 @@
       score.supporting_inventory_response_attributes = score.supporting_inventory_response;
       delete score.supporting_inventory_response;
 
-      AnalysisConsensusScore.save(params, score)
+      AnalysisConsensusScore
+        .save(params, score)
+        .$promise
+        .then(function () {
+          $scope.$emit('response_updated');
+        });
     };
   }
 })();
