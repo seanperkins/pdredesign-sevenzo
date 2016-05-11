@@ -12,10 +12,8 @@ json.created_at inventory.created_at
 json.updated_at inventory.updated_at
 json.status inventory.status
 json.consensus do
-  json.is_completed inventory.is_completed
+  json.is_completed false
 end
-json.percent_completed inventory.percent_completed
-json.completed_responses inventory.total_participant_responses
 json.has_access inventory.member?(user: current_user) || inventory.owner == current_user if current_user
 json.participant_count inventory.participants.count
 json.message inventory.message || default_inventory_message if current_user
