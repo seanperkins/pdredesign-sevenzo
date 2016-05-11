@@ -25,6 +25,8 @@
                                     Response, ResponseHelper, ConsensusService,
                                     current_context, current_entity, consensus) {
 
+    ConsensusService.setContext(current_context);
+
     $scope.current_entity = current_entity;
     $scope.consensus = consensus;
 
