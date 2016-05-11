@@ -8,11 +8,12 @@
     '$location',
     '$modalInstance',
     '$timeout',
+    'AssessmentService',
     'RecommendationTextService',
     'SessionService'
   ];
 
-  function AssessmentModalCtrl($location, $modalInstance, $timeout, RecommendationTextService, SessionService) {
+  function AssessmentModalCtrl($location, $modalInstance, $timeout, AssessmentService, RecommendationTextService, SessionService) {
     var vm = this;
 
     vm.alerts = [];

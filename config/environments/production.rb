@@ -60,7 +60,6 @@ PdrServer::Application.configure do
   # Precompile additional assets.
   # application.js, application.css, and all non-JS/CSS in app/assets folder are already added.
   config.assets.precompile += %w( mail.css colorbar.jpg logo.png intro_video.png )
-  config.assets.css_compressor = :sass
 
   # Ignore bad email addresses and do not raise email delivery errors.
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.
