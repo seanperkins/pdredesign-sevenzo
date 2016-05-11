@@ -14,12 +14,8 @@
 
   .hero-header
     background: image-url('hero_header.png') no-repeat center
+    background-size: cover
     padding: 3em 0 5em 0
-    button
-      font-weight: bold
-      font-size: 1em
-      color: $primary-color
-      background-color: $navbar-color
     h1, p
       color: #fff
     .hero-banner
@@ -30,13 +26,15 @@
       p
         text-align: center
       padding: 0 30% 0 30%
-
   .hero-footer
     @extend .hero-header
     background: image-url('hero_footer.png') no-repeat center
+    background-size: cover
     .hero-footer-banner
       @extend .hero-banner
       padding: 0 25% 0 25%
+      .btn-padding
+        margin: 2.5em 0 1.5em 0
 
 
   div.body

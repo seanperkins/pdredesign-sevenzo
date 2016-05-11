@@ -12,13 +12,14 @@
       scope: {
         image: '@',
         backgroundStyle: '@',
-        learnMore: '@',
+        learnMoreLink: '@',
         quote: '@',
         author: '@',
         subtext: '@',
         toolName: '@',
-        templateUrl: 'client/home/testimonial_template.html'
-      }
+        alternate: '@'
+      },
+      templateUrl: 'client/home/testimonial_template.html'
     }
   }
 })();

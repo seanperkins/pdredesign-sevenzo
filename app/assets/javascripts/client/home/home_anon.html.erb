@@ -3,7 +3,7 @@
     <h1>PDredesign</h1>
     <p class="text-center">A digital toolkit and community of practice dedicated to improving
       <u>professional development</u> for teachers.</p>
-    <button choose-role-modal type="button" class="btn btn-default">Sign Up</button>
+    <button choose-role-modal type="button" class="btn btn-primary-landing">Sign Up</button>
   </div>
 </div>
 
@@ -31,39 +31,21 @@
       </div>
     </div>
   </div>
-  <div class="row testimonial testimonial-background">
-    <div class="col-md-8 col-md-offset-2">
-      <div class="row">
-        <div class="col-md-6 testimonial-column-text">
-          <blockquote class="quote">
-            <q>The Readiness Assessment has been critical to improving our conversations about professional
-              development.</q>
-            <footer class="quote-footer">
-              <cite>Bryan Joffe, AASA</cite>
-            </footer>
-          </blockquote>
-          <p class="subtext">Understand how your district's current PD system is structured and determine where to focus collective
-            energy for improvement.</p>
-          <button type="button" class="btn btn-secondary">Learn More</button>
-        </div>
-        <div class="col-md-6 testimonial-column-picture">
-          <%= image_tag('readiness_assessment.png') %>
-          <h2>The Readiness Assessment</h2>
-        </div>
-      </div>
-    </div>
-  </div>
+  <testimonial tool-name="The Readiness Assessment"
+               quote="The Readiness Assessment has been critical to improving our conversations about professional development."
+               author="Bryan Joffe, AASA"
+               subtext="Understand how your district's current PD system is structured and determine where to focus collective energy for improvement."
+               learn-more-link="#/about/ra/assessment"
+               image="<%= image_path('readiness_assessment.png') %>">
+  </testimonial>
 </div>
-<div class="row">
-  <div class="col-md-12">
-    <div class="hero-footer">
-      <div class="hero-footer-banner">
-        <h1 class="text-center">Every year, $18 billion is spent on professional development, but only 29% of teachers are
-          satisfied with their PD offerings.</h1>
-        <button choose-role-modal type="button" class="btn btn-default">Sign Up</button>
-        <p class="text-center">Redesign your professional development with PDredesign.</p>
-      </div>
-    </div>
+
+<div class="row hero-footer">
+  <div class="col-md-12 hero-footer-banner">
+    <h1 class="text-center">Every year, $18 billion is spent on professional development, but only 29% of teachers
+      are satisfied with their PD offerings.</h1>
+    <button choose-role-modal type="button" class="btn btn-primary-landing btn-padding">Sign Up</button>
+    <p class="text-center">Redesign your professional development with PDredesign.</p>
   </div>
 </div>
 

@@ -30,7 +30,7 @@
         margin-top: 1.25em
         cite
           font-style: normal
-    button
+    a
       align-self: center
     .subtext
       font-size: 70%
@@ -45,3 +45,9 @@
   background: $off-white
 .testimonial-background-alt
   background: $background-color
+.natural-order
+  display: flex
+  flex-direction: row
+.reverse-order
+  @extend .natural-order
+  flex-direction: row-reverse
