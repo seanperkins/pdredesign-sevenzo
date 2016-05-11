@@ -57,6 +57,7 @@ source 'https://rails-assets.org' do
   gem 'rails-assets-angular-shims-placeholder', '0.4.2'
   gem 'rails-assets-angular-datatables'
   gem 'rails-assets-datatables-buttons', '~>1.0.0'
+  gem 'rails-assets-clipboard', '1.5.10'
 end
 
 group :development, :test do

@@ -2,7 +2,10 @@
   <div class="sidebar-section">
     <h2>Share this page</h2>
     <p>Copy this link to share this page.</p>
-    <input value="{{aboutSidebar.shareURL}}">
+    <div class="input-group">
+      <input id="share-url" value="{{aboutSidebar.shareURL}}" class="form-control">
+      <div class="input-group-addon" data-clipboard-target="#share-url"><i class="fa fa-copy"></i></div>
+    </div>
   </div>
   <div class="sidebar-section">
     <h2>PDredesign</h2>
@@ -11,22 +14,19 @@
   <div class="sidebar-section">
     <h2>1. Readiness Assessment</h2>
     <p><a ui-sref="about.ra-assessment">About Readiness Assessment</a></p>
-    <p><a>FAQs</a></p>
-    <p><a>Facilitate New Assessment</a></p>
-    <p><a>View Assessment List</a></p>
+    <p><a ui-sref="faqs({topic: 'Readiness Assessment'})">FAQs</a></p>
+    <p><a ng-click="aboutSidebar.openAssessmentModal()">Facilitate New Assessment</a></p>
+    <p><a ui-sref="assessments">View Assessment List</a></p>
   </div>
   <div class="sidebar-section">
     <h2>2. Data and Tech Inventory</h2>
     <p><a ui-sref="about.dt-inventory">About Data and Tech Inventory</a></p>
-    <p><a>FAQs</a></p>
-    <p><a>Create New Inventory</a></p>
-    <p><a>View Inventory List</a></p>
+    <p><a ng-click="aboutSidebar.openInventoryModal()">Create New Inventory</a></p>
+    <p><a ui-sref="inventories">View Inventory List</a></p>
   </div>
   <div class="sidebar-section">
     <h2>3. Data and Tech Analysis</h2>
     <p><a ui-sref="about.dt-analysis">About Data and Tech Analysis</a></p>
-    <p><a>FAQs</a></p>
-    <p><a>Facilitate New Analysis</a></p>
-    <p><a>View Analysis List</a></p>
+    <p><a ng-click="aboutSidebar.openAnalysisModal()">Facilitate New Analysis</a></p>
   </div>
 </div>
