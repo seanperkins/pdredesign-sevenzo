@@ -30,8 +30,7 @@
     type="password">
 
     <organization-select
-
-      ng-show="isNetworkPartner"
+      ng-if="isNetworkPartner"
       messages="errors"
       update-user-record="false"
       organization-id="user.organization_ids">
@@ -39,7 +38,7 @@
 
     <district-select
       required="true"
-      ng-hide="isNetworkPartner"
+      ng-if="!isNetworkPartner"
       multiple="false"
       districts="user.district_ids">
     </district-select>
