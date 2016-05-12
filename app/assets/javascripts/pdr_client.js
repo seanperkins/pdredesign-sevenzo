@@ -33,6 +33,7 @@
 //= require highcharts
 //= require highcharts/highcharts-more
 //= require selectize
+//= require clipboard
 //= require ./client/PDRClient
 //= require_tree ./client/routes
 //= require angular-rails-templates

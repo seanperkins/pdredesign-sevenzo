@@ -1,0 +1,32 @@
+.about-sidebar
+  .sidebar-section
+    &:first-of-type
+      p
+        text-align: left
+
+      .input-group
+        input
+          border-right: 0
+        [data-clipboard-target]
+          cursor: pointer
+          background: $primary-color
+          border-color: $primary-color
+          color: white
+
+    margin-bottom: 2em
+
+    h2
+      font-size: 1.1em
+
+    p
+      text-align: right
+      
+      a
+        font-weight: bold
+        color: $primary-color
+
+        &:hover, &:active, &:focus
+          text-decoration: none
+
+        &.active
+          color: $secondary-color
