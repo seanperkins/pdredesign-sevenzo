@@ -4,9 +4,7 @@
     <h4>{{inventoryModal.titleText()}}</h4>
   </div>
   <div class="modal-body">
-    <p ng-if="!inventoryModal.userIsNetworkPartner()">Facilitate a Data &amp; Tech Landscape Analysis for your district
-      by creating a new inventory. In this inventory,
-      you'll lead a team of participants in creating a list of products and data systems your district uses.</p>
+    <p ng-if="!inventoryModal.userIsNetworkPartner()">Facilitate a Data &amp; Tech Landscape Analysis for your district by creating a new Data &amp; Tech Inventory. In the Inventory, you'll lead a team of participants in creating a list of products and data systems your district uses.</p>
 
     <alert ng-repeat="alert in inventoryModal.alerts" type="{{alert.type}}" close="inventoryModal.closeAlert($index)">
       {{alert.msg}}
