@@ -7,7 +7,6 @@
   function testimonial() {
     return {
       restrict: 'E',
-      transclude: true,
       replace: true,
       scope: {
         image: '@',
