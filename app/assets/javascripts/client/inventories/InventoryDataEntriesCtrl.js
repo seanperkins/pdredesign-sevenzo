@@ -6,12 +6,14 @@
   InventoryDataEntriesCtrl.$inject = [
     '$scope',
     '$q',
+    '$compile',
+    '$modal',
     'DataEntry',
     'DTOptionsBuilder',
     'DTColumnBuilder'
   ];
 
-  function InventoryDataEntriesCtrl($scope, $q, DataEntry, DTOptionsBuilder, DTColumnBuilder) {
+  function InventoryDataEntriesCtrl($scope, $q, $compile, $modal, DataEntry, DTOptionsBuilder, DTColumnBuilder) {
     var vm = this;
     vm.inventory = $scope.inventory;
     vm.readOnly = $scope.readOnly;
@@ -21,6 +23,7 @@
     var options = DTOptionsBuilder.fromFnPromise(function() {
       var deferred = $q.defer();
       DataEntry.get({inventory_id: inventoryId}).$promise.then(function(results) {
+        vm.dataEntries = results.data_entries;
         deferred.resolve(results.data_entries);
       }, deferred.reject);
       return deferred.promise;
@@ -45,14 +48,35 @@
       }
     ]);
     vm.dtColumns = [
+      DTColumnBuilder.newColumn(null)
+        .notSortable()
+        .renderWith(actionsHTML)
+        .withOption('createdCell', function (cell) {
+          $compile(angular.element(cell).contents())($scope);
+        }),
       DTColumnBuilder.newColumn('general_data_question.data_type').withTitle('Data Type'),
       DTColumnBuilder.newColumn('general_data_question.data_capture').withTitle('Data Capture'),
       DTColumnBuilder.newColumn('data_entry_question.who_enters_data').withTitle('Who Enters Data'),
       DTColumnBuilder.newColumn('data_access_question.who_access_data').withTitle('Who Access Data'),
     ];
 
+    vm.showInventoryDataEntryModal = function(dataEntryId) {
+      $scope.resource = _.find(vm.dataEntries, {id: dataEntryId});
+
+      vm.modalInstance = $modal.open({
+        template: '<inventory-data-entry-modal inventory="inventory" resource="resource"></inventory-data-entry-modal>',
+        scope: $scope
+      });
+    };
+
     $scope.$on('close-inventory-data-entry-modal', function() {
+      vm.modalInstance.dismiss('cancel');
       vm.dtOptions.reloadData(null, true);
     });
+
+    function actionsHTML (data) {
+      return '' +
+        '<i class="fa fa-pencil" ng-click="inventoryDataEntries.showInventoryDataEntryModal(' + data.id + ')"></i>';
+    }
   }
 })();
