@@ -40,6 +40,15 @@ class V1::ProductEntriesController < ApplicationController
     end
   end
 
+  def destroy
+    @product_entry = product_entries.find(params[:id])
+    authorize_action_for @product_entry
+
+    @product_entry.destroy
+
+    render nothing: true, status: 204
+  end
+
   private
   def product_entries
     inventory.product_entries

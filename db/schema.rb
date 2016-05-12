@@ -291,8 +291,10 @@ ActiveRecord::Schema.define(version: 20160518220822) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "product_entry_id"
+    t.datetime "deleted_at"
   end
 
+  add_index "general_inventory_questions", ["deleted_at"], name: "index_general_inventory_questions_on_deleted_at", using: :btree
   add_index "general_inventory_questions", ["product_entry_id"], name: "index_general_inventory_questions_on_product_entry_id", using: :btree
 
   create_table "inventories", force: :cascade do |t|
@@ -305,6 +307,7 @@ ActiveRecord::Schema.define(version: 20160518220822) do
     t.text     "message"
     t.datetime "assigned_at"
     t.string   "share_token"
+    t.integer  "total_participant_responses", default: 0, null: false
   end
 
   create_table "inventory_access_requests", force: :cascade do |t|
@@ -438,8 +441,10 @@ ActiveRecord::Schema.define(version: 20160518220822) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "inventory_id"
+    t.datetime "deleted_at"
   end
 
+  add_index "product_entries", ["deleted_at"], name: "index_product_entries_on_deleted_at", using: :btree
   add_index "product_entries", ["inventory_id"], name: "index_product_entries_on_inventory_id", using: :btree
 
   create_table "product_questions", force: :cascade do |t|
@@ -450,8 +455,10 @@ ActiveRecord::Schema.define(version: 20160518220822) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "product_entry_id"
+    t.datetime "deleted_at"
   end
 
+  add_index "product_questions", ["deleted_at"], name: "index_product_questions_on_deleted_at", using: :btree
   add_index "product_questions", ["product_entry_id"], name: "index_product_questions_on_product_entry_id", using: :btree
 
   create_table "prospective_users", force: :cascade do |t|
@@ -574,8 +581,10 @@ ActiveRecord::Schema.define(version: 20160518220822) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "product_entry_id"
+    t.datetime "deleted_at"
   end
 
+  add_index "technical_questions", ["deleted_at"], name: "index_technical_questions_on_deleted_at", using: :btree
   add_index "technical_questions", ["product_entry_id"], name: "index_technical_questions_on_product_entry_id", using: :btree
 
   create_table "tool_categories", force: :cascade do |t|
@@ -615,8 +624,10 @@ ActiveRecord::Schema.define(version: 20160518220822) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "product_entry_id"
+    t.datetime "deleted_at"
   end
 
+  add_index "usage_questions", ["deleted_at"], name: "index_usage_questions_on_deleted_at", using: :btree
   add_index "usage_questions", ["product_entry_id"], name: "index_usage_questions_on_product_entry_id", using: :btree
 
   create_table "user_invitations", force: :cascade do |t|

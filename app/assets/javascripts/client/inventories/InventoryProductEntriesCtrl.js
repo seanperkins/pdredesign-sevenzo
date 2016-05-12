@@ -72,13 +72,26 @@
       });
     };
 
+    vm.deleteProductEntry = function (productEntryId) {
+      ProductEntry
+        .delete({
+          inventory_id: vm.inventory.id,
+          product_entry_id: productEntryId
+        })
+        .$promise
+        .then(function () {
+          vm.dtOptions.reloadData(null, true);
+        });
+    };
+
     $scope.$on('close-product-entry-modal', function() {
       vm.modalInstance && vm.modalInstance.dismiss('cancel');
       vm.dtOptions.reloadData(null, true);
     });
 
     function actionsHTML (data) {
-      return '<i class="fa fa-pencil" ng-click="inventoryProductEntries.showProductEntryModal(' + data.id + ')"></i>';
+      return '<i class="fa fa-pencil" ng-click="inventoryProductEntries.showProductEntryModal(' + data.id + ')"></i>' +
+             '<i class="fa fa-remove" ng-click="inventoryProductEntries.deleteProductEntry(' + data.id + ')"></i>';
     }
   }
 })();

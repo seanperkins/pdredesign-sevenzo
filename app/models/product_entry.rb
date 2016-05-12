@@ -19,6 +19,8 @@ class ProductEntry < ActiveRecord::Base
 
   belongs_to :inventory
 
+  acts_as_paranoid
+
   validates :general_inventory_question, presence: true
   validates :usage_question, presence: true
   validates :technical_question, presence: true
@@ -46,5 +48,4 @@ class ProductEntry < ActiveRecord::Base
     }).
     uniq
   }
-  
 end
