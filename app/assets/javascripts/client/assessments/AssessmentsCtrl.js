@@ -5,11 +5,13 @@
 
   AssessmentsCtrl.$inject = [
     '$scope',
+    '$modal',
     'SessionService',
+    'RecommendationTextService',
     'assessments'
   ];
 
-  function AssessmentsCtrl($scope, SessionService, assessments) {
+  function AssessmentsCtrl($scope, $modal, SessionService, RecommendationTextService, assessments) {
 
     $scope.assessments = assessments;
     $scope.user = SessionService.getCurrentUser();
@@ -19,6 +21,10 @@
     $scope.selectedDistrict = '';
     $scope.selectedStatus = '';
     $scope.permissionTypes = ['Organizer', 'Observer'];
+
+    $scope.text = function() {
+      return RecommendationTextService.assessmentText();
+    };
 
     $scope.$watch('user', function() {
       if (!$scope.user) {
@@ -71,5 +77,13 @@
     $scope.responseLinkDisabled = function(assessment) {
       return !!(_.isEmpty(assessment.responses) && !assessment.is_participant);
     };
+
+    $scope.openAssessmentModal = function() {
+      $scope.assessmentModal = $modal.open({
+        templateUrl: 'client/home/assessment_modal.html',
+        controller: 'AssessmentModalCtrl',
+        controllerAs: 'assessmentModal'
+      });
+    }
   }
 })();

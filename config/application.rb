@@ -34,6 +34,7 @@ module PdrServer
     config.angular_templates.module_name    = 'templates'
     config.angular_templates.inside_paths   = [Rails.root.join('app', 'assets', 'javascripts', 'client', 'views'),
                                                Rails.root.join('app', 'assets', 'javascripts', 'client', 'inventories'),
+                                               Rails.root.join('app', 'assets', 'javascripts', 'client', 'analyses'),
                                                Rails.root.join('app', 'assets', 'javascripts', 'client', 'access'),
                                                Rails.root.join('app', 'assets', 'javascripts', 'client', 'navigation'),
                                                Rails.root.join('app', 'assets', 'javascripts', 'client', 'forms'),
@@ -44,6 +45,7 @@ module PdrServer
                                                Rails.root.join('app', 'assets', 'javascripts', 'client', 'reminders'),
                                                Rails.root.join('app', 'assets', 'javascripts', 'client', 'home'),
                                                Rails.root.join('app', 'assets', 'javascripts', 'client', 'learning_questions'),
+                                               Rails.root.join('app', 'assets', 'javascripts', 'client', 'buttons'),
                                                Rails.root.join('app', 'assets', 'javascripts', 'client', 'consensus')]
     config.angular_templates.markups        = %w(erb)
     config.angular_templates.htmlcompressor = false

@@ -15,9 +15,46 @@
       .icons
         font-size: .95em
         .fa-stack-2x
-          color:  #c5dce2
+          color: #c5dce2
         .fa-stack-1x
           color: white
+  .welcome-backdrop
+    // With credit to http://stackoverflow.com/a/22211990
+    // Requires precise knowledge of the image dimensions.
+    $calculated-padding: (740 / 380 * 100)
+    background: asset-url('home_bg.png') no-repeat
+    background-size: auto auto
+    color: $secondary-font-color
+    padding-bottom: #{$calculated-padding}px
+    margin-bottom: #{-$calculated-padding}px
+    h1
+      margin: 0
+      padding-top: 20px
+      padding-bottom: 5px
+
+  .tool-container
+    background-color: $background-color-body
+    margin-bottom: 0.75em
+    .tool-container-header
+      padding-top: 3%
+      display: flex
+      flex-wrap: nowrap
+      .quick-actions
+        margin-left: 2%
+        font-weight: bold
+    .tool-link-container
+      padding-left: 0
+      padding-right: 0
+      display: flex
+      flex-direction: column
+    h2
+      margin-top: 0
+    .hr-line
+      border-bottom: 1px solid $light-grey
+      width: 95%
+      margin-left: 2.5%
+      margin-right: 2.5%
+      display: inline-block
 
   .design-principles
     background-color: #C5DCE2
@@ -82,7 +119,6 @@
         font-weight: bold
       span.subcategories
         display: block
-
 
       .tool
         margin-bottom: 0
