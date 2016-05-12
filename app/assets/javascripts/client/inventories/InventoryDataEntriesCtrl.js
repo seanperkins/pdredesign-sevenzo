@@ -70,13 +70,12 @@
     };
 
     $scope.$on('close-inventory-data-entry-modal', function() {
-      vm.modalInstance.dismiss('cancel');
+      vm.modalInstance && vm.modalInstance.dismiss('cancel');
       vm.dtOptions.reloadData(null, true);
     });
 
     function actionsHTML (data) {
-      return '' +
-        '<i class="fa fa-pencil" ng-click="inventoryDataEntries.showInventoryDataEntryModal(' + data.id + ')"></i>';
+      return '<i class="fa fa-pencil" ng-click="inventoryDataEntries.showInventoryDataEntryModal(' + data.id + ')"></i>';
     }
   }
 })();
