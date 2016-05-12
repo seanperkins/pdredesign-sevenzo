@@ -189,7 +189,6 @@
       views: {
         '': {
           controller: 'ConsensusShowCtrl',
-          //controllerAs: 'consensusShow',
           templateUrl: 'client/views/consensus/show.html'
         },
         'sidebar': {
