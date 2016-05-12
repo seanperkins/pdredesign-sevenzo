@@ -37,7 +37,7 @@
       options.buttons = buttonsOptions;
       return options;
     };
-    
+
     vm.dtOptions = options.withPaginationType('full_numbers').withButtons([
       {
         extend: 'columnsToggle',
@@ -47,11 +47,11 @@
     vm.dtColumns = [
       DTColumnBuilder.newColumn('general_inventory_question.product_name').withTitle('Name'),
       DTColumnBuilder.newColumn('general_inventory_question.vendor').withTitle('Vendor'),
-      DTColumnBuilder.newColumn('general_inventory_question.purpose').withTitle('Used for'),
+      DTColumnBuilder.newColumn('general_inventory_question.purpose').withTitle('Used For'),
       DTColumnBuilder.newColumn('technical_question.hosting').withTitle('Hosted'),
       DTColumnBuilder.newColumn('technical_question.connectivity').withTitle('Connected'),
-      DTColumnBuilder.newColumn('technical_question.single_sign_on').withTitle('Single sign on?'),
-      DTColumnBuilder.newColumn('usage_question.usage').withTitle('Usage data?')
+      DTColumnBuilder.newColumn('technical_question.single_sign_on').withTitle('Single Sign-On'),
+      DTColumnBuilder.newColumn('usage_question.usage').withTitle('Usage Data')
     ];
 
     $scope.$on('close-product-entry-modal', function() {

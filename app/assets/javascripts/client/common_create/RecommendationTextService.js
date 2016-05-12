@@ -13,9 +13,9 @@
 
     service.assessmentText = function() {
       if (SessionService.isNetworkPartner()) {
-        return 'Recommend Assessment';
+        return 'Recommend Readiness Assessment';
       } else {
-        return 'Facilitate New Assessment';
+        return 'Facilitate New Readiness Assessment';
       }
     };
 
