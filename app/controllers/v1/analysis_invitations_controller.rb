@@ -18,7 +18,7 @@ class V1::AnalysisInvitationsController < ApplicationController
 
     Analyses::MemberFromInvite.new(invite).execute
 
-    queue_woraker(invite.id) if send_invite
+    queue_worker(invite.id) if send_invite
     render nothing: true
   end
 
