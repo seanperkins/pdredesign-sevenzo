@@ -6,12 +6,14 @@
   InventoryProductEntriesCtrl.$inject = [
     '$scope',
     '$q',
+    '$compile',
+    '$modal',
     'ProductEntry',
     'DTOptionsBuilder',
     'DTColumnBuilder'
   ];
 
-  function InventoryProductEntriesCtrl($scope, $q, ProductEntry, DTOptionsBuilder, DTColumnBuilder) {
+  function InventoryProductEntriesCtrl($scope, $q, $compile, $modal, ProductEntry, DTOptionsBuilder, DTColumnBuilder) {
     var vm = this;
     vm.inventory = $scope.inventory;
     vm.readOnly = $scope.readOnly;
@@ -21,6 +23,7 @@
     var options = DTOptionsBuilder.fromFnPromise(function() {
       var deferred = $q.defer();
       ProductEntry.get({inventory_id: inventoryId}).$promise.then(function(results) {
+        vm.productEntries = results.product_entries;
         deferred.resolve(results.product_entries);
       }, deferred.reject);
       return deferred.promise;
@@ -37,7 +40,7 @@
       options.buttons = buttonsOptions;
       return options;
     };
-    
+
     vm.dtOptions = options.withPaginationType('full_numbers').withButtons([
       {
         extend: 'columnsToggle',
@@ -45,17 +48,37 @@
       }
     ]);
     vm.dtColumns = [
+      DTColumnBuilder.newColumn(null)
+        .notSortable()
+        .renderWith(actionsHTML)
+        .withOption('createdCell', function (cell) {
+          $compile(angular.element(cell).contents())($scope);
+        }),
       DTColumnBuilder.newColumn('general_inventory_question.product_name').withTitle('Name'),
       DTColumnBuilder.newColumn('general_inventory_question.vendor').withTitle('Vendor'),
-      DTColumnBuilder.newColumn('general_inventory_question.purpose').withTitle('Used for'),
+      DTColumnBuilder.newColumn('general_inventory_question.purpose').withTitle('Used For'),
       DTColumnBuilder.newColumn('technical_question.hosting').withTitle('Hosted'),
       DTColumnBuilder.newColumn('technical_question.connectivity').withTitle('Connected'),
-      DTColumnBuilder.newColumn('technical_question.single_sign_on').withTitle('Single sign on?'),
-      DTColumnBuilder.newColumn('usage_question.usage').withTitle('Usage data?')
+      DTColumnBuilder.newColumn('technical_question.single_sign_on').withTitle('Single Sign-On'),
+      DTColumnBuilder.newColumn('usage_question.usage').withTitle('Usage Data')
     ];
 
+    vm.showProductEntryModal = function(productEntryId) {
+      $scope.resource = _.find(vm.productEntries, {id: productEntryId});
+
+      vm.modalInstance = $modal.open({
+        template: '<product-entry-modal inventory="inventory" resource="resource"></product-entry-modal>',
+        scope: $scope
+      });
+    };
+
     $scope.$on('close-product-entry-modal', function() {
+      vm.modalInstance && vm.modalInstance.dismiss('cancel');
       vm.dtOptions.reloadData(null, true);
     });
+
+    function actionsHTML (data) {
+      return '<i class="fa fa-pencil" ng-click="inventoryProductEntries.showProductEntryModal(' + data.id + ')"></i>';
+    }
   }
 })();

@@ -4,17 +4,11 @@
   </div>
 
   <div class="status" ng-switch on="entity.status">
-    <div ng-switch-when="inventory" ng-if="entity.consensus.is_completed">
+    <div ng-switch-when="inventory">
       <span class="fa-stack fa-2x">
         <i class="fa fa-circle-thin fa-stack-2x"></i>
         <i ng-class="entityStatus.completedInventoryIcon(entity)" class="fa fa-stack-1x"></i>
       </span>
-    </div>
-    <div ng-switch-when="inventory" ng-if="!entity.consensus.is_completed">
-        <span class="fa-stack fa-2x">
-          <i class="fa fa-circle-thin fa-stack-2x"></i>
-          <span class="fa-stack-1x percent-complete">{{entityStatus.roundNumber(entity.percent_completed)}}%</span>
-        </span>
     </div>
     <div ng-switch-default>
         <span class="fa-stack fa-2x">

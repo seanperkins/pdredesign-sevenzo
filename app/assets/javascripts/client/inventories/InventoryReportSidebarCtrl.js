@@ -8,24 +8,29 @@
     '$modal',
     'inventory',
     '$stateParams',
-    'SessionService',
     '$state'
   ];
 
-  function InventoryReportSidebarCtrl($scope, $modal, inventory, $stateParams, SessionService, $state) {
+  function InventoryReportSidebarCtrl($scope, $modal, inventory, $stateParams, $state) {
     var vm = this;
-    $scope.inventory = inventory;
-    vm.inventory = $scope.inventory;
+    vm.inventory = inventory;
     vm.shared = $stateParams.shared || false;
-    var user = SessionService.getCurrentUser();
     vm.hideAnalysisAccess = inventory.analysis_count === 0 && !vm.inventory.is_facilitator;
     vm.creatingAnalysis = vm.inventory.analysis_count === 0 && vm.inventory.is_facilitator;
+
     vm.createAnalysis = function() {
       vm.analysisModal = $modal.open({
-        template: '<analysis-modal inventory="inventory"></analysis-modal>',
-        scope: $scope
+        templateUrl: 'client/analyses/analysis_modal.html',
+        controller: 'AnalysisModalCtrl',
+        controllerAs: 'analysisModal',
+        resolve: {
+          preSelectedInventory: function() {
+            return vm.inventory;
+          }
+        }
       });
     };
+
     vm.gotoAnalysis = function() {
       if(vm.inventory.analysis_count == 1) {
         var analysisState = !vm.inventory.analysis.assigned_at ? 'inventory_analysis_assign' :'inventory_analysis_dashboard' ;
@@ -37,6 +42,7 @@
         $state.go('analyses');
       }
     };
+
     vm.downloadReport = function() {
       vm.downloadModal = $modal.open({
         templateUrl: 'client/inventories/inventory_report_download_modal.html',
@@ -47,11 +53,9 @@
     vm.closeDownloadReportModal = function() {
       vm.downloadModal.dismiss();
     };
+
     $scope.$on('inventory-report-downloaded', function() {
       vm.closeDownloadReportModal();
-    });
-    $scope.$on('close-analysis-modal', function() {
-      vm.analysisModal.dismiss();
     });
   }
 })();

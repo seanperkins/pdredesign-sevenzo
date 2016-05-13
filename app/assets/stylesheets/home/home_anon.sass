@@ -1,0 +1,80 @@
+.home-container.container-fluid
+  color: $font-color
+  background-color: #FFF
+  font-size: 1.5em
+  &, .view
+    padding-left: 0
+    padding-right: 0
+  .primary-color
+    color: $primary-color
+  .dark-primary-color
+    color: $dark-primary-color
+  .secondary-color
+    color: $secondary-color
+
+  .hero-header
+    background: image-url('hero_header.png') no-repeat center
+    background-size: cover
+    padding: 3em 0 5em 0
+    h1, p
+      color: #fff
+    .hero-banner
+      display: flex
+      flex-direction: column
+      justify-content: center
+      align-items: center
+      .underline
+        text-decoration: underline
+      p
+        text-align: center
+      padding: 0 30% 0 30%
+  .hero-footer
+    @extend .hero-header
+    background: image-url('hero_footer.png') no-repeat center
+    background-size: cover
+    margin-bottom: 3em
+    .hero-footer-banner
+      @extend .hero-banner
+      padding: 0 25% 0 25%
+      .btn-padding
+        margin: 2.5em 0 1.5em 0
+
+
+  div.body
+    padding-top: 3em
+
+  div.stats
+    padding-top: 3em
+    padding-bottom: 5em
+    .legal
+      margin-top: 2em
+      font-size: .4em
+    img
+      width: 100%
+      max-width: 35em
+
+  div.path
+    background-color: $navbar-color
+    padding-top: 1em
+    h2
+      padding: 1em inherit
+    .points
+      padding-bottom: 2em
+    p
+      font-size: .9em
+    .points
+      img
+        width: 25%
+    .icons
+      img
+        width: 100%
+
+  div.action
+    padding-top: 2em
+    padding-bottom: 4em
+
+    button
+      font-size: 1.5em
+      margin-top: 2em
+      background-color: $primary-color
+      color: #fff

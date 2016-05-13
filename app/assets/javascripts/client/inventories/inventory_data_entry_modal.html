@@ -26,7 +26,7 @@
           <label for='data-entry-data-type'>
             Data Type
           </label>
-          <select 
+          <select
               class='form-control'
               ng-model='inventoryDataEntryModal.dataEntry.general_data_question.data_type'
               ng-options='name for (id, name) in inventoryDataEntryModal.constants.data_entry.general_data_question.data_type_options'
@@ -67,7 +67,7 @@
           </label>
           <div class='control-list'>
             <label ng-repeat='(id, name) in inventoryDataEntryModal.constants.data_entry.general_data_question.data_capture_options'>
-              <fake-radio model='inventoryDataEntryModal.dataEntry.general_data_question.data_capture' value='{{name}}'></fake-radio>
+              <fake-radio proxy-ng-model='inventoryDataEntryModal.dataEntry.general_data_question.data_capture' proxy-value='{{name}}'></fake-radio>
               {{name}}
             </label>
           </div>
@@ -96,7 +96,7 @@
       <div class='col-sm-12'>
         <div class='form-group'>
           <label for='data-entry-how-data-is-entered'>
-            How Data is Entered
+            How Data Is Entered
             <span class='field-info'>How is data entered?</span>
           </label>
           <textarea
@@ -112,10 +112,10 @@
       <div class='col-sm-6'>
         <div class='form-group'>
           <label for='data-entry-when-data-is-entered'>
-            When Data is Entered
+            When Data Is Entered
             <span class='field-info'>How frequently is the data updated?</span>
           </label>
-          <select 
+          <select
               class='form-control'
               ng-model='inventoryDataEntryModal.dataEntry.data_entry_question.when_data_is_entered'
               ng-options='name for (id, name) in inventoryDataEntryModal.constants.data_entry.data_entry_question.data_entered_frequencies'
@@ -132,7 +132,7 @@
             Who Accesses Data
             <span class='field-info'>Who can access the data? Include all types of individuals.</span>
           </label>
-          <select 
+          <select
               class='form-control'
               ng-model='inventoryDataEntryModal.dataEntry.data_access_question.who_access_data'
               ng-options='name for (id, name) in inventoryDataEntryModal.constants.data_entry.data_access_question.data_accessed_bies'
@@ -144,7 +144,7 @@
       <div class='col-sm-12'>
         <div class='form-group'>
           <label for='data-entry-how-data-is-accessed'>
-            How Data is Accessed
+            How Data Is Accessed
             <span class='field-info'>How do those individuals access the data?</span>
           </label>
           <textarea
@@ -159,7 +159,7 @@
       <div class='col-sm-12'>
         <div class='form-group'>
           <label for='data-entry-why-data-is-accessed'>
-            Why Data is Accessed
+            Why Data Is Accessed
             <span class='field-info'>For what purposes is the data accessed? For whom?</span>
           </label>
           <textarea

@@ -1,16 +1,16 @@
 <div class="row secondary user-header">
   <div class="col-md-12">
     <h1>Inventory List</h1>
-    <p>Hi {{inventoryIndex.user.first_name}}. This is your Inventory List. Create a new inventory or check the status of
+    <p>Hi {{inventoryIndex.user.first_name}}. This is your Inventory List. Create a new Inventory or check the status of
       an existing one to proceed.</p>
   </div>
 </div>
 <div class="row tertiary">
   <div class="col-md-12">
-    <start-inventory></start-inventory>
+    <primary-button icon="fa-bullhorn" click-fn="inventoryIndex.openInventoryModal()"
+                    text="Facilitate an Inventory"></primary-button>
   </div>
 </div>
 <div ng-repeat="inventory in inventoryIndex.inventories">
   <entry context="inventory" entity="inventory"></entry>
 </div>
-

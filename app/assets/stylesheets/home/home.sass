@@ -1,0 +1,149 @@
+.home-controller
+  .popover
+    width: 100%
+    .popover-content
+      .second
+        margin-top: 0.5em
+      p.no-link
+        font-size: 0.875em
+      p.greeting
+        font-size: 1.375em
+        font-weight: bold
+      p.description
+        margin-top: -0.5em
+        font-size: 0.875em
+      .icons
+        font-size: .95em
+        .fa-stack-2x
+          color: #c5dce2
+        .fa-stack-1x
+          color: white
+  .welcome-backdrop
+    // With credit to http://stackoverflow.com/a/22211990
+    // Requires precise knowledge of the image dimensions.
+    $calculated-padding: (740 / 380 * 100)
+    background: asset-url('home_bg.png') no-repeat
+    background-size: auto auto
+    color: $secondary-font-color
+    padding-bottom: #{$calculated-padding}px
+    margin-bottom: #{-$calculated-padding}px
+    h1
+      margin: 0
+      padding-top: 20px
+      padding-bottom: 5px
+
+  .tool-container
+    background-color: $background-color-body
+    margin-bottom: 0.75em
+    .tool-container-header
+      padding-top: 3%
+      display: flex
+      flex-wrap: nowrap
+      .quick-actions
+        margin-left: 2%
+        font-weight: bold
+    .tool-link-container
+      padding-left: 0
+      padding-right: 0
+      display: flex
+      flex-direction: column
+    h2
+      margin-top: 0
+    .hr-line
+      border-bottom: 1px solid $light-grey
+      width: 95%
+      margin-left: 2.5%
+      margin-right: 2.5%
+      display: inline-block
+
+  .design-principles
+    background-color: #C5DCE2
+    margin-top: 1em
+    padding: 0.2em .75em
+    font-size: .75em
+    font-weight: bold
+    h1
+      margin-top: .3em
+      text-transform: uppercase
+      color: #2D3A40
+  .icons
+    margin-bottom: 1em
+    font-size: .95em
+    .fa-stack-2x
+      color: #fff
+    .fa-stack-1x
+      color: #397585
+  .toolkits
+    padding-right: 0
+    .toolkit
+      padding-right: 0
+      padding-left: 0
+    .triangle-right
+      border-top: 0.9375em solid #D4E5E9
+      border-left: 0.625em solid #C5DCE2
+      border-bottom: 0.9375em solid #D4E5E9
+      float: right
+    .title.title-0
+      background-color: #C5DCE2
+    .title.title-1
+      background-color: #D4E5E9
+      .triangle-right
+        border-top: 0.9375em solid #E2EEF1
+        border-left: 0.625em solid #D4E5E9
+        border-bottom: 0.9375em solid #E2EEF1
+    .title.title-2
+      background-color: #E2EEF1
+      .triangle-right
+        visibility: hidden
+    .row.title
+      padding: 0 0 0 .3em
+      font-size: 1.1em
+      font-weight: bold
+      text-transform: uppercase
+      line-height: 1.8em
+      max-height: 1.8em
+    .goal
+      font-size: 1.0em
+      font-style: italic
+      padding: .3em
+      color: #999999
+      min-height: 5em
+    .categories
+      font-size: 1em
+      padding: .5em
+      margin-right: .5em
+      margin-bottom: 1em
+      background-color: #D4D2C8
+
+      .title
+        font-weight: bold
+      span.subcategories
+        display: block
+
+      .tool
+        margin-bottom: 0
+        padding: .1em
+        li
+          font-size: .9em
+          list-style: none
+          background-color: #fff
+          padding: .2em
+          .tool-title, .tool-check
+            vertical-align: middle
+            display: table-cell
+          .fa
+            color: #fff
+            padding: .2em
+            margin-right: .2em
+            font-size: 1.2em
+            &.active
+              background-color: #1273BA
+            &.inactive
+              background-color: #D4D2C8
+
+/* Media Query for toolkit phase title on screen col-md */
+@media (min-width: 992px) and (max-width: 1199px)
+  .home-controller
+    .toolkits
+      .row.title
+        font-size: 0.83em
