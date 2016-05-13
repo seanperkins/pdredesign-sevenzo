@@ -5,21 +5,20 @@ PDRClient.directive('consensus', [
       replace: true,
       scope: {
         assessmentId:  '@',
-        responseId:    '@'
+        responseId:    '@',
+        entity:        '=',
+        consensus:     '=',
+        context:       '@'
       },
       templateUrl: 'client/views/directives/consensus/consensus_questions.html',
       controller: [
         '$scope',
-        '$http',
         '$timeout',
-        '$stateParams',
-        '$location',
-        'SessionService',
         'Consensus',
-        'Score',
         'ResponseHelper',
         'ConsensusStateService',
-        function($scope, $http, $timeout, $stateParams, $location, SessionService, Consensus, Score, ResponseHelper, ConsensusStateService) {
+        'ConsensusService',
+        function($scope, $timeout, Consensus, ResponseHelper, ConsensusStateService, ConsensusService) {
 
           $scope.isConsensus        = true;
           $scope.isReadOnly         = true;
@@ -27,6 +26,10 @@ PDRClient.directive('consensus', [
           $scope.teamRoles          = [];
           $scope.loading            = false;
           $scope.answerPercentages  = [];
+
+          ConsensusService.setContext($scope.context);
+          $scope.isAssessment = $scope.context === 'assessment';
+          $scope.isAnalysis = $scope.context === 'analysis';
 
           $scope.isLoading = function(){ return $scope.loading; };
 
@@ -70,26 +73,18 @@ PDRClient.directive('consensus', [
           $scope.viewModes = [{label: "Category"}, {label: "Variance"}];
           $scope.viewMode  = $scope.viewModes[0];
 
-          $scope.redirectToReport = function(assessmentId) {
-            $location.path("/assessments/" + assessmentId + "/report");
-          };
-
           $scope.$on('submit_consensus', function() {
-            Consensus
-              .submit({assessment_id: $scope.assessmentId, id: $scope.responseId}, {submit: true})
-              .$promise
-              .then(function(data){
-                $scope.redirectToReport($scope.assessmentId);
+            ConsensusService
+              .submitConsensus($scope.consensus.id)
+              .then( function () {
+                ConsensusService.redirectToReport();
               });
           });
 
           $scope.updateConsensus = function(){
-             return Consensus
-              .get({assessment_id: $scope.assessmentId,
-                    id: $scope.responseId,
-                    team_role: $scope.teamRole})
-              .$promise
-              .then(function(data) {
+            return ConsensusService
+              .loadConsensus($scope.consensus.id, $scope.teamRole)
+              .then(function (data) {
                 $scope.updateConsensusState(data);
                 $scope.scores     = data.scores;
                 $scope.data       = data.categories;
@@ -97,6 +92,7 @@ PDRClient.directive('consensus', [
                 $scope.teamRoles  = data.team_roles;
                 $scope.isReadOnly = data.is_completed || false;
                 $scope.participantCount = data.participant_count;
+
                 return true;
               });
           };
@@ -119,6 +115,14 @@ PDRClient.directive('consensus', [
 
           $timeout(function(){ $scope.updateConsensus(); });
 
+          if ($scope.context === "analysis") {
+            ConsensusService
+              .getInventoryProductAndDataEntries()
+              .then(function (data) {
+                $scope.productEntries = data[0].product_entries;
+                $scope.dataEntries = data[1].data_entries;
+               });
+          }
         }]
     };
 }]);

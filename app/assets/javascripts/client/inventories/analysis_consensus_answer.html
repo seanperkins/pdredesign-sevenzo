@@ -1,0 +1,58 @@
+<div class="answers" ng-show="question.answersVisible">
+  <div class="supporting-material">
+    <div class="supporting-products">
+      <div class="supporting-list">
+        <div class="supporting-list-header">
+          <span>Supporting Products</span>
+          <product-entry-list-link product-entries="productEntries" resource="question.score.supporting_inventory_response"></product-entry-list-link>
+        </div>
+        <div class="supporting-list-contents">
+          <p ng-repeat="selectedProductEntry in analysisConsensusAnswer.selectedProductEntries()">{{selectedProductEntry.general_inventory_question.product_name}}</p>
+        </div>
+      </div>
+      <div class="notes">
+        <span class="notes-header">Notes</span>
+        <textarea
+          ng-model="question.score.supporting_inventory_response.product_entry_evidence"
+          placeholder="This is completed by a designated facilitator during one or more in-person meetings with the team that participated in the inventory.">
+        </textarea>
+      </div>
+    </div>
+    <div class="supporting-data">
+      <div class="supporting-list">
+        <div class="supporting-list-header">
+          <span>Supporting Data</span>
+          <inventory-data-entry-list-link inventory-data-entries="inventoryDataEntries" resource="question.score.supporting_inventory_response"></inventory-data-entry-list-link>
+        </div>
+        <div class="supporting-list-contents">
+          <p ng-repeat="selectedInventoryDataEntry in analysisConsensusAnswer.selectedInventoryDataEntries()">{{selectedInventoryDataEntry.name}}</p>
+        </div>
+      </div>
+      <div class="notes">
+        <span class="notes-header">Notes</span>
+        <textarea
+          ng-model="question.score.supporting_inventory_response.data_entry_evidence"
+          placeholder="This is completed by a designated facilitator during one or more in-person meetings with the team that participated in the inventory.">
+        </textarea>
+      </div>
+    </div>
+  </div>
+  <div class="score">
+    <div ng-repeat="answer in question.answers">
+      <span class="score-title">{{analysisConsensusAnswer.answerTitle(answer.value)}}</span>
+      <label class="score-checkbox scored-{{answer.value}}">
+        <fake-radio proxy-ng-model="question.score.value" proxy-ng-value="answer.value"></fake-radio>
+      </label>
+    </div>
+    <!-- Temporary hack for hiding "skip". -->
+    <div ng-if="false">
+      <span class="score-title">Skip</span>
+      <label class="score-checkbox skipped">
+        <fake-radio proxy-ng-model="question.score.value" proxy-ng-value="null"></fake-radio>
+      </label>
+    </div>
+  </div>
+  <div class="save">
+    <a class="btn btn-primary" ng-click="analysisConsensusAnswer.saveScore()">Save Response</a>
+  </div>
+</div>

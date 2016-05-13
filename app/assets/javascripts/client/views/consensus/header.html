@@ -2,10 +2,10 @@
   <div class="col-md-12">
     <div class="media">
       <div class="media-body">
-        <h1>{{assessment.name}}</h1>
+        <h1>{{entity.name}}</h1>
         <p class='byline'>organized by:
-          <a href=""> {{assessment.facilitator.full_name}}</a>
-          on {{assessment.created_at  | amDateFormat:'MMMM Do, YYYY'}}
+          <a href=""> {{entity.facilitator.full_name}}</a>
+          on {{entity.created_at  | amDateFormat:'MMMM Do, YYYY'}}
         </p>
       </div>
     </div>
@@ -16,15 +16,10 @@
     <div class="media">
       <div class="media-body">
           <h2>Instructions</h2>
-          <p class='instructions-content'>
-            The Readiness Assessment consists of questions across the 8 categories of the <readiness-assessment-modal title="PD System Map"></readiness-assessment-modal>. As the assessment facilitator, use this page to guide and document the conversation during the in-person consensus meeting.
-          </p>
-          <p class='instructions-content'>
-            For each question, discuss the individual responses as a group to collectively decide a consensus score, including notes for reference. You may sort or skip questions to support a targeted discussion. Save each completed response as you move through the consensus meeting.
-          </p>
+          <p class='instructions-content' ng-repeat='paragraph in instructionParagraphs()' bind-html-compile='paragraph'></p>
         </div>
       </div>
-      <div class="export-buttons">
+      <div class="export-buttons" ng-if="context === 'assessment'">
         <h2>Consensus Export Options</h2>
         <button class="btn btn-success" ng-click="exportToPDF()">Export to PDF</button>
         <button class="btn btn-success" ng-click="exportToCSV()">Export to CSV</button>

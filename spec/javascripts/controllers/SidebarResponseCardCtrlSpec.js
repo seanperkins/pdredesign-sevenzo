@@ -2,33 +2,44 @@ describe('Controller: SidebarResponseCardCtrl', function() {
   var subject,
       $scope,
       $httpBackend,
+      $q,
       $location,
       Consensus,
-      Response;
+      Response,
+      ConsensusService;
 
   beforeEach(module('PDRClient'));
 
   beforeEach(inject(function($injector, $controller) {
-      $scope       = $injector.get('$rootScope').$new();
-      $httpBackend = $injector.get('$httpBackend');
-      $location    = $injector.get('$location');
-      Consensus    = $injector.get('Consensus');
-      Response     = $injector.get('Response');
+      $scope           = $injector.get('$rootScope').$new();
+      $httpBackend     = $injector.get('$httpBackend');
+      $q               = $injector.get('$q');
+      $location        = $injector.get('$location');
+      Consensus        = $injector.get('Consensus');
+      ConsensusService = $injector.get('ConsensusService');
+      Response         = $injector.get('Response');
 
       subject  = $controller('SidebarResponseCardCtrl', {
-        $scope: $scope
+        $scope: $scope,
+        current_context: "assessment",
+        current_entity: {name: "test"},
+        consensus: {id: 2}
       });
 
-      $scope.assessmentId = 1;
       $scope.responseId   = 2;
   }));
 
   it('updates questions via #updateScores', function(){
     var expected = [{}, {}];
+    spyOn(ConsensusService, 'updateScores').and.callFake(function () {
+      return {
+        then: function (callback) {
+          return callback(expected);
+        }
+      }
+    });
 
-    $httpBackend.expectGET('/v1/assessments/1/responses/2/scores').respond(expected);
     $scope.updateScores();
-    $httpBackend.flush();
 
     expect($scope.questions.length).toEqual(2);
   });
@@ -61,18 +72,6 @@ describe('Controller: SidebarResponseCardCtrl', function() {
       {score: {skipped: true, value: null, evidence: 'something'}},
       {score: {}}];
     expect($scope.unansweredQuestions()).toEqual(1);
-  });
-
-  describe('#subject',function() {
-    it('returns Response when is response', function() {
-      spyOn($scope, 'isResponse').and.returnValue(true);
-      expect($scope.subject()).toEqual(Response);
-    });
-
-    it('returns Consensus when not response', function() {
-      spyOn($scope, 'isResponse').and.returnValue(false);
-      expect($scope.subject()).toEqual(Consensus);
-    });
   });
 
   describe('#canSubmit', function() {
@@ -122,8 +121,9 @@ describe('Controller: SidebarResponseCardCtrl', function() {
     });
   });
 
-  it('redirectToAssessmentsIndex redirects in Assessment Index page', function() {
-    $scope.redirectToAssessmentsIndex();
+  it('redirectToEntityIndex redirects in Assessment Index page', function() {
+    ConsensusService.setContext("assessment");
+    $scope.redirectToEntityIndex();
     expect($location.path()).toEqual('/assessments');
   });
 

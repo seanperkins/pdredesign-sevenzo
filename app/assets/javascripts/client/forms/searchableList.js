@@ -1,8 +1,8 @@
 (function() {
   'use strict';
   angular.module('PDRClient')
-      .directive('searchableList', searchableList);
-  
+    .directive('searchableList', searchableList);
+
   function searchableList () {
     return {
       restrict: 'E',
@@ -22,13 +22,16 @@
       element.find('.list > div').removeClass('odd');
 
       var searchTerm = event.currentTarget.value;
-      
+
       _.each( element.find('.list').children(), function (listItemElement) {
-         if (listItemElement.innerText.match(searchTerm) === null) {
+        var innerText = (listItemElement.innerText || "").toLowerCase();
+        var term = (searchTerm || "").toLowerCase();
+
+        if (innerText.match(term) === null) {
           $(listItemElement).hide();
-         } else {
+        } else {
           $(listItemElement).show();
-         }
+        }
       });
 
       element.find('.list > div:visible:even').addClass('odd');
