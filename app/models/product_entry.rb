@@ -12,10 +12,13 @@ class ProductEntry < ActiveRecord::Base
   include Authority::Abilities
   self.authorizer_name = 'ProductEntryAuthorizer'
 
-  has_one :general_inventory_question, -> { with_deleted }, dependent: :delete
-  has_one :product_question, -> { with_deleted }, dependent: :delete
-  has_one :usage_question, -> { with_deleted }, dependent: :delete
-  has_one :technical_question, -> { with_deleted }, dependent: :delete
+  # XXX These were (and should be) dependent: :delete
+  # but the paranoia gem doesn't work with that for the restoring behaviour
+  # https://github.com/rubysherpas/paranoia/issues/320
+  has_one :general_inventory_question, -> { with_deleted }, dependent: :destroy
+  has_one :product_question, -> { with_deleted }, dependent: :destroy
+  has_one :usage_question, -> { with_deleted }, dependent: :destroy
+  has_one :technical_question, -> { with_deleted }, dependent: :destroy
 
   belongs_to :inventory
 

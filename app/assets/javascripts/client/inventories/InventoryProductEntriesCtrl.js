@@ -84,14 +84,34 @@
         });
     };
 
+    vm.restoreProductEntry = function (productEntryId) {
+      ProductEntry
+        .restore({
+          inventory_id: vm.inventory.id,
+          product_entry_id: productEntryId
+        }, {})
+        .$promise
+        .then(function () {
+          vm.dtOptions.reloadData(null, true);
+        });
+    };
+
     $scope.$on('close-product-entry-modal', function() {
       vm.modalInstance && vm.modalInstance.dismiss('cancel');
       vm.dtOptions.reloadData(null, true);
     });
 
     function actionsHTML (data) {
-      return '<i class="fa fa-pencil" ng-click="inventoryProductEntries.showProductEntryModal(' + data.id + ')"></i>' +
-             '<i class="fa fa-remove" ng-click="inventoryProductEntries.deleteProductEntry(' + data.id + ')"></i>';
+      var editHTML = '<i class="fa fa-pencil" ng-click="inventoryProductEntries.showProductEntryModal(' + data.id + ')"></i>';
+      var deleteHTML = '<i class="fa fa-remove" ng-click="inventoryProductEntries.deleteProductEntry(' + data.id + ')"></i>';
+      var restoreHTML = '<i class="fa fa-undo" ng-click="inventoryProductEntries.restoreProductEntry(' + data.id + ')"></i>';
+
+      // TODO this should be "if user is an owner or facilitator"
+      if (true) {
+        return editHTML + deleteHTML + restoreHTML;
+      } else {
+        return editHTML + deleteHTML;
+      }
     }
   }
 })();
