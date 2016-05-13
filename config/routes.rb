@@ -121,6 +121,8 @@ PdrServer::Application.routes.draw do
       end
     end
 
+    get '/analyses', to: 'analyses#all'
+
     scope '/constants' do
       get 'product_entry', to: 'constants#product_entry'
       get 'data_entry', to: 'constants#data_entry'

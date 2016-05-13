@@ -1,0 +1,16 @@
+<div class="row secondary user-header">
+  <div class="col-md-12">
+    <h1>Analysis List</h1>
+    <p>Hi {{analysesIndex.user.first_name}}. This is your Analysis List. Create a new Analysis or check the status of
+      an existing one to proceed.</p>
+  </div>
+</div>
+<div class="row tertiary">
+  <div class="col-md-12">
+    <primary-button icon="fa-bullhorn"
+                    text="Facilitate an Analysis"></primary-button>
+  </div>
+</div>
+<div ng-repeat="analysis in analysesIndex.analyses">
+  <entry context="analysis" entity="analysis"></entry>
+</div>

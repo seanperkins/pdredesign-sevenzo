@@ -14,7 +14,8 @@
 
     var methodOptions = {
       'query': {
-        method: 'GET'
+        method: 'GET',
+        url: 'analyses'
       },
       'create': {
         method: 'POST'

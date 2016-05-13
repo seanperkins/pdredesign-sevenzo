@@ -9,7 +9,21 @@
   ];
 
   function AnalysisRoutes($stateProvider) {
-    $stateProvider.state('inventory_analysis_dashboard', {
+    $stateProvider.state('analyses', {
+      url: '/analyses',
+      authenticate: true,
+      views: {
+        '': {
+          controller: 'AnalysesIndexCtrl',
+          controllerAs: 'analysesIndex',
+          templateUrl: 'client/analyses/analyses_index.html'
+        },
+        'sidebar': {
+          controller: 'SidebarCtrl',
+          templateUrl: 'client/views/sidebar/sidebar_generic.html'
+        }
+      }
+    }).state('inventory_analysis_dashboard', {
       url: '/inventories/:inventory_id/analyses/:id/dashboard',
       authenticate: true,
       resolve: {
