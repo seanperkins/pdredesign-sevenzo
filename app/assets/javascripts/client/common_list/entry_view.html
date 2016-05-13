@@ -35,7 +35,7 @@
         <span class="category">Participants</span>
         <span class="stat">{{entity.participant_count}}</span>
       </div>
-      <div class="disable-entry entry-item" ng-if="context !== 'inventory'">
+      <div class="disable-entry entry-item" ng-if="context === 'assessment'">
         <span class="category">Completed</span>
         <span class="stat">{{entity.completed_responses}}</span>
       </div>
@@ -43,7 +43,7 @@
         <span class='category'>Meeting</span>
         <span class='stat'>{{entry.meetingTime(entity.meeting_date)}}</span>
       </div>
-      <div class="date disable-entry" ng-if="context === 'inventory'">
+      <div class="date disable-entry date" ng-if="context === 'inventory' || context === 'analysis'">
         <span class='category'>Deadline</span>
         <span class='stat'>{{entry.meetingTime(entity.due_date)}}</span>
       </div>
