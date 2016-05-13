@@ -1,0 +1,17 @@
+<div class="sidebar analysis-dashboard-sidebar inventory-edit-sidebar">
+  <analysis-schedule only-schedule="true" analysis="analysisSidebar.currentAnalysis"></analysis-schedule>
+  <ul>
+    <li>
+      <a ui-sref="inventory_analysis_assign({inventory_id: analysisSidebar.currentAnalysis.inventory_id, id: analysisSidebar.currentAnalysis.id})" class="btn btn-primary">Go to Analysis</a>
+    </li>
+    <li>
+      <a ng-click="analysisSidebar.modifyCalendar()" class="btn btn-default">Modify calendar</a>
+    </li>
+    <li>
+      <a ui-sref="inventory_dashboard({inventory_id: analysisSidebar.currentAnalysis.inventory_id})" class="btn btn-default">Go to Inventory</a>
+    </li>
+    <li>
+      <a ng-click="analysisSidebar.displayLearningQuestions()" class="btn btn-secondary">Add/Review Learning Questions</a>
+    </li>
+  </ul>
+</div>

@@ -6,7 +6,9 @@
   function inviteAnalysisUser() {
     return {
       restrict: 'E',
-      scope: {},
+      scope: {
+        sendInvite:'='
+      },
       templateUrl: 'client/inventories/invite_analysis_user.html',
       controller: 'InviteAnalysisUserCtrl',
       controllerAs: 'inviteAnalysisUser',

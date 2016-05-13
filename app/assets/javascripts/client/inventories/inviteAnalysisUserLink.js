@@ -6,7 +6,9 @@
   function inviteAnalysisUserLink() {
     return {
       restrict: 'E',
-      scope: {},
+      scope: {
+        sendInvite:'@'
+      },
       templateUrl: 'client/inventories/invite_analysis_user_link.html',
       controller: 'InviteAnalysisUserLinkCtrl',
       controllerAs: 'inviteAnalysisUserLink',

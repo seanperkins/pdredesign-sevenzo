@@ -15,7 +15,6 @@ ActiveRecord::Schema.define(version: 20160511230025) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-  enable_extension "pg_trgm"
 
   create_table "access_requests", force: :cascade do |t|
     t.integer  "assessment_id"
@@ -35,9 +34,11 @@ ActiveRecord::Schema.define(version: 20160511230025) do
     t.text     "message"
     t.datetime "assigned_at"
     t.integer  "rubric_id"
+    t.integer  "owner_id"
   end
 
   add_index "analyses", ["inventory_id"], name: "index_analyses_on_inventory_id", using: :btree
+  add_index "analyses", ["owner_id"], name: "index_analyses_on_owner_id", using: :btree
 
   create_table "analysis_invitations", force: :cascade do |t|
     t.string  "first_name"
@@ -60,6 +61,7 @@ ActiveRecord::Schema.define(version: 20160511230025) do
     t.datetime "invited_at"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.datetime "reminded_at"
   end
 
   add_index "analysis_members", ["analysis_id"], name: "index_analysis_members_on_analysis_id", using: :btree
@@ -293,6 +295,7 @@ ActiveRecord::Schema.define(version: 20160511230025) do
     t.text     "message"
     t.datetime "assigned_at"
     t.string   "share_token"
+    t.integer  "total_participant_responses", default: 0, null: false
   end
 
   create_table "inventory_access_requests", force: :cascade do |t|

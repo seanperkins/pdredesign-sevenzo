@@ -19,11 +19,13 @@ class Analysis < ActiveRecord::Base
 
   belongs_to :inventory
   belongs_to :rubric
+  belongs_to :owner, class_name: 'User'
 
   attr_accessor :assign
 
-  validates_presence_of :name, :deadline, :inventory, :rubric
+  validates_presence_of :name, :deadline, :inventory, :rubric, :owner
   validates :message, presence: true, if: "assigned_at.present?"
+  has_many :messages, as: :tool
 
   has_many :members, class_name: 'AnalysisMember'
   has_many :participants, -> { where(role: 'participant') }, class_name: 'AnalysisMember'
@@ -34,7 +36,7 @@ class Analysis < ActiveRecord::Base
   before_save :set_assigned_at
 
   def facilitator?(user)
-    facilitators.where(user: user).exists?
+    facilitators.where(user_id: user.id).exists?
   end
 
   def team_roles_for_participants

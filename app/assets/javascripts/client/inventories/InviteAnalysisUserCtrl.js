@@ -22,6 +22,9 @@
       vm.closeAlert = function(index) {
         vm.alerts.splice(index, 1);
       };
+      if($scope.sendInvite === 'true') {
+        invitation['send_invite'] = true;
+      }
 
       AnalysisInvitation.create({inventory_id: $stateParams.inventory_id, analysis_id: $stateParams.id}, invitation)
           .$promise

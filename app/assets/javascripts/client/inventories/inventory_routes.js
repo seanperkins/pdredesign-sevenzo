@@ -162,6 +162,29 @@
       },
       params: {
         shared: true
+	  }
+    }).state('inventory_analysis_dashboard', {
+      url: '/inventories/:inventory_id/analyses/:id/dashboard',
+      authenticate: true,
+      resolve: {
+        inventory: ['$stateParams', 'Inventory', function($stateParams, Inventory) {
+          return Inventory.get({inventory_id: $stateParams.inventory_id}).$promise;
+        }],
+        current_analysis: ['$stateParams', 'Analysis', function($stateParams, Analysis) {
+          return Analysis.get({inventory_id: $stateParams.inventory_id, id: $stateParams.id}).$promise;
+        }]
+      },
+      views: {
+        '': {
+          controller: 'AnalysisDashboardCtrl',
+          controllerAs: 'analysisDashboard',
+          templateUrl: 'client/inventories/analysis_dashboard.html'
+        },
+        'sidebar': {
+          controller: 'AnalysisSidebarCtrl',
+          controllerAs: 'analysisSidebar',
+          templateUrl: 'client/inventories/analysis_dashboard_sidebar.html'
+        }
       }
     }).state('inventory_analysis_consensus_create', {
       url: '/inventories/:inventory_id/analyses/:analysis_id/consensus',
