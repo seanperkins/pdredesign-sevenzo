@@ -39,12 +39,29 @@ class Analysis < ActiveRecord::Base
     facilitators.where(user_id: user.id).exists?
   end
 
+  def member?(user: user)
+    self.members.where(user: user).exists?
+  end
+
   def team_roles_for_participants
     self.members
         .joins(:user)
         .pluck('users.team_role')
         .uniq
         .compact
+  end
+
+  def status
+    return :draft if self.assigned_at.nil?
+    :consensus
+  end
+
+  def fully_complete?
+    response && response.completed?
+  end
+
+  def consensus
+    @consensus ||= Response.where(responder_id: self.id, responder_type: 'Analysis').first
   end
 
   private
