@@ -7,14 +7,13 @@
   <div class="row secondary">
     <div class="col-md-12">
       <h1>Facilitate New Readiness Assessment</h1>
-      <p>Edit your assessment settings, add &amp; manage participants, draft a email message, and send
-        invititations.</p>
+      <p>Edit your Inventory settings, invite and manage participants, and draft an email message.</p>
     </div>
   </div>
   <div class='row row-wizard'>
     <div class='col-md-2'>
       <p class='wizard-step'>Step 1</p>
-      <p class='wizard-instruction'> This is the name and details others will see for this assessment.</p>
+      <p class='wizard-instruction'> These are the details others will see for this Readiness Assessment.</p>
     </div>
     <tool-details model="assessment"></tool-details>
   </div>
@@ -22,14 +21,14 @@
     <div class='col-md-2'>
       <p class='wizard-step'>Step 2</p>
       <p class='wizard-instruction'>
-        These are the individuals from the district who will receive an invite to participate in the assessment.</p>
+        These are the individuals from the district who will be invited to participate.</p>
     </div>
     <create-participants model="assessment"></create-participants>
   </div>
   <div class='row row-wizard'>
     <div class='col-md-2'>
       <p class='wizard-step'>Step 3</p>
-      <p class='wizard-instruction'> Each participant will receive an email invite. You can customize the email message
+      <p class='wizard-instruction'> Each participant will receive an email invitation. You can customize the email message
         here.</p>
     </div>
     <invite-message model="assessment" district="district"></invite-message>
@@ -37,8 +36,7 @@
   <div class='row row-wizard'>
     <div class='col-md-2'>
       <p class='wizard-step'>Step 4</p>
-      <p class='wizard-instruction'>Learning Questions help your team focus on key aspects of the technology
-        implementation.</p>
+      <p class='wizard-instruction'>Learning Questions help your team focus on key aspects of your district's current PD state.</p>
     </div>
     <learning-question modal="false" context="assessment"></learning-question>
   </div>
