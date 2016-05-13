@@ -13,3 +13,6 @@ json.messages @messages, :id, :category, :teaser, :sent_at do |message|
   json.teaser   sanitize(message.teaser, tags: [])
   json.sent_at  message.sent_at
 end
+json.facilitator do
+  json.partial! 'v1/shared/user', user: analysis.owner
+end

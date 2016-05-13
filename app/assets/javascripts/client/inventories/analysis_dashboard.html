@@ -1,9 +1,9 @@
 <div class="dashboard">
   <div class="row row-bg row-header">
     <div class="col-md-12">
-      <h1 class="greeting">{{analysisDashboard.inventory.name}}</h1>
-      <h4 class="byline">organized by: <a href="#">{{analysisDashboard.inventory.facilitator.full_name}} </a>
-        on {{analysisDashboard.inventory.created_at | amDateFormat:'MMMM Do, YYYY'}}
+      <h1 class="greeting">{{analysisDashboard.currentAnalysis.name}}</h1>
+      <h4 class="byline">organized by: <a href="#">{{analysisDashboard.currentAnalysis.facilitator.full_name}} </a>
+        on {{analysisDashboard.currentAnalysis.created_at | amDateFormat:'MMMM Do, YYYY'}}
       </h4>
     </div>
   </div>
@@ -32,7 +32,7 @@
         <manage-analysis-permissions-link></manage-analysis-permissions-link>
       </div>
       <div class="col-lg-12">
-        <invite-analysis-user-link></invite-analysis-user-link>
+        <invite-analysis-user-link send-invite="true"></invite-analysis-user-link>
       </div>
     </div>
     <div id="messages" ng-if="analysisDashboard.currentAnalysis.messages">

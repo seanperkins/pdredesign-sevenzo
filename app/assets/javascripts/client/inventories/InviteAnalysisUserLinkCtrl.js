@@ -11,6 +11,7 @@
 
   function InviteAnalysisUserLinkCtrl($modal, $scope) {
     var vm = this;
+    vm.sendInvite = $scope.sendInvite;
     vm.open = function() {
       vm.modal = $modal.open({
         templateUrl: 'client/inventories/invite_analysis_user_modal.html',
