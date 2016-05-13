@@ -1,0 +1,52 @@
+.testimonial
+  display: flex
+  flex-direction: row
+  flex-wrap: wrap
+  margin-top: 1em
+  padding-top: 1em
+  padding-bottom: 1em
+  %testimonial-column
+    display: flex
+    flex-direction: column
+  .testimonial-column-text
+    @extend %testimonial-column
+    .quote
+      border: 0
+      padding: 10px 20px
+      margin-bottom: 0
+      q
+        quotes: "\201C" "\201D" "\2018" "\2019"
+        font-size: 1.35em
+        &:before
+          content: open-quote
+          font-size: 1em
+        &:after
+          content: close-quote
+          font-size: 1em
+      .quote-footer
+        font-size: 100%
+        color: $primary-color
+        margin-top: 1.25em
+        cite
+          font-style: normal
+    a
+      align-self: center
+    .subtext
+      font-size: 70%
+      padding: 10px 20px
+  .testimonial-column-picture
+    @extend %testimonial-column
+    justify-content: center
+    align-items: center
+    margin: 0 auto
+
+.testimonial-background
+  background: $off-white
+.testimonial-background-alt
+  background: $background-color
+.natural-order
+  display: flex
+  flex-direction: row
+.reverse-order
+  @extend .natural-order
+  flex-direction: row-reverse

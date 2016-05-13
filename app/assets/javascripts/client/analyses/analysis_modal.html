@@ -7,9 +7,7 @@
       <div class="col-sm-12">
         <div class="notice">
           <h2>You need to have an Inventory to create an Analysis</h2>
-          <p>The Data &amp; Tech Analysis needs to be linked to a Data &amp; Tech Inventory to be most effective. If
-            you've already built an inventory, check to make sure you are a facilitator of that inventory in order to
-            create an analysis. You can also start a new inventory by clicking below.</p>
+          <p>The Data &amp; Tech Analysis needs to be linked to a Data &amp; Tech Inventory to be most effective. You can also start a new Inventory by clicking below.</p>
           <primary-button icon="fa-bullhorn" click-fn="analysisModal.openInventoryModal()"
                           text="{{ analysisModal.inventoryText() }}"></primary-button>
         </div>
@@ -26,9 +24,9 @@
   <div ng-show="analysisModal.hasInventories()">
     <div class="row" ng-if="!analysisModal.userIsNetworkPartner()">
       <div class="col-sm-12">
-        <p>Facilitate the Data &amp; Tech Analysis process for your district by creating a new analysis and selecting an
-          inventory to connect to it. Click <a href="#/analyses" ng-click="analysisModal.gotoAnalyses()">here</a> to
-          view current analyses for your district or to participate in an existing analysis.</p>
+        <p>Facilitate the Data &amp; Tech Analysis process for your district by creating a new Analysis and selecting an
+          Inventory to connect to it. Click <a href="#/analyses" ng-click="analysisModal.gotoAnalyses()">here</a> to
+          view current Analyses for your district or to participate in an existing Analysis.</p>
       </div>
     </div>
 

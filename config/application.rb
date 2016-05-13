@@ -46,7 +46,8 @@ module PdrServer
                                                Rails.root.join('app', 'assets', 'javascripts', 'client', 'home'),
                                                Rails.root.join('app', 'assets', 'javascripts', 'client', 'learning_questions'),
                                                Rails.root.join('app', 'assets', 'javascripts', 'client', 'buttons'),
-                                               Rails.root.join('app', 'assets', 'javascripts', 'client', 'consensus')]
+                                               Rails.root.join('app', 'assets', 'javascripts', 'client', 'consensus'),
+                                               Rails.root.join('app', 'assets', 'javascripts', 'client', 'about')]
     config.angular_templates.markups        = %w(erb)
     config.angular_templates.htmlcompressor = false
   end

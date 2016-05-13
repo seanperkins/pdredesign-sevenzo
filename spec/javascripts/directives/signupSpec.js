@@ -30,19 +30,15 @@ describe('Directive: signup', function() {
   });
 
   it('it hides district-select and shows organizaton-select when isNetworkPartner is true', function() {
-    expect(element.find('district-select').hasClass('ng-hide'))
-      .toBe(true);
-    expect(element.find('organization-select').hasClass('ng-hide'))
-      .toBe(false);
+    expect(element.find('district-select').length).toBe(0);
+    expect(element.find('organization-select').length).toBe(1);
   });
 
   it('it hides organizaton-select and shows district-select when isNetworkPartner is false', function() {
     isolatedScope.isNetworkPartner = false;
     isolatedScope.$digest();
-    expect(element.find('district-select').hasClass('ng-hide'))
-      .toBe(false);
-    expect(element.find('organization-select').hasClass('ng-hide'))
-      .toBe(true);
+    expect(element.find('district-select').length).toBe(1);
+    expect(element.find('organization-select').length).toBe(0);
   });
 
   describe('#setRole', function() {

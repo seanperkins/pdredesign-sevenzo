@@ -6,9 +6,9 @@
   <div class="modal-body">
     <p ng-if="!assessmentModal.userIsNetworkPartner()">Facilitate the Readiness Assessment process for your district
       by creating a
-      new assessment.<a ng-click="assessmentModal.hideModal()"
-                        href="#/assessments"> Click here</a> to view current assessments for your district or to
-      participate in an existing assessment.</p>
+      new Readiness Assessment.<a ng-click="assessmentModal.hideModal()"
+                        href="#/assessments"> Click here</a> to view or
+      participate in an existing Assessment in your district.</p>
     <alert ng-repeat="alert in assessmentModal.alerts" type="{{alert.type}}"
            close="assessmentModal.closeAlert($index)">
       {{alert.msg}}
@@ -33,7 +33,7 @@
           <div ng-show="assessmentModal.noDistrict()" class="col-md-12">
             <p>
               You have not selected districts that you work with. Please update your profile
-              <a href="#/settings" ng-click="assessmentModal.hideModal()">here</a>
+              <a href="#/settings" ng-click="assessmentModal.hideModal()">here.</a>
             </p>
           </div>
         </div>

@@ -12,28 +12,38 @@
   .secondary-color
     color: $secondary-color
 
-  section.hero
-    // background-color set for IE9
-    // linear-gradient is ignored by IE9
-    background-color: rgba(12, 105, 159, 0.9)
-    background: linear-gradient(to bottom, $gradient-top 0%, $gradient-bottom 100%), image-url('rose.jpg') no-repeat
-    background-size: auto 100%
-    background-position: center
-    padding-top: 3em
-    padding-bottom: 5em
-    button
-      font-weight: bold
-      font-size: 1em
-      color: $primary-color
-      background-color: $navbar-color
-
+  .hero-header
+    background: image-url('hero_header.png') no-repeat center
+    background-size: cover
+    padding: 3em 0 5em 0
     h1, p
       color: #fff
-  section.body
-    padding-top: 3em
-    padding-bottom: 1em
+    .hero-banner
+      display: flex
+      flex-direction: column
+      justify-content: center
+      align-items: center
+      .underline
+        text-decoration: underline
+      p
+        text-align: center
+      padding: 0 30% 0 30%
+  .hero-footer
+    @extend .hero-header
+    background: image-url('hero_footer.png') no-repeat center
+    background-size: cover
+    margin-bottom: 3em
+    .hero-footer-banner
+      @extend .hero-banner
+      padding: 0 25% 0 25%
+      .btn-padding
+        margin: 2.5em 0 1.5em 0
 
-  section.stats
+
+  div.body
+    padding-top: 3em
+
+  div.stats
     padding-top: 3em
     padding-bottom: 5em
     .legal
@@ -43,7 +53,7 @@
       width: 100%
       max-width: 35em
 
-  section.path
+  div.path
     background-color: $navbar-color
     padding-top: 1em
     h2
@@ -59,7 +69,7 @@
       img
         width: 100%
 
-  section.action
+  div.action
     padding-top: 2em
     padding-bottom: 4em
 

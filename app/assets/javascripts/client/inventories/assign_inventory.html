@@ -6,15 +6,14 @@
   </div>
   <div class="row secondary">
     <div class="col-md-12">
-      <h1>Facilitate a new Data &amp; Tech Inventory</h1>
-      <p>Edit your inventory settings, add &amp; manage participants, draft a email message, and send
-        invitations.</p>
+      <h1>Facilitate a New Data &amp; Tech Inventory</h1>
+      <p>Edit your Inventory settings, invite and manage participants, and draft an email message.</p>
     </div>
   </div>
   <div class='row row-wizard'>
     <div class='col-md-2'>
       <p class='wizard-step'>Step 1</p>
-      <p class='wizard-instruction'> This is the name and details others will see for this inventory.</p>
+      <p class='wizard-instruction'> These are the details others will see for this Data &amp; Tech Inventory.</p>
     </div>
     <tool-details model="inventoryAssign.currentInventory"></tool-details>
   </div>
@@ -22,14 +21,14 @@
     <div class='col-md-2'>
       <p class='wizard-step'>Step 2</p>
       <p class='wizard-instruction'>
-        These are the individuals from the district who will receive an invite to participate in the inventory.</p>
+        These are the individuals from the district who will be invited to participate.</p>
     </div>
     <create-participants model="inventoryAssign.currentInventory"></create-participants>
   </div>
   <div class='row row-wizard'>
     <div class='col-md-2'>
       <p class='wizard-step'>Step 3</p>
-      <p class='wizard-instruction'> Each participant will receive an email invite. You can customize the email message
+      <p class='wizard-instruction'> Each participant will receive an email invitation. You can customize the email message
         here.</p>
     </div>
     <invite-message model="inventoryAssign.currentInventory" district="inventoryAssign.district"></invite-message>
@@ -37,7 +36,7 @@
   <div class='row row-wizard'>
     <div class='col-md-2'>
       <p class='wizard-step'>Step 4</p>
-      <p class='wizard-instruction'>Learning Questions help your team focus on key aspects of the technology
+      <p class='wizard-instruction'>Learning Questions help your team focus on key aspects of your district's data and technology
         implementation.</p>
     </div>
     <learning-question modal="false" context="inventory"></learning-question>
