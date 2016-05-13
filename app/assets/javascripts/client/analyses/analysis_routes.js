@@ -14,6 +14,11 @@
       authenticate: true,
       views: {
         '': {
+          resolve: {
+            analyses_result: ['Analysis', function(Analysis) {
+              return Analysis.query().$promise;
+            }]
+          },
           controller: 'AnalysesIndexCtrl',
           controllerAs: 'analysesIndex',
           templateUrl: 'client/analyses/analyses_index.html'

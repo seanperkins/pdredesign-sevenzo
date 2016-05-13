@@ -7,8 +7,8 @@ class V1::AnalysesController < ApplicationController
   end
 
   def all
-    @analyses = Analysis.joins(:inventory).where(inventories: {district_id: current_user.district_id})
-    render_template 'v1/analyses/index', status: 200
+    @analyses = Analysis.joins(:inventory).where(inventories: {district_id: current_user.districts})
+    render template: 'v1/analyses/index', status: 200
   end
 
   def show

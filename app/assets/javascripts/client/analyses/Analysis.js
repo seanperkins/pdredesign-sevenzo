@@ -15,7 +15,7 @@
     var methodOptions = {
       'query': {
         method: 'GET',
-        url: 'analyses'
+        url: UrlService.url('analyses')
       },
       'create': {
         method: 'POST'
