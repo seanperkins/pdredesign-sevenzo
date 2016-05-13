@@ -79,14 +79,6 @@ class Inventory < ActiveRecord::Base
     :inventory
   end
 
-  def is_completed
-    total_participant_responses == participant_count && total_participant_responses > 0
-  end
-
-  def percent_completed
-    (total_participant_responses / participant_count.to_d) * 100
-  end
-
   def participant_count
     participants.count
   end

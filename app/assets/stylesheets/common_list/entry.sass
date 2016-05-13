@@ -12,8 +12,6 @@
   .consensus-state
     background-color: $consensus-color
   .inventory-state
-    @extend .assessment-state
-  .completed-inventory-state
     @extend .consensus-state
   .overview
     padding-top: 12px
@@ -34,7 +32,7 @@
       background-color: $background-color-body
       height: 82px
       padding: 10px
-      &:hover 
+      &:hover
         cursor: pointer
         h3
           color: darken($primary-color, 20%)
@@ -54,17 +52,22 @@
       border: 1px solid $background-color-body
       border-left: none
       font-size: 12px
-      .meta, .meeting
-        display: inline-block
-        .category
-          margin-right: .25em
-        .stat
-          font-weight: 600
-      .meta .stat
+      display: flex
+      flex-direction: row
+      justify-content: space-between
+      .district-header
+        margin-right: 10%
+        width: 15%
+      .category
+        margin-right: .25em
+      .stat
+        font-weight: 600
         margin-right: 1em
         &:last-child
           margin-right: 0
-      .meeting
-        float: right
+      .entry-item
+        margin-right: 5%
+      .date
+        margin-left: auto
   a:hover
     cursor:pointer
