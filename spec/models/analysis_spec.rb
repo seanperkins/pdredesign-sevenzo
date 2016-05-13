@@ -25,6 +25,7 @@ describe Analysis do
     it { is_expected.to validate_presence_of :deadline }
     it { is_expected.to validate_presence_of :inventory }
     it { is_expected.to validate_presence_of :rubric }
+    it { is_expected.to validate_presence_of :owner }
 
     context ':assigned_at' do
       before do

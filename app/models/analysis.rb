@@ -23,7 +23,7 @@ class Analysis < ActiveRecord::Base
 
   attr_accessor :assign
 
-  validates_presence_of :name, :deadline, :inventory, :rubric
+  validates_presence_of :name, :deadline, :inventory, :rubric, :owner
   validates :message, presence: true, if: "assigned_at.present?"
   has_many :messages, as: :tool
 

@@ -19,5 +19,6 @@ FactoryGirl.define do
     deadline { Faker::Date.between(1.day.from_now, 1.year.from_now) }
     association :inventory
     association :rubric
+    association :owner, factory: :user
   end
 end
