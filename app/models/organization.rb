@@ -3,8 +3,8 @@
 # Table name: organizations
 #
 #  id   :integer          not null, primary key
-#  name :string(255)
-#  logo :string(255)
+#  name :string
+#  logo :string
 #
 
 class Organization < ActiveRecord::Base

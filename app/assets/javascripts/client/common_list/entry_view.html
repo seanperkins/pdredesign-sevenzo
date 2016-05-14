@@ -25,6 +25,7 @@
         </div>
       </div>
       <inventory-links id="{{ entity.id }}" links="entity.links" ng-if="context === 'inventory'"></inventory-links>
+      <analysis-links entity="entity" links="entity.links" ng-if="context === 'analysis'"></analysis-links>
     </div>
 
     <div class="entry-footer">

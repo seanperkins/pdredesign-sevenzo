@@ -14,5 +14,18 @@
 
     vm.user = SessionService.getCurrentUser();
     vm.analyses = analyses_result.analyses;
+
+    vm.openAnalysisModal = function() {
+      $modal.open({
+        templateUrl: 'client/analyses/analysis_modal.html',
+        controller: 'AnalysisModalCtrl',
+        controllerAs: 'analysisModal',
+        resolve: {
+          preSelectedInventory: function() {
+            return null;
+          }
+        }
+      });
+    }
   }
 })();
