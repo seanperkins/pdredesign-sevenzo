@@ -6,6 +6,11 @@ class V1::AnalysesController < ApplicationController
     render template: 'v1/analyses/index', status: 200
   end
 
+  def all
+    @analyses = Analysis.joins(:inventory).where(inventories: {district_id: current_user.districts})
+    render template: 'v1/analyses/index', status: 200
+  end
+
   def show
     @analysis = inventory.analyses.find(params[:id])
     @messages = messages if current_user

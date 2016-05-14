@@ -11,6 +11,7 @@
 #  message      :text
 #  assigned_at  :datetime
 #  rubric_id    :integer
+#  owner_id     :integer
 #
 
 FactoryGirl.define do

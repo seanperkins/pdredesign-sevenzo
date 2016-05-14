@@ -11,10 +11,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160511230025) do
+ActiveRecord::Schema.define(version: 20160513235309) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+  enable_extension "pg_trgm"
 
   create_table "access_requests", force: :cascade do |t|
     t.integer  "assessment_id"
@@ -39,6 +40,15 @@ ActiveRecord::Schema.define(version: 20160511230025) do
 
   add_index "analyses", ["inventory_id"], name: "index_analyses_on_inventory_id", using: :btree
   add_index "analyses", ["owner_id"], name: "index_analyses_on_owner_id", using: :btree
+
+  create_table "analysis_access_requests", force: :cascade do |t|
+    t.integer  "analysis_id", null: false
+    t.integer  "user_id",     null: false
+    t.string   "role",        null: false
+    t.string   "token"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "analysis_invitations", force: :cascade do |t|
     t.string  "first_name"
@@ -295,7 +305,6 @@ ActiveRecord::Schema.define(version: 20160511230025) do
     t.text     "message"
     t.datetime "assigned_at"
     t.string   "share_token"
-    t.integer  "total_participant_responses", default: 0, null: false
   end
 
   create_table "inventory_access_requests", force: :cascade do |t|
@@ -643,6 +652,8 @@ ActiveRecord::Schema.define(version: 20160511230025) do
   add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
 
   add_foreign_key "analyses", "inventories"
+  add_foreign_key "analysis_access_requests", "analyses", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "analysis_access_requests", "users", on_update: :cascade, on_delete: :cascade
   add_foreign_key "analysis_invitations", "analyses", on_update: :cascade, on_delete: :cascade
   add_foreign_key "analysis_invitations", "users", on_update: :cascade, on_delete: :cascade
   add_foreign_key "analysis_members", "analyses"

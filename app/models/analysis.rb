@@ -11,6 +11,7 @@
 #  message      :text
 #  assigned_at  :datetime
 #  rubric_id    :integer
+#  owner_id     :integer
 #
 
 class Analysis < ActiveRecord::Base
@@ -30,13 +31,22 @@ class Analysis < ActiveRecord::Base
   has_many :members, class_name: 'AnalysisMember'
   has_many :participants, -> { where(role: 'participant') }, class_name: 'AnalysisMember'
   has_many :facilitators, -> { where(role: 'facilitator') }, class_name: 'AnalysisMember'
+  has_many :access_requests, class_name: 'AnalysisAccessRequest'
   has_one :response, as: :responder, dependent: :destroy
 
   after_create :set_members_from_inventory
   before_save :set_assigned_at
 
   def facilitator?(user)
-    facilitators.where(user_id: user.id).exists?
+    facilitators.exists?(user_id: user.id) || owner.id == user.id
+  end
+
+  def participant?(user)
+    participants.exists?(user_id: user.id)
+  end
+
+  def member?(user:)
+    self.members.where(user: user).exists?
   end
 
   def team_roles_for_participants
@@ -45,6 +55,27 @@ class Analysis < ActiveRecord::Base
         .pluck('users.team_role')
         .uniq
         .compact
+  end
+
+  def status
+    return :draft if self.assigned_at.nil?
+    :consensus
+  end
+
+  def fully_complete?
+    response && response.completed?
+  end
+
+  def consensus
+    @consensus ||= Response.where(responder_id: self.id, responder_type: 'Analysis').first
+  end
+
+  def pending_requests?(user)
+    access_requests.exists?(user: user)
+  end
+
+  def network_partner?(user)
+    self.members.joins(:user).exists?(user_id: user.id, users: {role: 'network_partner'})
   end
 
   private
