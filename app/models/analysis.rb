@@ -38,7 +38,7 @@ class Analysis < ActiveRecord::Base
   before_save :set_assigned_at
 
   def facilitator?(user)
-    facilitators.exists?(user_id: user.id)
+    facilitators.exists?(user_id: user.id) || owner.id == user.id
   end
 
   def participant?(user)

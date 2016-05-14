@@ -15,7 +15,7 @@ json.status analysis.status
 json.has_access analysis.member?(user: current_user) || analysis.owner == current_user if current_user
 json.inventory_id analysis.inventory_id
 json.message analysis.message || default_analysis_message if current_user
-json.is_facilitator analysis.facilitator?(current_user) if current_user
+json.is_facilitator analysis.facilitator?(current_user)
 json.participant_count analysis.participants.count
 json.messages @messages, :id, :category, :teaser, :sent_at do |message|
   json.id       message.id

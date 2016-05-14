@@ -5,11 +5,12 @@
       .controller('AnalysesIndexCtrl', AnalysesIndexCtrl);
 
   AnalysesIndexCtrl.$inject = [
+    '$modal',
     'SessionService',
     'analyses_result'
   ];
 
-  function AnalysesIndexCtrl(SessionService, analyses_result) {
+  function AnalysesIndexCtrl($modal, SessionService, analyses_result) {
     var vm = this;
 
     vm.user = SessionService.getCurrentUser();
