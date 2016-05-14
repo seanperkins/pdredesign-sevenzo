@@ -139,15 +139,15 @@
     service.instructionParagraphs = function () {
       if (service.context === "assessment") {
         return [
-          'The Readiness Assessment consists of questions across the 8 categories of the <readiness-assessment-modal title="PD System Map"></readiness-assessment-modal>. As the assessment facilitator, use this page to guide and document the conversation during the in-person consensus meeting.',
+          'The Readiness Assessment consists of questions across the 8 categories of the <readiness-assessment-modal title="PD System Map"></readiness-assessment-modal>. As the Assessment facilitator, use this page to guide and document the conversation during the in-person consensus meeting.',
           'For each question, discuss the individual responses as a group to collectively decide a consensus score, including notes for reference. You may sort or skip questions to support a targeted discussion. Save each completed response as you move through the consensus meeting.'
         ];
       } else if (service.context === "analysis") {
         return [
-          'Data & Tech Analysis Consensus instructions.'
+          'The Data & Tech Analysis asks your team to rate the level of technology and data alignment in 11 categories related to professional development.',
+          'For each category, discuss as a group to collectively decide a consensus score. Include notes, data sets, and products for reference. You may skip questions to support a targeted discussion. Remember to save each completed response.'
         ];
       }
     };
   }
 })();
-
