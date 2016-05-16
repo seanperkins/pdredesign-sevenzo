@@ -111,6 +111,21 @@
           templateUrl: 'client/inventories/assign_analysis.html'
         }
       }
+    }).state('inventory_analysis_report', {
+      url: '/inventories/:inventory_id/analyses/:id/report',
+      authenticate: true,
+      views: {
+        '': {
+          controller: 'AnalysisReportCtrl',
+          controllerAs: 'analysisReport',
+          templateUrl: 'client/analyses/report.html'
+        },
+        'sidebar': {
+          controller: 'AnalysisReportSidebarCtrl',
+          controllerAs: 'analysisReportSidebar',
+          templateUrl: 'client/analyses/report_sidebar.html'
+        }
+      }
     });
   }
 })();
