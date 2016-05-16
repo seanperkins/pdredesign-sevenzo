@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160513235309) do
+ActiveRecord::Schema.define(version: 20160516164625) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -424,11 +424,14 @@ ActiveRecord::Schema.define(version: 20160513235309) do
   add_index "participants", ["user_id", "assessment_id"], name: "index_participants_on_user_id_and_assessment_id", unique: true, using: :btree
 
   create_table "priorities", force: :cascade do |t|
-    t.integer  "assessment_id"
-    t.integer  "order",         array: true
+    t.integer  "tool_id"
+    t.integer  "order",      array: true
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "tool_type"
   end
+
+  add_index "priorities", ["tool_type", "tool_id"], name: "index_priorities_on_tool_type_and_tool_id", using: :btree
 
   create_table "product_entries", force: :cascade do |t|
     t.datetime "created_at"

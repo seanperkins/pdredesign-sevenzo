@@ -37,7 +37,7 @@ describe V1::PrioritiesController do
     it 'creates a priority record' do
       post :create, assessment_id: assessment.id,
         order: [1,2,3]
-      priority = Priority.find_by(assessment: assessment) 
+      priority = Priority.find_by(tool: assessment)
 
       expect(priority.order).to eq([1,2,3])
     end

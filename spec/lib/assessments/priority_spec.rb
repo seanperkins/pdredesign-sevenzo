@@ -12,7 +12,7 @@ describe Assessments::Priority do
 
     @priority = Priority.create!(
       order: [@cat2.id, @cat1.id],
-      assessment: assessment)   
+      tool: assessment)
   end 
 
   let(:assessment) { @assessment_with_participants }  
@@ -44,14 +44,14 @@ describe Assessments::Priority do
       @priority.delete
       @priority = Priority.create!(
         order: [@cat2.id, @cat2.id, @cat1.id],
-        assessment: assessment)
+        tool: assessment)
 
       expect(@subject.categories.count).to eq(4)
     end
 
     it 'returns cateogries not in order' do
       @priority.delete
-      Priority.create!(order: [@cat3.id, @cat2.id], assessment: assessment)   
+      Priority.create!(order: [@cat3.id, @cat2.id], tool: assessment)
 
       first  = @subject.categories[0]
       second = @subject.categories[1]
