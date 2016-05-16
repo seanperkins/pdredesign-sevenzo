@@ -1,0 +1,7 @@
+<div class="links">
+  <div class="repeat" ng-repeat="link in analysisLinks.orderLinks(links)">
+    <a class="link pull-right"
+       ng-href="{{ analysisLinks.location(link) }}"
+       ng-click="analysisLinks.invokeAction(link)">{{ link.title }}</a>
+  </div>
+</div>

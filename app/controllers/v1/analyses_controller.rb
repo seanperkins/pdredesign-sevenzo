@@ -6,8 +6,14 @@ class V1::AnalysesController < ApplicationController
     render template: 'v1/analyses/index', status: 200
   end
 
+  def all
+    @analyses = Analysis.joins(:inventory).where(inventories: {district_id: current_user.districts})
+    render template: 'v1/analyses/index', status: 200
+  end
+
   def show
     @analysis = inventory.analyses.find(params[:id])
+    @messages = messages if current_user
     authorize_action_for @analysis
     render template: 'v1/analyses/show', status: 200
   end
@@ -16,6 +22,7 @@ class V1::AnalysesController < ApplicationController
     @analysis = inventory.analyses.build(analysis_params)
     @analysis.rubric = pick_rubric
     authorize_action_for @analysis
+    @analysis.owner = current_user
 
     if @analysis.save
       render template: 'v1/analyses/show', status: 201
@@ -68,5 +75,18 @@ class V1::AnalysesController < ApplicationController
 
   def pick_rubric
     Rubric.analysis_driven.where.not(version: nil).order(version: :desc).first
+  end
+
+  def messages
+    messages = []
+    messages.concat @analysis.messages
+    messages.push welcome_message
+  end
+
+  def welcome_message
+    OpenStruct.new(id: nil,
+                   category: 'welcome',
+                   sent_at: @analysis.updated_at,
+                   teaser: @analysis.message)
   end
 end

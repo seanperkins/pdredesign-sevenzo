@@ -48,6 +48,9 @@ describe V1::AnalysesController do
            deadline: "11/14/2042"
 
       expect(response).to have_http_status(:created)
+      expect(json['id']).not_to be_nil
+      expect(Analysis.where(id:json['id']).first).not_to be_nil
+      expect(Analysis.where(id:json['id']).first.owner).to eq inventory.owner
     end
   end
 

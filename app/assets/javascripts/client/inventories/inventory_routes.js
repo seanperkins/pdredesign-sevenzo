@@ -1,5 +1,6 @@
 (function() {
   'use strict';
+
   angular.module('PDRClient')
       .config(InventoryRoutes);
 
@@ -87,25 +88,6 @@
           controller: 'InventorySidebarCtrl',
           controllerAs: 'inventorySidebar',
           templateUrl: 'client/inventories/sidebar.html'
-        }
-      }
-    }).state('inventory_analysis_assign', {
-      url: '/inventories/:inventory_id/analyses/:id/assign',
-      authenticate: true,
-      showFullWidth: true,
-      resolve: {
-        current_inventory: ['$stateParams', 'Inventory', function($stateParams, Inventory) {
-          return Inventory.get({inventory_id: $stateParams.inventory_id}).$promise;
-        }],
-        current_analysis: ['$stateParams', 'Analysis', function($stateParams, Analysis) {
-          return Analysis.get({inventory_id: $stateParams.inventory_id, id: $stateParams.id}).$promise;
-        }]
-      },
-      views: {
-        'full-width': {
-          controller: 'AnalysisAssignCtrl',
-          controllerAs: 'analysisAssign',
-          templateUrl: 'client/inventories/assign_analysis.html'
         }
       }
     }).state('inventories_report', {

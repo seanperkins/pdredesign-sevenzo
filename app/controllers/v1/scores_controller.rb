@@ -41,6 +41,7 @@ class V1::ScoresController < ApplicationController
                   :value,
                   :evidence,
                   supporting_inventory_response_attributes: [
+                      :id,
                       {product_entries: []},
                       {data_entries: []},
                       :product_entry_evidence,

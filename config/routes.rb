@@ -98,7 +98,7 @@ PdrServer::Application.routes.draw do
         end
       end
 
-      resources :analyses, only: [:index,:show,:create] do
+      resources :analyses, only: [:index, :show, :create, :update] do
         put '/', to: "analyses#update", on: :collection
 
         resources :participants, controller: 'analysis_participants', only: [:create, :destroy, :index] do
@@ -106,6 +106,7 @@ PdrServer::Application.routes.draw do
         end
         resources :invitations, controller: 'analysis_invitations', only: [:create]
         resource :permissions, controller: 'analysis_permissions', only: [:show, :update]
+        resource :reminders, controller: 'analysis_reminders', only: [:create]
         resources :learning_questions, only: [:index, :create, :update, :destroy] do
           get :exists, on: :collection
         end
@@ -119,6 +120,8 @@ PdrServer::Application.routes.draw do
         get :district_product_entries
       end
     end
+
+    get '/analyses', to: 'analyses#all'
 
     scope '/constants' do
       get 'product_entry', to: 'constants#product_entry'

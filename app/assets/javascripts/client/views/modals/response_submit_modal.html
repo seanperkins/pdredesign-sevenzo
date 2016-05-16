@@ -4,9 +4,9 @@
     <h2>Submit {{responseTitle()}}</h2>
   </div>
   <div class="modal-body">
-    <h2>You are submitting your response to {{assessment.name}}!</h2>
+    <h2>You are submitting your response to {{current_entity.name}}!</h2>
     <div ng-hide='unansweredQuestions() == 0'>
-      <h2>You have left<span class='badge'>{{unansweredQuestions()}}</span>questions unanswered.</h2>
+      <h2>You have left <span class='badge'>{{unansweredQuestions()}}</span> questions unanswered.</h2>
       <h3>Even though you can submit your response without answering all questions, we encourage you to try to answer as many as you can.</h3>
     </div>
 
@@ -17,7 +17,7 @@
   </div>
 
   <div class='modal-footer'>
-    <button ng-click="redirectToAssessmentsIndex(); cancel()" ng-if="!isResponse()" class='btn btn-primary btn-lg'>
+    <button ng-click="redirectToEntityIndex(); cancel()" ng-if="!isResponse()" class='btn btn-primary btn-lg'>
       Save for Later
     </button>
 

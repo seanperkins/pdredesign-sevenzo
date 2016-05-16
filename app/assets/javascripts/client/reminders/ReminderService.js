@@ -7,10 +7,11 @@
   ReminderService.$inject = [
     '$stateParams',
     'AssessmentReminder',
-    'InventoryReminder'
+    'InventoryReminder',
+    'AnalysisReminder'
   ];
 
-  function ReminderService($stateParams, AssessmentReminder, InventoryReminder) {
+  function ReminderService($stateParams, AssessmentReminder, InventoryReminder, AnalysisReminder) {
     var service = this;
 
     service.setContext = function(context) {
@@ -27,6 +28,9 @@
             .$promise;
       } else if (service.context === 'inventory') {
         return InventoryReminder.save({inventory_id: service.extractId()}, {message: message})
+            .$promise;
+      } else if (service.context === 'analysis') {
+        return AnalysisReminder.save({inventory_id: $stateParams.inventory_id, id: $stateParams.id}, {message: message})
             .$promise;
       }
     };

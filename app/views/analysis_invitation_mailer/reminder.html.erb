@@ -1,0 +1,33 @@
+<table class="row">
+  <tr>
+    <td class="wrapper last">
+      <table class="twelve columns">
+        <tr>
+          <td class="left-text-pad">
+            <h2>Reminder</h2>
+            <br>
+            <p class="lead">
+            Hi <b><%= @first_name %></b>, This is a reminder that the Data &amp; Tech Analysis meeting for <b><%= @analysis_name %></b> will take place on <b><%= @deadline %></b>. Please remember to bring any information that may be helpful with you.</p>
+            <br>
+            <br>
+            <p class="lead">
+              <%= @message %>
+            </p>
+            <br>
+            <br>
+            <p class="lead">
+              <center>
+                <a href="<%= @analysis_link %>" target="_blank" class="button">View Analysis</a>
+              </center>
+            </p>
+            <br>
+            <br>
+          </td>
+          <td class="expander"></td>
+        </tr>
+      </table>
+
+    </td>
+  </tr>
+</table>
+

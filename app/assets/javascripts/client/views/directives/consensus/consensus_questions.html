@@ -1,5 +1,5 @@
 <div class="categories">
-  <div class="row sort-by">
+  <div class="row sort-by" ng-if="isAssessment">
     <div>
       <sort-by categories="categories" data="data" />
     </div>
@@ -10,11 +10,14 @@
   </div>
   <div class="category" ng-repeat="category in categories">
     <div class="row">
-      <p class="category-label" ng-click="toggleCategoryAnswers(category)">
+      <p class="category-label" ng-click="toggleCategoryAnswers(category)" ng-if="isAssessment">
         <i class="fa fa-chevron-right" ng-class="{'fa-chevron-down' : category.toggled === true}"></i>
         {{category.name}}
       </p>
-      <div class="question-container question-{{question.id}}" ng-repeat="question in category.questions">
+      <div
+        class="question-container question-{{question.id}}" 
+        ng-class="{'analysis-consensus-question': isAnalysis}"
+        ng-repeat="question in category.questions">
         <div class="question-row" ng-click="toggleAnswers(question, $event)">
           <div class="question">
             <p class="question-id scored-{{question.score.value}}" ng-show="question.loading">
@@ -26,12 +29,13 @@
               {{question.number}}
             </p>
           </div>
-          <div class="question-content">
-            <p class="question-headline">
-              {{question.headline}}
-            </p>
-            <p class="content">{{question.content}}</p>
-            <response-answer-group question="question" is-consensus="true" scores="scores"></response-answer-group>
+          <div class="question-content" ng-class="{expanded: question.answersVisible}">
+            <div class="question-header">
+              <p class="question-headline">{{question.headline}}</p>
+              <p class="content">{{question.content}}</p>
+             </div>
+            <response-answer-group question="question" is-consensus="true" ng-if="isAssessment" scores="scores"></response-answer-group>
+            <analysis-consensus-answer question="question" ng-if="isAnalysis" product-entries="productEntries" inventory-data-entries="dataEntries"></analysis-consensus-answer>
           </div>
         </div>
       </div>

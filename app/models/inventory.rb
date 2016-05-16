@@ -2,16 +2,16 @@
 #
 # Table name: inventories
 #
-#  id                          :integer          not null, primary key
-#  name                        :text             not null
-#  deadline                    :datetime         not null
-#  district_id                 :integer          not null
-#  created_at                  :datetime         not null
-#  updated_at                  :datetime         not null
-#  owner_id                    :integer
-#  message                     :text
-#  assigned_at                 :datetime
-#  total_participant_responses :integer          default(0), not null
+#  id          :integer          not null, primary key
+#  name        :text             not null
+#  deadline    :datetime         not null
+#  district_id :integer          not null
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
+#  owner_id    :integer
+#  message     :text
+#  assigned_at :datetime
+#  share_token :string
 #
 
 class Inventory < ActiveRecord::Base
@@ -22,7 +22,7 @@ class Inventory < ActiveRecord::Base
   has_many :product_entries
   has_many :data_entries
   has_many :access_requests, class_name: 'InventoryAccessRequest'
-  has_many :messages, foreign_key: :tool_id
+  has_many :messages, as: :tool
 
   belongs_to :district
   belongs_to :owner, class_name: 'User'
@@ -77,14 +77,6 @@ class Inventory < ActiveRecord::Base
   def status
     return :draft if self.assigned_at.nil?
     :inventory
-  end
-
-  def is_completed
-    total_participant_responses == participant_count && total_participant_responses > 0
-  end
-
-  def percent_completed
-    (total_participant_responses / participant_count.to_d) * 100
   end
 
   def participant_count

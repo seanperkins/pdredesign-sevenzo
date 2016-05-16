@@ -10,7 +10,8 @@
       replace: true,
       transclude: true,
       scope: {
-        message: '='
+        message: '=',
+        kind: '@'
       },
       templateUrl: 'client/inventories/message_element.html',
       controller: 'MessageElementCtrl',
