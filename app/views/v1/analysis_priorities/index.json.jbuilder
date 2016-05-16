@@ -1,11 +1,10 @@
 index = 0
-json.array! @categories do |category|
+json.array! @scores_and_relevant_data do |score|
   index +=1
-  json.id category[:id]
-  json.order index
-  json.name category[:name]
-  json.score 0
-  json.products 0
-  json.data 0
-  json.total_yearly_cost 0
+  json.priority index
+  json.category score.headline
+  json.score score.value
+  json.products score.product_count
+  json.data score.data_count
+  json.total_yearly_cost_in_cents score.total_cost_yearly
 end

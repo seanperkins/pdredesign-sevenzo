@@ -114,6 +114,8 @@ PdrServer::Application.routes.draw do
           resources :scores, only: [:create, :index]
         end
         resources :analysis_consensus, except: [:delete, :index]
+
+        resources :analysis_priorities, only: [:index, :create]
       end
 
       member do
