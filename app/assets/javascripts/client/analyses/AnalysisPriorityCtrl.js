@@ -5,17 +5,14 @@
       .controller('AnalysisPriorityCtrl', AnalysisPriorityCtrl);
 
   AnalysisPriorityCtrl.$inject = [
-    '$scope',
+    '$rootScope',
     '$filter',
     '$timeout',
-    '$stateParams',
-    'AnalysisPriority'
+    'AnalysisPriorityService'
   ];
 
-  function AnalysisPriorityCtrl($scope, $filter, $timeout, $stateParams, AnalysisPriority) {
+  function AnalysisPriorityCtrl($rootScope, $filter, $timeout, AnalysisPriorityService) {
     var vm = this;
-
-    vm.priorityData = $scope.priorities;
 
     vm.convertToWholeDollars = function(amountInCents) {
       return $filter('currency')(amountInCents / 100, '$', 2);
@@ -56,34 +53,29 @@
       angular.forEach($('[data-table-dnd-tr]'), function(tr) {
         order.push($(tr).find('.hidden').text());
       });
-      AnalysisPriority.save({
-        inventory_id: $stateParams.inventory_id,
-        analysis_id: $stateParams.id
-      }, {order: order})
-          .$promise
+
+      AnalysisPriorityService
+          .save(order)
           .then(function() {
             vm.loadPriorityData();
-            vm.initializeTable();
           });
     };
 
-    vm.initializeTable = function() {
+    vm.invokeDragAndDrop = function() {
       $timeout(function() {
         $('[data-table-dnd]').tableDnD();
       });
     };
 
     vm.loadPriorityData = function() {
-      AnalysisPriority.query({
-        inventory_id: $stateParams.inventory_id,
-        analysis_id: $stateParams.id
-      })
-          .$promise
+      AnalysisPriorityService.load()
           .then(function(data) {
             vm.priorityData = data;
+            $rootScope.$broadcast('top-priority', vm.priorityData[0].category);
+            vm.invokeDragAndDrop();
           });
     };
 
-    vm.initializeTable();
+    vm.loadPriorityData();
   }
 })();
