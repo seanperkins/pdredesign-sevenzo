@@ -114,6 +114,14 @@
     }).state('inventory_analysis_report', {
       url: '/inventories/:inventory_id/analyses/:id/report',
       authenticate: true,
+      resolve: {
+        analysis_priorities: ['$stateParams', 'AnalysisPriority', function($stateParams, AnalysisPriority) {
+          return AnalysisPriority.query({
+            inventory_id: $stateParams.inventory_id,
+            analysis_id: $stateParams.id
+          }).$promise;
+        }]
+      },
       views: {
         '': {
           controller: 'AnalysisReportCtrl',
