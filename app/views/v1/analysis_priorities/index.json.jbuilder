@@ -1,6 +1,7 @@
 index = 0
 json.array! @scores_and_relevant_data do |score|
   index +=1
+  json.question_id score.question_id
   json.priority index
   json.category score.headline
   json.score score.value

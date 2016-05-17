@@ -1,10 +1,11 @@
 class V1::AnalysisPrioritiesController < ApplicationController
   before_action :authenticate_user!
-  # authorize_actions_for :analysis
 
   def index
-    @scores_and_relevant_data = build_scores_and_relevant_data
+    @scores_and_relevant_data = ordered_data(build_scores_and_relevant_data)
   end
+
+  authority_actions index: :read
 
   def create
     priority = Priority.find_or_initialize_by(tool: current_analysis)
@@ -18,13 +19,35 @@ class V1::AnalysisPrioritiesController < ApplicationController
     end
   end
 
+  authority_actions create: :create
+
   private
   def current_analysis
     @analysis ||= Analysis.where(id: params[:analysis_id]).first
+    authorize_action_for @analysis
+    @analysis
   end
 
   def analysis_priority_params
     params.permit(:order)
+  end
+
+  def ordered_data(unordered_data)
+    priority ||= Priority.where(tool: current_analysis).first
+    if priority
+      order_by_question_id(unordered_data, priority.order)
+    else
+      unordered_data
+    end
+  end
+
+  def order_by_question_id(data, order)
+    [].tap do |new_order|
+      order.each do |id|
+        new_order.push( data.detect { |datum| datum[:question_id] == id} )
+        data.delete_if { |datum| datum[:question_id] == id }
+      end
+    end
   end
 
   def build_scores_and_relevant_data
@@ -32,7 +55,8 @@ class V1::AnalysisPrioritiesController < ApplicationController
     # Note that we are shoehorning in a value 0 for several columns to be computed separately.
 
     scores_and_relevant_data =
-        Score.select('scores.value',
+        Score.select('questions.id AS question_id',
+                     'scores.value',
                      'questions.headline',
                      'questions.order',
                      'rubrics.id AS rubric_id',
@@ -44,10 +68,10 @@ class V1::AnalysisPrioritiesController < ApplicationController
                      '0 AS data_count',
                      '0 AS total_cost_yearly')
             .joins('INNER JOIN questions ON scores.question_id = questions.id
-                               INNER JOIN supporting_inventory_responses ON supporting_inventory_responses.score_id = scores.id
-                               INNER JOIN questions_rubrics ON questions_rubrics.question_id = questions.id
-                               INNER JOIN rubrics ON rubrics.id = questions_rubrics.rubric_id
-                               INNER JOIN responses ON scores.response_id = responses.id')
+                    INNER JOIN supporting_inventory_responses ON supporting_inventory_responses.score_id = scores.id
+                    INNER JOIN questions_rubrics ON questions_rubrics.question_id = questions.id
+                    INNER JOIN rubrics ON rubrics.id = questions_rubrics.rubric_id
+                    INNER JOIN responses ON scores.response_id = responses.id')
             .where(rubrics: {id: current_analysis.rubric.id},
                    responses: {responder_type: Analysis.to_s,
                                responder_id: current_analysis.id})
@@ -60,6 +84,5 @@ class V1::AnalysisPrioritiesController < ApplicationController
     }
 
     scores_and_relevant_data
-
   end
 end
