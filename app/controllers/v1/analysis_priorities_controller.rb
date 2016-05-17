@@ -83,6 +83,6 @@ class V1::AnalysisPrioritiesController < ApplicationController
       score.total_cost_yearly = GeneralInventoryQuestion.where(id: score.product_entries).sum(:price_in_cents)
     }
 
-    scores_and_relevant_data
+    scores_and_relevant_data.to_ary
   end
 end

@@ -7,10 +7,12 @@
   AnalysisPriorityCtrl.$inject = [
     '$scope',
     '$filter',
-    '$timeout'
+    '$timeout',
+    '$stateParams',
+    'AnalysisPriority'
   ];
 
-  function AnalysisPriorityCtrl($scope, $filter, $timeout) {
+  function AnalysisPriorityCtrl($scope, $filter, $timeout, $stateParams, AnalysisPriority) {
     var vm = this;
 
     vm.priorityData = $scope.priorities;
@@ -48,10 +50,38 @@
       }
     };
 
+    vm.savePriority = function() {
+      var order = [];
+
+      angular.forEach($('[data-table-dnd-tr]'), function(tr) {
+        order.push($(tr).find('.hidden').text());
+      });
+      AnalysisPriority.save({
+        inventory_id: $stateParams.inventory_id,
+        analysis_id: $stateParams.id
+      }, {order: order})
+          .$promise
+          .then(function() {
+            vm.loadPriorityData();
+            vm.initializeTable();
+          });
+    };
+
     vm.initializeTable = function() {
       $timeout(function() {
         $('[data-table-dnd]').tableDnD();
       });
+    };
+
+    vm.loadPriorityData = function() {
+      AnalysisPriority.query({
+        inventory_id: $stateParams.inventory_id,
+        analysis_id: $stateParams.id
+      })
+          .$promise
+          .then(function(data) {
+            vm.priorityData = data;
+          });
     };
 
     vm.initializeTable();
