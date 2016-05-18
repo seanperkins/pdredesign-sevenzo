@@ -10,6 +10,6 @@
   ];
 
   function AnalysisPriority($resource, UrlService) {
-    return $resource(UrlService.url('inventories/:inventory_id/analyses/:analysis_id/analysis_priorities'));
+    return $resource(UrlService.url('inventories/:inventory_id/analyses/:id/analysis_priorities'));
   }
 })();

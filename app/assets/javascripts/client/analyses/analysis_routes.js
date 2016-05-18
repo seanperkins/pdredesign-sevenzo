@@ -118,7 +118,13 @@
         analysis_priorities: ['$stateParams', 'AnalysisPriority', function($stateParams, AnalysisPriority) {
           return AnalysisPriority.query({
             inventory_id: $stateParams.inventory_id,
-            analysis_id: $stateParams.id
+            id: $stateParams.id
+          }).$promise;
+        }],
+        analysis_comparison_data: ['$stateParams', 'AnalysisReport', function($stateParams, AnalysisReport) {
+          return AnalysisReport.comparisonData({
+            inventory_id: $stateParams.inventory_id,
+            id: $stateParams.id
           }).$promise;
         }]
       },

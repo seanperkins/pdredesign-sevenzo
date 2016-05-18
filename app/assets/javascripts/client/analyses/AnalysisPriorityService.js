@@ -15,7 +15,7 @@
     service.save = function(order) {
       return AnalysisPriority.save({
         inventory_id: $stateParams.inventory_id,
-        analysis_id: $stateParams.id
+        id: $stateParams.id
       }, {order: order})
           .$promise;
     };
@@ -23,7 +23,7 @@
     service.load = function() {
       return AnalysisPriority.query({
         inventory_id: $stateParams.inventory_id,
-        analysis_id: $stateParams.id
+        id: $stateParams.id
       })
           .$promise
     };

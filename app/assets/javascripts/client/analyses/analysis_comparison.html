@@ -1,0 +1,38 @@
+<div class="analysis-report-compare">
+  <h3>Compare</h3>
+
+  <div class="row">
+    <div class="col-lg-6">
+      <table class="table table-striped table-bordered table-condensed" ts-wrapper>
+        <thead>
+        <tr>
+          <th>Product Name</th>
+          <th ts-criteria="usage" ts-default>Usage Ranking</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="item in comparisonData track by item.product_name" ts-repeat ts-hide-no-data>
+          <td>{{ item.product_name }}</td>
+          <td>{{ item.usage }}</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="col-lg-6">
+      <table class="table table-striped table-bordered table-condensed" ts-wrapper>
+        <thead>
+        <tr>
+          <th>Product Name</th>
+          <th ts-criteria="price_in_cents" ts-default="descending">Cost</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="item in comparisonData track by item.product_name" ts-repeat ts-hide-no-data>
+          <td>{{ item.product_name }}</td>
+          <td>{{ (item.price_in_cents / 100) | currency }}</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
