@@ -24,11 +24,15 @@ class V1::AnalysisReportsController < ApplicationController
           WHERE supporting_inventory_responses.score_id IN (SELECT scores.id
                                                             FROM scores
                                                             WHERE scores.response_id = ?)))",
-                                         131]
+                                         current_response.id]
   end
 
   def current_analysis
-    @analysis ||= Analysis.where(id: params[:analysis_id])
+    @analysis ||= Analysis.where(id: params[:analysis_id]).first
+  end
+
+  def current_response
+    @response ||= Response.where(responder: current_analysis).first
   end
 
 end

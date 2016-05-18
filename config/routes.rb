@@ -116,6 +116,8 @@ PdrServer::Application.routes.draw do
         resources :analysis_consensus, except: [:delete, :index]
 
         resources :analysis_priorities, only: [:index, :create]
+
+        get 'comparison_data', to: 'analysis_reports#comparison_data'
       end
 
       member do
