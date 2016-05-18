@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160516164625) do
+ActiveRecord::Schema.define(version: 20160518220822) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -35,6 +35,7 @@ ActiveRecord::Schema.define(version: 20160516164625) do
     t.datetime "assigned_at"
     t.integer  "rubric_id"
     t.integer  "owner_id"
+    t.text     "report_takeaway"
   end
 
   add_index "analyses", ["inventory_id"], name: "index_analyses_on_inventory_id", using: :btree
