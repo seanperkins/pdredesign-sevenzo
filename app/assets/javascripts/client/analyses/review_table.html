@@ -10,7 +10,13 @@
     </thead>
     <tbody>
     <tr ng-repeat="item in reviewHeaderData track by item.category_name" ts-repeat ts-hide-no-data>
-      <td>{{ item.category_name }}</td>
+      <td ng-click="analysisReviewTable.toggleEntryExpansion(item.supporting_response_id)">
+        {{ item.category_name }}
+        <ul ng-if="analysisReviewTable.hasExpanded(item.supporting_response_id)">
+          <li ng-repeat="item in analysisReviewTable.pullTitlesForEntry(item.supporting_response_id)">{{ item.product_name }}</li>
+          <li ng-if="!analysisReviewTable.pullTitlesForEntry(item.supporting_response_id).length">No products found</li>
+        </ul>
+      </td>
       <td>{{ item.product_count }}</td>
     </tr>
     </tbody>

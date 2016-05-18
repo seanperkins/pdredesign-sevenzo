@@ -6,11 +6,17 @@ class V1::AnalysisReportsController < ApplicationController
   end
 
   def review_header_data
-    @categories = fetch_categories_for_consensus
+    @categories = fetch_review_header_data
   end
 
-  def categories_with_products
-
+  def fetch_review_body_data(supporting_response_id)
+    supporting_inventory_response = SupportingInventoryResponse.where(id: supporting_response_id).first
+    if supporting_inventory_response
+      GeneralInventoryQuestion
+          .where(id: supporting_inventory_response.product_entries)
+    else
+      []
+    end
   end
 
   private
@@ -35,14 +41,14 @@ class V1::AnalysisReportsController < ApplicationController
                                           current_response.id]
   end
 
-  def fetch_categories_for_consensus
-    Question.select(:headline, 'COALESCE(array_length(product_entries, 1), 0) AS product_count')
+  def fetch_review_header_data
+    Question.select(:headline,
+                    'COALESCE(array_length(product_entries, 1), 0) AS product_count',
+                    'supporting_inventory_responses.id AS supporting_response_id')
         .joins('INNER JOIN scores ON scores.question_id = questions.id
                 INNER JOIN supporting_inventory_responses ON supporting_inventory_responses.score_id = scores.id')
         .where(scores: {id: current_response.scores})
   end
-
-
 
   def current_analysis
     @analysis ||= Analysis.where(id: params[:analysis_id]).first

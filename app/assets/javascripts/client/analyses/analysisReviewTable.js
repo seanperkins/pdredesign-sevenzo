@@ -12,7 +12,9 @@
       scope: {
         reviewHeaderData: '='
       },
-      templateUrl: 'client/analyses/review_table.html'
-    }
+      templateUrl: 'client/analyses/review_table.html',
+      controller: 'AnalysisReviewTableCtrl',
+      controllerAs: 'analysisReviewTable'
+    };
   }
 })();

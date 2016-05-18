@@ -16,7 +16,7 @@
         url: UrlService.url('inventories/:inventory_id/analyses/:id/comparison_data'),
         isArray: true
       },
-      'reviewHeaderData':{
+      'reviewHeaderData': {
         method: 'GET',
         url: UrlService.url('inventories/:inventory_id/analyses/:id/review_header_data'),
         isArray: true
