@@ -1,0 +1,19 @@
+<div class="analysis-report-review">
+  <h3>Review</h3>
+
+  <table class="table table-striped table-bordered table-condensed" ts-wrapper>
+    <thead>
+    <tr>
+      <th ts-criteria="category_name">Type</th>
+      <th ts-criteria="product_count"># of products</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr ng-repeat="item in reviewHeaderData track by item.category_name" ts-repeat ts-hide-no-data>
+      <td>{{ item.category_name }}</td>
+      <td>{{ item.product_count }}</td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+

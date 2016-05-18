@@ -126,6 +126,12 @@
             inventory_id: $stateParams.inventory_id,
             id: $stateParams.id
           }).$promise;
+        }],
+        analysis_review_header_data: ['$stateParams', 'AnalysisReport', function($stateParams, AnalysisReport) {
+          return AnalysisReport.reviewHeaderData({
+            inventory_id: $stateParams.inventory_id,
+            id: $stateParams.id
+          }).$promise;
         }]
       },
       views: {

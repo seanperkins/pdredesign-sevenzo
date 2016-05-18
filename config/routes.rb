@@ -118,6 +118,7 @@ PdrServer::Application.routes.draw do
         resources :analysis_priorities, only: [:index, :create]
 
         get 'comparison_data', to: 'analysis_reports#comparison_data'
+        get 'review_header_data', to: 'analysis_reports#review_header_data'
       end
 
       member do

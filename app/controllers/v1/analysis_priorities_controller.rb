@@ -61,11 +61,8 @@ class V1::AnalysisPrioritiesController < ApplicationController
                      'questions.order',
                      'rubrics.id AS rubric_id',
                      'supporting_inventory_responses.product_entries',
-                     'supporting_inventory_responses.data_entries',
-                     'supporting_inventory_responses.product_entry_evidence',
-                     'supporting_inventory_responses.data_entry_evidence',
-                     '0 AS product_count',
-                     '0 AS data_count',
+                     'COALESCE(array_length(supporting_inventory_responses.product_entries, 1), 0) AS product_count',
+                     'COALESCE(array_length(supporting_inventory_responses.data_entries, 1), 0) AS data_count',
                      '0 AS total_cost_yearly')
             .joins('INNER JOIN questions ON scores.question_id = questions.id
                     INNER JOIN supporting_inventory_responses ON supporting_inventory_responses.score_id = scores.id
@@ -78,8 +75,6 @@ class V1::AnalysisPrioritiesController < ApplicationController
             .order('questions.order ASC')
 
     scores_and_relevant_data.each { |score|
-      score.product_count = score.product_entries.size
-      score.data_count = score.data_entries.size
       score.total_cost_yearly = GeneralInventoryQuestion.where(id: score.product_entries).sum(:price_in_cents)
     }
 
