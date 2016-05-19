@@ -32,7 +32,7 @@ class V1::AnalysisReportsController < ApplicationController
         SELECT DISTINCT product_entries.inventory_id
         FROM product_entries
           INNER JOIN general_inventory_questions ON general_inventory_questions.product_entry_id = product_entries.id
-        WHERE general_inventory_questions.id IN (
+        WHERE general_inventory_questions.product_entry_id IN (
           SELECT DISTINCT UNNEST(supporting_inventory_responses.product_entries)
           FROM supporting_inventory_responses
           WHERE supporting_inventory_responses.score_id IN (SELECT scores.id
