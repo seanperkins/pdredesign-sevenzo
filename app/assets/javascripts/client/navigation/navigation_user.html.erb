@@ -14,11 +14,17 @@
     <div class="collapse navbar-collapse" id="pdredesign-navbar">
       <ul class='nav navbar-nav'>
         <li ng-class="activeClassFor('current_state')" class="cursor">
-          <a href='#/assessments'>Readiness Assessment</a>
+          <a ui-sref='assessments'>Readiness Assessment</a>
         </li>
-        <!-- <li ng-class="activeClassFor('inventories')" class="cursor">
-          <a href='#/inventories'>Data & Tech Audit</a>
-        </li> -->
+        <li ng-class="activeClassFor('inventories')" class="cursor">
+          <a ui-sref="inventories">Data &amp; Tech Inventory</a>
+        </li>
+        <li ng-class="activeClassFor('analyses')" class="cursor">
+          <a ui-sref="analyses">Data &amp; Tech Analysis</a>
+        </li>
+        <li ng-class="activeClassFor('about')" class="cursor">
+          <a ui-sref="about.pdredesign">About</a>
+        </li>
       </ul>
       <ul class='nav navbar-nav navbar-right user-menu cursor'>
         <li class='hidden-xs hidden-sm'>
