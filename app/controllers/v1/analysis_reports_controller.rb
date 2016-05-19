@@ -13,7 +13,7 @@ class V1::AnalysisReportsController < ApplicationController
     supporting_inventory_response = SupportingInventoryResponse.where(id: supporting_response_id).first
     if supporting_inventory_response
       GeneralInventoryQuestion
-          .where(id: supporting_inventory_response.product_entries)
+          .where(product_entry_id: supporting_inventory_response.product_entries)
     else
       []
     end
