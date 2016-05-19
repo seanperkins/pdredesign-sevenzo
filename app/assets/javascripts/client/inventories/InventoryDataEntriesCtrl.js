@@ -30,16 +30,16 @@
     });
 
     //HACK: activate datatables.buttons plugin, we'll be able to get rid of this once we migrate to angular-datatables 0.3.x
-		options.withButtons = function(buttonsOptions) {
-			var options = this;
-			var buttonsPrefix = 'B';
-			options.dom = options.dom ? options.dom : $.fn.dataTable.defaults.sDom;
-			if (options.dom.indexOf(buttonsPrefix) === -1) {
-				options.dom = buttonsPrefix + options.dom;
-			}
-			options.buttons = buttonsOptions;
-			return options;
-		};
+    options.withButtons = function(buttonsOptions) {
+      var options = this;
+      var buttonsPrefix = 'B';
+      options.dom = options.dom ? options.dom : $.fn.dataTable.defaults.sDom;
+      if (options.dom.indexOf(buttonsPrefix) === -1) {
+        options.dom = buttonsPrefix + options.dom;
+      }
+      options.buttons = buttonsOptions;
+      return options;
+    };
 
     vm.dtOptions = options.withPaginationType('full_numbers').withButtons([
       {
@@ -49,15 +49,16 @@
     ]);
     vm.dtColumns = [
       DTColumnBuilder.newColumn(null)
-        .notSortable()
-        .renderWith(actionsHTML)
-        .withOption('createdCell', function (cell) {
-          $compile(angular.element(cell).contents())($scope);
-        }),
+          .notSortable()
+          .renderWith(actionsHTML)
+          .withOption('createdCell', function(cell) {
+            $compile(angular.element(cell).contents())($scope);
+          }),
+      DTColumnBuilder.newColumn('name').withTitle('Name'),
       DTColumnBuilder.newColumn('general_data_question.data_type').withTitle('Data Type'),
       DTColumnBuilder.newColumn('general_data_question.data_capture').withTitle('Data Capture'),
       DTColumnBuilder.newColumn('data_entry_question.who_enters_data').withTitle('Who Enters Data'),
-      DTColumnBuilder.newColumn('data_access_question.who_access_data').withTitle('Who Accesses Data'),
+      DTColumnBuilder.newColumn('data_access_question.who_access_data').withTitle('Who Accesses Data')
     ];
 
     vm.showInventoryDataEntryModal = function(dataEntryId) {
@@ -74,7 +75,7 @@
       vm.dtOptions.reloadData(null, true);
     });
 
-    function actionsHTML (data) {
+    function actionsHTML(data) {
       return '<i class="fa fa-pencil" ng-click="inventoryDataEntries.showInventoryDataEntryModal(' + data.id + ')"></i>';
     }
   }

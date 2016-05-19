@@ -34,20 +34,25 @@
     }, function(url) {
       switch (url) {
         case '/assessments':
-          return $scope.currentLocation = "current_state";
-        case '':
-          return $scope.currentLocation = "home";
-        case '/':
-          return $scope.currentLocation = "home";
+          return $scope.currentLocation = 'current_state';
         case '/login':
-          return $scope.currentLocation = "login";
+          return $scope.currentLocation = 'login';
         case '/administrators':
-          return $scope.currentLocation = "administrators";
+          return $scope.currentLocation = 'administrators';
         case '/educators':
-          return $scope.currentLocation = "educators";
-          return $scope.currentLocation = "networks";
+          return $scope.currentLocation = 'educators';
         case '/inventories':
           return $scope.currentLocation = 'inventories';
+        case '/analyses':
+          return $scope.currentLocation = 'analyses';
+        case '/about/pdredesign':
+        case '/about/ra/assessment':
+        case '/about/dt/inventory':
+        case '/about/dt/analysis':
+          return $scope.currentLocation = 'about';
+        case '':
+        case '/':
+          return $scope.currentLocation = 'home';
         default:
           return '';
       }

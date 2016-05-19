@@ -1,19 +1,32 @@
 nav.navbar
-  .navbar-form
-    border: none
-  margin-bottom: 0
+  .navbar-flex
+    display: flex
   .logo
     padding: 0
+  .navbar-nav
+    display: flex
+    flex-direction: row
+    margin-left: auto
+    li
+      align-self: center
+    @media (min-width: 991px)
+      float: none
+      li
+        float: none
   .navbar-header
+    display: flex
+    flex-direction: row
+    margin-right: auto
     img
       margin-top: .3em
       padding: .3em
       height: 2.5em
+    a
+      align-self: center
   .user-menu
     padding-right: 1em
     .polaroid
       border-radius: 3em
   .cursor
-    cursor: hand
     cursor: pointer
 
