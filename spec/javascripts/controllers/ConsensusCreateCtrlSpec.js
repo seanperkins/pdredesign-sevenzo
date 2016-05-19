@@ -3,6 +3,7 @@ describe('Controller: ConsensusCreateCtrl', function() {
       scopeget,
       httpBackend,
       timeout,
+      stateParams,
       ConsensusResource;
 
   beforeEach(module('PDRClient'));
@@ -11,14 +12,16 @@ describe('Controller: ConsensusCreateCtrl', function() {
     q  = $injector.get('$q');
     scope              = $injector.get('$rootScope').$new();
     httpBackend        = $injector.get('$httpBackend');
+    stateParams        = $injector.get('$stateParams');
     ConsensusResource  = $injector.get('Consensus');
     timeout            = $injector.get('$timeout');
 
     subject  = $controller('ConsensusCreateCtrl', {
-      $scope: scope
+      $scope: scope,
+      current_context: "assessment"
     });
-    scope.assessmentId = 2
 
+    stateParams.assessment_id = 2;
   }));
 
   afterEach(function() {
@@ -39,7 +42,7 @@ describe('Controller: ConsensusCreateCtrl', function() {
 
   it('Consensus create is called', function() {
     httpBackend.expectPOST('/v1/assessments/2/consensus').respond({})
-    scope.createConsensus(2, 3);
+    scope.createConsensus();
     httpBackend.flush();
   });
 

@@ -1,6 +1,7 @@
 <div class="entry">
   <assessment-entity-status entity="entity" ng-if="context === 'assessment'"></assessment-entity-status>
   <inventory-entity-status entity="entity" ng-if="context === 'inventory'"></inventory-entity-status>
+  <analysis-entity-status entity="entity" ng-if="context === 'analysis'"></analysis-entity-status>
   <div class="entry-content">
     <div class="entry-details">
       <div class="disable-entry details"
@@ -24,23 +25,26 @@
         </div>
       </div>
       <inventory-links id="{{ entity.id }}" links="entity.links" ng-if="context === 'inventory'"></inventory-links>
+      <analysis-links entity="entity" links="entity.links" ng-if="context === 'analysis'"></analysis-links>
     </div>
 
     <div class="entry-footer">
-      <div class="meta">
-        <div ng-show="entry.isNetworkPartner()" class="col-md-4 col-xs-3 district-name disable-entry">
-          {{entity.district_name}}
-        </div>
+      <div class="district-header disable-entry" ng-if="entry.isNetworkPartner()">
+        {{entity.district_name}}
+      </div>
+      <div class="disable-entry entry-item">
         <span class="category">Participants</span>
         <span class="stat">{{entity.participant_count}}</span>
+      </div>
+      <div class="disable-entry entry-item" ng-if="context === 'assessment'">
         <span class="category">Completed</span>
         <span class="stat">{{entity.completed_responses}}</span>
       </div>
-      <div class="meeting" ng-if="context === 'assessment'">
+      <div class="disable-entry date" ng-if="context === 'assessment'">
         <span class='category'>Meeting</span>
         <span class='stat'>{{entry.meetingTime(entity.meeting_date)}}</span>
       </div>
-      <div class="meeting" ng-if="context === 'inventory'">
+      <div class="date disable-entry date" ng-if="context === 'inventory' || context === 'analysis'">
         <span class='category'>Deadline</span>
         <span class='stat'>{{entry.meetingTime(entity.due_date)}}</span>
       </div>

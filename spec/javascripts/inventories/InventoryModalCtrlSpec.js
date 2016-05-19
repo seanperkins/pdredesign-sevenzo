@@ -7,18 +7,29 @@
         $location,
         SessionService,
         Inventory,
+        $modalInstance,
+        modalInstanceClose,
         controller;
 
     beforeEach(function() {
-      module('PDRClient');
-      inject(function(_$rootScope_, _$timeout_, _$location_, _$controller_, $injector) {
-        $scope = _$rootScope_.$new(true);
+      modalInstanceClose = jasmine.createSpy('modalInstanceClose');
+      $modalInstance = {
+        close: modalInstanceClose
+      };
+
+      module('PDRClient', function($provide) {
+        $provide.value('$modalInstance', function() {
+          return $modalInstance;
+        });
+      });
+
+      inject(function(_$timeout_, _$location_, _$controller_, $injector) {
         $timeout = _$timeout_;
         $location = _$location_;
         SessionService = $injector.get('SessionService');
         Inventory = $injector.get('Inventory');
         controller = _$controller_('InventoryModalCtrl', {
-          $scope: $scope,
+          $modalInstance: $modalInstance,
           $timeout: $timeout,
           $location: $location,
           SessionService: SessionService,
@@ -28,10 +39,9 @@
     });
 
     describe('#close', function() {
-      it('emits the correct event', function() {
-        spyOn($scope, '$emit');
+      it('delegates to $modalInstance', function() {
         controller.close();
-        expect($scope.$emit).toHaveBeenCalledWith('close-inventory-modal');
+        expect(modalInstanceClose).toHaveBeenCalledWith('cancel');
       });
     });
 

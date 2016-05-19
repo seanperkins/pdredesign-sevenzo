@@ -1,0 +1,20 @@
+<div class="row testimonial" ng-class="alternate === 'true' ? 'testimonial-background-alt': 'testimonial-background'">
+  <div class="col-md-8 col-md-offset-2">
+    <div class="row" ng-class="alternate === 'true' ? 'reverse-order' : 'natural-order'">
+      <div class="col-md-6 testimonial-column-text">
+        <blockquote class="quote">
+          <q>{{ quote }}</q>
+          <footer class="quote-footer">
+            <cite>{{ author }}</cite>
+          </footer>
+        </blockquote>
+        <p class="subtext">{{ subtext }}</p>
+        <a ng-href="{{ learnMoreLink }}" type="button" class="btn btn-secondary">Learn More</a>
+      </div>
+      <div class="col-md-6 testimonial-column-picture">
+        <img ng-src="{{ image }}">
+        <h2>{{ toolName }}</h2>
+      </div>
+    </div>
+  </div>
+</div>

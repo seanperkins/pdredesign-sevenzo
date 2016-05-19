@@ -4,28 +4,19 @@
   angular.module('PDRClient')
       .controller('MessageElementCtrl', MessageElementCtrl);
 
-  function MessageElementCtrl() {
-    var vm = this;
-    vm.messageTitle = function(category) {
-      switch (category) {
-        case 'welcome':
-          return 'Welcome Invite';
-        case 'reminder':
-          return 'Individual Inventory Reminder';
-        default:
-          return 'General Message';
-      }
-    };
+  MessageElementCtrl.$inject = ['$scope'];
 
-    vm.messageIcon = function(category) {
-      switch (category) {
-        case 'welcome':
-          return 'fa-envelope-o';
-        case 'reminder':
-          return 'fa-clock-o';
-        default:
-          return 'fa-envelope-o';
-      }
-    };
+  function MessageElementCtrl($scope) {
+    var vm = this;
+    vm.message = $scope.message;
+    var kind = $scope.kind || 'Inventory';
+    vm.title = {
+      'welcome': 'Welcome Invite',
+      'reminder': 'Individual ' + kind + ' Reminder',
+    }[vm.message.category] || 'General Message';
+    vm.icon = {
+      'welcome': 'fa-envelope-o',
+      'reminder': 'fa-clock-o',
+    }[vm.message.category] || 'fa-envelope-o';
   }
 })();

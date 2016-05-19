@@ -62,7 +62,7 @@
             Pricing Structure
             <span class='field-info'>How is the pricing structured?</span>
           </label>
-          <select 
+          <select
               class='form-control'
               ng-model='productEntryModal.productEntry.general_inventory_question.pricing_structure'
               ng-options='name for (id, name) in productEntryModal.constants.product_entry.general_inventory_question.pricing_structure_options'
@@ -127,7 +127,7 @@
       <div class='col-sm-6'>
         <div class='form-group'>
           <label>
-            How it's Assigned
+            How It's Assigned
             <span class='field-info'>How is the product assigned to teachers?</span>
           </label>
           <div ng-repeat='selectedAssignmentApproach in selectedAssignmentApproaches' class='control-list'>
@@ -143,7 +143,7 @@
       <div class='col-sm-6'>
         <div class='form-group'>
           <label>
-            How it's Used
+            How It's Used
             <span class='field-info'>How is the product used by teachers?</span>
           </label>
           <div ng-repeat='selectedUsageFrequency in selectedUsageFrequencies' class='control-list'>
@@ -159,7 +159,7 @@
       <div class='col-sm-6'>
         <div class='form-group'>
           <label>
-            How it's Accessed
+            How It's Accessed
             <span class='field-info'>How is the product accessed by teachers?</span>
           </label>
           <div ng-repeat='selectedAccess in selectedAccesses' class='control-list'>
@@ -289,7 +289,7 @@
           </label>
           <div class='control-list'>
             <label ng-repeat='(id, name) in productEntryModal.constants.product_entry.technical_question.hosting_options'>
-              <fake-radio model='productEntryModal.productEntry.technical_question.hosting' value='{{name}}'></fake-radio>
+              <fake-radio proxy-ng-model='productEntryModal.productEntry.technical_question.hosting' proxy-value='{{name}}'></fake-radio>
               {{name}}
             </label>
           </div>
@@ -323,7 +323,7 @@
           </label>
           <div class='control-list'>
             <label ng-repeat='(id, name) in productEntryModal.constants.product_entry.technical_question.single_sign_on_options'>
-              <fake-radio model='productEntryModal.productEntry.technical_question.single_sign_on' value='{{name}}'></fake-radio>
+              <fake-radio proxy-ng-model='productEntryModal.productEntry.technical_question.single_sign_on' proxy-value='{{name}}'></fake-radio>
               {{name}}
             </label>
           </div>

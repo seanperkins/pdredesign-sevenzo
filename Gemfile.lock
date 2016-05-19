@@ -355,10 +355,13 @@ GEM
       rails-assets-angular (= 1.2.28)
     rails-assets-angular-shims-placeholder (0.4.2)
       rails-assets-angular (>= 1.0.8, < 1.5)
+    rails-assets-angular-tablesort (1.1.2)
+      rails-assets-angular
     rails-assets-angular-ui-router (0.2.15)
       rails-assets-angular (>= 1.0.8)
     rails-assets-angular-ui-utils (0.2.3)
       rails-assets-angular (>= 1.0.2)
+    rails-assets-clipboard (1.5.10)
     rails-assets-datatables (1.10.11)
       rails-assets-jquery (>= 1.7.0)
     rails-assets-datatables-buttons (1.0.3)
@@ -553,8 +556,10 @@ DEPENDENCIES
   rails-assets-angular-route (= 1.2.28)!
   rails-assets-angular-sanitize (= 1.2.28)!
   rails-assets-angular-shims-placeholder (= 0.4.2)!
+  rails-assets-angular-tablesort (~> 1.1.2)!
   rails-assets-angular-ui-router (= 0.2.15)!
   rails-assets-angular-ui-utils (= 0.2.3)!
+  rails-assets-clipboard (= 1.5.10)!
   rails-assets-datatables-buttons (~> 1.0.0)!
   rails-assets-highcharts (= 3.0.10)!
   rails-assets-jquery (= 2.1.4)!

@@ -11,11 +11,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160427221954) do
+ActiveRecord::Schema.define(version: 20160518220822) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-  enable_extension "pg_trgm"
 
   create_table "access_requests", force: :cascade do |t|
     t.integer  "assessment_id"
@@ -35,9 +34,21 @@ ActiveRecord::Schema.define(version: 20160427221954) do
     t.text     "message"
     t.datetime "assigned_at"
     t.integer  "rubric_id"
+    t.integer  "owner_id"
+    t.text     "report_takeaway"
   end
 
   add_index "analyses", ["inventory_id"], name: "index_analyses_on_inventory_id", using: :btree
+  add_index "analyses", ["owner_id"], name: "index_analyses_on_owner_id", using: :btree
+
+  create_table "analysis_access_requests", force: :cascade do |t|
+    t.integer  "analysis_id", null: false
+    t.integer  "user_id",     null: false
+    t.string   "role",        null: false
+    t.string   "token"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "analysis_invitations", force: :cascade do |t|
     t.string  "first_name"
@@ -60,6 +71,7 @@ ActiveRecord::Schema.define(version: 20160427221954) do
     t.datetime "invited_at"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.datetime "reminded_at"
   end
 
   add_index "analysis_members", ["analysis_id"], name: "index_analysis_members_on_analysis_id", using: :btree
@@ -284,15 +296,14 @@ ActiveRecord::Schema.define(version: 20160427221954) do
   add_index "general_inventory_questions", ["product_entry_id"], name: "index_general_inventory_questions_on_product_entry_id", using: :btree
 
   create_table "inventories", force: :cascade do |t|
-    t.text     "name",                                    null: false
-    t.datetime "deadline",                                null: false
-    t.integer  "district_id",                             null: false
-    t.datetime "created_at",                              null: false
-    t.datetime "updated_at",                              null: false
+    t.text     "name",        null: false
+    t.datetime "deadline",    null: false
+    t.integer  "district_id", null: false
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
     t.integer  "owner_id"
     t.text     "message"
     t.datetime "assigned_at"
-    t.integer  "total_participant_responses", default: 0, null: false
     t.string   "share_token"
   end
 
@@ -414,11 +425,14 @@ ActiveRecord::Schema.define(version: 20160427221954) do
   add_index "participants", ["user_id", "assessment_id"], name: "index_participants_on_user_id_and_assessment_id", unique: true, using: :btree
 
   create_table "priorities", force: :cascade do |t|
-    t.integer  "assessment_id"
-    t.integer  "order",         array: true
+    t.integer  "tool_id"
+    t.integer  "order",      array: true
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "tool_type"
   end
+
+  add_index "priorities", ["tool_type", "tool_id"], name: "index_priorities_on_tool_type_and_tool_id", using: :btree
 
   create_table "product_entries", force: :cascade do |t|
     t.datetime "created_at"
@@ -531,7 +545,7 @@ ActiveRecord::Schema.define(version: 20160427221954) do
   add_index "scores", ["response_id", "question_id"], name: "index_scores_on_response_id_and_question_id", unique: true, using: :btree
 
   create_table "sessions", force: :cascade do |t|
-    t.string   "session_id", limit: 255, null: false
+    t.string   "session_id", null: false
     t.text     "data"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -642,6 +656,8 @@ ActiveRecord::Schema.define(version: 20160427221954) do
   add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
 
   add_foreign_key "analyses", "inventories"
+  add_foreign_key "analysis_access_requests", "analyses", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "analysis_access_requests", "users", on_update: :cascade, on_delete: :cascade
   add_foreign_key "analysis_invitations", "analyses", on_update: :cascade, on_delete: :cascade
   add_foreign_key "analysis_invitations", "users", on_update: :cascade, on_delete: :cascade
   add_foreign_key "analysis_members", "analyses"

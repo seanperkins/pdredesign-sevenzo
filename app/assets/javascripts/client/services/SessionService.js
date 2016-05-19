@@ -1,9 +1,23 @@
-PDRClient.service('SessionService',
-  ['UrlService', '$http', '$location', '$q', '$rootScope', '$state', 'User',
-  function(UrlService, $http, $location, $q, $rootScope, $state, User) {
+(function() {
+  'use strict';
+
+  angular.module('PDRClient')
+      .service('SessionService', SessionService);
+
+  SessionService.$inject = [
+    'UrlService',
+    '$http',
+    '$location',
+    '$q',
+    '$rootScope',
+    '$state',
+    'User'
+  ];
+
+  function SessionService(UrlService, $http, $location, $q, $rootScope, $state, User) {
     var userIsAuthenticated = false;
     var service = this;
-    var user    = null;
+    var user = null;
 
     $rootScope.$on('clear_user', function() {
       service.clear();
@@ -17,16 +31,16 @@ PDRClient.service('SessionService',
       localStorage.setItem('user', stringy);
     }
 
-    this.userRole = function() { return user && user.role; };
+    this.userRole = function() {
+      return user && user.role;
+    };
 
     this.isNetworkPartner = function() {
-      if(service.userRole() == "network_partner")
-        return true;
-      return false;
+      return service.userRole() === "network_partner";
     };
 
     this.syncAndRedirect = function(url) {
-      return this.syncUser().then(function(usr) {
+      return this.syncUser().then(function() {
         return $location.path(url);
       });
     };
@@ -34,24 +48,22 @@ PDRClient.service('SessionService',
     this.syncUser = function() {
       var deferred = $q.defer();
 
-      User
-        .get()
-        .$promise
-        .then(function(usr) {
-          setCurrentUser(usr);
-          deferred.resolve(usr);
-      }, function(){
-        deferred.reject(false);
-      });
+      User.get()
+          .$promise
+          .then(function(usr) {
+            setCurrentUser(usr);
+            deferred.resolve(usr);
+          }, function() {
+            deferred.reject(false);
+          });
 
       return deferred.promise;
     };
 
     this.softLogin = function() {
       var localUser = localStorage.getItem('user');
-      if(localUser !== null && typeof localUser !== 'undefined'){
-        object = JSON.parse(localUser);
-        setCurrentUser(object);
+      if (localUser !== null && typeof localUser !== 'undefined') {
+        setCurrentUser(JSON.parse(localUser));
         this.syncUser();
       }
     };
@@ -77,9 +89,9 @@ PDRClient.service('SessionService',
 
       $http({
         method: 'DELETE',
-        url:     UrlService.url('users/sign_out') ,
+        url: UrlService.url('users/sign_out'),
         data: {}
-      }).then(function(response) {
+      }).then(function() {
         service.clear();
         deferred.resolve(true);
       });
@@ -92,13 +104,13 @@ PDRClient.service('SessionService',
 
       $http({
         method: 'POST',
-        url:     UrlService.url('users/sign_in') ,
+        url: UrlService.url('users/sign_in'),
         data: {email: email, password: password}
       }).then(function(response) {
         var responseUser = response.data.user;
         setCurrentUser(responseUser);
         deferred.resolve(responseUser);
-      }, function(response){
+      }, function() {
         service.clear();
         deferred.reject(false);
       });
@@ -107,11 +119,11 @@ PDRClient.service('SessionService',
     };
 
     this.setUserTemplate = function(scope, loggedInTemplate, loggedOutTemplate) {
-      if(service.getUserAuthenticated()) {
+      if (service.getUserAuthenticated()) {
         scope.template = loggedInTemplate;
       } else {
         scope.template = loggedOutTemplate;
       }
     };
-
-}]);
+  }
+})();

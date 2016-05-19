@@ -1,13 +1,14 @@
 <div class="row secondary">
   <div class="col-md-12">
     <h1>Readiness Assessment List</h1>
-    <p>Hi {{user.first_name}}. This is your Readiness Assessment List. Create a new assessment or check the status of an
+    <p>Hi, {{user.first_name}}. This is your Readiness Assessment List. Create a new Assessment or check the status of an
       existing one to proceed.</p>
   </div>
 </div>
 <div class="row tertiary">
   <div class="col-md-12">
-    <start-assessment></start-assessment>
+    <primary-button icon="fa-bullhorn" text="{{ text() }}"
+                    click-fn="openAssessmentModal()"></primary-button>
     <div class="row">
       <div class="assessments-filter">
         <div ng-show="isNetworkPartner()">

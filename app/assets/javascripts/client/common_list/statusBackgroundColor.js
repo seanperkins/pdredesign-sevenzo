@@ -16,12 +16,8 @@
         element.addClass('draft-state');
       } else if (entity.status === 'assessment') {
         element.addClass('assessment-state');
-      } else if(entity.status === 'inventory') {
-        if(entity.consensus && entity.consensus.is_completed) {
-          element.addClass('completed-inventory-state');
-        } else {
-          element.addClass('inventory-state');
-        }
+      } else if (entity.status === 'inventory') {
+        element.addClass('inventory-state');
       } else {
         element.addClass('consensus-state');
       }

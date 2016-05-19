@@ -4,8 +4,9 @@ class V1::PrioritiesController < ApplicationController
 
   def index
     @diagnostic_min = 2
-    @categories     = categories
+    @categories = categories
   end
+
   authority_actions create: :show
 
   def create
@@ -17,18 +18,18 @@ class V1::PrioritiesController < ApplicationController
       render status: 422, nothing: true
     end
   end
+
   authority_actions create: :update
 
-
   private
-  def categories 
+  def categories
     @categories ||= Assessments::Priority
-      .new(assessment)
-      .categories
+                        .new(assessment)
+                        .categories
   end
 
   def find_or_initialize(assessment)
-    Priority.find_or_initialize_by(assessment: assessment)
+    Priority.find_or_initialize_by(tool: assessment)
   end
 
   def assessment

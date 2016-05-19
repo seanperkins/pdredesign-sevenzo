@@ -69,7 +69,7 @@
 
         $scope.addLearningQuestion = function () {
             $scope.modal = $modal.open({
-                template: '<learning-question-modal reminder="false" />',
+                template: '<learning-question-modal context="assessment" reminder="false"></learning-question-modal>',
                 scope: $scope
             });
         };

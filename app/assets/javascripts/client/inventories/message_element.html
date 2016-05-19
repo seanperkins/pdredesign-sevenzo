@@ -1,12 +1,12 @@
 <div class="row row-even">
   <div class="col-icon col-md-1 col-sm-1 col-xs-1">
-    <i ng-class="messageElement.messageIcon(message.category)" class="fa fa-2x"></i>
+    <i ng-class="messageElement.icon" class="fa fa-2x"></i>
   </div>
   <div class="col-even col-mg-11 col-sm-11 col-xs-11">
     <h4 class="subject">
-      {{ messageElement.messageTitle(message.category )}}
-      <small class="date">- {{ message.sent_at | amDateFormat:'MMMM Do, YYYY' }}</small>
+      {{ messageElement.title }}
+      <small class="date">- {{ messageElement.message.sent_at | amDateFormat:'MMMM Do, YYYY' }}</small>
     </h4>
-    <p class="content">{{ message.teaser }}</p>
+    <p class="content">{{ messageElement.message.teaser }}</p>
   </div>
 </div>

@@ -1,103 +1,65 @@
-<section class='hero'>
-  <div class='row'>
-    <div class='col-sm-12 text-center'>
-      <h1>PDredesign</h1>
-    </div>
+<div class="hero-header">
+  <div class="hero-banner">
+    <h1>PDredesign</h1>
+    <p class="text-center">A digital toolkit and community of practice dedicated to improving
+      <span class="underline">professional development</span> for teachers.</p>
+    <button choose-role-modal type="button" class="btn btn-primary-landing">Sign Up</button>
   </div>
-  <div class='row'>
-    <div class='col-sm-12 text-center'>
-      <p>A digital toolkit and community of practice</br>
-        dedicated to improving professional</br>
-        development for teachers.</p>
-    </div>
-  </div>
-  <div class='row'>
-    <div class='col-sm-12 text-center'>
-      <button choose-role-modal type='button' class='btn btn-default'>Sign Up</button>
-    </div>
-  </div>
-</section>
+</div>
 
-<section class='body'>
-  <div class='row'>
-    <div class='col-sm-12 text-center'>
-      <h2 class="secondary-color">Why Redesign PD?</h2>
+<div class="body">
+  <div class="row">
+    <div class="col-sm-12 text-center">
+      <h1>What Can PDredesign Do For You?</h1>
     </div>
   </div>
-  <div class='row'>
-    <div class='col-sm-12 text-center'>
-      <p class="primary-color">Teachers, more than ever, are looking for relevant, flexible,</br>
-        collaborative PD to meet the needs of students in their</br>
-        classrooms.</p>
+  <div class="row icon-row">
+    <div class="col-md-8 col-md-offset-2">
+      <div class="row">
+        <div class="col-md-4 icon-column text-center">
+          <%= image_tag('redesign_or_improve.png') %>
+          <p class="text-center">Redesign or improve your district's PD using high quality tools</p>
+        </div>
+        <div class="col-md-4 icon-column text-center">
+          <%= image_tag('collaborate.png') %>
+          <p class="text-center">Collaborate with stakeholders to create real solutions</p>
+        </div>
+        <div class="col-md-4 icon-column text-center">
+          <%= image_tag('connect.png') %>
+          <p class="text-center">Connect with other districts facing similar challenges</p>
+        </div>
+      </div>
     </div>
   </div>
-</section>
+  <testimonial tool-name="Readiness Assessment"
+               quote="The Readiness Assessment has been critical to improving our conversations about professional development."
+               author="Bryan Joffe, AASA"
+               subtext="Understand how your district's current PD system is structured and determine where to focus collective energy for improvement."
+               learn-more-link="#/about/ra/assessment"
+               image="<%= image_path('readiness_assessment.png') %>">
+  </testimonial>
+  <testimonial alternate="true"
+               tool-name="Data &amp; Tech Inventory"
+               quote="It gives us a way to see the big picture and how it all connects, rather than seeing the fragmented pieces."
+               author="Judy Schinbeckler, Putnam County Schools"
+               subtext="Get a complete picture of what data and technology systems are currently in use across departments."
+               learn-more-link="#/about/dt/inventory"
+               image="<%= image_path('inventory.png') %>">
+  </testimonial>
+  <testimonial tool-name="Data &amp; Tech Analysis"
+               quote="We can now easily identify the tools no one uses and build upon the ones that are working."
+               author="Margie Johnson, Metro Nashville Public Schools"
+               subtext="Perform a deep dive analysis into how data systems and technology support teacher professional development across key areas."
+               learn-more-link="#/about/dt/analysis"
+               image="<%= image_path('inventory_analysis.png') %>">
+  </testimonial>
+</div>
 
-<section class='stats'>
-  <div class='row'>
-    <div class='col-sm-12 text-center'>
-      <%= image_tag('landing-page-graph.png') %>
-    </div>
+<div class="row hero-footer">
+  <div class="col-md-12 hero-footer-banner">
+    <h1 class="text-center">Every year, $18 billion is spent on professional development, but only 29% of teachers
+      are satisfied with their PD offerings.</h1>
+    <button choose-role-modal type="button" class="btn btn-primary-landing btn-padding">Sign Up</button>
+    <p class="text-center">Redesign your professional development with PDredesign.</p>
   </div>
-  <div class='row'>
-    <div class='col-sm-12 text-center legal dark-primary-color'>
-      Teachers surveyed were asked "in the past 12 months, to what extent have
-      the following factors limited the effectiveness of your PD?" 936 teachers responded<br/>
-      Source: PD teacher survey, February 2014<br/>
-    </div>
-  </div>
-</section>
-
-<section class='path'>
-  <div class='row'>
-    <div class='col-sm-12 text-center'>
-      <h2 class="secondary-color">Redesign for continous improvement and sustainable change</h2>
-    </div>
-  </div>
-  <div class='row'>
-    <div class='col-sm-12 col-md-4 col-md-offset-2 text-center'>
-      <div class="points">
-        <h3 class="primary-color">Where are we now?</h3>
-        <p>Understand your strengths across the district and identify priorities for growth.</p>
-        <%= image_tag 'landpage-icons-mappin.png', class: 'visible-xs-inline' %>
-      </div>
-      <div class="points">
-        <h3 class="primary-color">Where do we need to grow?</h3>
-        <p>Analyze resources and gaps in priority areas.</p>
-        <%= image_tag 'landpage-icons-tools.png', class: 'visible-xs-inline' %>
-      </div>
-      <div class="points">
-        <h3 class="primary-color">How do we reach our goals?</h3>
-        <p>Leverage best practices and tools to make your plan come to life.</p>
-        <%= image_tag 'landpage-icons-playbook.png', class: 'visible-xs-inline' %>
-      </div>
-      <div class="points">
-        <h3 class="primary-color">Who can help us get there?</h3>
-        <p>Find districts and partners working on solutions.</p>
-        <%= image_tag 'landpage-icons-community.png', class: 'visible-xs-inline' %>
-      </div>
-    </div>
-    <div class='col-sm-12 col-md-3 col-md-offset-1 icons hidden-sm hidden-xs'>
-      <%= image_tag 'path.png' %>
-    </div>
-  </div>
-</section>
-
-<section class='action'>
-  <div class='row'>
-    <div class='col-sm-12 text-center'>
-      <h2 class="secondary-color">Join PD redesign</h2>
-    </div>
-  </div>
-  <div class='row'>
-    <div class='col-sm-12 text-center'>
-      A digital toolkit and community of practice dedicated to<br/>
-      improving professional development for teachers.
-    </div>
-    <div class='row'>
-      <div class='col-sm-12 text-center'>
-        <button choose-role-modal type='button' class='btn btn-default'>Sign Up</button>
-      </div>
-    </div>
-  </div>
-</section>
+</div>

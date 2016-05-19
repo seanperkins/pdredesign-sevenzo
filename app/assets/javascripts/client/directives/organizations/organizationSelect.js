@@ -95,11 +95,14 @@ PDRClient.directive('organizationSelect', [
                   return OrganizationHelper.searchOrganization(query, callback);
                 }
             });
-            scope.updateOrganizationObject(scope.organizationId);
+
+            if (scope.organizationId) {
+              scope.updateOrganizationObject(scope.organizationId);
+            }
           });
 
           scope.$watch('organizationId', function(id, _oldValue) {
-            if(!scope.selectize || !scope.organization) return;
+            if(!scope.selectize || !scope.organization || !id) return;
             scope.updateOrganizationObject(id);
           });
 
