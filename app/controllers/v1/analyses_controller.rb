@@ -69,7 +69,8 @@ class V1::AnalysesController < ApplicationController
       :name,
       :deadline,
       :message,
-      :assign
+      :assign,
+      :report_takeaway
     )
   end
 

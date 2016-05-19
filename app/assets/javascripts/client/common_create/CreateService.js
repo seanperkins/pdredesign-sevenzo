@@ -7,6 +7,7 @@
     '$window',
     '$location',
     '$stateParams',
+    '$state',
     'Assessment',
     'Inventory',
     'Participant',
@@ -15,7 +16,7 @@
     'AnalysisParticipant'
   ];
 
-  function CreateService($window, $location, $stateParams, Assessment, Inventory, Participant, InventoryParticipant, Analysis, AnalysisParticipant) {
+  function CreateService($window, $location, $stateParams, $state, Assessment, Inventory, Participant, InventoryParticipant, Analysis, AnalysisParticipant) {
     var service = this;
 
     service.loadDistrict = function(district) {
@@ -156,7 +157,10 @@
         service.alertError = false;
         service.saveAnalysis(analysis, true)
             .then(function() {
-              $location.path('/inventories');
+              $state.go('inventory_analysis_consensus_create', {
+                inventory_id: $stateParams.inventory_id,
+                analysis_id: $stateParams.id
+              });
             });
       }
     };
@@ -186,11 +190,11 @@
     };
 
     service.save = function(entity) {
-      if(service.context === 'assessment') {
+      if (service.context === 'assessment') {
         service.saveAssessment(entity);
-      } else if(service.context === 'inventory') {
+      } else if (service.context === 'inventory') {
         service.saveInventory(entity);
-      } else if(service.context === 'analysis') {
+      } else if (service.context === 'analysis') {
         service.saveAnalysis(entity);
       }
     };

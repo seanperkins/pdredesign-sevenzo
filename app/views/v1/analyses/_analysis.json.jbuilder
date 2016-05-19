@@ -24,6 +24,8 @@ json.messages @messages, :id, :category, :teaser, :sent_at do |message|
   json.sent_at  message.sent_at
 end
 
+json.report_takeaway analysis.report_takeaway
+
 if analysis.consensus
   json.consensus do
     json.id           analysis.consensus.id

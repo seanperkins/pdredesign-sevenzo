@@ -13,7 +13,7 @@ module Assessments
 
     private
     def priority
-      @priority ||= ::Priority.find_by(assessment: assessment)
+      @priority ||= ::Priority.find_by(tool: assessment)
     end
 
     def order

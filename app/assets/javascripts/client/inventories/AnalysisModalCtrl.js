@@ -96,6 +96,7 @@
           .$promise
           .then(function(productEntry) {
             vm.closeModal();
+            $state.go('inventory_analysis_assign', {inventory_id: productEntry.inventory_id, id: productEntry.id});
           }, function(response) {
             var errors = response.data.errors;
             angular.forEach(errors, function(error, field) {

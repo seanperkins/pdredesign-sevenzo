@@ -1,0 +1,25 @@
+<div class="analysis-report-review">
+  <h3>Review</h3>
+
+  <table class="table table-striped table-bordered table-condensed" ts-wrapper>
+    <thead>
+    <tr>
+      <th ts-criteria="category_name">Type</th>
+      <th ts-criteria="product_count"># of products</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr ng-repeat="item in reviewHeaderData track by item.category_name" ts-repeat ts-hide-no-data>
+      <td ng-click="analysisReviewTable.toggleEntryExpansion(item.supporting_response_id)">
+        {{ item.category_name }}
+        <ul ng-if="analysisReviewTable.hasExpanded(item.supporting_response_id)">
+          <li ng-repeat="item in analysisReviewTable.pullTitlesForEntry(item.supporting_response_id)">{{ item.product_name }}</li>
+          <li ng-if="!analysisReviewTable.pullTitlesForEntry(item.supporting_response_id).length">No products found</li>
+        </ul>
+      </td>
+      <td>{{ item.product_count }}</td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+

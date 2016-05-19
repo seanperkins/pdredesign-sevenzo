@@ -4,7 +4,6 @@
   font-size: 24px;
 }
 
-
 .btn-secondary {
   @include button-variant($btn-primary-color, $secondary-color, $secondary-color);
 }

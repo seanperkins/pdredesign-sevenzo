@@ -58,6 +58,7 @@ source 'https://rails-assets.org' do
   gem 'rails-assets-angular-datatables'
   gem 'rails-assets-datatables-buttons', '~>1.0.0'
   gem 'rails-assets-clipboard', '1.5.10'
+  gem 'rails-assets-angular-tablesort', '~> 1.1.2'
 end
 
 group :development, :test do
