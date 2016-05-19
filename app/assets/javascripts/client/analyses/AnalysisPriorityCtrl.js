@@ -71,7 +71,10 @@
       AnalysisPriorityService.load()
           .then(function(data) {
             vm.priorityData = data;
-            $rootScope.$broadcast('top-priority', vm.priorityData[0].category);
+            $rootScope.$broadcast('top-priority', {
+              category: vm.priorityData[0].category,
+              link: vm.determineLink(vm.priorityData[0].category)
+            });
             vm.invokeDragAndDrop();
           });
     };

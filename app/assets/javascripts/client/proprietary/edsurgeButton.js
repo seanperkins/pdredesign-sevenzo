@@ -9,8 +9,10 @@
       restrict: 'E',
       replace: true,
       transclude: true,
-      scope: {},
-      templateUrl: 'client/proprietary/edsurge_button.html',
+      scope: {
+        buttonLink: '='
+      },
+      templateUrl: 'client/proprietary/edsurge_button.html'
     }
   }
 })();

@@ -17,8 +17,9 @@
       id: $stateParams.id
     };
 
-    $scope.$on('top-priority', function(evt, category) {
-      vm.topPriority = category;
+    $scope.$on('top-priority', function(evt, categoryObject) {
+      vm.topPriority = categoryObject.category;
+      vm.topPriorityLink = categoryObject.link;
     });
   }
 })();
