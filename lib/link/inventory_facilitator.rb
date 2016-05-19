@@ -1,7 +1,6 @@
 module Link
   class InventoryFacilitator
     attr_reader :inventory, :user
-    # delegate :is_completed, to: :inventory, prefix: true
 
     def initialize(inventory, user)
       @inventory = inventory
@@ -17,10 +16,9 @@ module Link
       if draft?
         {finish: finish_link}
       else
-        {inventory: inventory_link, dashboard: dashboard_link}
+        {inventory: inventory_link, dashboard: dashboard_link, report: report_link}
       end
     end
-
 
     def finish_link
       {title: 'Finish & Assign', active: true, type: :finish}
