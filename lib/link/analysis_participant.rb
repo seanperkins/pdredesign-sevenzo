@@ -11,7 +11,7 @@ module Link
     def execute
       return nil if draft?
       completed = consensus? ? fully_complete? : completed?
-      links = [{action: action}]
+      links = {action: action}
       if completed
         links.merge!({report: report})
       end
