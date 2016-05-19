@@ -40,7 +40,7 @@
 			options.buttons = buttonsOptions;
 			return options;
 		};
-    
+
     vm.dtOptions = options.withPaginationType('full_numbers').withButtons([
       {
         extend: 'columnsToggle',
@@ -57,7 +57,7 @@
       DTColumnBuilder.newColumn('general_data_question.data_type').withTitle('Data Type'),
       DTColumnBuilder.newColumn('general_data_question.data_capture').withTitle('Data Capture'),
       DTColumnBuilder.newColumn('data_entry_question.who_enters_data').withTitle('Who Enters Data'),
-      DTColumnBuilder.newColumn('data_access_question.who_access_data').withTitle('Who Access Data'),
+      DTColumnBuilder.newColumn('data_access_question.who_access_data').withTitle('Who Accesses Data'),
     ];
 
     vm.showInventoryDataEntryModal = function(dataEntryId) {
