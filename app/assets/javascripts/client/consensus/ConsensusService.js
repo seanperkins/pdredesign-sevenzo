@@ -45,10 +45,10 @@
     };
 
     service.redirectToCreatedConsensus = function (consensusId) {
-      if (service.context === "assessment") {
-        $location.path("/assessments/" + service.extractId() + "/consensus/" + consensusId);
-      } else if (service.context === "analysis") {
-        $location.path("/inventories/" + $stateParams.inventory_id + "/analyses/" + service.extractId() + "/consensus/" + consensusId);
+      if (service.context === 'assessment') {
+        $location.path('/assessments/' + service.extractId() + '/consensus/' + consensusId);
+      } else if (service.context === 'analysis') {
+        $location.path('/inventories/' + $stateParams.inventory_id + '/analyses/' + service.extractId() + '/consensus/' + consensusId);
       }
     };
 
