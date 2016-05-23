@@ -10,10 +10,11 @@
     '$modal',
     'ProductEntry',
     'DTOptionsBuilder',
-    'DTColumnBuilder'
+    'DTColumnBuilder',
+    'SessionService'
   ];
 
-  function InventoryProductEntriesCtrl($scope, $q, $compile, $modal, ProductEntry, DTOptionsBuilder, DTColumnBuilder) {
+  function InventoryProductEntriesCtrl($scope, $q, $compile, $modal, ProductEntry, DTOptionsBuilder, DTColumnBuilder, SessionService) {
     var vm = this;
     vm.inventory = $scope.inventory;
     vm.readOnly = $scope.readOnly;
@@ -23,8 +24,22 @@
     var options = DTOptionsBuilder.fromFnPromise(function() {
       var deferred = $q.defer();
       ProductEntry.get({inventory_id: inventoryId}).$promise.then(function(results) {
-        vm.productEntries = results.product_entries;
-        deferred.resolve(results.product_entries);
+        var productEntries = _.map(results.product_entries, function (productEntry) {
+          if (productEntry.deleted_at) {
+            productEntry.deleted_at = moment(productEntry.deleted_at).format("MMMM D, YYYY");
+          }
+          return productEntry;
+        });
+
+        vm.deletedProductEntries = _.filter(productEntries, function (productEntry) {
+          return typeof productEntry.deleted_at !== "undefined";
+        });
+
+        vm.productEntries = _.filter(productEntries, function (productEntry) {
+          return typeof productEntry.deleted_at === "undefined";
+        });
+
+        deferred.resolve(vm.productEntries);
       }, deferred.reject);
       return deferred.promise;
     });
@@ -96,22 +111,21 @@
         });
     };
 
+    vm.isOwnerOrFacilitator = function () {
+      return SessionService.getCurrentUser().id === vm.inventory.owner_id
+             || vm.inventory.is_facilitator;
+    }
+
     $scope.$on('close-product-entry-modal', function() {
       vm.modalInstance && vm.modalInstance.dismiss('cancel');
       vm.dtOptions.reloadData(null, true);
     });
 
     function actionsHTML (data) {
-      var editHTML = '<i class="fa fa-pencil" ng-click="inventoryProductEntries.showProductEntryModal(' + data.id + ')"></i>';
+      var editHTML = '<i class="fa fa-pencil" ng-click="inventoryProductEntries.showProductEntryModal(' + data.id + ')"></i>&nbsp;&nbsp;';
       var deleteHTML = '<i class="fa fa-remove" ng-click="inventoryProductEntries.deleteProductEntry(' + data.id + ')"></i>';
-      var restoreHTML = '<i class="fa fa-undo" ng-click="inventoryProductEntries.restoreProductEntry(' + data.id + ')"></i>';
 
-      // TODO this should be "if user is an owner or facilitator"
-      if (true) {
-        return editHTML + deleteHTML + restoreHTML;
-      } else {
-        return editHTML + deleteHTML;
-      }
+      return editHTML + deleteHTML;
     }
   }
 })();
