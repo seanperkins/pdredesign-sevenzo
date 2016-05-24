@@ -1,7 +1,7 @@
 class V1::ProductEntriesController < ApplicationController
   include SharedInventoryFetch
   before_action :authenticate_user!, except: :index
-  before_action :inventory, except: :index
+  before_action :inventory, except: [:index, :destroy, :restore]
 
   def index
     @product_entries = product_entries
@@ -40,9 +40,31 @@ class V1::ProductEntriesController < ApplicationController
     end
   end
 
+  def destroy
+    @product_entry = Inventory.find(params[:inventory_id]).product_entries.find(params[:id])
+    authorize_action_for @product_entry
+
+    @product_entry.destroy
+
+    render nothing: true, status: 204
+  end
+
+  def restore
+    @product_entry = Inventory.find(params[:inventory_id]).product_entries.with_deleted.find(params[:id])
+    authorize_action_for @product_entry
+
+    @product_entry.restore(recursive: true)
+
+    render nothing: true, status: 204
+  end
+
   private
   def product_entries
-    inventory.product_entries
+    if inventory.facilitator?(user: current_user)
+      inventory.product_entries.with_deleted
+    else
+      inventory.product_entries
+    end
   end
 
   def render_error
