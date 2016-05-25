@@ -30,16 +30,24 @@ module V1
       @counter = @counter + 1
     end
 
+    def question_skipped?(score)
+      score.value.nil? &&
+        score.product_count == 0 &&
+        score.data_count == 0 &&
+        score.product_entry_evidence.nil? &&
+        score.data_entry_evidence.nil?
+    end
+
     def analysis_consensus_mappings
       {
         'Priority' => ->(*){ counter },
         'Category' => :headline,
-        'Score' => :value,
-        'Products' => :product_count,
-        'Data' => :data_count,
+        'Score' => ->(score){ score.value if score.value.try(:>, 0) },
+        'Products' => ->(score){ score.product_count unless question_skipped?(score) },
+        'Data' => ->(score){ score.data_count unless question_skipped?(score) },
         'Product Notes' => :product_entry_evidence,
         'Data Notes' => :data_entry_evidence,
-        'Total Costs Yearly (USD)' => ->(ac){ ac.total_cost_yearly / 100 }
+        'Total Costs Yearly (USD)' => ->(score){ score.total_cost_yearly / 100 }
       }
     end
 
