@@ -75,24 +75,28 @@ class V1::ProductEntriesController < ApplicationController
   def product_entry_params
     params.permit(
       product_question_attributes: [
+        :id,
         {how_its_assigned: []},
         {how_its_used: []},
         {how_its_accessed: []},
         {audience: []}
       ],
       usage_question_attributes: [
+        :id,
         :school_usage,
         :usage,
         :vendor_data,
         :notes
       ],
       technical_question_attributes: [
+        :id,
         {platforms: []},
         :hosting,
         {connectivity: []},
         :single_sign_on
       ],
       general_inventory_question_attributes: [
+        :id,
         :product_name,
         :vendor,
         :point_of_contact_name,
