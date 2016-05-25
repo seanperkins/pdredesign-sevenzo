@@ -62,18 +62,23 @@
       }
     ]);
     vm.dtColumns = [
-      DTColumnBuilder.newColumn(null)
-          .notSortable()
-          .renderWith(actionsHTML)
-          .withOption('createdCell', function(cell) {
-            $compile(angular.element(cell).contents())($scope);
-          }),
       DTColumnBuilder.newColumn('name').withTitle('Name'),
       DTColumnBuilder.newColumn('general_data_question.data_type').withTitle('Data Type'),
       DTColumnBuilder.newColumn('general_data_question.data_capture').withTitle('Data Capture'),
       DTColumnBuilder.newColumn('data_entry_question.who_enters_data').withTitle('Who Enters Data'),
       DTColumnBuilder.newColumn('data_access_question.who_access_data').withTitle('Who Accesses Data')
     ];
+
+    if (!vm.shared) {
+      vm.dtColumns.unshift(
+        DTColumnBuilder.newColumn(null)
+          .notSortable()
+          .renderWith(actionsHTML)
+          .withOption('createdCell', function(cell) {
+            $compile(angular.element(cell).contents())($scope);
+          })
+      );
+    }
 
     vm.showInventoryDataEntryModal = function(dataEntryId) {
       $scope.resource = _.find(vm.dataEntries, {id: dataEntryId});
@@ -109,8 +114,9 @@
     };
 
     vm.isOwnerOrFacilitator = function () {
-      return SessionService.getCurrentUser().id === vm.inventory.owner_id
-             || vm.inventory.is_facilitator;
+      var currentUser = SessionService.getCurrentUser();
+
+      return currentUser && (currentUser.id === vm.inventory.owner_id || vm.inventory.is_facilitator);
     }
 
     $scope.$on('close-inventory-data-entry-modal', function() {

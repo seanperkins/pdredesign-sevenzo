@@ -62,12 +62,6 @@
       }
     ]);
     vm.dtColumns = [
-      DTColumnBuilder.newColumn(null)
-        .notSortable()
-        .renderWith(actionsHTML)
-        .withOption('createdCell', function (cell) {
-          $compile(angular.element(cell).contents())($scope);
-        }),
       DTColumnBuilder.newColumn('general_inventory_question.product_name').withTitle('Name'),
       DTColumnBuilder.newColumn('general_inventory_question.vendor').withTitle('Vendor'),
       DTColumnBuilder.newColumn('general_inventory_question.purpose').withTitle('Used For'),
@@ -76,6 +70,17 @@
       DTColumnBuilder.newColumn('technical_question.single_sign_on').withTitle('Single Sign-On'),
       DTColumnBuilder.newColumn('usage_question.usage').withTitle('Usage Data')
     ];
+
+    if (!vm.shared) {
+      vm.dtColumns.unshift(
+        DTColumnBuilder.newColumn(null)
+          .notSortable()
+          .renderWith(actionsHTML)
+          .withOption('createdCell', function (cell) {
+            $compile(angular.element(cell).contents())($scope);
+          })
+      );
+    }
 
     vm.showProductEntryModal = function(productEntryId) {
       $scope.resource = _.find(vm.productEntries, {id: productEntryId});
@@ -111,8 +116,9 @@
     };
 
     vm.isOwnerOrFacilitator = function () {
-      return SessionService.getCurrentUser().id === vm.inventory.owner_id
-             || vm.inventory.is_facilitator;
+      var currentUser = SessionService.getCurrentUser();
+
+      return currentUser && (currentUser.id === vm.inventory.owner_id || vm.inventory.is_facilitator);
     }
 
     $scope.$on('close-product-entry-modal', function() {

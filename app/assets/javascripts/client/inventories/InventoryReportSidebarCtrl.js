@@ -13,10 +13,18 @@
 
   function InventoryReportSidebarCtrl($scope, $modal, inventory, $stateParams, $state) {
     var vm = this;
+
+    new Clipboard("[data-clipboard-target]");
+
     vm.inventory = inventory;
     vm.shared = $stateParams.shared || false;
     vm.hideAnalysisAccess = vm.inventory.analysis_count === 0 && !vm.inventory.is_facilitator;
     vm.creatingAnalysis = vm.inventory.analysis_count === 0 && vm.inventory.is_facilitator;
+    vm.shareURL = $state.href(
+      'inventories_shared_report',
+      {inventory_id: vm.inventory.share_token},
+      {absolute: true}
+    );
 
     vm.createAnalysis = function() {
       vm.analysisModal = $modal.open({
