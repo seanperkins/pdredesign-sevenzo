@@ -155,7 +155,6 @@
     service.exportToPDF = function () {
       if (service.context === "assessment") {
         var url = UrlService.url('assessments/' + service.extractId() + '/reports/consensus_report.pdf');
-      } else if (service.context === "analysis") {
       }
 
       return $http.post(url, {}, {responseType: "arraybuffer"})
@@ -170,10 +169,13 @@
     service.exportToCSV = function () {
       if (service.context === "assessment") {
         var url = UrlService.url('assessments/' + service.extractId() + '/reports/consensus_report.csv');
+        var method = "post";
       } else if (service.context === "analysis") {
+        var url = UrlService.url('inventories/' + $stateParams.inventory_id + '/analyses/' + service.extractId() + '/analysis_consensus/' + $stateParams.id + '.csv');
+        var method = "get";
       }
 
-      return $http.post(url, {})
+      return $http[method](url, {})
         .success(function (data) {
           forceDownload(data, {
             fileExt: "csv"

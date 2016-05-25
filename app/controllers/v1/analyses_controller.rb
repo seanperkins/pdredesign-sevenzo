@@ -4,10 +4,7 @@ class V1::AnalysesController < ApplicationController
   def index
     @analyses = inventory.analyses
 
-    respond_to do |format|
-      format.json { render template: 'v1/analyses/index', status: 200 }
-      format.csv  { render csv: 'analyses', template: 'v1/analyses/index' }
-    end
+    render template: 'v1/analyses/index', status: 200
   end
 
   def all
