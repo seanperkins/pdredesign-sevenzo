@@ -76,17 +76,20 @@ class V1::DataEntriesController < ApplicationController
     params.permit(
       :name,
       general_data_question_attributes: [
+        :id,
         :data_type,
         :point_of_contact_name,
         :point_of_contact_department,
         :data_capture
       ],
       data_entry_question_attributes: [
+        :id,
         :who_enters_data,
         :how_data_is_entered,
         :when_data_is_entered
       ],
       data_access_question_attributes: [
+        :id,
         :data_storage,
         :who_access_data,
         :how_data_is_accessed,
