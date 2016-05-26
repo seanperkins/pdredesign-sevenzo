@@ -3,17 +3,17 @@
     <button type="button" class="close" ng-click="assessmentModal.hideModal()">&times;</button>
     <h4 class="modal-title">{{assessmentModal.modalTitle}}</h4>
   </div>
-  <div class="modal-body">
-    <p ng-if="!assessmentModal.userIsNetworkPartner()">Facilitate the Readiness Assessment process for your district
-      by creating a
-      new Readiness Assessment.<a ng-click="assessmentModal.hideModal()"
-                        href="#/assessments"> Click here</a> to view or
-      participate in an existing Assessment in your district.</p>
-    <alert ng-repeat="alert in assessmentModal.alerts" type="{{alert.type}}"
-           close="assessmentModal.closeAlert($index)">
-      {{alert.msg}}
-    </alert>
-    <form name="assessmentModalForm">
+  <form name="assessmentModalForm">
+    <div class="modal-body">
+      <p ng-if="!assessmentModal.userIsNetworkPartner()">
+        Facilitate the Readiness Assessment process for your district by creating a new Readiness Assessment.
+        <a ng-click="assessmentModal.hideModal()" href="#/assessments">Click here</a>
+        to view or participate in an existing Assessment in your district.
+      </p>
+      <alert ng-repeat="alert in assessmentModal.alerts" type="{{alert.type}}"
+             close="assessmentModal.closeAlert($index)">
+        {{alert.msg}}
+      </alert>
       <div class="row">
         <div class="col-md-12">
           <input class="form-control" type="text" ng-model="assessmentModal.assessment.name" placeholder="Name*"
@@ -52,15 +52,15 @@
           </div>
         </div>
       </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" ng-click="assessmentModal.hideModal();">Close</button>
-        <button type="submit"
-                ng-disabled="assessmentModalForm.$invalid"
-                ng-click="assessmentModal.create(assessmentModal.assessment)"
-                class="btn btn-primary">
-          Create
-        </button>
-      </div>
-    </form>
-  </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-default" ng-click="assessmentModal.hideModal();">Close</button>
+      <button type="submit"
+              ng-disabled="assessmentModalForm.$invalid"
+              ng-click="assessmentModal.create(assessmentModal.assessment)"
+              class="btn btn-primary">
+        Create
+      </button>
+    </div>
+  </form>
 </div>
