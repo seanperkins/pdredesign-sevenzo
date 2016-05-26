@@ -1,7 +1,7 @@
 <div class="inventory-items-list">
   <div class="header">
     <h4 class="pull-left">Data</h4>
-    <inventory-data-entry inventory="inventoryDataEntries.inventory" ng-if="!inventoryDataEntries.readOnly"></inventory-data-entry>
+    <inventory-data-entry inventory="inventoryDataEntries.inventory" ng-if="!inventoryDataEntries.shared"></inventory-data-entry>
     <label ng-show="inventoryDataEntries.isOwnerOrFacilitator()">
       <fake-checkbox model="vm.showDeletedDataEntries"></fake-checkbox>
       Show deleted data

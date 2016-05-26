@@ -18,4 +18,10 @@
       <a ui-sref="inventory_dashboard({inventory_id: inventoryReportSidebar.inventory.id})" class="btn btn-default">Dashboard</a>
     </li>
   </ul>
+
+  <div class="share-report" ng-if="!inventoryReportSidebar.shared">
+    <h2>Share this report</h2>
+    <p>Copy this link to share this page.</p>
+    <share-url url="{{inventoryReportSidebar.shareURL}}"></share-url>
+  </div>
 </div>

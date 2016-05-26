@@ -15,10 +15,6 @@
   function AboutSidebarCtrl($rootScope, $element, $location, $timeout, $modal) {
     var vm = this;
 
-    // We don't have a use for the returned Clipboard instance below, so we're
-    // not assigning it to anything.
-    new Clipboard("[data-clipboard-target]");
-
     vm.openAssessmentModal = function() {
       $modal.open({
         templateUrl: 'client/home/assessment_modal.html',
