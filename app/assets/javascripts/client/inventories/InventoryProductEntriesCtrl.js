@@ -55,12 +55,16 @@
       return options;
     };
 
-    vm.dtOptions = options.withPaginationType('full_numbers').withButtons([
-      {
-        extend: 'columnsToggle',
-        columns: '1:visible, 2:visible, 3:visible, 4:visible, 5:visible, 6:visible'
-      }
-    ]);
+    vm.dtOptions = options
+      .withPaginationType('full_numbers')
+      .withButtons([
+        {
+          extend: 'columnsToggle',
+          columns: '1:visible, 2:visible, 3:visible, 4:visible, 5:visible, 6:visible'
+        }
+      ])
+      .withOption('dom', '<"table-header"fB>rt<"table-footer"ip>');
+
     vm.dtColumns = [
       DTColumnBuilder.newColumn('general_inventory_question.product_name').withTitle('Name'),
       DTColumnBuilder.newColumn('general_inventory_question.vendor').withTitle('Vendor'),
@@ -74,7 +78,7 @@
     if (!vm.shared) {
       vm.dtColumns.unshift(
         DTColumnBuilder.newColumn(null)
-          .notSortable()
+          .withClass('not-sortable')
           .renderWith(actionsHTML)
           .withOption('createdCell', function (cell) {
             $compile(angular.element(cell).contents())($scope);
