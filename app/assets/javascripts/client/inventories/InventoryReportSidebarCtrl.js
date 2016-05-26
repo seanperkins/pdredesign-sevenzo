@@ -14,8 +14,6 @@
   function InventoryReportSidebarCtrl($scope, $modal, inventory, $stateParams, $state) {
     var vm = this;
 
-    new Clipboard("[data-clipboard-target]");
-
     vm.inventory = inventory;
     vm.shared = $stateParams.shared || false;
     vm.hideAnalysisAccess = vm.inventory.analysis_count === 0 && !vm.inventory.is_facilitator;
