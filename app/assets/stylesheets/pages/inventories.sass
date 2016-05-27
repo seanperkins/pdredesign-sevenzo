@@ -21,9 +21,6 @@
       .btn
         width: 100% 
 
-    .btn-primary
-      padding: 0.9em
-
   .share-report
     margin-top: 2em
 
@@ -40,11 +37,57 @@
 
   .list
     margin-top: 1em
-    border-color: $btn-primary-border
+    border-color: $light-grey
     border-width: 1pt
     border-style: solid
     min-height: 5em
-    padding: 1em
+    padding: 0
+
+    .table-header
+      background-color: $off-white
+
+      .dataTables_filter
+        float: none
+        border-bottom: 1px solid $light-grey
+        padding: 0.5em 0.5em 0 0.5em
+      .dt-buttons
+        float: none
+        border-bottom: 1px solid $light-grey
+        padding: 0.5em
+
+        a
+          display: inline-flex
+
+    table
+      width: 100% !important
+      border-bottom-color: $light-grey
+
+      thead
+        tr
+          background-color: $off-white
+
+          th
+            border-bottom-color: $light-grey
+            &.not-sortable
+              background: none
+
+      tr
+        td
+          border: none
+
+        &.odd
+          background-color: white
+          &:hover
+            background-color: white
+        &.even
+          background-color: $off-white
+          &:hover
+            background-color: $off-white
+
+    .table-footer
+      > *
+        padding: 0.5em
+          
 
     i.fa[ng-click]
       cursor: pointer
@@ -52,6 +95,8 @@
       display: inline
 
     .deleted-entries
+      padding: 0.5em
+
       ul
         list-style: none
         padding-left: 0

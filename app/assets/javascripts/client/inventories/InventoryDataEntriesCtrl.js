@@ -55,12 +55,16 @@
       return options;
     };
 
-    vm.dtOptions = options.withPaginationType('full_numbers').withButtons([
-      {
-        extend: 'columnsToggle',
-        columns: '1:visible, 2:visible, 3:visible'
-      }
-    ]);
+    vm.dtOptions = options
+      .withPaginationType('full_numbers')
+      .withButtons([
+        {
+          extend: 'columnsToggle',
+          columns: '1:visible, 2:visible, 3:visible'
+        }
+      ])
+      .withOption('dom', '<"table-header"fB>rt<"table-footer"ip>');
+
     vm.dtColumns = [
       DTColumnBuilder.newColumn('name').withTitle('Name'),
       DTColumnBuilder.newColumn('general_data_question.data_type').withTitle('Data Type'),
@@ -72,7 +76,7 @@
     if (!vm.shared) {
       vm.dtColumns.unshift(
         DTColumnBuilder.newColumn(null)
-          .notSortable()
+          .withClass('not-sortable')
           .renderWith(actionsHTML)
           .withOption('createdCell', function(cell) {
             $compile(angular.element(cell).contents())($scope);

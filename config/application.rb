@@ -52,5 +52,8 @@ module PdrServer
                                                Rails.root.join('app', 'assets', 'javascripts', 'client', 'about')]
     config.angular_templates.markups        = %w(erb)
     config.angular_templates.htmlcompressor = false
+
+    # prioritizing our image assets over gems' image assets
+    config.assets.paths.unshift "/#{config.root}/app/assets/images"
   end
 end
