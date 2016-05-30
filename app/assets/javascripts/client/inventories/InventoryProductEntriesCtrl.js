@@ -63,7 +63,7 @@
           columns: '1:visible, 2:visible, 3:visible, 4:visible, 5:visible, 6:visible'
         }
       ])
-      .withOption('dom', '<"table-header"fB>rt<"table-footer"ip>');
+      .withOption('dom', '<"table-header"B>rt<"table-footer"ip>');
 
     vm.dtColumns = [
       DTColumnBuilder.newColumn('general_inventory_question.product_name').withTitle('Name'),
@@ -85,6 +85,18 @@
           })
       );
     }
+
+    $scope.$on('event:dataTableLoaded', function(event, loadedDT) {
+      $(".product-entries-table .dataTables_filter")
+        .prependTo(".product-entries-table .table-header");
+
+      $(".product-entries-table .dataTables_filter input")
+        .keyup(function(event) {
+          loadedDT.DataTable
+            .search(event.target.value)
+            .draw();
+        });
+    });
 
     vm.showProductEntryModal = function(productEntryId) {
       $scope.resource = _.find(vm.productEntries, {id: productEntryId});

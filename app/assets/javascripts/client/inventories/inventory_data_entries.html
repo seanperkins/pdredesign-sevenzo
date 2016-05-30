@@ -8,7 +8,13 @@
     </label>
   </div>
   <div class="row">
-    <div class="list col-md-12 table-responsive">
+    <div class="list col-md-12 table-responsive data-entries-table">
+      <div class="dataTables_filter">
+        <div class="search-wrapper">
+          <i class="fa fa-search"></i>
+          <input type="text" placeholder="Search entries">
+        </div>
+      </div>
       <table datatable="" dt-options="inventoryDataEntries.dtOptions" dt-columns="inventoryDataEntries.dtColumns" class="row-border hover"></table>
       <div ng-show="vm.showDeletedDataEntries" class="deleted-entries">
         <h4>Deleted Data Entries</h4>
