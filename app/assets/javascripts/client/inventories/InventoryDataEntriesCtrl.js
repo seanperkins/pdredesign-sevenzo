@@ -63,7 +63,7 @@
           columns: '1:visible, 2:visible, 3:visible'
         }
       ])
-      .withOption('dom', '<"table-header"fB>rt<"table-footer"ip>');
+      .withOption('dom', '<"table-header"B>rt<"table-footer"ip>');
 
     vm.dtColumns = [
       DTColumnBuilder.newColumn('name').withTitle('Name'),
@@ -83,6 +83,18 @@
           })
       );
     }
+
+    $scope.$on('event:dataTableLoaded', function(event, loadedDT) {
+      $(".data-entries-table .dataTables_filter")
+        .prependTo(".data-entries-table .table-header");
+
+      $(".data-entries-table .dataTables_filter input")
+        .keyup(function(event) {
+          loadedDT.DataTable
+            .search(event.target.value)
+            .draw();
+        });
+    });
 
     vm.showInventoryDataEntryModal = function(dataEntryId) {
       $scope.resource = _.find(vm.dataEntries, {id: dataEntryId});

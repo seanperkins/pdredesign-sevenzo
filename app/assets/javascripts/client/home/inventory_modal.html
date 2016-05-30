@@ -1,4 +1,4 @@
-<div>
+<div class="create-modal">
   <div class="modal-header">
     <button class="close" ng-click="inventoryModal.close()">&times;</button>
     <h4>{{inventoryModal.titleText()}}</h4>
@@ -55,7 +55,7 @@
     <button type="submit"
             ng-disabled="startInventoryForm.$invalid"
             ng-click="inventoryModal.createInventory(inventoryModal.inventory)"
-            class="btn btn-primary">
+            class="btn btn-secondary">
       Create
     </button>
   </div>

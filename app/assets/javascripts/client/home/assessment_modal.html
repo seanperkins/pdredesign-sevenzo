@@ -1,4 +1,4 @@
-<div class="modal-content assessment-modal">
+<div class="modal-content create-modal">
   <div class="modal-header">
     <button type="button" class="close" ng-click="assessmentModal.hideModal()">&times;</button>
     <h4 class="modal-title">{{assessmentModal.modalTitle}}</h4>
@@ -58,7 +58,7 @@
       <button type="submit"
               ng-disabled="assessmentModalForm.$invalid"
               ng-click="assessmentModal.create(assessmentModal.assessment)"
-              class="btn btn-primary">
+              class="btn btn-secondary">
         Create
       </button>
     </div>

@@ -1,7 +1,10 @@
 <div class="searchable-list">
   <div class="list-header">
     <strong>{{title}}</strong>
-    <input type="text" placeholder="Search" class="search">
+    <div class="search-wrapper">
+      <i class="fa fa-search"></i>
+      <input type="text" placeholder="Search" class="search">
+    </div>
   </div>
   <div ng-transclude class="list"></div>
 </div>
