@@ -1,4 +1,5 @@
 <div class="analysis-report-sidebar">
+  <analysis-schedule analysis="analysisReportSidebar.currentAnalysis" only-schedule=true></analysis-schedule>
   <a ui-sref="inventory_analysis_dashboard(analysisReportSidebar.returnState)" class="btn btn-default" ng-if="!analysisReportSidebar.shared">Go to Dashboard</a>
 
   <div class="share-report" ng-if="!analysisReportSidebar.shared">

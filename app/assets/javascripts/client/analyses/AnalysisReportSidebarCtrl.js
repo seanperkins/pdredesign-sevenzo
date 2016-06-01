@@ -13,6 +13,7 @@
 
   function AnalysisReportSidebarCtrl($scope, $state, $stateParams, current_analysis) {
     var vm = this;
+    vm.currentAnalysis = current_analysis;
     vm.shared = $stateParams.shared || false;
     vm.shareURL = $state.href(
       'inventory_analysis_shared_report',
