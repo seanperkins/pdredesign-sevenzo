@@ -8,7 +8,9 @@
     return {
       restrict: 'E',
       replace: true,
-      scope: {},
+      scope: {
+        shared: '='
+      },
       transclude: true,
       templateUrl: 'client/analyses/priority_table.html',
       controller: 'AnalysisPriorityTableCtrl',

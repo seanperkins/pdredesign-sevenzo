@@ -5,14 +5,16 @@
       .controller('AnalysisPriorityTableCtrl', AnalysisPriorityTableCtrl);
 
   AnalysisPriorityTableCtrl.$inject = [
+    '$scope',
     '$rootScope',
     '$filter',
     '$timeout',
     'AnalysisPriorityService'
   ];
 
-  function AnalysisPriorityTableCtrl($rootScope, $filter, $timeout, AnalysisPriorityService) {
+  function AnalysisPriorityTableCtrl($scope, $rootScope, $filter, $timeout, AnalysisPriorityService) {
     var vm = this;
+    vm.shared = $scope.shared;
 
     vm.convertToWholeDollars = function(amountInCents) {
       return $filter('currency')(amountInCents / 100, '$', 2);
@@ -63,7 +65,9 @@
 
     vm.invokeDragAndDrop = function() {
       $timeout(function() {
-        $('[data-table-dnd]').tableDnD();
+        if (!vm.shared) {
+          $('[data-table-dnd]').tableDnD();
+        }
       });
     };
 

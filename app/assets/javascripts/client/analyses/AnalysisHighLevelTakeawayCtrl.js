@@ -5,12 +5,14 @@
       .controller('AnalysisHighLevelTakeawayCtrl', AnalysisHighLevelTakeawayCtrl);
 
   AnalysisHighLevelTakeawayCtrl.$inject = [
+    '$scope',
     '$stateParams',
     'Analysis'
   ];
 
-  function AnalysisHighLevelTakeawayCtrl($stateParams, Analysis) {
+  function AnalysisHighLevelTakeawayCtrl($scope, $stateParams, Analysis) {
     var vm = this;
+    vm.shared = $scope.shared;
 
     vm.setDefaultTakeaway = function() {
       Analysis.get({inventory_id: $stateParams.inventory_id, id: $stateParams.id})

@@ -13,6 +13,7 @@
 #  rubric_id      :integer
 #  owner_id       :integer
 #  report_takeway :text
+#  share_token    :string
 #
 
 class Analysis < ActiveRecord::Base
@@ -36,17 +37,20 @@ class Analysis < ActiveRecord::Base
   has_one :response, as: :responder, dependent: :destroy
 
   after_create :set_members_from_inventory
-  before_save :set_assigned_at
+  before_save :set_assigned_at, :ensure_share_token
 
   def facilitator?(user)
+    return false if user.nil?
     facilitators.exists?(user_id: user.id) || owner.id == user.id
   end
 
   def participant?(user)
+    return false if user.nil?
     participants.exists?(user_id: user.id)
   end
 
   def member?(user:)
+    return false if user.nil?
     self.members.where(user: user).exists?
   end
 
@@ -72,10 +76,12 @@ class Analysis < ActiveRecord::Base
   end
 
   def pending_requests?(user)
+    return false if user.nil?
     access_requests.exists?(user: user)
   end
 
   def network_partner?(user)
+    return false if user.nil?
     self.members.joins(:user).exists?(user_id: user.id, users: {role: 'network_partner'})
   end
 
@@ -90,5 +96,9 @@ class Analysis < ActiveRecord::Base
 
   def set_assigned_at
     self.assigned_at = Time.now if self.assign
+  end
+
+  def ensure_share_token
+    self.share_token ||= SecureRandom.hex(32)
   end
 end

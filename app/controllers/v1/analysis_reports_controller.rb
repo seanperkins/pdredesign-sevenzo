@@ -1,13 +1,16 @@
 class V1::AnalysisReportsController < ApplicationController
-  before_action :authenticate_user!
+  include SharedAnalysisFetch
+  before_action :authenticate_user!, except: [:comparison_data, :review_header_data]
 
   def comparison_data
     @comparison_data = fetch_comparison_data
   end
+  authority_actions comparison_data: :read
 
   def review_header_data
     @categories = fetch_review_header_data
   end
+  authority_actions review_header_data: :read
 
   def fetch_review_body_data(supporting_response_id)
     supporting_inventory_response = SupportingInventoryResponse.where(id: supporting_response_id).first
@@ -52,7 +55,7 @@ class V1::AnalysisReportsController < ApplicationController
   end
 
   def current_analysis
-    @analysis ||= Analysis.where(id: params[:analysis_id]).first
+    @analysis ||= analysis
   end
 
   def current_response

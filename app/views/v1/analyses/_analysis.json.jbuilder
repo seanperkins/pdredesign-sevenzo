@@ -26,6 +26,7 @@ json.messages @messages, :id, :category, :teaser, :sent_at do |message|
 end
 
 json.report_takeaway analysis.report_takeaway
+json.share_token analysis.share_token
 
 if analysis.consensus
   json.consensus do

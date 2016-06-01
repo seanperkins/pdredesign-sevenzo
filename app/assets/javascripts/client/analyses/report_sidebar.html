@@ -1,5 +1,13 @@
 <div class="analysis-report-sidebar">
-  <a ui-sref="inventory_analysis_dashboard(analysisReportSidebar.returnState)"  class="btn btn-default">Go to Dashboard</a>
+  <analysis-schedule analysis="analysisReportSidebar.currentAnalysis" only-schedule=true></analysis-schedule>
+  <a ui-sref="inventory_analysis_dashboard(analysisReportSidebar.returnState)" class="btn btn-default" ng-if="!analysisReportSidebar.shared">Go to Dashboard</a>
+
+  <div class="share-report" ng-if="!analysisReportSidebar.shared">
+    <h2>Share this report</h2>
+    <p>Copy this link to share this page.</p>
+    <share-url url="{{analysisReportSidebar.shareURL}}"></share-url>
+  </div>
+
   <div class="top-priority">
     <p>#1 Priority:</p>
     <p>{{ analysisReportSidebar.topPriority }}</p>
