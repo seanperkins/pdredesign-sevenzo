@@ -14,7 +14,7 @@
     <tbody>
     <tr data-table-dnd-tr ng-repeat="priorityData in analysisPriorityTable.priorityData">
       <td>
-        <i class="fa fa-ellipsis-v"></i>
+        <i class="fa fa-ellipsis-v" ng-if="!analysisPriorityTable.shared"></i>
         {{ priorityData.priority }}
       </td>
       <td>
@@ -33,6 +33,6 @@
   </table>
   <div class="priority-table-footer">
     <span>*Click to view corresponding Edsurge resources</span>
-    <button class="btn btn-secondary" ng-click="analysisPriorityTable.savePriority()">Save priority</button>
+    <button class="btn btn-secondary" ng-click="analysisPriorityTable.savePriority()" ng-if="!analysisPriorityTable.shared">Save priority</button>
   </div>
 </div>

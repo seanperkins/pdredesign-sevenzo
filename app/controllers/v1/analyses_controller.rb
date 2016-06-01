@@ -1,5 +1,7 @@
 class V1::AnalysesController < ApplicationController
-  before_action :authenticate_user!
+  include SharedInventoryFetch
+  include SharedAnalysisFetch
+  before_action :authenticate_user!, except: [:show]
 
   def index
     @analyses = inventory.analyses
@@ -13,9 +15,8 @@ class V1::AnalysesController < ApplicationController
   end
 
   def show
-    @analysis = inventory.analyses.find(params[:id])
+    @analysis = analysis
     @messages = messages if current_user
-    authorize_action_for @analysis
     render template: 'v1/analyses/show', status: 200
   end
 
@@ -48,9 +49,6 @@ class V1::AnalysesController < ApplicationController
   end
 
   private
-  def inventory
-    @inventory ||= current_user.inventories.find(params[:inventory_id])
-  end
 
   def render_error
     @errors = @analysis.errors

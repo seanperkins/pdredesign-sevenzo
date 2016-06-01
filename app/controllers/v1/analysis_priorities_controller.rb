@@ -1,5 +1,7 @@
 class V1::AnalysisPrioritiesController < ApplicationController
-  before_action :authenticate_user!
+  include SharedInventoryFetch
+  include SharedAnalysisFetch
+  before_action :authenticate_user!, except: :index
 
   def index
     @scores_and_relevant_data = Analyses::Priority.new(analysis: current_analysis).ordered_list
@@ -23,9 +25,7 @@ class V1::AnalysisPrioritiesController < ApplicationController
 
   private
   def current_analysis
-    @analysis ||= Analysis.where(id: params[:analysis_id]).first
-    authorize_action_for @analysis
-    @analysis
+    @analysis ||= analysis
   end
 
   def analysis_priority_params
