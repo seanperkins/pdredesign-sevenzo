@@ -34,7 +34,7 @@
               <p class="question-headline">{{question.headline}}</p>
               <p class="content">{{question.content}}</p>
              </div>
-            <response-answer-group question="question" is-consensus="true" ng-if="isAssessment" scores="scores"></response-answer-group>
+            <response-answer-group question="question" is-consensus="true" ng-if="isAssessment" scores="scores" show-skip=false></response-answer-group>
             <analysis-consensus-answer question="question" ng-if="isAnalysis" product-entries="productEntries" inventory-data-entries="dataEntries"></analysis-consensus-answer>
           </div>
         </div>

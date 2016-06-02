@@ -1,13 +1,16 @@
 class V1::AnalysisReportsController < ApplicationController
-  before_action :authenticate_user!
+  include SharedAnalysisFetch
+  before_action :authenticate_user!, except: [:comparison_data, :review_header_data]
 
   def comparison_data
     @comparison_data = fetch_comparison_data
   end
+  authority_actions comparison_data: :read
 
   def review_header_data
     @categories = fetch_review_header_data
   end
+  authority_actions review_header_data: :read
 
   def fetch_review_body_data(supporting_response_id)
     supporting_inventory_response = SupportingInventoryResponse.where(id: supporting_response_id).first
@@ -22,13 +25,14 @@ class V1::AnalysisReportsController < ApplicationController
   private
   def fetch_comparison_data
     GeneralInventoryQuestion.find_by_sql ["SELECT
+        pe.id,
         giq.product_name,
         giq.price_in_cents,
         uq.usage
       FROM general_inventory_questions giq
         INNER JOIN product_entries pe ON giq.product_entry_id = pe.id
         INNER JOIN usage_questions uq ON uq.product_entry_id = pe.id
-      WHERE pe.inventory_id IN (
+      WHERE pe.deleted_at IS NULL AND pe.inventory_id IN (
         SELECT DISTINCT product_entries.inventory_id
         FROM product_entries
           INNER JOIN general_inventory_questions ON general_inventory_questions.product_entry_id = product_entries.id
@@ -51,7 +55,7 @@ class V1::AnalysisReportsController < ApplicationController
   end
 
   def current_analysis
-    @analysis ||= Analysis.where(id: params[:analysis_id]).first
+    @analysis ||= analysis
   end
 
   def current_response

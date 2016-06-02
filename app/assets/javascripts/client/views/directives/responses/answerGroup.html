@@ -5,6 +5,7 @@
   </div>
   <skip-question
       editable="!isConsensus"
+      ng-if="showSkip"
       question="question"
       response-id="{{responseAnswerGroup.responseId}}"
       assessment-id="{{responseAnswerGroup.assessmentId}}">

@@ -10,21 +10,35 @@
     '$modal',
     'DataEntry',
     'DTOptionsBuilder',
-    'DTColumnBuilder'
+    'DTColumnBuilder',
+    'SessionService'
   ];
 
-  function InventoryDataEntriesCtrl($scope, $q, $compile, $modal, DataEntry, DTOptionsBuilder, DTColumnBuilder) {
+  function InventoryDataEntriesCtrl($scope, $q, $compile, $modal, DataEntry, DTOptionsBuilder, DTColumnBuilder, SessionService) {
     var vm = this;
     vm.inventory = $scope.inventory;
-    vm.readOnly = $scope.readOnly;
     vm.shared = $scope.shared;
 
     var inventoryId = vm.shared ? vm.inventory.share_token : vm.inventory.id;
     var options = DTOptionsBuilder.fromFnPromise(function() {
       var deferred = $q.defer();
       DataEntry.get({inventory_id: inventoryId}).$promise.then(function(results) {
-        vm.dataEntries = results.data_entries;
-        deferred.resolve(results.data_entries);
+        var dataEntries = _.map(results.data_entries, function (dataEntry) {
+          if (dataEntry.deleted_at) {
+            dataEntry.deleted_at = moment(dataEntry.deleted_at).format("MMMM D, YYYY");
+          }
+          return dataEntry;
+        });
+
+        vm.deletedDataEntries = _.filter(dataEntries, function (dataEntry) {
+          return typeof dataEntry.deleted_at !== "undefined";
+        });
+
+        vm.dataEntries = _.filter(dataEntries, function (dataEntry) {
+          return typeof dataEntry.deleted_at === "undefined";
+        });
+
+        deferred.resolve(vm.dataEntries);
       }, deferred.reject);
       return deferred.promise;
     });
@@ -41,25 +55,46 @@
       return options;
     };
 
-    vm.dtOptions = options.withPaginationType('full_numbers').withButtons([
-      {
-        extend: 'columnsToggle',
-        columns: '1:visible, 2:visible, 3:visible'
-      }
-    ]);
+    vm.dtOptions = options
+      .withPaginationType('full_numbers')
+      .withButtons([
+        {
+          extend: 'columnsToggle',
+          columns: '1:visible, 2:visible, 3:visible'
+        }
+      ])
+      .withOption('dom', '<"table-header"B>rt<"table-footer"ip>');
+
     vm.dtColumns = [
-      DTColumnBuilder.newColumn(null)
-          .notSortable()
-          .renderWith(actionsHTML)
-          .withOption('createdCell', function(cell) {
-            $compile(angular.element(cell).contents())($scope);
-          }),
       DTColumnBuilder.newColumn('name').withTitle('Name'),
       DTColumnBuilder.newColumn('general_data_question.data_type').withTitle('Data Type'),
       DTColumnBuilder.newColumn('general_data_question.data_capture').withTitle('Data Capture'),
       DTColumnBuilder.newColumn('data_entry_question.who_enters_data').withTitle('Who Enters Data'),
       DTColumnBuilder.newColumn('data_access_question.who_access_data').withTitle('Who Accesses Data')
     ];
+
+    if (!vm.shared) {
+      vm.dtColumns.unshift(
+        DTColumnBuilder.newColumn(null)
+          .withClass('not-sortable')
+          .renderWith(actionsHTML)
+          .withOption('createdCell', function(cell) {
+            $compile(angular.element(cell).contents())($scope);
+          })
+      );
+    }
+
+    $scope.$on('event:dataTableLoaded', function(event, loadedDT) {
+      $(".data-entries-table .dataTables_filter")
+        .prependTo(".data-entries-table .table-header");
+
+      $(".data-entries-table .dataTables_filter input")
+        .keyup(function(event) {
+          loadedDT.DataTable
+            .search(event.target.value)
+            .draw();
+        });
+    });
 
     vm.showInventoryDataEntryModal = function(dataEntryId) {
       $scope.resource = _.find(vm.dataEntries, {id: dataEntryId});
@@ -70,13 +105,46 @@
       });
     };
 
+    vm.deleteDataEntry = function (dataEntryId) {
+      DataEntry
+        .delete({
+          inventory_id: vm.inventory.id,
+          data_entry_id: dataEntryId
+        })
+        .$promise
+        .then(function () {
+          vm.dtOptions.reloadData(null, true);
+        });
+    };
+
+    vm.restoreDataEntry = function (dataEntryId) {
+      DataEntry
+        .restore({
+          inventory_id: vm.inventory.id,
+          data_entry_id: dataEntryId
+        }, {})
+        .$promise
+        .then(function () {
+          vm.dtOptions.reloadData(null, true);
+        });
+    };
+
+    vm.isOwnerOrFacilitator = function () {
+      var currentUser = SessionService.getCurrentUser();
+
+      return currentUser && (currentUser.id === vm.inventory.owner_id || vm.inventory.is_facilitator);
+    }
+
     $scope.$on('close-inventory-data-entry-modal', function() {
       vm.modalInstance && vm.modalInstance.dismiss('cancel');
       vm.dtOptions.reloadData(null, true);
     });
 
-    function actionsHTML(data) {
-      return '<i class="fa fa-pencil" ng-click="inventoryDataEntries.showInventoryDataEntryModal(' + data.id + ')"></i>';
+    function actionsHTML (data) {
+      var editHTML = '<i class="fa fa-pencil" ng-click="inventoryDataEntries.showInventoryDataEntryModal(' + data.id + ')"></i>&nbsp;&nbsp;';
+      var deleteHTML = '<i class="fa fa-remove" ng-click="inventoryDataEntries.deleteDataEntry(' + data.id + ')"></i>';
+
+      return editHTML + deleteHTML;
     }
   }
 })();

@@ -2,10 +2,7 @@
   <div class="sidebar-section">
     <h2>Share This Page</h2>
     <p>Copy this link to share this page.</p>
-    <div class="input-group">
-      <input id="share-url" value="{{aboutSidebar.shareURL}}" class="form-control">
-      <div class="input-group-addon" data-clipboard-target="#share-url"><i class="fa fa-copy"></i></div>
-    </div>
+    <share-url url="{{aboutSidebar.shareURL}}"></share-url>
   </div>
   <div class="sidebar-section">
     <h2>PDredesign</h2>
@@ -15,18 +12,19 @@
     <h2>1. Readiness Assessment</h2>
     <p><a ui-sref="about.ra-assessment">About the Assessment</a></p>
     <p><a ui-sref="faqs({topic: 'Readiness Assessment'})">FAQs</a></p>
-    <p><a ng-click="aboutSidebar.openAssessmentModal()">Facilitate New Assessment</a></p>
-    <p><a ui-sref="assessments">View Assessment List</a></p>
+    <p><a ng-click="aboutSidebar.openAssessmentModal()" ng-if="aboutSidebar.isLoggedIn">Facilitate New Assessment</a></p>
+    <p><a ui-sref="assessments" ng-if="aboutSidebar.isLoggedIn">View Assessment List</a></p>
   </div>
   <div class="sidebar-section">
     <h2>2. Data &amp; Tech Inventory</h2>
     <p><a ui-sref="about.dt-inventory">About the Inventory</a></p>
-    <p><a ng-click="aboutSidebar.openInventoryModal()">Create New Inventory</a></p>
-    <p><a ui-sref="inventories">View Inventory List</a></p>
+    <p><a ng-click="aboutSidebar.openInventoryModal()" ng-if="aboutSidebar.isLoggedIn">Create New Inventory</a></p>
+    <p><a ui-sref="inventories" ng-if="aboutSidebar.isLoggedIn">View Inventory List</a></p>
   </div>
   <div class="sidebar-section">
     <h2>3. Data &amp; Tech Analysis</h2>
     <p><a ui-sref="about.dt-analysis">About the Analysis</a></p>
-    <p><a ng-click="aboutSidebar.openAnalysisModal()">Facilitate New Analysis</a></p>
+    <p><a ng-click="aboutSidebar.openAnalysisModal()" ng-if="aboutSidebar.isLoggedIn">Facilitate New Analysis</a></p>
+    <p><a ui-sref="analyses" ng-if="aboutSidebar.isLoggedIn">View Analysis List</a></p>
   </div>
 </div>

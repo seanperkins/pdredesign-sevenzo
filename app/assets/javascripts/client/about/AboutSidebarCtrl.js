@@ -9,15 +9,14 @@
     '$element',
     '$location',
     '$timeout',
-    '$modal'
+    '$modal',
+    'SessionService'
   ];
 
-  function AboutSidebarCtrl($rootScope, $element, $location, $timeout, $modal) {
+  function AboutSidebarCtrl($rootScope, $element, $location, $timeout, $modal, SessionService) {
     var vm = this;
 
-    // We don't have a use for the returned Clipboard instance below, so we're
-    // not assigning it to anything.
-    new Clipboard("[data-clipboard-target]");
+    vm.isLoggedIn = SessionService.getUserAuthenticated();
 
     vm.openAssessmentModal = function() {
       $modal.open({

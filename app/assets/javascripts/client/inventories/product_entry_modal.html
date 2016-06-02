@@ -98,7 +98,7 @@
             <span class='field-info'>What type of product is it? Check all that apply.</span>
           </label>
           <div ng-repeat='selectedProductType in selectedProductTypes' class='control-list'>
-            <label>
+            <label class="checkbox-label">
               <fake-checkbox model='selectedProductType.selected'></fake-checkbox>
               {{selectedProductType.name}}
             </label>
@@ -131,7 +131,7 @@
             <span class='field-info'>How is the product assigned to teachers?</span>
           </label>
           <div ng-repeat='selectedAssignmentApproach in selectedAssignmentApproaches' class='control-list'>
-            <label>
+            <label class="checkbox-label">
               <fake-checkbox model='selectedAssignmentApproach.selected'></fake-checkbox>
               {{selectedAssignmentApproach.name}}
             </label>
@@ -147,7 +147,7 @@
             <span class='field-info'>How is the product used by teachers?</span>
           </label>
           <div ng-repeat='selectedUsageFrequency in selectedUsageFrequencies' class='control-list'>
-            <label>
+            <label class="checkbox-label">
               <fake-checkbox model='selectedUsageFrequency.selected'></fake-checkbox>
               {{selectedUsageFrequency.name}}
             </label>
@@ -163,7 +163,7 @@
             <span class='field-info'>How is the product accessed by teachers?</span>
           </label>
           <div ng-repeat='selectedAccess in selectedAccesses' class='control-list'>
-            <label>
+            <label class="checkbox-label">
               <fake-checkbox model='selectedAccess.selected'></fake-checkbox>
               {{selectedAccess.name}}
             </label>
@@ -179,7 +179,7 @@
             <span class='field-info'>Who is the target audience for the product?</span>
           </label>
           <div ng-repeat='selectedAudienceType in selectedAudienceTypes' class='control-list'>
-            <label>
+            <label class="checkbox-label">
               <fake-checkbox model='selectedAudienceType.selected'></fake-checkbox>
               {{selectedAudienceType.name}}
             </label>
@@ -272,7 +272,7 @@
             <span class='field-info'>What platform can be used to access the product?</span>
           </label>
           <div ng-repeat='selectedPlatformOption in selectedPlatformOptions' class='control-list'>
-            <label>
+            <label class="checkbox-label">
               <fake-checkbox model='selectedPlatformOption.selected'></fake-checkbox>
               {{selectedPlatformOption.name}}
             </label>
@@ -305,7 +305,7 @@
           </label>
           <searchable-list title="{{selectedConnectedProductEntries.length}} Products">
             <div ng-repeat='selectedConnectedProductEntry in selectedConnectedProductEntries' class='control-list'>
-              <label>
+              <label class="checkbox-label">
                 <fake-checkbox model='selectedConnectedProductEntry.selected'></fake-checkbox>
                 {{productEntryModal.getProductEntryName(selectedConnectedProductEntry.name)}}
               </label>
@@ -337,7 +337,7 @@
       <div class='col-md-12'>
         <div class='form-group'>
           <button ng-click='productEntryModal.closeModal()' class='btn btn-default'>Cancel</button>
-          <input type='submit' value='Save' class='btn btn-primary'>
+          <input type='submit' value='Save' class='btn btn-secondary'>
         </div>
       </div>
     </div>

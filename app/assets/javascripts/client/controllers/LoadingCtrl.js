@@ -4,8 +4,6 @@ PDRClient.controller('LoadingCtrl', ['$scope', 'SessionService',
       $scope.format;
       $scope.DOMChanges = function(){
         $('.popover').popover('hide');
-        $('.loading-state')
-          .height($(document).height());
       };
 
       $scope.$on('start_change', function() {

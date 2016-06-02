@@ -6,17 +6,20 @@
 
   AddInventoryUsersCtrl.$inject = [
     '$scope',
+    '$rootScope',
     'CreateService'
   ];
 
-  function AddInventoryUsersCtrl($scope, CreateService) {
+  function AddInventoryUsersCtrl($scope, $rootScope, CreateService) {
     var vm = this;
 
     vm.loadInvitables = function() {
+      $rootScope.$broadcast('start_change');
       CreateService.updateInvitableParticipantList()
           .then(function(result) {
             vm.invitables = result;
             $scope.$emit('update_participants');
+            $rootScope.$broadcast('success_change');
           });
     };
 

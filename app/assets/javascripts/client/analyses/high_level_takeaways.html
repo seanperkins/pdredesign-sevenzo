@@ -2,13 +2,11 @@
   <h3>High Level Takeaways</h3>
 
   <div class="row">
-    <div class="col-lg-12">
-      <textarea class="form-control"
-                rows="5"
-                ng-model="takeawayCtrl.text"
-                placeholder="Briefly summarize the top 3-5 high level findings about how data and tech align with professional development in the district (including common themes, trends, or areas where additional research is needed)."></textarea>
-      <br />
-      <button class="btn btn-secondary pull-right" ng-click="takeawayCtrl.saveTakeaway(takeawayCtrl.text)">Save</button>
-    </div>
+    <textarea class="form-control"
+              rows="5"
+              ng-model="takeawayCtrl.text"
+              placeholder="Briefly summarize the top 3-5 high level findings about how data and tech align with professional development in the district (including common themes, trends, or areas where additional research is needed)."></textarea>
+    <br />
+    <button class="btn btn-secondary pull-right" ng-click="takeawayCtrl.saveTakeaway(takeawayCtrl.text)" ng-if="!takeawayCtrl.shared">Save</button>
   </div>
 </div>

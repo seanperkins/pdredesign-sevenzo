@@ -10,7 +10,8 @@
       scope: {
         question: '=',
         isConsensus: '@',
-        scores: '='
+        scores: '=',
+        showSkip: '='
       },
       transclude: true,
       replace: true,

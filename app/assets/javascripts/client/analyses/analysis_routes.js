@@ -115,6 +115,9 @@
       url: '/inventories/:inventory_id/analyses/:id/report',
       authenticate: true,
       resolve: {
+        current_analysis: ['$stateParams', 'Analysis', function($stateParams, Analysis) {
+          return Analysis.get({inventory_id: $stateParams.inventory_id, id: $stateParams.id}).$promise;
+        }],
         analysis_comparison_data: ['$stateParams', 'AnalysisReport', function($stateParams, AnalysisReport) {
           return AnalysisReport.comparisonData({
             inventory_id: $stateParams.inventory_id,
@@ -139,6 +142,43 @@
           controllerAs: 'analysisReportSidebar',
           templateUrl: 'client/analyses/report_sidebar.html'
         }
+      },
+      params: {
+        shared: false
+      }
+    }).state('inventory_analysis_shared_report', {
+      url: '/inventories/:inventory_id/analyses/shared/:id/report',
+      resolve: {
+        current_analysis: ['$stateParams', 'Analysis', function($stateParams, Analysis) {
+          return Analysis.get({inventory_id: $stateParams.inventory_id, id: $stateParams.id}).$promise;
+        }],
+        analysis_comparison_data: ['$stateParams', 'AnalysisReport', function($stateParams, AnalysisReport) {
+          return AnalysisReport.comparisonData({
+            inventory_id: $stateParams.inventory_id,
+            id: $stateParams.id
+          }).$promise;
+        }],
+        analysis_review_header_data: ['$stateParams', 'AnalysisReport', function($stateParams, AnalysisReport) {
+          return AnalysisReport.reviewHeaderData({
+            inventory_id: $stateParams.inventory_id,
+            id: $stateParams.id
+          }).$promise;
+        }]
+      },
+      views: {
+        '': {
+          controller: 'AnalysisReportCtrl',
+          controllerAs: 'analysisReport',
+          templateUrl: 'client/analyses/report.html'
+        },
+        'sidebar': {
+          controller: 'AnalysisReportSidebarCtrl',
+          controllerAs: 'analysisReportSidebar',
+          templateUrl: 'client/analyses/report_sidebar.html'
+        }
+      },
+      params: {
+        shared: true
       }
     });
   }

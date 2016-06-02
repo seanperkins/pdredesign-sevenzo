@@ -29,14 +29,15 @@
   <% end %>
 </head>
 <body>
-<%= render 'pdr_client/layouts/partials/top_nav' %>
+  <div class="everything-except-footer-wrapper">
+    <%= render 'pdr_client/layouts/partials/top_nav' %>
 
-<div class="home-container container-fluid" ng-if="showFluid">
-  <div class="row">
-    <div class="col-md-12 view" ui-view="full-width">
+    <div class="home-container container-fluid" ng-if="showFluid">
+      <div class="row">
+        <div class="col-md-12 view" ui-view="full-width">
+        </div>
+      </div>
     </div>
-  </div>
-</div>
 
     <div class="main-container container" ng-if="!showFluid">
       <div class="row">
@@ -56,9 +57,10 @@
         </div>
       </div>
     </div>
+  </div>
 
-<%= render 'pdr_client/layouts/partials/footer' %>
-<%= render 'pdr_client/layouts/partials/loading' %>
-<%= render 'pdr_client/layouts/partials/ga' %>
+  <%= render 'pdr_client/layouts/partials/footer' %>
+  <%= render 'pdr_client/layouts/partials/loading' %>
+  <%= render 'pdr_client/layouts/partials/ga' %>
 </body>
 </html>

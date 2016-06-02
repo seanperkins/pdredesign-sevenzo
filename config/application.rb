@@ -40,6 +40,7 @@ module PdrServer
                                                Rails.root.join('app', 'assets', 'javascripts', 'client', 'forms'),
                                                Rails.root.join('app', 'assets', 'javascripts', 'client', 'common_list'),
                                                Rails.root.join('app', 'assets', 'javascripts', 'client', 'common_create'),
+                                               Rails.root.join('app', 'assets', 'javascripts', 'client', 'common_share'),
                                                Rails.root.join('app', 'assets', 'javascripts', 'client', 'assessments'),
                                                Rails.root.join('app', 'assets', 'javascripts', 'client', 'permissions'),
                                                Rails.root.join('app', 'assets', 'javascripts', 'client', 'proprietary'),
@@ -51,5 +52,8 @@ module PdrServer
                                                Rails.root.join('app', 'assets', 'javascripts', 'client', 'about')]
     config.angular_templates.markups        = %w(erb)
     config.angular_templates.htmlcompressor = false
+
+    # prioritizing our image assets over gems' image assets
+    config.assets.paths.unshift "/#{config.root}/app/assets/images"
   end
 end

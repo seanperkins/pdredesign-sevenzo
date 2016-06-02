@@ -2,17 +2,19 @@
   'use strict';
 
   angular.module('PDRClient')
-      .controller('AnalysisPriorityCtrl', AnalysisPriorityCtrl);
+      .controller('AnalysisPriorityTableCtrl', AnalysisPriorityTableCtrl);
 
-  AnalysisPriorityCtrl.$inject = [
+  AnalysisPriorityTableCtrl.$inject = [
+    '$scope',
     '$rootScope',
     '$filter',
     '$timeout',
     'AnalysisPriorityService'
   ];
 
-  function AnalysisPriorityCtrl($rootScope, $filter, $timeout, AnalysisPriorityService) {
+  function AnalysisPriorityTableCtrl($scope, $rootScope, $filter, $timeout, AnalysisPriorityService) {
     var vm = this;
+    vm.shared = $scope.shared;
 
     vm.convertToWholeDollars = function(amountInCents) {
       return $filter('currency')(amountInCents / 100, '$', 2);
@@ -63,7 +65,9 @@
 
     vm.invokeDragAndDrop = function() {
       $timeout(function() {
-        $('[data-table-dnd]').tableDnD();
+        if (!vm.shared) {
+          $('[data-table-dnd]').tableDnD();
+        }
       });
     };
 

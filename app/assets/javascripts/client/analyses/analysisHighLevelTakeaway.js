@@ -9,7 +9,9 @@
       restrict: 'E',
       replace: true,
       transclude: true,
-      scope: {},
+      scope: {
+        shared: '='
+      },
       templateUrl: 'client/analyses/high_level_takeaways.html',
       controller: 'AnalysisHighLevelTakeawayCtrl',
       controllerAs: 'takeawayCtrl'

@@ -50,7 +50,7 @@
               <input
                   id='analysis-deadline'
                   required
-                  ng-model='analysisModal.analysis.deadline'
+                  ng-model='analysisModal.date'
                   type='text'
                   class='form-control'
                   data-format='dd/MM/yyyy hh:mm:ss'>
@@ -80,7 +80,7 @@
         <div class='col-md-12'>
           <div class='form-group'>
             <button ng-click='analysisModal.closeModal()' class='btn btn-default'>Cancel</button>
-            <input type='submit' value='Save' class='btn btn-primary' ng-disabled='form.$invalid'>
+            <input type='submit' value='Save' class='btn btn-secondary' ng-disabled='form.$invalid'>
           </div>
         </div>
       </div>

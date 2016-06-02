@@ -1,7 +1,7 @@
 class V1::DataEntriesController < ApplicationController
   include SharedInventoryFetch
   before_action :authenticate_user!, except: :index
-  before_action :inventory, except: :index
+  before_action :inventory, except: [:index, :destroy, :restore]
 
   def index
     @data_entries = data_entries
@@ -40,9 +40,31 @@ class V1::DataEntriesController < ApplicationController
     end
   end
 
+  def destroy
+    @data_entry = Inventory.find(params[:inventory_id]).data_entries.find(params[:id])
+    authorize_action_for @data_entry
+
+    @data_entry.destroy
+
+    render nothing: true, status: 204
+  end
+  
+  def restore
+    @data_entry = Inventory.find(params[:inventory_id]).data_entries.with_deleted.find(params[:id])
+    authorize_action_for @data_entry
+
+    @data_entry.restore(recursive: true)
+
+    render nothing: true, status: 204
+  end
+  
   private
   def data_entries
-    inventory.data_entries
+    if inventory.facilitator?(user: current_user)
+      inventory.data_entries.with_deleted
+    else
+      inventory.data_entries
+    end
   end
 
   def render_error
@@ -54,17 +76,20 @@ class V1::DataEntriesController < ApplicationController
     params.permit(
       :name,
       general_data_question_attributes: [
+        :id,
         :data_type,
         :point_of_contact_name,
         :point_of_contact_department,
         :data_capture
       ],
       data_entry_question_attributes: [
+        :id,
         :who_enters_data,
         :how_data_is_entered,
         :when_data_is_entered
       ],
       data_access_question_attributes: [
+        :id,
         :data_storage,
         :who_access_data,
         :how_data_is_accessed,
