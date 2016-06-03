@@ -24,42 +24,62 @@
     .stat
       color: #248b9e
 
+  .participant-list
+    column-count: 2
+    clear: both
+    > *
+      display: inline-block
+
   .row.row-participant
     margin: 0 0 0.625em 0
+    padding: 0.5em
     background-color: #f7f8fa
     border-bottom: 0.2em solid #dcdbd4
+    display: flex
+    align-items: stretch
+    justify-content: space-between
 
-    div
-      padding: 0em
-    .col-md-2
-      margin-bottom: -0.0625em
-    .name
-      font-size: 0.9em
-      font-style: italic
-      color: #8a1d30
-      margin-top: 1em
-      margin-bottom: 0
-    .email
-      font-size: 0.65em
-      font-style: italic
-      margin-bottom: 0
-    .status
-      font-size: 0.85em
-      margin-top: 1em
-      padding-left: 1.3em
-      i
-        color: #515c5e
-        margin-right: 0.2em
-        margin-bottom: 0.3em
-      p.state
-        color: #515c5e
-        margin-bottom: 0.1875em
+    .avatar
+      flex-basis: 50px
+      flex-shrink: 0
+      display: flex
+      flex-direction: column
+      justify-content: center
+      img
+        border: 2px solid $primary-color
+        border-radius: 50%
+        overflow: hidden
 
-      p.date
-        color: #979998
-        margin-bottom: 0em
-        font-size: 0.625em
-        font-style: italic
+    .user-data
+      word-break: break-word
+      margin: 0 1em 0 0.5em
+      padding: 0.5em 0
+      display: flex
+      flex-direction: column
+      justify-content: space-between
+      span
+        display: block
+        &.name
+          font-size: 0.9em
+          font-weight: 500
+        &.email
+          font-size: 0.7em
+
+    .user-meta
+      flex-basis: 30%
+      flex-shrink: 0
+      padding: 0.5em 0
+      display: flex
+      flex-direction: column
+      justify-content: space-between
+      > *
+        display: block
+        &.status
+          font-size: 0.9em
+          font-weight: 500
+        &.date
+          font-size: 0.7em
+      
 
   .row.row-participant-action
     margin: 0 0 0.625em 0
