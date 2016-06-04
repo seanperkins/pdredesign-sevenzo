@@ -24,9 +24,6 @@
       </div>
     </div>
     <ul class="links">
-      <li ng-show="!$state.includes('assessment_dashboard')">
-        <a class="btn btn-block btn-default" href="#/assessments/{{assessment.id}}/dashboard">Dashboard</a>
-      </li>
       <li ng-show="noMeetingDate()">
         <a class="btn btn-block btn-default" ng-click="modifySchedule()" href="">Schedule Consensus Meeting</a>
         <a class="btn btn-block btn-default" ng-click="newReminder()" href="">Send Reminder</a>
@@ -40,14 +37,22 @@
         <a class="btn btn-block btn-default" ng-show="consensusStarted()" href="#/assessments/{{assessment.id}}/consensus/{{assessment.consensus.id}}">View Consensus</a>
         <a class="btn btn-block btn-default" ng-hide="consensusStarted()" ng-click="createConsensus()" href="" >Create Consensus</a>
       </li>
+      <li ng-show="!$state.includes('assessment_dashboard')">
+        <a class="btn btn-block btn-default" href="#/assessments/{{assessment.id}}/dashboard">Dashboard</a>
+      </li>
       <li ng-show="reportPresent() && !$state.includes('assessment_report')">
         <a class="btn btn-block btn-default" href="#/assessments/{{assessment.id}}/report">Report</a>
-        <a class="btn btn-block btn-default" ng-click="showShareReport()" href="">Share Report</a>
       </li>
       <li>
         <a class="btn btn-block btn-secondary" ng-if="true || noMeetingDate() || preMeetingDate()" ng-click="addLearningQuestion()">Add/Review Learning Questions</a>
       </li>
     </ul>
+
+    <div class="share-report">
+      <h3>Share this report</h3>
+      <p>Copy this link to share this page.</p>
+      <share-url url="{{shareURL}}"></share-url>
+    </div>
   </div>
 
   <div class="content">

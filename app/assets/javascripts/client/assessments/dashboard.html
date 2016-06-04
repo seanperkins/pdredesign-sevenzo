@@ -11,10 +11,6 @@
         <a  ng-if="assessment.overview.link == 'view_consensus' " href="#/assessments/{{assessment.id}}/consensus/{{assessment.consensus.id}}">View Consensus</a>
         <a  ng-if="assessment.overview.link == 'edit_consensus' " href="#/assessments/{{assessment.id}}/consensus/{{assessment.consensus.id}}">Edit Consensus</a>
       </p>
-      <assessment-priority
-        data-editable="false"
-        data-assessment-id="{{assessment.id}}">
-      </assessment-priority>
     </div>
   </div>
 
