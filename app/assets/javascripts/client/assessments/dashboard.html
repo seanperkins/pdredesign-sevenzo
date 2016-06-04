@@ -3,77 +3,63 @@
     <div class="col-md-12">
       <h1  class="greeting">{{assessment.name}}</h1>
       <h4 class="byline">organized by: <a href="#">{{assessment.facilitator.full_name}} </a>
-      on {{assessment.created_at | amDateFormat:'MMMM Do, YYYY'}}
+        on {{assessment.created_at | amDateFormat:'MMMM Do, YYYY'}}
       </h4>
 
       <p id="report-header">
-        {{assessment.overview.text}}
-        <a  ng-if="assessment.overview.link == 'view_consensus' " href="#/assessments/{{assessment.id}}/consensus/{{assessment.consensus.id}}">View Consensus</a>
-        <a  ng-if="assessment.overview.link == 'edit_consensus' " href="#/assessments/{{assessment.id}}/consensus/{{assessment.consensus.id}}">Edit Consensus</a>
+      {{assessment.overview.text}}
+      <a  ng-if="assessment.overview.link == 'view_consensus' " href="#/assessments/{{assessment.id}}/consensus/{{assessment.consensus.id}}">View Consensus</a>
+      <a  ng-if="assessment.overview.link == 'edit_consensus' " href="#/assessments/{{assessment.id}}/consensus/{{assessment.consensus.id}}">Edit Consensus</a>
       </p>
     </div>
   </div>
 
   <div class='row'>
-        <div id='participants' ng-show="assessment.is_facilitator">
-          <div class='row'>
-            <div class='col-md-12 header'>
-              <h2>
-                <span class='stat'>{{assessment.participant_count}} </span>
-                Participants
-              </h2>
-            </div>
-            <div class="participant-list">
-              <participant ng-repeat="user in assessment.participants" user="user"></participant>
-            </div>
-          </div>
-        </div>
+    <div id='participants' ng-show="assessment.is_facilitator">
+      <div class='row'>
         <div class='col-md-12 header'>
-          <div class="row">
-            <div class="col-lg-12">
-              <add-new-participants send-invite="true"></add-new-participants>
-            </div>
-            <div class="col-lg-12">
-              <manage-participants auto-show="{{showModal}}"
-                                   send-invite="true"
-                                   number-of-requests="{{assessment.number_of_requests}}" ng-if="assessment">
-              </manage-participants>
-            </div>
-            <div class="col-lg-12">
-              <invite-user send-invite="true"
-                           role="participant">
-              </invite-user>
-            </div>
-          </div>
+          <h2 ng-pluralize
+              count="assessment.participant_count"
+              when="{'0': 'No Participants',
+                     '1': '{} Participant',
+                     'other' : '{} Participants'}">
         </div>
-
-        <div id='messages' ng-show="assessment.messages">
-          <div class='col-md-12 header'>
-            <h2>
-              <span class='stat'>{{assessment.messages.length}}</span> Sent Messages
-            </h2>
-          </div>
-
-          <div ng-repeat="message in assessment.messages">
-            <div class='row'>
-              <div class="col-md-12 col-sm-12">
-                <div class="row row-message">
-                  <a href="">
-                    <div class="col-md-1 col-sm-1 col-xs-2">
-                      <i class="fa {{messageIcon(message.category)}}"></i>
-                    </div>
-                    <div class="col-md-11 col-sm-11 col-xs-10 message-content">
-                      <h4 class="subject">
-                        {{messageTitle(message.category)}}
-                        <small class="date">- {{message.sent_at| amDateFormat:'MMMM Do, YYYY'}}</small>
-                      </h4>
-                      <p class="content">{{message.teaser}}</p>
-                    </div>
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
+        <div class="participant-list">
+          <participant ng-repeat="user in assessment.participants" user="user"></participant>
         </div>
+      </div>
     </div>
+    <div class='col-md-12 header'>
+      <div class="row">
+        <div class="col-lg-12">
+          <add-new-participants send-invite="true"></add-new-participants>
+        </div>
+        <div class="col-lg-12">
+          <manage-participants auto-show="{{showModal}}"
+                               send-invite="true"
+                               number-of-requests="{{assessment.number_of_requests}}" ng-if="assessment">
+          </manage-participants>
+        </div>
+        <div class="col-lg-12">
+          <invite-user send-invite="true"
+                       role="participant">
+          </invite-user>
+        </div>
+      </div>
+    </div>
+
+    <div id='messages' ng-show="assessment.messages">
+      <div class='col-md-12 header'>
+          <h2 ng-pluralize
+              count="assessment.messages.length"
+              when="{'0': 'No Sent Messages',
+                     '1': '{} Sent Message',
+                     'other' : '{} Sent Messages'}">
+      </div>
+
+      <div class="col-md-12" ng-repeat="message in assessment.messages">
+        <message-element kind="Assessment" message="message"></message-element>
+      </div>
+    </div>
+  </div>
 </div>
