@@ -64,6 +64,17 @@
 
     $scope.updateAssessment();
     $scope.updateParticipantsList();
+
+    $scope.createReminder = function() {
+      $scope.modal = $modal.open({
+        template: '<reminder-modal context="assessment"></reminder-modal>',
+        scope: $scope
+      });
+    };
+
+    $scope.$on('close-reminder-modal', function() {
+      $scope.modal.dismiss('cancel');
+    });
   }
 })();
 

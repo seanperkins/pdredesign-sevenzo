@@ -60,6 +60,20 @@
       <div class="col-md-12" ng-repeat="message in assessment.messages">
         <message-element kind="Assessment" message="message"></message-element>
       </div>
+
+      <div class="col-md-12">
+        <div class="plus-button">
+          <a ng-click="createReminder()" href="">
+            <span class="fa-stack fa-2x">
+              <i class="fa fa-circle fa-stack-2x"></i>
+              <i class="fa fa-envelope fa-stack-1x fa-icon"></i>
+            </span>
+            <div class="heading">
+              Send a Reminder Email
+            </div>
+          </a>
+        </div>
+      </div>
     </div>
   </div>
 </div>
