@@ -1,13 +1,15 @@
 <div class='row row-participant'>
-  <avatar data-avatar="{{user.avatar}}" data-width="100%"></avatar>
-  <div class='user-data'>
-    <span class='name'>{{user.full_name}}</span>
-    <span class='email'>{{user.email}}</span>
-  </div>
-  <div class='user-meta'>
-    <div class='status'>
-      <response-status data-user="user" hide-icons=true></response-status>
+  <div class="wrapper">
+    <avatar data-avatar="{{user.avatar}}" data-width="100%"></avatar>
+    <div class='user-data'>
+      <span class='name'>{{user.full_name}}</span>
+      <span class='email'>{{user.email}}</span>
     </div>
-    <span class="date">{{user.status_date | amDateFormat:'MMMM Do, YYYY'}}</span>
+    <div class='user-meta'>
+      <div class='status'>
+        <response-status data-user="user" hide-icons=true></response-status>
+      </div>
+      <span class="date">{{user.status_date | amDateFormat:'MMMM Do, YYYY'}}</span>
+    </div>
   </div>
 </div>
