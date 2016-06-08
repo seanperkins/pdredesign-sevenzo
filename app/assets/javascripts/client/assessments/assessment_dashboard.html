@@ -23,35 +23,35 @@
         </div>
       </div>
     </div>
-    <div class="links">
-      <a
-        ng-class="{ active: $state.includes('assessment_dashboard') }"
-        href="#/assessments/{{assessment.id}}/dashboard">Dashboard
-      </a>
-      <span ng-show="noMeetingDate()">
-        <a ng-click="modifySchedule()" href="">Schedule Consensus Meeting</a>
-        <a ng-click="newReminder()" href="">Send Reminder</a>
-      </span>
+    <ul class="links">
+      <li ng-show="noMeetingDate()">
+        <a class="btn btn-block btn-default" ng-click="modifySchedule()" href="">Schedule Consensus Meeting</a>
+        <a class="btn btn-block btn-default" ng-click="newReminder()" href="">Send Reminder</a>
+      </li>
+      <li ng-show="preMeetingDate()">
+        <a class="btn btn-block btn-default" ng-click="modifySchedule()" href="">Modify Schedule</a>
+        <a class="btn btn-block btn-default" ng-click="createConsensus()" href="" >Create Consensus</a>
+        <a class="btn btn-block btn-default" ng-click="newReminder()" href="">Send Reminder</a>
+      </li>
+      <li ng-show="postMeetingDate()">
+        <a class="btn btn-block btn-default" ng-show="consensusStarted()" href="#/assessments/{{assessment.id}}/consensus/{{assessment.consensus.id}}">View Consensus</a>
+        <a class="btn btn-block btn-default" ng-hide="consensusStarted()" ng-click="createConsensus()" href="" >Create Consensus</a>
+      </li>
+      <li ng-show="!$state.includes('assessment_dashboard')">
+        <a class="btn btn-block btn-default" href="#/assessments/{{assessment.id}}/dashboard">Dashboard</a>
+      </li>
+      <li ng-show="reportPresent() && !$state.includes('assessment_report')">
+        <a class="btn btn-block btn-default" href="#/assessments/{{assessment.id}}/report">Report</a>
+      </li>
+      <li>
+        <a class="btn btn-block btn-secondary" ng-if="true || noMeetingDate() || preMeetingDate()" ng-click="addLearningQuestion()">Add/Review Learning Questions</a>
+      </li>
+    </ul>
 
-      <span ng-show="preMeetingDate()">
-        <a ng-click="modifySchedule()" href="">Modify Schedule</a>
-        <a ng-click="createConsensus()" href="" >Create Consensus</a>
-        <a ng-click="newReminder()" href="">Send Reminder</a>
-      </span>
-      <span ng-show="postMeetingDate()">
-        <a ng-show="consensusStarted()" href="#/assessments/{{assessment.id}}/consensus/{{assessment.consensus.id}}">View Consensus</a>
-        <a ng-hide="consensusStarted()" ng-click="createConsensus()" href="" >Create Consensus</a>
-      </span>
-
-      <span ng-show="reportPresent()">
-        <a
-          ng-class="{ active: $state.includes('assessment_report') }"
-          href="#/assessments/{{assessment.id}}/report">Report
-        </a>
-        <a ng-click="showShareReport()" href="">Share Report</a>
-      </span>
-
-      <a ng-if="noMeetingDate() || preMeetingDate()" ng-click="addLearningQuestion()">Add/Review Learning Questions</a>
+    <div class="share-report">
+      <h3>Share this report</h3>
+      <p>Copy this link to share this page.</p>
+      <share-url url="{{shareURL}}"></share-url>
     </div>
   </div>
 

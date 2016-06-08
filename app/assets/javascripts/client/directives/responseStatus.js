@@ -5,6 +5,7 @@ PDRClient.directive('responseStatus', [
       replace: true,
       scope: {
         user: "=",
+        hideIcons: "="
       },
       templateUrl: 'client/views/directives/response_status.html',
       controller: [

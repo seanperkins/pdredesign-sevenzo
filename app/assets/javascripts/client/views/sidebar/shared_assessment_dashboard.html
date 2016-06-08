@@ -1,9 +1,9 @@
 <div class="sidebar">
   <div id="assessment_dashboard_consensus_sidebar" ng-controller="AssessmentSharedDashboardSidebarCtrl">
     <div class='consensus'>
-      <p ng-show="noMeetingDate()" class='header'>Consensus Meeting not yet scheduled</p>
-      <p ng-show="preMeetingDate()" class='header'>Consensus Meeting for</p>
-      <p ng-show="postMeetingDate()" class='header'>Consensus Meeting was held</p>
+      <p ng-show="noMeetingDate()" class='header'>Consensus meeting not yet scheduled</p>
+      <p ng-show="preMeetingDate()" class='header'>Consensus meeting for</p>
+      <p ng-show="postMeetingDate()" class='header'>Consensus meeting was held</p>
       <div class='outer'>
         <div class='inner'>
           <div ng-show="postMeetingDate()">
@@ -22,14 +22,6 @@
           </div>
         </div>
       </div>
-    </div>
-    <div class="links">
-      <span>
-        <a
-          ng-class="{ active: $state.includes('assessment_report') }"
-          href="#/assessments/{{assessment.id}}/report">Report
-        </a>
-      </span>
     </div>
   </div>
   <div class="content">

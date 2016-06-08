@@ -27,7 +27,7 @@
     };
 
     service.extractId = function() {
-      return $stateParams.assessment_id || $stateParams.analysis_id;
+      return $stateParams.assessment_id || $stateParams.analysis_id || $stateParams.id;
     };
 
     service.redirectToIndex = function () {
@@ -166,12 +166,14 @@
         });
     };
 
-    service.exportToCSV = function () {
+    service.exportToCSV = function (consensusId) {
+      consensusId = consensusId || $stateParams.id;
+
       if (service.context === "assessment") {
         var url = UrlService.url('assessments/' + service.extractId() + '/reports/consensus_report.csv');
         var method = "post";
       } else if (service.context === "analysis") {
-        var url = UrlService.url('inventories/' + $stateParams.inventory_id + '/analyses/' + service.extractId() + '/analysis_consensus/' + $stateParams.id + '.csv');
+        var url = UrlService.url('inventories/' + $stateParams.inventory_id + '/analyses/' + service.extractId() + '/analysis_consensus/' + consensusId + '.csv');
         var method = "get";
       }
 
