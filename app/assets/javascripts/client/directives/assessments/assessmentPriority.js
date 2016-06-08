@@ -33,6 +33,7 @@ PDRClient.directive('assessmentPriority', [
                   if($scope.editable == "true"){
                    $scope.setupDnD();
                   }
+                  $scope.invokeDragAndDrop();
                   $scope.loading = false;
                 });
             };
@@ -61,6 +62,14 @@ PDRClient.directive('assessmentPriority', [
             $scope.setupDnD = function() {
               $timeout(function() {
                 $(".table-diagnostic").tableDnD();
+              });
+            };
+
+            $scope.invokeDragAndDrop = function() {
+              $timeout(function() {
+                if ($scope.editable) {
+                  $('[data-table-dnd]').tableDnD();
+                }
               });
             };
         }],

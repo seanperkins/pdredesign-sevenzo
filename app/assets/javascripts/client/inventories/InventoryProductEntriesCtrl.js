@@ -55,6 +55,7 @@
       return options;
     };
 
+    var PAGE_LENGTH = 20;
     vm.dtOptions = options
       .withPaginationType('full_numbers')
       .withButtons([
@@ -63,7 +64,16 @@
           columns: '1:visible, 2:visible, 3:visible, 4:visible, 5:visible, 6:visible'
         }
       ])
-      .withOption('dom', '<"table-header"B>rt<"table-footer"ip>');
+      .withOption('pageLength', PAGE_LENGTH)
+      .withOption('dom', '<"table-header"B>rt<"table-footer"ip>')
+      .withOption('drawCallback', function (settings) {
+        var $pagination = $('.dataTables_paginate');
+        if (vm.productEntries.length > PAGE_LENGTH) {
+          $pagination.show();
+        } else {
+          $pagination.hide();
+        }
+      });
 
     vm.dtColumns = [
       DTColumnBuilder.newColumn('general_inventory_question.product_name').withTitle('Name'),

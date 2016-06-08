@@ -1,15 +1,13 @@
 <div class='row row-participant'>
-  <div class='col-md-2 col-sm-2 col-xs-2'>
-    <avatar avatar="{{user.avatar}}" width="100%"></avatar>
+  <avatar data-avatar="{{user.avatar}}" data-width="100%"></avatar>
+  <div class='user-data'>
+    <span class='name'>{{user.full_name}}</span>
+    <span class='email'>{{user.email}}</span>
   </div>
-  <div class='col-md-6 col-sm-6 col-xs-6'>
-    <p class='name'>{{user.full_name}}</p>
-    <p class='email'>{{user.email}}</p>
-  </div>
-  <div class='col-md-4 col-sm-4 col-xs-4'>
+  <div class='user-meta'>
     <div class='status'>
-      <response-status user="user"></response-status>
-      <p class="date">{{user.status_date | amDateFormat:'MMMM Do, YYYY'}}</p>
+      <response-status data-user="user" hide-icons=true></response-status>
     </div>
+    <span class="date">{{user.status_date | amDateFormat:'MMMM Do, YYYY'}}</span>
   </div>
 </div>

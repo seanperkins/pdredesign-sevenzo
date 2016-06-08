@@ -20,8 +20,8 @@
         </div>
       </div>
       <hr class="dashboard-hr" />
-      <div class="col-md-6 col-sm-6" ng-repeat="user in analysisDashboard.participants">
-        <participant user="user"></participant>
+      <div class="participant-list">
+        <participant ng-repeat="user in analysisDashboard.participants" user="user"></participant>
       </div>
     </div>
     <div class="row">
