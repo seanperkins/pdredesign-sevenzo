@@ -89,8 +89,12 @@ class Analysis < ActiveRecord::Base
   def set_members_from_inventory
     %i|participants facilitators|.each do |member_type|
       self.inventory.send(member_type).each do |inventory_member|
-        self.send(member_type).create(user: inventory_member.user)
+        self.send(member_type).create(user: inventory_member.user) unless self.owner == inventory_member.user
       end
+    end
+
+    if self.inventory.owner != self.owner
+      self.facilitators.create(user: self.inventory.owner)
     end
   end
 
