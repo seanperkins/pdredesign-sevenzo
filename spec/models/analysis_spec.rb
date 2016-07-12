@@ -49,7 +49,7 @@ describe Analysis do
       it 'requires :due_date when assigned_at is present' do
         expect(@analysis.valid?).to eq(false)
         expect(@analysis.errors[:message])
-          .to include("can\'t be blank")
+          .to include("can't be blank")
 
         @analysis.assigned_at = nil
         @analysis.valid?
@@ -89,8 +89,8 @@ describe Analysis do
         expect(subject.participants.map(&:user).include?(owner)).to be false
       end
 
-      it 'does not register the owner as a facilitator' do
-        expect(subject.facilitators.map(&:user).include?(owner)).to be false
+      it 'registers the owner as a facilitator' do
+        expect(subject.facilitators.map(&:user).include?(owner)).to be true
       end
     end
 
@@ -108,13 +108,12 @@ describe Analysis do
         create(:analysis, inventory: inventory, owner: owner)
       }
 
-
       it {
         expect(subject.owner).to equal owner
       }
 
-      it 'does not copy the user across as a facilitator' do
-        expect(subject.facilitators.map(&:user).include?(owner)).to be false
+      it 'copies the user across as a facilitator' do
+        expect(subject.facilitators.map(&:user).include?(owner)).to be true
       end
 
       it 'adds the owner of the original inventory as a facilitator' do

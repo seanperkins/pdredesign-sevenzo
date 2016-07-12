@@ -29,7 +29,7 @@ FactoryGirl.define do
   factory :user do
     email { Faker::Internet.safe_email }
     password { Faker::Internet.password(12) }
-    role  :district_member
+    role :district_member
     admin false
     first_name 'Example'
     last_name 'User'
@@ -44,8 +44,8 @@ FactoryGirl.define do
     after(:create) do |user, evaluator|
       if evaluator.district
         user.districts << evaluator.district
-      else 
-        user.districts = FactoryGirl.create_list(:district, evaluator.districts)
+      else
+        user.districts = create_list(:district, evaluator.districts)
       end
     end
   end
