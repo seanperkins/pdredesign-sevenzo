@@ -117,13 +117,10 @@ module Application
       User.create! attributes
     end
 
-    def create_district(opts = {})
-      District.create! opts
-    end
-
     def create_sample_user(opts = {})
-      district = Application.create_district
-      Application.create_user({ role: :district_member, districts: [district]}.merge(opts))
+      user = FactoryGirl.create(:user, :with_district)
+      user.districts << opts[:districts]
+      user
     end
 
     def request_access_to_assessment(opts)

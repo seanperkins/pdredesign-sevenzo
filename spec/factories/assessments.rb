@@ -33,19 +33,17 @@ FactoryGirl.define do
       name 'Assessment other'
       due_date Time.now
       message 'some message'
-      association :rubric
-      association :district
       association :user, factory: [:user, :with_district], districts: 1
 
       before(:create) do |assessment|
-        assessment.participants = FactoryGirl.create_list(:participant, 2, :with_users)
-        assessment.facilitators = [FactoryGirl.create(:user, :with_district)]
+        assessment.participants = create_list(:participant, 2, :with_users)
+        assessment.facilitators = create_list(:user, 1, :with_district)
       end
     end
 
     trait :with_consensus do
       after(:create) do |assessment|
-        assessment.update_attributes(response: FactoryGirl.create(:response, responder: assessment))
+        assessment.update_attributes(response: create(:response, responder: assessment))
       end
     end
   end
