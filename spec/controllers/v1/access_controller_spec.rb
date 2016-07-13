@@ -4,17 +4,20 @@ describe V1::AccessController do
   render_views
 
   let(:assessment) {
-    @assessment_with_participants
+    create(:assessment, :with_participants)
+  }
+
+  let(:facilitator) {
+    assessment.facilitators.first
   }
 
   let(:user) {
-    FactoryGirl.create(:user, :with_district)
+    create(:user, :with_district)
   }
 
   before(:each) do
     request.env['HTTP_ACCEPT'] = 'application/json'
-    create_magic_assessments
-    sign_in @facilitator2
+    sign_in facilitator
   end
 
   def create_token_chain(roles = [:facilitator])
@@ -24,19 +27,28 @@ describe V1::AccessController do
       token: 'expected_token')
   end
 
-  describe '#grant' do
-    it 'requires a login' do
-      sign_out :user
-      post :grant, token: 'stuff'
-      assert_response :unauthorized
+  describe 'POST #grant' do
+    context 'when not authenticated' do
+      before(:each) do
+        sign_out :user
+        post :grant, token: 'stuff'
+      end
+
+      it {
+        is_expected.to respond_with :unauthorized
+      }
     end
 
-    it 'requires a facilitator of the assessment' do
-      sign_in user
-      create_token_chain
+    context 'when not a facilitator' do
+      before(:each) do
+        sign_in user
+        create_token_chain
+        post :grant, token: @record.token
+      end
 
-      post :grant, token: @record.token
-      assert_response :unauthorized
+      it {
+        is_expected.to respond_with :unauthorized
+      }
     end
 
     it 'returns 404 when a token is not found' do
@@ -80,6 +92,5 @@ describe V1::AccessController do
       post :grant, token: @record.token
       expect(AccessRequest.find_by(token: 'expected_token')).to eq(nil)
     end
-
   end
 end
