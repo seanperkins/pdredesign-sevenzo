@@ -11,6 +11,7 @@
 #  created_at           :datetime
 #  updated_at           :datetime
 #  data_entry_id        :integer
+#  deleted_at           :datetime
 #
 
 class DataAccessQuestion < ActiveRecord::Base

@@ -2,18 +2,18 @@
 #
 # Table name: analyses
 #
-#  id             :integer          not null, primary key
-#  name           :text
-#  deadline       :datetime
-#  inventory_id   :integer
-#  created_at     :datetime
-#  updated_at     :datetime
-#  message        :text
-#  assigned_at    :datetime
-#  rubric_id      :integer
-#  owner_id       :integer
-#  report_takeway :text
-#  share_token    :string
+#  id              :integer          not null, primary key
+#  name            :text
+#  deadline        :datetime
+#  inventory_id    :integer
+#  created_at      :datetime
+#  updated_at      :datetime
+#  message         :text
+#  assigned_at     :datetime
+#  rubric_id       :integer
+#  owner_id        :integer
+#  report_takeaway :text
+#  share_token     :string
 #
 
 class Analysis < ActiveRecord::Base
