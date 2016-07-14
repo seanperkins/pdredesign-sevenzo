@@ -268,6 +268,7 @@ class Assessment < ActiveRecord::Base
 
   def self.assessments_for_user(user)
     districts = user.district_ids
+    # Code smell; we're only looking at participants when we should probably look at members
     includes(participants: :user).where(district_id: districts)
   end
 

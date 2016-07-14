@@ -47,7 +47,7 @@ FactoryGirl.define do
       if evaluator.district
         user.districts << evaluator.district
       else
-        user.districts = FactoryGirl.create_list(:district, evaluator.districts)
+        user.districts = create_list(:district, evaluator.districts)
       end
     end
   end

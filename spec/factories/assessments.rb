@@ -29,6 +29,10 @@ FactoryGirl.define do
       association :response, :as_assessment_responder
     end
 
+    trait :with_owner do
+      association :user, factory: [:user, :with_district], districts: 1
+    end
+
     trait :with_participants do
       name 'Assessment other'
       due_date Time.now
