@@ -36,7 +36,7 @@ class Analysis < ActiveRecord::Base
   has_many :access_requests, class_name: 'AnalysisAccessRequest'
   has_one :response, as: :responder, dependent: :destroy
 
-  after_create :set_members_from_inventory
+  after_create :set_members_from_inventory, :add_facilitator_owner
   before_save :set_assigned_at, :ensure_share_token
 
   def facilitator?(user)
@@ -86,10 +86,14 @@ class Analysis < ActiveRecord::Base
   end
 
   private
+  def add_facilitator_owner
+    self.facilitators.create(user: owner) if owner
+  end
+
   def set_members_from_inventory
     %i|participants facilitators|.each do |member_type|
       self.inventory.send(member_type).each do |inventory_member|
-        self.send(member_type).create(user: inventory_member.user)
+        self.send(member_type).create(user: inventory_member.user) unless self.owner == inventory_member.user
       end
     end
   end

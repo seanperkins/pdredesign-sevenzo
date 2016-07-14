@@ -27,7 +27,7 @@ FactoryGirl.define do
       end
 
       after(:create) do |inventory, evaluator|
-        inventory.members << FactoryGirl.create_list(:inventory_member, evaluator.members)
+        inventory.members << create_list(:inventory_member, evaluator.members)
       end
     end
 
@@ -37,7 +37,7 @@ FactoryGirl.define do
       end
 
       after(:create) do |inventory, evaluator|
-        FactoryGirl.create_list(:inventory_member, evaluator.facilitators, :as_facilitator, inventory: inventory)
+        create_list(:inventory_member, evaluator.facilitators, :as_facilitator, inventory: inventory)
       end
     end
 
@@ -47,7 +47,7 @@ FactoryGirl.define do
       end
 
       after(:create) do |inventory, evaluator|
-        FactoryGirl.create_list(:inventory_member, evaluator.participants, :as_participant, inventory: inventory)
+        create_list(:inventory_member, evaluator.participants, :as_participant, inventory: inventory)
       end
     end
 
@@ -57,7 +57,7 @@ FactoryGirl.define do
       end
 
       after(:create) do |inventory, evaluator|
-        FactoryGirl.create_list(:product_entry, evaluator.product_entries, inventory: inventory)
+        create_list(:product_entry, evaluator.product_entries, inventory: inventory)
       end
     end
 
@@ -67,7 +67,7 @@ FactoryGirl.define do
       end
 
       after(:create) do |inventory, evaluator|
-        FactoryGirl.create_list(:data_entry, evaluator.data_entries, inventory: inventory)
+        create_list(:data_entry, evaluator.data_entries, inventory: inventory)
       end
     end
 
@@ -77,7 +77,7 @@ FactoryGirl.define do
       end
 
       after(:create) do |inventory, evaluator|
-        FactoryGirl.create_list(:analysis, evaluator.analysis, inventory: inventory)
+        create_list(:analysis, evaluator.analysis, inventory: inventory)
       end
     end
   end

@@ -49,7 +49,7 @@ describe Analysis do
       it 'requires :due_date when assigned_at is present' do
         expect(@analysis.valid?).to eq(false)
         expect(@analysis.errors[:message])
-          .to include("can\'t be blank")
+          .to include("can't be blank")
 
         @analysis.assigned_at = nil
         @analysis.valid?
@@ -66,10 +66,86 @@ describe Analysis do
   end
 
   describe '#create' do
-    let(:inventory) { FactoryGirl.create(:inventory, :with_participants, :with_facilitators, participants: 2, facilitators: 2) }
-    subject { FactoryGirl.create(:analysis, inventory: inventory ) }
 
-    it { expect(subject.members.count).to be inventory.members.count }
-    it { expect(subject.members.pluck(:role)).to match_array inventory.members.pluck(:role) }
+    context 'when user creating new analysis is the owner of its parent inventory' do
+
+      let(:owner) {
+        create(:user)
+      }
+
+      let(:inventory) {
+        create(:inventory, :with_participants, :with_facilitators, participants: 2, facilitators: 2, owner: owner)
+      }
+
+      subject {
+        create(:analysis, inventory: inventory, owner: owner)
+      }
+
+      it {
+        expect(subject.owner).to equal owner
+      }
+
+      it 'does not register the owner as a particpant' do
+        expect(subject.participants.map(&:user).include?(owner)).to be false
+      end
+
+      it 'registers the owner as a facilitator' do
+        expect(subject.facilitators.map(&:user).include?(owner)).to be true
+      end
+    end
+
+    context 'when user creating new analysis is a facilitator of its parent inventory' do
+
+      let(:owner) {
+        inventory.facilitators.sample.user
+      }
+
+      let(:inventory) {
+        create(:inventory, :with_participants, :with_facilitators, participants: 2, facilitators: 2)
+      }
+
+      subject {
+        create(:analysis, inventory: inventory, owner: owner)
+      }
+
+      it {
+        expect(subject.owner).to equal owner
+      }
+
+      it 'copies the user across as a facilitator' do
+        expect(subject.facilitators.map(&:user).include?(owner)).to be true
+      end
+
+      it 'adds the owner of the original inventory as a facilitator' do
+        expect(subject.facilitators.map(&:user).include?(inventory.owner)).to be true
+      end
+    end
+
+    context 'when user creating new analysis is a participant of its parent inventory' do
+
+      let(:owner) {
+        inventory.participants.sample.user
+      }
+
+      let(:inventory) {
+        create(:inventory, :with_participants, :with_facilitators, participants: 2, facilitators: 2)
+      }
+
+      subject {
+        create(:analysis, inventory: inventory, owner: owner)
+      }
+
+      it {
+        expect(subject.owner).to equal owner
+      }
+
+      it 'does not copy the user across as a participant' do
+        expect(subject.participants.map(&:user).include?(owner)).to be false
+      end
+
+      it 'adds the owner of the original inventory as a facilitator' do
+        expect(subject.facilitators.map(&:user).include?(inventory.owner)).to be true
+      end
+    end
   end
 end

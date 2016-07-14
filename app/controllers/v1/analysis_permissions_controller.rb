@@ -15,9 +15,12 @@ class V1::AnalysisPermissionsController < ApplicationController
 
   private
   def update_permission(permission)
-    user = User.find_by(email: permission["email"])
-    role = permission["role"]
-    role = "facilitator" if user.network_partner?
+    user = User.find_by(email: permission['email'])
+    if user.network_partner?
+      role = 'facilitator'
+    else
+      role = permission['role']
+    end
     permission = Analyses::Permission.new(analysis: analysis, user: user)
     permission.role = role
   end
