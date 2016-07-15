@@ -41,9 +41,9 @@ class V1::AssessmentsPermissionsController < ApplicationController
   private
 
   def update_permission(permission)
-    user = User.find_by(email: permission["email"])
-    level = permission["level"]
-    level = "facilitator" if user.network_partner?
+    user = User.find_by(email: permission['email'])
+    level = permission['level']
+    level = 'facilitator' if user.network_partner?
     assessment_permission.update_level(user, level) unless user == current_user
   end
 
