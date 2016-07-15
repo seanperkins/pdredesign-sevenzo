@@ -282,8 +282,8 @@ describe V1::AssessmentsController do
         end
       end
 
-      context 'when the assessment has responses' do
-        let!(:assessment_response) {
+      context 'when the participant has responses' do
+        let!(:participant_response) {
           create(:response, responder: participant, rubric: rubric)
         }
 
@@ -301,133 +301,163 @@ describe V1::AssessmentsController do
         end
 
         it 'retrieves existing responses' do
-          json_response = json.detect { |json_assessment| json_assessment['id'] == assessment.id }['responses'].first
-          expect(json_response['id']).to eq assessment_response.id
+          json_response = json.last['responses'].first
+          expect(json_response['id']).to eq participant_response.id
         end
       end
 
-      context 'when the user role is member' do
+      context 'when the assessment has responses' do
+        let!(:assessment_response) {
+          create(:response, responder: assessment, rubric: rubric, submitted_at: Time.now)
+        }
+
+        let(:assessment) {
+          assessment_list.first
+        }
+
+        before(:each) do
+          sign_in user
+          get :index
+        end
+
+        it {
+          json_response = json.last['consensus']
+          expect(json_response['id']).to eq(assessment_response.id)
+        }
+
+        it {
+          json_response = json.last['consensus']
+          expect(json_response['submitted_at']).not_to be_nil
+        }
+      end
+
+      context 'when the user is a member of the district' do
 
         let(:member_user) {
           create(:user, districts: [district_1, district_2])
-        }
-
-        let!(:additional_assessment) {
-          create(:assessment, :with_participants, district: district_2)
         }
 
         let(:district_2) {
           create(:district)
         }
 
-        before(:each) do
-          sign_in member_user
+        context 'when the user role is member' do
+          let!(:additional_assessment) {
+            create(:assessment, :with_participants, district: district_2)
+          }
 
-          get :index
+          before(:each) do
+            member_user.update(role: :member)
+            sign_in member_user
+
+            get :index
+          end
+
+          it {
+            expect(assigns(:assessments).count).to eq 4
+          }
         end
 
-        it {
-          expect(assigns(:assessments).count).to eq 4
-        }
+        context 'when the user is a participant of the assessment' do
+
+          let(:assessment) {
+            assessment_list.last
+          }
+
+          let!(:participant) {
+            create(:participant, user: member_user, assessment: assessment)
+          }
+
+          before(:each) do
+            sign_in member_user
+            get :index
+          end
+
+          it {
+            expect(json.first['is_participant']).to be true
+          }
+        end
       end
-    end
-
-    it 'returns is_participant if current_user is a participant' do
-      sign_in @user
-      get :index
-
-      expect(json.first["is_participant"]).to eq(true)
-    end
-
-
-    it 'returns a consensus_id and submitted_at if present' do
-      time = Time.now
-      consensus = Response.create(responder_id: @assessment_with_participants.id,
-                                  responder_type: 'Assessment',
-                                  rubric: @rubric,
-                                  submitted_at: time)
-      sign_in @user
-      get :index
-
-      json_response = json.first
-      expect(json_response["consensus"]["id"]).to eq(consensus.id)
-      expect(json_response["consensus"]["submitted_at"]).not_to be_nil
-
-    end
-
-    it 'doesnt error on deleted participants user' do
-      assessment.participants.first.user.delete
-
-      sign_in @facilitator
-      get :index
-
-      assert_response :success
     end
   end
 
   describe 'POST #create' do
-    before { create_magic_assessments }
-    before { sign_in @facilitator }
-    let(:assessment) { @assessment_with_participants }
 
-    before do
-      assessment.update(facilitators: [@facilitator])
+    let(:facilitator) {
+      create(:user, :with_district)
+    }
+
+    let(:rubric) {
+      create(:rubric)
+    }
+
+    before(:each) do
+      sign_in facilitator
     end
 
-    it 'allows a facilitator to create an assessment' do
-      post :create,
-           name: 'some assessment',
-           rubric_id: @rubric.id,
-           due_date: Time.now
+    context 'when authorized' do
+      before(:each) do
+        post :create,
+             name: 'some assessment',
+             rubric_id: rubric.id,
+             due_date: Time.now
+      end
 
-      assert_response :success
+      it {
+        is_expected.to respond_with :success
+      }
+
+      it {
+        expect(json['id']).not_to be_nil
+      }
+
+      it {
+        expect(json['facilitator']['id']).to eq(facilitator.id)
+      }
+
+      it {
+        assessment = Assessment.find(json['id'])
+        expect(assessment.participant?(facilitator)).to be true
+      }
     end
 
-    it 'sets the facilitator correctly' do
-      post :create,
-           name: 'some assessment',
-           rubric_id: @rubric.id,
-           due_date: Time.now
-
-      expect(json["facilitator"]["id"]).to eq(@facilitator.id)
-    end
 
     it 'district member is assigned as a participant automatically' do
       post :create,
            name: 'some assessment',
-           rubric_id: @rubric.id,
+           rubric_id: rubric.id,
            due_date: Time.now
 
       assessment = Assessment.find(json["id"])
 
-      expect(assessment.participant?(@facilitator)).to eq(true)
+      expect(assessment.participant?(facilitator)).to eq(true)
     end
 
     it 'district member is assigned as a participant automatically' do
-      @facilitator.update(role: :network_partner)
+      facilitator.update(role: :network_partner)
 
       post :create,
            name: 'some assessment',
-           rubric_id: @rubric.id,
+           rubric_id: rubric.id,
            due_date: Time.now
 
       assessment = Assessment.find(json["id"])
 
-      expect(assessment.participant?(@facilitator)).to eq(false)
+      expect(assessment.participant?(facilitator)).to eq(false)
     end
 
 
     it 'creates a record' do
       post :create,
            name: 'some assessment',
-           rubric_id: @rubric.id,
+           rubric_id: rubric.id,
            due_date: Time.now
 
       expect(json["id"]).not_to be_nil
     end
 
     it 'sets the newest rubric if one is not provided' do
-      @rubric = create(:rubric, :as_assessment_rubric, version: 99)
+      rubric = create(:rubric, :as_assessment_rubric, version: 99)
       create(:rubric, :as_assessment_rubric, version: 95)
 
       create_struct
@@ -436,13 +466,12 @@ describe V1::AssessmentsController do
            name: 'some assessment',
            due_date: Time.now
 
-      expect(json["rubric_id"]).to eq(@rubric.id)
+      expect(json["rubric_id"]).to eq(rubric.id)
     end
 
     it 'allows to set the district_id' do
       district = District.create!
       Rubric.create!(version: 95)
-      create_struct
 
       post :create,
            name: 'some assessment',
@@ -454,7 +483,7 @@ describe V1::AssessmentsController do
 
     it 'returns json errors when an assessment cant be created' do
       post :create,
-           rubric_id: @rubric.id,
+           rubric_id: rubric.id,
            due_date: Time.now
 
       expect(json["errors"]["name"]).to include("can't be blank")
