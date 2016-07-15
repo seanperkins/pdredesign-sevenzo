@@ -383,110 +383,116 @@ describe V1::AssessmentsController do
 
   describe 'POST #create' do
 
-    let(:facilitator) {
-      create(:user, :with_district)
+    let!(:rubric) {
+      create(:rubric, :as_assessment_rubric)
     }
-
-    let(:rubric) {
-      create(:rubric)
-    }
-
-    before(:each) do
-      sign_in facilitator
-    end
 
     context 'when authorized' do
+      context 'when user is to become the facilitator of the project' do
+
+        let(:facilitator) {
+          create(:user, :with_district)
+        }
+
+        before(:each) do
+          sign_in facilitator
+          post :create,
+               name: 'some assessment',
+               rubric_id: rubric.id,
+               due_date: Time.now
+        end
+
+        it {
+          is_expected.to respond_with :success
+        }
+
+        it {
+          expect(json['id']).not_to be_nil
+        }
+
+        it {
+          expect(json['facilitator']['id']).to eq(facilitator.id)
+        }
+
+        it {
+          assessment = Assessment.find(json['id'])
+          expect(assessment.participant?(facilitator)).to be true
+        }
+      end
+
+      context 'when user is a district member' do
+
+        let(:facilitator) {
+          create(:user, :with_district, :with_network_partner_role)
+        }
+
+        before(:each) do
+          sign_in facilitator
+          post :create,
+               name: 'some assessment',
+               rubric_id: rubric.id,
+               due_date: Time.now
+        end
+
+        it {
+          assessment = Assessment.find(json['id'])
+          expect(assessment.participant?(facilitator)).to be false
+        }
+      end
+
+      context 'when the rubric is not provided' do
+        let!(:default_rubric) {
+          create(:rubric, :as_assessment_rubric)
+        }
+
+        let(:facilitator) {
+          create(:user, :with_district)
+        }
+
+        before(:each) do
+          sign_in facilitator
+          post :create, name: 'some assessment', due_date: Time.now
+        end
+
+        it {
+          expect(json['rubric_id']).to eq default_rubric.id
+        }
+      end
+
+      context 'when specifying another district' do
+        let(:new_district) {
+          create(:district)
+        }
+
+        let(:facilitator) {
+          create(:user, :with_district)
+        }
+
+        before(:each) do
+          sign_in facilitator
+          post :create, name: 'some assessment', due_date: Time.now, district_id: new_district.id
+        end
+
+        it {
+          expect(json['district_id']).to eq new_district.id
+        }
+      end
+    end
+
+    context 'when no name is passed to the endpoint' do
+
+      let(:facilitator) {
+        create(:user, :with_district)
+      }
+
       before(:each) do
-        post :create,
-             name: 'some assessment',
-             rubric_id: rubric.id,
-             due_date: Time.now
+        sign_in facilitator
+        post :create, rubric_id: rubric.id, due_date: Time.now
       end
 
       it {
-        is_expected.to respond_with :success
+        expect(json['errors']['name']).to include 'can\'t be blank'
       }
-
-      it {
-        expect(json['id']).not_to be_nil
-      }
-
-      it {
-        expect(json['facilitator']['id']).to eq(facilitator.id)
-      }
-
-      it {
-        assessment = Assessment.find(json['id'])
-        expect(assessment.participant?(facilitator)).to be true
-      }
-    end
-
-
-    it 'district member is assigned as a participant automatically' do
-      post :create,
-           name: 'some assessment',
-           rubric_id: rubric.id,
-           due_date: Time.now
-
-      assessment = Assessment.find(json["id"])
-
-      expect(assessment.participant?(facilitator)).to eq(true)
-    end
-
-    it 'district member is assigned as a participant automatically' do
-      facilitator.update(role: :network_partner)
-
-      post :create,
-           name: 'some assessment',
-           rubric_id: rubric.id,
-           due_date: Time.now
-
-      assessment = Assessment.find(json["id"])
-
-      expect(assessment.participant?(facilitator)).to eq(false)
-    end
-
-
-    it 'creates a record' do
-      post :create,
-           name: 'some assessment',
-           rubric_id: rubric.id,
-           due_date: Time.now
-
-      expect(json["id"]).not_to be_nil
-    end
-
-    it 'sets the newest rubric if one is not provided' do
-      rubric = create(:rubric, :as_assessment_rubric, version: 99)
-      create(:rubric, :as_assessment_rubric, version: 95)
-
-      create_struct
-
-      post :create,
-           name: 'some assessment',
-           due_date: Time.now
-
-      expect(json["rubric_id"]).to eq(rubric.id)
-    end
-
-    it 'allows to set the district_id' do
-      district = District.create!
-      Rubric.create!(version: 95)
-
-      post :create,
-           name: 'some assessment',
-           due_date: Time.now,
-           district_id: district.id
-
-      expect(json["district_id"]).to eq(district.id)
-    end
-
-    it 'returns json errors when an assessment cant be created' do
-      post :create,
-           rubric_id: rubric.id,
-           due_date: Time.now
-
-      expect(json["errors"]["name"]).to include("can't be blank")
     end
   end
 end
