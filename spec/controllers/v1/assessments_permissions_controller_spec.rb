@@ -521,79 +521,211 @@ describe V1::AssessmentsPermissionsController do
     end
   end
 
-  describe "PUT#deny PUT#accept permission" do
+  describe 'PUT #deny' do
 
-    let(:brand_new_user) { FactoryGirl.create(:user) }
-    let(:ra) { Application.request_access_to_assessment(assessment: assessment, user: brand_new_user, roles: ["facilitator"]) }
+    let(:user) {
+      create(:user, :with_district)
+    }
 
-    context 'PUT#deny' do
-
-      it 'deny the permission request ' do
-        ap = Assessments::Permission.new(assessment)
-        sign_in @facilitator2
-
-        put :deny, assessment_id: assessment.id, id: ra.id, email: brand_new_user.email
-
-        assert_response :success
-        expect(assessment.facilitator?(brand_new_user)).to eq(false)
-        expect(ap.get_access_request(brand_new_user)).to eq(nil)
+    context 'when unauthenticated' do
+      before(:each) do
+        sign_out :user
+        put :deny, assessment_id: assessment.id, id: 0, email: user.email
       end
 
-      it 'unauthorized when is not logged in PUT#deny' do
-        put :deny, assessment_id: assessment.id, id: 1
-        assert_response :unauthorized
-      end
+      it {
+        is_expected.to respond_with :unauthorized
+      }
+    end
 
-      it 'forbid the deny request when no permissions to update PUT#deny' do
-        sign_in @facilitator
+    context 'when authenticated' do
+      context 'when authorized to update permissions' do
+        let(:facilitator) {
+          assessment.user
+        }
 
-        put :deny, assessment_id: assessment.id, id: ra.id, email: brand_new_user.email
+        let(:access_request) {
+          create(:access_request, assessment: assessment, user: user, roles: ['facilitator'])
+        }
 
-        assert_response :forbidden
+        let(:assessment_permission) {
+          Assessments::Permission.new(assessment)
+        }
+
+        before(:each) do
+          sign_in facilitator
+          put :deny, assessment_id: assessment.id, id: access_request.id, email: user.email
+        end
+
+        it {
+          is_expected.to respond_with :success
+        }
+
+        it {
+          expect(assessment.facilitator?(user)).to be false
+        }
+
+        it {
+          expect(assessment_permission.get_access_request(user)).to be_nil
+        }
       end
     end
 
-    context 'PUT#accept' do
+    context 'when unauthorized to update permissions' do
+      let(:participant) {
+        assessment.participants.sample.user
+      }
 
-      it 'PUT#accept' do
-        sign_in @facilitator2
+      let(:access_request) {
+        create(:access_request, assessment: assessment, user: user, roles: ['facilitator'])
+      }
 
-        put :accept, assessment_id: assessment.id, id: ra.id, email: brand_new_user.email
-
-        assert_response :success
-        expect(assessment.facilitator?(brand_new_user)).to eq(true)
+      before(:each) do
+        sign_in participant
+        put :deny, assessment_id: assessment.id, id: access_request.id, email: user.email
       end
 
-      it 'security: responds with 401 auth error PUT#accept' do
-        put :accept, assessment_id: assessment.id, id: 1
-        assert_response :unauthorized
-      end
-
-      it 'forbid the deny request when no permissions to update PUT#accept' do
-        sign_in @facilitator
-
-        put :accept, assessment_id: assessment.id, id: ra.id, email: brand_new_user.email
-
-        assert_response :forbidden
-      end
-
+      it {
+        is_expected.to respond_with :forbidden
+      }
     end
-
   end
 
-  describe "GET#current_level - for current_user" do
+  describe 'PUT #accept' do
+    let(:user) {
+      create(:user, :with_district)
+    }
 
-    it 'returns the current_user permission level' do
-      sign_in @facilitator2
+    context 'when unauthenticated' do
+      before(:each) do
+        sign_out :user
+        put :accept, assessment_id: assessment.id, id: 0, email: user.email
+      end
 
-      assert_response :success
+      it {
+        is_expected.to respond_with :unauthorized
+      }
     end
 
-    it 'security: responds with 401 auth error' do
-      get :current_level, assessment_id: assessment.id
-      assert_response :unauthorized
-    end
+    context 'when authenticated' do
+      context 'when authorized' do
+        let(:facilitator) {
+          assessment.facilitators.sample
+        }
 
+        let(:access_request) {
+          create(:access_request, assessment: assessment, user: user, roles: ['facilitator'])
+        }
+
+        before(:each) do
+          sign_in facilitator
+          put :accept, assessment_id: assessment.id, id: access_request.id, email: user.email
+        end
+
+        it {
+          is_expected.to respond_with :success
+        }
+
+        it {
+          expect(assessment.facilitator?(user)).to be true
+        }
+      end
+
+      context 'when unauthorized' do
+        let(:participant) {
+          assessment.participants.sample.user
+        }
+
+        let(:access_request) {
+          create(:access_request, assessment: assessment, user: user, roles: ['facilitator'])
+        }
+
+        before(:each) do
+          sign_in participant
+          put :accept, assessment_id: assessment.id, id: access_request.id, email: user.email
+        end
+
+        it {
+          is_expected.to respond_with :forbidden
+        }
+      end
+    end
   end
 
+  describe 'GET #current_level' do
+    context 'when unauthenticated' do
+      before(:each) do
+        sign_out :user
+        get :current_level, assessment_id: assessment.id
+      end
+
+      it {
+        is_expected.to respond_with :unauthorized
+      }
+    end
+
+    context 'when authenticated' do
+      context 'when the user is an owner' do
+        let(:user) {
+          assessment.user
+        }
+
+        before(:each) do
+          sign_in user
+          get :current_level, assessment_id: assessment.id
+        end
+
+        it {
+          expect(json['permission_level']).to eq 'facilitator'
+        }
+      end
+
+      context 'when the user is a facilitator' do
+        let(:user) {
+          assessment.facilitators.sample
+        }
+
+        before(:each) do
+          sign_in user
+          get :current_level, assessment_id: assessment.id
+        end
+
+        it {
+          expect(json['permission_level']).to eq 'facilitator'
+        }
+      end
+
+      context 'when the user is a participant' do
+        let(:user) {
+          assessment.participants.sample.user
+        }
+
+        before(:each) do
+          sign_in user
+          get :current_level, assessment_id: assessment.id
+        end
+
+        it {
+          expect(json['permission_level']).to eq 'participant'
+        }
+      end
+
+      context 'when the user is a network partner' do
+        let(:user) {
+          u = create(:user, :with_network_partner_role)
+          assessment.network_partners << u
+          u
+        }
+
+        before(:each) do
+          sign_in user
+          get :current_level, assessment_id: assessment.id
+        end
+
+        it {
+          is_expected.to respond_with :forbidden
+        }
+      end
+    end
+  end
 end
