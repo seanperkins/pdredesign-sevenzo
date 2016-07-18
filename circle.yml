@@ -4,5 +4,6 @@ machine:
 
 test:
   override:
+    - bundle exec rake db:migrate
     - bundle exec rspec
     - bundle exec rake jasmine:ci
