@@ -325,6 +325,189 @@ describe V1::AssessmentsPermissionsController do
       end
     end
 
+    context 'when changing the role from facilitator to participant' do
+      let(:facilitator) {
+        assessment.facilitators.sample
+      }
+
+      let(:user) {
+        assessment.user
+      }
+
+      before(:each) do
+        sign_in user
+        put :update, assessment_id: assessment.id, id: facilitator.id,
+            permissions: [{
+                              level: 'participant',
+                              email: facilitator.email
+                          }]
+      end
+
+      it {
+        is_expected.to respond_with :success
+      }
+
+      it {
+        expect(assessment.facilitator?(facilitator)).to be false
+      }
+
+      it {
+        expect(assessment.participant?(facilitator)).to be false
+      }
+
+      it {
+        expect(assessment.owner?(facilitator)).to be false
+      }
+
+      it {
+        expect(assessment.network_partner?(facilitator)).to be false
+      }
+
+      it {
+        expect(assessment.viewer?(facilitator)).to be false
+      }
+    end
+
+    context 'when changing the role from network partner to participant' do
+      let(:network_partner) {
+        u = create(:user, :with_network_partner_role)
+        assessment.network_partners << u
+        u
+      }
+
+      let(:user) {
+        assessment.user
+      }
+
+      before(:each) do
+        sign_in user
+        put :update, assessment_id: assessment.id, id: network_partner.id,
+            permissions: [{
+                              level: 'participant',
+                              email: network_partner.email
+                          }]
+      end
+
+      it {
+        is_expected.to respond_with :success
+      }
+
+      it {
+        expect(assessment.facilitator?(network_partner)).to be true
+      }
+
+      it {
+        expect(assessment.participant?(network_partner)).to be false
+      }
+
+      it {
+        expect(assessment.owner?(network_partner)).to be false
+      }
+
+      it {
+        expect(assessment.network_partner?(network_partner)).to be false
+      }
+
+      it {
+        expect(assessment.viewer?(network_partner)).to be false
+      }
+    end
+
+    context 'when changing the role from network partner to facilitator' do
+      let(:network_partner) {
+        u = create(:user, :with_network_partner_role)
+        assessment.network_partners << u
+        u
+      }
+
+      let(:user) {
+        assessment.user
+      }
+
+      before(:each) do
+        sign_in user
+        put :update, assessment_id: assessment.id, id: network_partner.id,
+            permissions: [{
+                              level: 'facilitator',
+                              email: network_partner.email
+                          }]
+      end
+
+      it {
+        is_expected.to respond_with :success
+      }
+
+      it {
+        expect(assessment.facilitator?(network_partner)).to be true
+      }
+
+      it {
+        expect(assessment.participant?(network_partner)).to be false
+      }
+
+      it {
+        expect(assessment.owner?(network_partner)).to be false
+      }
+
+      it {
+        expect(assessment.network_partner?(network_partner)).to be false
+      }
+
+      it {
+        expect(assessment.viewer?(network_partner)).to be false
+      }
+    end
+
+    context 'when changing the current user role' do
+      let(:user) {
+        assessment.user
+      }
+
+      before(:each) do
+        sign_in user
+        put :update, assessment_id: assessment.id, id: user.id,
+            permissions: [{
+                              level: 'network_partner',
+                              email: user.email
+                          }]
+      end
+
+      it {
+        is_expected.to respond_with :success
+      }
+
+      it {
+        expect(assessment.owner?(user)).to be true
+      }
+
+      it {
+        expect(assessment.network_partner?(user)).to be false
+      }
+    end
+
+    context 'when no permissions field is provided' do
+      let(:participant) {
+        assessment.participants.sample.user
+      }
+
+      let(:user) {
+        assessment.user
+      }
+
+      before(:each) do
+        sign_in user
+        put :update, assessment_id: assessment.id, id: participant.id
+      end
+
+      it {
+        is_expected.to respond_with :success
+      }
+
+      it {
+        expect(assessment.participant?(participant)).to be true
+      }
+    end
+
     context 'when not authenticated' do
 
       before(:each) do
@@ -335,48 +518,6 @@ describe V1::AssessmentsPermissionsController do
       it {
         is_expected.to respond_with :unauthorized
       }
-
-    end
-
-    context 'respond to PUT#update' do
-      let(:brand_new_user) { FactoryGirl.create(:user) }
-
-      it 'responds successfully to PUT#update' do
-        assessment.facilitators << @facilitator
-
-        sign_in @facilitator2
-
-        put :update, assessment_id: assessment.id, id: @facilitator.id,
-            permissions: [{level: "viewer", email: @facilitator.email}]
-
-        expect(assessment.facilitator?(@facilitator)).to eq(false)
-        expect(assessment.viewer?(@facilitator)).to eq(true)
-        assert_response :success
-      end
-
-      it 'security: current_user should not be updated' do
-        assessment.facilitators << @facilitator
-
-        sign_in @facilitator
-
-        put :update, assessment_id: assessment.id, id: @facilitator.id,
-            permissions: [{level: "viewer", email: @facilitator.email}]
-
-        expect(assessment.facilitator?(@facilitator)).to eq(true)
-        expect(assessment.viewer?(@facilitator)).to eq(false)
-      end
-
-      it 'does not die with empty permissions' do
-        assessment.facilitators << @facilitator
-
-        sign_in @facilitator
-
-        put :update, assessment_id: assessment.id, id: @facilitator.id
-
-        assert_response :success
-      end
-
-
     end
   end
 
