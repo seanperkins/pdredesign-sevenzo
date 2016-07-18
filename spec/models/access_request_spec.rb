@@ -15,28 +15,45 @@ require 'spec_helper'
 
 describe AccessRequest do
 
-  before { create_magic_assessments }
-  let(:assessment) { @assessment_with_participants }
-  let(:user_requesting_access) { FactoryGirl.create(:user) }
+  it {
+    is_expected.to belong_to :assessment
+  }
 
-  context '#before_destroy' do
-    it 'should flush_cached_version to the assessment when the access is granted' do
-      access_request = Application.request_access_to_assessment(assessment: assessment, user: user_requesting_access, roles: ['facilitator'])
+  it {
+    is_expected.to belong_to :user
+  }
 
-      expect(assessment).to receive(:flush_cached_version)
+  it {
+    is_expected.to validate_presence_of :roles
+  }
+
+  it {
+    is_expected.to validate_presence_of :user_id
+  }
+
+  it {
+    is_expected.to validate_presence_of :assessment_id
+  }
+
+  describe '#before_destroy' do
+    let(:access_request) {
+      create(:access_request)
+    }
+
+    it {
+      expect(access_request.assessment).to receive :flush_cached_version
       access_request.destroy
-    end
+    }
   end
 
   context '#after_create' do
-    it 'should flush_cached_version to the assessment when the access is requested' do
-      ar = AccessRequest.new({roles: ['facilitator'], token: SecureRandom.hex[0..9]})
-      ar.user = user_requesting_access
-      ar.assessment = assessment
+    let(:access_request) {
+      build(:access_request)
+    }
 
-      expect(assessment).to receive(:flush_cached_version)
-      ar.save
-    end
+    it {
+      expect(access_request.assessment).to receive :flush_cached_version
+      access_request.save
+    }
   end
 end
-
