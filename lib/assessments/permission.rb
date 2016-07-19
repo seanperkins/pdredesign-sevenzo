@@ -126,7 +126,9 @@ module Assessments
     end
 
     def notify_user_for_access_granted(assessment, user, role)
-      AccessGrantedNotificationWorker.perform_async(assessment.id, user.id, role) unless [:participant, 'participant'].include? role
+      unless [:participant, 'participant'].include? role
+        AccessGrantedNotificationWorker.perform_async(assessment.id, user.id, role)
+      end
     end
   end
 end

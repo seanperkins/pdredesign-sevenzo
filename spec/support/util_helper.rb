@@ -101,15 +101,3 @@ end
 def expect_flush_cached_assessment
   expect_any_instance_of(Assessment).to receive(:flush_cached_version)
 end
-
-module Application
-  class << self
-    def request_access_to_assessment(opts)
-      ar = AccessRequest.new({roles: opts[:roles], token: SecureRandom.hex[0..9]})
-      ar.user = opts[:user]
-      ar.assessment = opts[:assessment]
-      ar.save
-      return ar
-    end
-  end
-end
