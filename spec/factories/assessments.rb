@@ -26,6 +26,7 @@ FactoryGirl.define do
     association :district
 
     trait :with_response do
+      assigned_at Time.now
       association :response, :as_assessment_responder
     end
 
@@ -35,7 +36,7 @@ FactoryGirl.define do
 
     trait :with_participants do
       name 'Assessment other'
-      due_date Time.now
+      due_date 5.days.from_now
       message 'some message'
       association :user, factory: [:user, :with_district], districts: 1
 

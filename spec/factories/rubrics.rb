@@ -24,5 +24,30 @@ FactoryGirl.define do
     trait :as_analysis_rubric do
       tool_type Analysis.to_s
     end
+
+    trait :with_questions_and_scores do
+      transient do
+        question_count 1
+        scores Array.new
+        answers Array.new
+      end
+
+      after(:create) do |rubric, evaluator|
+        axis = create(:axis)
+        questions = create_list(:question, evaluator.question_count,
+                                rubrics: [rubric],
+                                headline: Faker::Lorem.word,
+                                category: create(:category, axis: axis))
+        evaluator.scores.each_with_index { |score_hash, idx|
+          score_hash[:question] = questions[idx]
+          create(:score, score_hash)
+
+          evaluator.answers.each { |answer_hash|
+            answer_hash[:question] = questions[idx]
+            create(:answer, answer_hash)
+          }
+        }
+      end
+    end
   end
 end

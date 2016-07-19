@@ -10,5 +10,7 @@
 #
 
 FactoryGirl.define do
-  factory :category
+  factory :category do
+    name { Faker::Hacker.ingverb }
+  end
 end

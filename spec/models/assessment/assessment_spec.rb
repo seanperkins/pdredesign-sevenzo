@@ -21,148 +21,290 @@
 require 'spec_helper'
 
 describe Assessment do
-  describe 'validations' do
-    it { is_expected.to validate_presence_of :name }
-    it { is_expected.to validate_presence_of :rubric_id }
-    it { is_expected.to validate_presence_of :district_id }
+  it {
+    is_expected.to validate_presence_of :name
+  }
 
-    context ':assigned_at' do
-      before do
-        @assessment = Assessment.new(assigned_at: Time.now)
+  it {
+    is_expected.to validate_presence_of :rubric_id
+  }
+
+  it {
+    is_expected.to validate_presence_of :district_id
+  }
+
+  context 'when assigned_at is present' do
+    context 'when due_date is invalid' do
+      let(:participants) {
+        create_list(:participant, 2)
+      }
+
+      let(:assessment) {
+        build(:assessment, participants: participants, assigned_at: Time.now, message: 'msg')
+      }
+
+      before(:each) do
+        assessment.save
       end
 
-      it 'requires :due_date when assigned_at is present' do
-        expect(@assessment.valid?).to eq(false)
-        expect(@assessment.errors[:due_date])
-          .to include("can\'t be blank")
+      it {
+        expect(assessment.valid?).to be false
+      }
 
-        @assessment.assigned_at = nil
-        @assessment.valid?
-        expect(@assessment.errors[:due_date])
-          .to eq([])
+      it {
+        expect(assessment.errors[:due_date]).to include 'can\'t be blank'
+      }
+    end
+
+    context 'when message is invalid' do
+      let(:participants) {
+        create_list(:participant, 2)
+      }
+
+      let(:assessment) {
+        build(:assessment, participants: participants, assigned_at: Time.now, due_date: 5.days.from_now)
+      }
+
+      before(:each) do
+        assessment.save
       end
 
-      it 'requires :due_date when assigned_at is present' do
-        expect(@assessment.valid?).to eq(false)
-        expect(@assessment.errors[:message])
-          .to include("can\'t be blank")
+      it {
+        expect(assessment.valid?).to be false
+      }
 
-        @assessment.assigned_at = nil
-        @assessment.valid?
-        expect(@assessment.errors[:message])
-          .to eq([])
+      it {
+        expect(assessment.errors[:message]).to include 'can\'t be blank'
+      }
+    end
+
+    context 'when no participants are attached' do
+      let(:assessment) {
+        build(:assessment, assigned_at: Time.now, due_date: 5.days.from_now, message: 'msg')
+      }
+
+      before(:each) do
+        assessment.save
       end
 
-      context '#assignable?' do
-        it 'requires participants when assigned' do
-          participant = Participant.new(user_id: 1)
+      it {
+        expect(assessment.valid?).to be false
+      }
 
-          expect(@assessment.valid?).to eq(false)
-          expect(@assessment.errors[:participant_ids])
-            .to include("You must assign participants to this assessment.")
+      it {
+        expect(assessment.errors[:participant_ids]).to include 'You must assign participants to this assessment.'
+      }
+    end
 
-          @assessment.participants = [participant]
-          @assessment.valid?
-          expect(@assessment.errors[:participant_ids])
-            .to eq([])
+    context 'when all fields are specified' do
+      let(:participants) {
+        create_list(:participant, 2)
+      }
 
-        end
+      let(:assessment) {
+        build(:assessment, participants: participants, assigned_at: Time.now, due_date: 5.days.from_now, message: 'msg')
+      }
+
+      before(:each) do
+        assessment.save
       end
+
+      it {
+        expect(assessment.valid?).to be true
+      }
     end
   end
 
   describe '#pending_requests?' do
-    before { create_magic_assessments }
-    let(:assessment) { @assessment_with_participants }
+    context 'on an assessment without any outstanding requests' do
+      let(:access_request) {
+        create(:access_request)
+      }
 
-    it 'returns true when there are pending requests for a user' do
-      expect(assessment.pending_requests?(@user3)).to eq(false)
+      let(:assessment) {
+        create(:assessment, :with_participants)
+      }
 
-      AccessRequest.create!(user_id: @user3.id, assessment_id: assessment.id,
-                            roles: [:viewer])
-      expect(assessment.pending_requests?(@user3)).to eq(true)
+      let(:user) {
+        access_request.user
+      }
+
+      it {
+        expect(assessment.pending_requests?(user)).to be false
+      }
+    end
+
+    context 'on an assessment with outstanding requests' do
+      let(:access_request) {
+        create(:access_request)
+      }
+
+      let(:assessment) {
+        access_request.assessment
+      }
+
+      let(:user) {
+        access_request.user
+      }
+
+      it {
+        expect(assessment.pending_requests?(user)).to be true
+      }
     end
   end
 
   describe '#completed?' do
-    before { @assessment = Assessment.new }
-    it 'is completed' do
-      allow(@assessment).to receive(:percent_completed)
-        .and_return(100)
-      expect(@assessment.completed?).to eq(true)
+    context 'when percent_completed is equal to 100' do
+      let(:assessment) {
+        create(:assessment, :with_participants)
+      }
+
+      it {
+        allow(assessment).to receive(:percent_completed).and_return 100
+        expect(assessment.completed?).to be true
+      }
     end
 
-    it 'is not completed' do
-      allow(@assessment).to receive(:percent_completed)
-        .and_return(99)
-      expect(@assessment.completed?).to eq(false)
+    context 'when percent_completed is less than 100' do
+      let(:assessment) {
+        create(:assessment, :with_participants)
+      }
+
+      it {
+        allow(assessment).to receive(:percent_completed).and_return 99
+        expect(assessment.completed?).to be false
+      }
+    end
+
+    context 'when percent_completed is greater than 100' do
+      let(:assessment) {
+        create(:assessment, :with_participants)
+      }
+
+      it {
+        allow(assessment).to receive(:percent_completed).and_return 101
+        expect(assessment.completed?).to be false
+      }
     end
   end
 
-  describe 'status' do
-    before { @assessment = Assessment.new }
+  describe '#status' do
+    context 'when assigned_at is nil' do
+      let(:assessment) {
+        create(:assessment, :with_participants, assigned_at: nil)
+      }
 
-    it 'is draft when not assigned' do
-      allow(@assessment).to receive(:assigned_at).and_return(nil)
-      expect(@assessment.status).to eq(:draft)
+      it {
+        expect(assessment.status).to eq :draft
+      }
     end
 
-    it 'is consensus when response is present' do
-      allow(@assessment).to receive(:assigned_at)
-        .and_return(true)
+    context 'when response is present' do
+      let(:assessment) {
+        create(:assessment, :with_participants, :with_response)
+      }
 
-      allow(@assessment).to receive(:response)
-        .and_return(true)
-
-      expect(@assessment.status).to eq(:consensus)
+      it {
+        expect(assessment.status).to eq :consensus
+      }
     end
 
-    it 'is assessment when response is not present' do
-      allow(@assessment).to receive(:assigned_at)
-        .and_return(true)
+    context 'when assigned_at is not nil and response is absent' do
+      let(:assessment) {
+        create(:assessment, :with_participants, assigned_at: Time.now)
+      }
 
-      allow(@assessment).to receive(:response)
-        .and_return(false)
-
-      expect(@assessment.status).to eq(:assessment)
+      it {
+        expect(assessment.status).to eq :assessment
+      }
     end
   end
 
   describe '#share_token' do
-    before { create_magic_assessments }
-    let(:assessment) { @assessment_with_participants }
-    let!(:original_share_token) { assessment.share_token }
-    it do
-      expect(assessment.share_token).not_to be_empty
-    end
+    let(:assessment) {
+      create(:assessment, :with_participants)
+    }
 
-    describe 'when saved again' do 
-      before do
+    let(:original_share_token) {
+      assessment.share_token
+    }
+
+    it {
+      expect(assessment.share_token).not_to be_empty
+    }
+
+    describe 'when saved again' do
+      before(:each) do
         assessment.save!
       end
-      it do
+
+      it {
         expect(assessment.share_token).to eq original_share_token
-      end
+      }
     end
   end
 
   describe '#answered_scores' do
-    let(:assessment) { @assessment_with_participants }
+    let(:response) {
+      create(:response, :as_assessment_response, submitted_at: Time.now)
+    }
 
-    before { create_magic_assessments }
-    before do
-      create_struct
-      Response
-        .find(99)
-        .update(responder: @participant, submitted_at: Time.now)
-    end
+    let(:assessment) {
+      response.responder
+    }
+
+    let!(:rubric) {
+      create(:rubric, :with_questions_and_scores,
+             question_count: 3,
+             scores: [{
+                          response: response,
+                          value: 1,
+                          evidence: 'expected'
+                      },
+                      {
+                          response: response,
+                          value: 1,
+                          evidence: 'expected'
+                      },
+                      {
+                          response: response,
+                          value: 1,
+                          evidence: 'expected'
+                      }
+             ],
+             answers: [{
+                           value: 1,
+                           content: 'some content'
+                       },
+                       {
+                           value: 2,
+                           content: 'some content'
+                       },
+                       {
+                           value: 3,
+                           content: 'some content'
+                       },
+                       {
+                           value: 4,
+                           content: 'some content'
+                       }]
+      )
+    }
+
+    # before { create_magic_assessments }
+    # before do
+    #   create_struct
+    #   Response
+    #     .find(99)
+    #     .update(responder: @participant, submitted_at: Time.now)
+    # end
 
     it 'returns all the scores for an assessment' do
       expect(assessment.answered_scores.count).to eq(3)
     end
 
     it 'does not count Assessment scores' do
-      Response.create(responder_id:   assessment.id,
+      Response.create(responder_id: assessment.id,
                       responder_type: 'Assessment',
                       submitted_at: Time.now,
                       id: 42)
@@ -185,11 +327,11 @@ describe Assessment do
       before { create_magic_assessments }
 
       before do
-       create_struct
+        create_struct
 
-       Response
-         .find(99)
-         .update(responder: @participant, submitted_at: Time.now)
+        Response
+            .find(99)
+            .update(responder: @participant, submitted_at: Time.now)
       end
 
       it 'returns scores for the specified :team_role' do
@@ -217,11 +359,11 @@ describe Assessment do
       before { create_magic_assessments }
 
       before do
-       create_struct
+        create_struct
 
-       Response
-         .find(99)
-         .update(responder: @participant, submitted_at: Time.now)
+        Response
+            .find(99)
+            .update(responder: @participant, submitted_at: Time.now)
       end
 
       it 'returns distinct roles for all answered scores participant' do
@@ -320,8 +462,8 @@ describe Assessment do
     context 'with consensus' do
       before do
         @consensus = Response
-          .create(responder_type: 'Assessment',
-                  responder: @assessment_with_participants)
+                         .create(responder_type: 'Assessment',
+                                 responder: @assessment_with_participants)
 
       end
 
@@ -342,8 +484,8 @@ describe Assessment do
     context 'with response' do
       before do
         @response = Response
-          .create(responder_type: 'Participant',
-        responder: @participant)
+                        .create(responder_type: 'Participant',
+                                responder: @participant)
       end
 
       def response_count(method)
@@ -362,30 +504,30 @@ describe Assessment do
         it 'returns the participants submitted responses' do
           expect do
             @response.update(submitted_at: Time.now)
-          end.to change{ response_count(:participant_responses) }.by(1)
-       end
+          end.to change { response_count(:participant_responses) }.by(1)
+        end
       end
 
       describe '#participants_not_responded' do
         it 'returns the participants that have not responded' do
           expect do
             @response.update(submitted_at: Time.now)
-          end.to change{ response_count(:participants_not_responded) }.by(-1)
-       end
+          end.to change { response_count(:participants_not_responded) }.by(-1)
+        end
       end
 
       describe '#participants_viewed_report' do
         it 'gets users who have viewed the report' do
           expect do
             @participant.update(report_viewed_at: Time.now)
-          end.to change{ response_count(:participants_viewed_report) }.by(1)
+          end.to change { response_count(:participants_viewed_report) }.by(1)
         end
       end
 
       describe '#response_submitted' do
         before do
           @response = Response.create(responder_type: 'Assessment',
-                                      responder:      @facilitator2)
+                                      responder: @facilitator2)
           assessment.update(response: @response)
         end
 
@@ -424,7 +566,7 @@ describe Assessment do
       before { create_magic_assessments }
       let(:assessment) { @assessment_with_participants }
 
-      it {is_expected.to respond_to(:flush_cached_version)}
+      it { is_expected.to respond_to(:flush_cached_version) }
 
       it "should touch the assessment and change the updated_at for the assessment" do
         uab = assessment.updated_at
@@ -437,7 +579,7 @@ describe Assessment do
     describe '#all_users' do
       before { create_magic_assessments }
       let(:assessment) { @assessment_with_participants }
-      
+
       it 'returns all the users involved in the assessment (participants, viewers, network_partners, facilitators)' do
         assessment.facilitators << @facilitator
 

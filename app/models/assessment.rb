@@ -69,7 +69,7 @@ class Assessment < ActiveRecord::Base
 
 	def validate_participants
     return unless self.participants.empty?
-		errors.add :participant_ids, "You must assign participants to this assessment."
+		errors.add :participant_ids, 'You must assign participants to this assessment.'
 	end
 
 	## ASSESSMENT METHODS FOR RESPONSES
