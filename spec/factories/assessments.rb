@@ -27,6 +27,7 @@ FactoryGirl.define do
 
     trait :with_response do
       assigned_at Time.now
+      due_date 5.days.from_now
       association :response, :as_assessment_responder
     end
 

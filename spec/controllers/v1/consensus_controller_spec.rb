@@ -153,11 +153,11 @@ describe V1::ConsensusController do
     context 'when there is no evidence' do
 
       let(:user) {
-        FactoryGirl.create(:user)
+        create(:user)
       }
 
       let(:assessment) {
-        FactoryGirl.create(:assessment, :with_response, user: user)
+        create(:assessment, :with_response, :with_participants, user: user)
       }
 
       before(:each) do
@@ -173,23 +173,23 @@ describe V1::ConsensusController do
     context 'when there is evidence' do
 
       let(:user) {
-        FactoryGirl.create(:user)
+        create(:user)
       }
 
       let!(:participants) {
-        FactoryGirl.create_list(:participant, 1, assessment: assessment)
+        create_list(:participant, 1, assessment: assessment)
       }
 
       let(:assessment) {
-        FactoryGirl.create(:assessment, :with_response, user: user)
+        create(:assessment, :with_response, :with_participants, user: user)
       }
 
       let!(:preexisting_response) {
-        FactoryGirl.create(:response, responder_type: 'Participant', responder: participants.first)
+        create(:response, responder_type: 'Participant', responder: participants.first)
       }
 
       let(:score) {
-        FactoryGirl.create(:score, response: preexisting_response)
+        create(:score, response: preexisting_response)
       }
 
       before(:each) do

@@ -16,19 +16,20 @@ FactoryGirl.define do
   factory :response do
     association :rubric
 
-    trait :with_assessment_type do
-      responder_type 'Assessment'
-    end
-
     trait :as_assessment_responder do
       responder_type 'Assessment'
       responder { create(:user) }
     end
 
+    trait :as_participant_responder do
+      responder_type 'Participant'
+      responder { create(:participant) }
+    end
+
     trait :as_assessment_response do
       association :rubric, :as_assessment_rubric
       after(:create) do |response, _|
-        response.responder = create(:assessment)
+        response.responder = create(:assessment, :with_participants)
       end
     end
 
@@ -46,6 +47,9 @@ FactoryGirl.define do
       end
     end
 
+    trait :submitted do
+      submitted_at Time.now
+    end
 
   end
 end

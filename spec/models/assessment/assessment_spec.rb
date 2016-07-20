@@ -249,158 +249,467 @@ describe Assessment do
       create(:response, :as_assessment_response, submitted_at: Time.now)
     }
 
+    let(:first_user_response) {
+      create(:response, :as_participant_responder, responder: assessment.participants.first)
+    }
+
+    let(:second_user_response) {
+      create(:response, :as_participant_responder, responder: assessment.participants.last)
+    }
+
     let(:assessment) {
       response.responder
     }
 
-    let!(:rubric) {
-      create(:rubric, :with_questions_and_scores,
-             question_count: 3,
-             scores: [{
-                          response: response,
-                          value: 1,
-                          evidence: 'expected'
-                      },
-                      {
-                          response: response,
-                          value: 1,
-                          evidence: 'expected'
-                      },
-                      {
-                          response: response,
-                          value: 1,
-                          evidence: 'expected'
-                      }
-             ],
-             answers: [{
-                           value: 1,
-                           content: 'some content'
-                       },
-                       {
-                           value: 2,
-                           content: 'some content'
-                       },
-                       {
-                           value: 3,
-                           content: 'some content'
-                       },
-                       {
-                           value: 4,
-                           content: 'some content'
-                       }]
-      )
-    }
+    context 'when pulling back all existing scores' do
 
-    # before { create_magic_assessments }
-    # before do
-    #   create_struct
-    #   Response
-    #     .find(99)
-    #     .update(responder: @participant, submitted_at: Time.now)
-    # end
+      let!(:rubric) {
+        create(:rubric, :with_questions_and_scores,
+               question_count: 3,
+               scores: [{
+                            response: first_user_response,
+                            value: 1,
+                            evidence: 'expected'
+                        },
+                        {
+                            response: second_user_response,
+                            value: 1,
+                            evidence: 'expected'
+                        },
+                        {
+                            response: second_user_response,
+                            value: 1,
+                            evidence: 'expected'
+                        }
+               ],
+               answers: [{
+                             value: 1,
+                             content: 'some content'
+                         },
+                         {
+                             value: 2,
+                             content: 'some content'
+                         },
+                         {
+                             value: 3,
+                             content: 'some content'
+                         },
+                         {
+                             value: 4,
+                             content: 'some content'
+                         }]
+        )
+      }
 
-    it 'returns all the scores for an assessment' do
-      expect(assessment.answered_scores.count).to eq(3)
+      it {
+        expect(assessment.answered_scores.count).to eq(3)
+      }
     end
 
-    it 'does not count Assessment scores' do
-      Response.create(responder_id: assessment.id,
-                      responder_type: 'Assessment',
-                      submitted_at: Time.now,
-                      id: 42)
+    context 'when a score does not contain evidence' do
+      let!(:rubric) {
+        create(:rubric, :with_questions_and_scores,
+               question_count: 3,
+               scores: [{
+                            response: first_user_response,
+                            value: 1,
+                            evidence: ''
+                        },
+                        {
+                            response: second_user_response,
+                            value: 1,
+                            evidence: 'expected'
+                        },
+                        {
+                            response: second_user_response,
+                            value: 1,
+                            evidence: 'expected'
+                        }
+               ],
+               answers: [{
+                             value: 1,
+                             content: 'some content'
+                         },
+                         {
+                             value: 2,
+                             content: 'some content'
+                         },
+                         {
+                             value: 3,
+                             content: 'some content'
+                         },
+                         {
+                             value: 4,
+                             content: 'some content'
+                         }]
+        )
+      }
 
-      expect(assessment.answered_scores.count).to eq(3)
+      it {
+        expect(assessment.answered_scores.count).to eq(2)
+      }
     end
 
-    it 'does not return nil scores' do
-      Score.first.update(value: nil, evidence: '')
-      expect(assessment.answered_scores.count).to eq(2)
-    end
+    context 'when the score is skipped' do
+      let!(:rubric) {
+        create(:rubric, :with_questions_and_scores,
+               question_count: 3,
+               scores: [{
+                            response: first_user_response,
+                            value: nil,
+                            evidence: 'needs evidence'
+                        },
+                        {
+                            response: second_user_response,
+                            value: 1,
+                            evidence: 'expected'
+                        },
+                        {
+                            response: second_user_response,
+                            value: 1,
+                            evidence: 'expected'
+                        }
+               ],
+               answers: [{
+                             value: 1,
+                             content: 'some content'
+                         },
+                         {
+                             value: 2,
+                             content: 'some content'
+                         },
+                         {
+                             value: 3,
+                             content: 'some content'
+                         },
+                         {
+                             value: 4,
+                             content: 'some content'
+                         }]
+        )
+      }
 
-    it 'returns skipped scores' do
-      Score.first.update(value: nil)
-      expect(assessment.answered_scores.count).to eq(3)
+      it {
+        expect(assessment.answered_scores.count).to eq(3)
+      }
     end
 
     describe '#scores_for_team_role' do
-      let(:assessment) { @assessment_with_participants }
-      before { create_magic_assessments }
+      let(:response) {
+        create(:response, :as_assessment_response, submitted_at: Time.now)
+      }
 
-      before do
-        create_struct
+      let(:assessment) {
+        response.responder
+      }
 
-        Response
-            .find(99)
-            .update(responder: @participant, submitted_at: Time.now)
+      context 'when there are no roles for any participants' do
+        let(:first_user_response) {
+          create(:response, :as_participant_responder, responder: assessment.participants.first)
+        }
+
+        let!(:rubric) {
+          create(:rubric, :with_questions_and_scores,
+                 scores: [{
+                              response: first_user_response,
+                              value: 1,
+                              evidence: 'needs evidence'
+                          }
+                 ],
+                 answers: [{
+                               value: 1,
+                               content: 'some content'
+                           }]
+          )
+        }
+
+        let(:team_role) {
+          :worker
+        }
+
+        it {
+          expect(assessment.scores_for_team_role(:worker).count).to eq 0
+        }
       end
 
-      it 'returns scores for the specified :team_role' do
-        expect(assessment.scores_for_team_role(:worker).count).to eq(0)
+      context 'when there is a role for a participant' do
+        context 'when the response is not skipped' do
+          let(:participant_with_role) {
+            p = assessment.participants.first
+            p.user.update(team_role: :worker)
+            p
+          }
 
-        @user.update(team_role: :worker)
+          let(:first_user_response) {
+            create(:response, :as_participant_responder, responder: participant_with_role)
+          }
 
-        expect(assessment.scores_for_team_role(:worker).count).to eq(3)
-      end
+          let!(:rubric) {
+            create(:rubric, :with_questions_and_scores,
+                   scores: [{
+                                response: first_user_response,
+                                value: 1,
+                                evidence: 'needs evidence'
+                            }
 
-      it 'returns an empty array when users dont have roles' do
-        expect(assessment.scores_for_team_role(:worker)).to eq([])
-      end
+                   ],
+                   answers: [{
+                                 value: 1,
+                                 content: 'some content'
+                             }]
+            )
+          }
 
-      it 'does not return nil scores' do
-        assessment.answered_scores.first.update(value: nil, evidence: nil)
+          let(:team_role) {
+            :worker
+          }
 
-        @user.update(team_role: :worker)
-        expect(assessment.scores_for_team_role(:worker).count).to eq(2)
+          it {
+            expect(assessment.scores_for_team_role(:worker).count).to eq 1
+          }
+        end
+
+        context 'when the response does not contain evidence' do
+          let(:participant_with_role) {
+            p = assessment.participants.first
+            p.user.update(team_role: :worker)
+            p
+          }
+
+          let(:first_user_response) {
+            create(:response, :as_participant_responder, responder: participant_with_role)
+          }
+
+          let!(:rubric) {
+            create(:rubric, :with_questions_and_scores,
+                   scores: [{
+                                response: first_user_response,
+                                value: 1,
+                                evidence: nil
+                            }
+
+                   ],
+                   answers: [{
+                                 value: 1,
+                                 content: 'some content'
+                             }]
+            )
+          }
+
+          let(:team_role) {
+            :worker
+          }
+
+          it {
+            expect(assessment.scores_for_team_role(:worker).count).to eq 0
+          }
+        end
       end
     end
 
     describe '#team_roles_for_participants' do
-      let(:assessment) { @assessment_with_participants }
-      before { create_magic_assessments }
 
-      before do
-        create_struct
+      let(:assessment) {
+        create(:assessment, :with_participants)
+      }
 
-        Response
-            .find(99)
-            .update(responder: @participant, submitted_at: Time.now)
+      context 'when participants do not have roles' do
+        it {
+          expect(assessment.team_roles_for_participants).to be_empty
+        }
       end
 
-      it 'returns distinct roles for all answered scores participant' do
-        @user.update(team_role: :worker)
-        @user2.update(team_role: :worker)
+      context 'when participants have roles' do
+        context 'when participants have the same role' do
+          before(:each) do
+            assessment.participants.first.user.update(team_role: :worker)
+            assessment.participants.last.user.update(team_role: :worker)
+          end
 
-        expect(assessment.team_roles_for_participants).to eq(["worker"])
+          it {
+            expect(assessment.team_roles_for_participants).to eq ['worker']
+          }
+        end
 
-        @user.update(team_role: :non_worker)
-        @user2.update(team_role: :worker)
-        expect(assessment.team_roles_for_participants).to include("non_worker")
-        expect(assessment.team_roles_for_participants).to include("worker")
-      end
+        context 'when participants have different roles' do
+          before(:each) do
+            assessment.participants.first.user.update(team_role: :worker)
+            assessment.participants.last.user.update(team_role: :non_worker)
+          end
 
-      it 'returns an empty array for nil participants' do
-        expect(assessment.team_roles_for_participants).to eq([])
+          it {
+            expect(assessment.team_roles_for_participants.sort).to eq %w(worker non_worker).sort
+          }
+        end
       end
     end
 
     describe '#scores' do
-      it 'returns scores for a particular question id' do
-        question = Question.find_by(headline: "headline 1")
-        expect(assessment.scores(question.id).count).to eq(1)
-      end
+      let(:response) {
+        create(:response, :as_assessment_response, submitted_at: Time.now)
+      }
+
+      let(:assessment) {
+        response.responder
+      }
+
+      let(:first_user_response) {
+        create(:response, :as_participant_responder, responder: assessment.participants.first)
+      }
+
+      let!(:rubric) {
+        create(:rubric, :with_questions_and_scores,
+               scores: [{
+                            response: first_user_response,
+                            value: 1,
+                            evidence: nil
+                        }
+
+               ],
+               answers: [{
+                             value: 1,
+                             content: 'some content'
+                         }]
+        )
+      }
+
+      it {
+        expect(assessment.scores(Question.first).count).to eq 1
+      }
     end
   end
 
   describe '#score_count' do
-    before { create_magic_assessments }
-    before { create_struct }
-    before { create_responses }
+    let(:response) {
+      create(:response, :as_assessment_response, submitted_at: Time.now)
+    }
 
-    let(:assessment) { @assessment_with_participants }
+    let(:assessment) {
+      response.responder
+    }
 
-    it 'returns the number of scores for a question + response' do
-      question = Question.find_by(headline: "question1")
-      expect(assessment.score_count(question, 1)).to eq(1)
+    let(:first_user_response) {
+      create(:response, :as_participant_responder, :submitted, responder: assessment.participants.first)
+    }
+
+    context 'when scores for the given value do not exist' do
+      let!(:rubric) {
+        create(:rubric, :with_questions_and_scores,
+               scores: [{
+                            response: first_user_response,
+                            value: 1,
+                            evidence: 'evidenced'
+                        }
+
+               ],
+               answers: [{
+                             value: 1,
+                             content: 'some content'
+                         }]
+        )
+      }
+
+      it {
+        expect(assessment.score_count(Question.first, 10)).to eq 0
+      }
+    end
+
+    context 'when scores for the given value exist' do
+
+      let!(:rubric) {
+        create(:rubric, :with_questions_and_scores,
+               scores: [{
+                            response: first_user_response,
+                            value: 1,
+                            evidence: 'It counts...'
+                        }
+
+               ],
+               answers: [{
+                             value: 1,
+                             content: 'some content'
+                         }]
+        )
+      }
+
+      it {
+        expect(assessment.score_count(Question.first, 1)).to eq 1
+      }
+    end
+  end
+
+  describe 'Assessment#assessments_for_user' do
+
+    let(:district) {
+      create(:district)
+    }
+
+    context 'when user has multiple assessments' do
+      context 'when user does not have a role' do
+        let(:user) {
+          create(:user, districts: [district])
+        }
+
+        let!(:assessments) {
+          create_list(:assessment, 3, :with_participants) do |assessment|
+            assessment.participants << create(:participant, user: user)
+            assessment.district = district
+            assessment.save!
+          end
+        }
+
+        it {
+          expect(Assessment.assessments_for_user(user).size).to eq 3
+        }
+      end
+
+      context 'when user has a role' do
+        let(:user) {
+          create(:user, districts: [district], role: :member)
+        }
+
+        let!(:assessments) {
+          create_list(:assessment, 3, :with_participants) do |assessment|
+            assessment.participants << create(:participant, user: user)
+            assessment.district = district
+            assessment.save!
+          end
+        }
+
+        it {
+          expect(Assessment.assessments_for_user(user).size).to eq 3
+        }
+      end
+    end
+
+    context 'when user is a network partner' do
+      let(:user) {
+        create(:user, districts: [district, other_district], role: :network_partner)
+      }
+
+      let(:other_district) {
+        create(:district)
+      }
+
+      let!(:district_assessments) {
+        create_list(:assessment, 3, :with_participants) do |assessment|
+          assessment.participants << create(:participant, user: user)
+          assessment.district = district
+          assessment.save!
+        end
+      }
+
+      let!(:other_district_assessments) {
+        create_list(:assessment, 3, :with_participants) do |assessment|
+          assessment.participants << create(:participant, user: user)
+          assessment.district = other_district
+          assessment.save!
+        end
+      }
+
+      it {
+        expect(Assessment.assessments_for_user(user).size).to eq 6
+      }
     end
   end
 
@@ -408,28 +717,7 @@ describe Assessment do
     before { create_magic_assessments }
     let(:assessment) { @assessment_with_participants }
 
-    context '#assessments_for_user' do
-      it 'returns all assessments for district_members' do
-        records = Assessment.assessments_for_user(@facilitator)
-        expect(records.count).to eq(3)
 
-        @facilitator.update(role: :member)
-        records = Assessment.assessments_for_user(@facilitator)
-        expect(records.count).to eq(3)
-      end
-
-      it 'returns all assessments in every district for network_partners' do
-        @user.update(role: :network_partner)
-        @user.update(district_ids: [@district.id])
-
-        records = Assessment.assessments_for_user(@user)
-        expect(records.count).to eq(3)
-
-        @user.update(district_ids: [@district.id, @district2.id])
-        records = Assessment.assessments_for_user(@user)
-        expect(records.count).to eq(4)
-      end
-    end
 
     context '#participant?' do
       it 'returns true when a user is a participant of an assessment' do
