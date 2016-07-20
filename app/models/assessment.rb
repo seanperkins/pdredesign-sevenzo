@@ -234,6 +234,8 @@ class Assessment < ActiveRecord::Base
 	end
 
   def participants_not_responded
+    # Code smell; should likely be inner or even right join instead of left join to prevent pulling in
+    # participants without responses
     participants
       .joins('LEFT JOIN responses ON responses.responder_id = participants.id')
       .where('responses.submitted_at IS NULL')

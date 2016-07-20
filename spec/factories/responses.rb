@@ -41,6 +41,7 @@ FactoryGirl.define do
     end
 
     trait :as_participant_response do
+      responder_type 'Participant'
       association :rubric, :as_assessment_rubric
       after(:create) do |response, _|
         response.responder = create(:participant)

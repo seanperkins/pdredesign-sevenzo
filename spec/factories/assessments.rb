@@ -47,6 +47,17 @@ FactoryGirl.define do
       end
     end
 
+    trait :with_network_partners do
+      name 'Assessment other'
+      due_date 5.days.from_now
+      message 'some message'
+      association :user, factory: [:user, :with_district], districts: 1
+
+      before(:create) do |assessment|
+        assessment.network_partners = create_list(:user, 1, :with_network_partner_role, :with_district)
+      end
+    end
+
     trait :with_consensus do
       after(:create) do |assessment|
         assessment.update_attributes(response: create(:response, responder: assessment))

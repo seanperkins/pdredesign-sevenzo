@@ -246,7 +246,7 @@ describe Assessment do
 
   describe '#answered_scores' do
     let(:response) {
-      create(:response, :as_assessment_response, submitted_at: Time.now)
+      create(:response, :as_assessment_response, :submitted)
     }
 
     let(:first_user_response) {
@@ -396,7 +396,7 @@ describe Assessment do
 
     describe '#scores_for_team_role' do
       let(:response) {
-        create(:response, :as_assessment_response, submitted_at: Time.now)
+        create(:response, :as_assessment_response, :submitted)
       }
 
       let(:assessment) {
@@ -546,7 +546,7 @@ describe Assessment do
 
     describe '#scores' do
       let(:response) {
-        create(:response, :as_assessment_response, submitted_at: Time.now)
+        create(:response, :as_assessment_response, :submitted)
       }
 
       let(:assessment) {
@@ -581,7 +581,7 @@ describe Assessment do
 
   describe '#score_count' do
     let(:response) {
-      create(:response, :as_assessment_response, submitted_at: Time.now)
+      create(:response, :as_assessment_response, :submitted)
     }
 
     let(:assessment) {
@@ -713,179 +713,417 @@ describe Assessment do
     end
   end
 
-  describe 'with data' do
-    before { create_magic_assessments }
-    let(:assessment) { @assessment_with_participants }
+  describe '#participant?' do
+    context 'when the user is a participant' do
+      let(:assessment) {
+        create(:assessment, :with_participants)
+      }
 
+      let(:user) {
+        assessment.participants.sample.user
+      }
 
-
-    context '#participant?' do
-      it 'returns true when a user is a participant of an assessment' do
-        expect(assessment.participant?(@user)).to eq(true)
-      end
-
-      it 'returns true when a user is a participant of an assessment' do
-        assessment.participants.find_by(user_id: @user.id).destroy
-        expect(assessment.participant?(@user)).to eq(false)
-      end
+      it {
+        expect(assessment.participant?(user)).to be true
+      }
     end
 
-    context '#has_access?' do
-      it 'returns true when a user is a participant of an assessment' do
-        expect(assessment.has_access?(@user)).to eq(true)
-      end
+    context 'when the user is not a participant' do
+      let(:assessment) {
+        create(:assessment)
+      }
 
-      it 'returns false when a user is not a participant of an assessment' do
-        assessment.participants.find_by(user_id: @user.id).destroy
-        expect(assessment.has_access?(@user)).to eq(false)
-      end
+      let(:user) {
+        create(:user, :with_district)
+      }
 
-      it 'returns true when a user is a facilitator of an assessment' do
-        assessment.participants.find_by(user_id: @user.id).destroy
-        assessment.facilitators[0].id = @user.id
-        expect(assessment.has_access?(@user)).to eq(true)
-      end
+      it {
+        expect(assessment.participant?(user)).to be false
+      }
     end
-
-    context 'with consensus' do
-      before do
-        @consensus = Response
-                         .create(responder_type: 'Assessment',
-                                 responder: @assessment_with_participants)
-
-      end
-
-      context '#consensus' do
-        it 'returns the consensus' do
-          consensus = assessment.consensus
-          expect(consensus.id).to eq(@consensus.id)
-        end
-
-        it 'returns nil whne consensus is not present' do
-          @consensus.destroy
-          consensus = assessment.consensus
-          expect(consensus).to eq(nil)
-        end
-      end
-    end
-
-    context 'with response' do
-      before do
-        @response = Response
-                        .create(responder_type: 'Participant',
-                                responder: @participant)
-      end
-
-      def response_count(method)
-        assessment.send(method).count
-      end
-
-      context '#responses' do
-        it 'returns the users response' do
-          responses = assessment.responses(@user)
-          expect(responses.count).to eq(1)
-          expect(responses.first.id).to eq(@response.id)
-        end
-      end
-
-      describe '#participant_response' do
-        it 'returns the participants submitted responses' do
-          expect do
-            @response.update(submitted_at: Time.now)
-          end.to change { response_count(:participant_responses) }.by(1)
-        end
-      end
-
-      describe '#participants_not_responded' do
-        it 'returns the participants that have not responded' do
-          expect do
-            @response.update(submitted_at: Time.now)
-          end.to change { response_count(:participants_not_responded) }.by(-1)
-        end
-      end
-
-      describe '#participants_viewed_report' do
-        it 'gets users who have viewed the report' do
-          expect do
-            @participant.update(report_viewed_at: Time.now)
-          end.to change { response_count(:participants_viewed_report) }.by(1)
-        end
-      end
-
-      describe '#response_submitted' do
-        before do
-          @response = Response.create(responder_type: 'Assessment',
-                                      responder: @facilitator2)
-          assessment.update(response: @response)
-        end
-
-        it 'returns true when a response is submitted' do
-          @response.update(submitted_at: Time.now)
-          expect(assessment.response_submitted?).to eq(true)
-        end
-
-        it 'returns false when a response isnt submitted' do
-          expect(assessment.response_submitted?).to eq(false)
-        end
-      end
-
-      describe '#percent_completed' do
-        it 'gets 0% complete' do
-          expect(assessment.percent_completed).to eq(0.0)
-        end
-
-        it 'gets 50% complete' do
-          @response.update(submitted_at: Time.now)
-          expect(assessment.percent_completed).to eq(50.0)
-        end
-
-        it 'gets 100% complete' do
-          Response.create(responder_type: 'Participant',
-                          responder: @participant2,
-                          submitted_at: Time.now)
-
-          @response.update(submitted_at: Time.now)
-          expect(assessment.percent_completed).to eq(100.0)
-        end
-      end
-    end
-
-    context "#flush_cached_version" do
-      before { create_magic_assessments }
-      let(:assessment) { @assessment_with_participants }
-
-      it { is_expected.to respond_to(:flush_cached_version) }
-
-      it "should touch the assessment and change the updated_at for the assessment" do
-        uab = assessment.updated_at
-        assessment.flush_cached_version
-        assessment.reload
-        expect(assessment.updated_at).not_to eq(uab)
-      end
-    end
-
-    describe '#all_users' do
-      before { create_magic_assessments }
-      let(:assessment) { @assessment_with_participants }
-
-      it 'returns all the users involved in the assessment (participants, viewers, network_partners, facilitators)' do
-        assessment.facilitators << @facilitator
-
-        au = assessment.all_users
-        expect(au).to include(assessment.participants.first.user)
-        expect(au).to include(@facilitator)
-        expect(au).not_to include(assessment.user) #not to include owner
-      end
-
-      it 'results inside of all_users method should not be repeated' do
-        participant = assessment.participants.first.user
-        assessment.facilitators << participant
-
-        expect(assessment.all_users).to include_only_one_of(participant)
-      end
-    end
-
   end
 
+  describe '#has_access?' do
+    context 'when the user is a participant' do
+      let(:assessment) {
+        create(:assessment, :with_participants)
+      }
+
+      let(:user) {
+        assessment.participants.sample.user
+      }
+
+      it {
+        expect(assessment.has_access?(user)).to be true
+      }
+    end
+
+    context 'when the user is a facilitator' do
+      let(:assessment) {
+        create(:assessment, :with_participants)
+      }
+
+      let(:user) {
+        assessment.facilitators.sample
+      }
+
+      it {
+        expect(assessment.has_access?(user)).to be true
+      }
+    end
+
+    context 'when the user is the owner' do
+      let(:assessment) {
+        create(:assessment, :with_participants)
+      }
+
+      let(:user) {
+        assessment.user
+      }
+
+      it {
+        expect(assessment.has_access?(user)).to be true
+      }
+    end
+
+    context 'when the user is not a part of the assessment' do
+      let(:assessment) {
+        create(:assessment, :with_participants)
+      }
+
+      let(:user) {
+        create(:user)
+      }
+
+      it {
+        expect(assessment.has_access?(user)).to be false
+      }
+    end
+  end
+
+  describe '#consensus' do
+    let(:assessment) {
+      create(:assessment, :with_participants)
+    }
+
+    context 'when a consensus is present' do
+      let!(:response) {
+        create(:response, :as_assessment_response, responder: assessment)
+      }
+
+      it {
+        expect(assessment.consensus.id).to_not be_nil
+      }
+    end
+
+    context 'when a consensus is not present' do
+      it {
+        expect(assessment.consensus).to be_nil
+      }
+    end
+  end
+
+  describe '#responses' do
+    let(:assessment) {
+      create(:assessment, :with_participants)
+    }
+
+    context 'when user is a facilitator' do
+      let(:user) {
+        assessment.facilitators.sample
+      }
+
+
+      let!(:response) {
+        create(:response, :as_participant_response, responder: user)
+      }
+
+      it {
+        expect(assessment.responses(user)).to be_empty
+      }
+    end
+
+    context 'when user is the owner' do
+      let(:user) {
+        assessment.user
+      }
+
+      let!(:response) {
+        create(:response, :as_participant_response, responder: user)
+      }
+
+      it {
+        expect(assessment.responses(user)).to be_empty
+      }
+    end
+
+    context 'when user is a participant' do
+      context 'when there are no responses' do
+        let(:user) {
+          assessment.participants.sample.user
+        }
+
+        it {
+          expect(assessment.responses(user)).to be_empty
+        }
+      end
+
+      context 'when there are responses' do
+        let(:user) {
+          participant.user
+        }
+
+        let(:participant) {
+          assessment.participants.sample
+        }
+
+        let!(:response) {
+          create(:response, :as_participant_response, responder: participant)
+        }
+
+        it {
+          expect(assessment.responses(user)).to eq [response]
+        }
+      end
+    end
+  end
+
+  describe '#participant_responses' do
+    let(:assessment) {
+      create(:assessment, :with_participants)
+    }
+
+    context 'when response has not been submitted' do
+      let(:participant) {
+        assessment.participants.sample
+      }
+
+      let!(:response) {
+        create(:response, :as_participant_response, responder: participant)
+      }
+
+      it {
+        expect(assessment.participant_responses).to be_empty
+      }
+    end
+
+    context 'when response has been submitted' do
+      let(:participant) {
+        assessment.participants.sample
+      }
+
+      let!(:response) {
+        create(:response, :as_participant_response, :submitted, responder: participant)
+      }
+
+      it {
+        expect(assessment.participant_responses.include?(response)).to be true
+      }
+    end
+  end
+
+  describe '#participants_not_responded' do
+    let(:assessment) {
+      create(:assessment, :with_participants)
+    }
+
+    context 'when response has not been submitted' do
+      let(:participant) {
+        assessment.participants.sample
+      }
+
+      let!(:response) {
+        create(:response, :as_participant_response, responder: participant)
+      }
+
+      it {
+        expect(assessment.participants_not_responded.include?(participant)).to be true
+      }
+    end
+
+    context 'when response has been submitted' do
+      # Code smell - please see #participants_not_responded for an explanation as to why
+      # all participants are required to submit a response in this context
+      let!(:responses) {
+        assessment.participants.each {|assessment_participant|
+          create(:response, :as_participant_response, :submitted, responder: assessment_participant)
+        }
+      }
+
+      it {
+        expect(assessment.participants_not_responded).to be_empty
+      }
+    end
+  end
+
+  describe '#participants_viewed_report' do
+    let(:assessment) {
+      create(:assessment, :with_participants)
+    }
+
+    context 'when declared unseen' do
+      let!(:participant) {
+        assessment.participants.sample
+      }
+
+      it {
+        expect(assessment.participants_viewed_report).to be_empty
+      }
+    end
+
+    context 'when declared seen' do
+      let!(:participant) {
+        p = assessment.participants.sample
+        p.report_viewed_at = Time.now
+        p.save!
+        p
+      }
+
+      it {
+        expect(assessment.participants_viewed_report.include?(participant)).to be true
+      }
+    end
+  end
+
+  describe '#response_submitted?' do
+    let(:assessment) {
+      create(:assessment, :with_participants)
+    }
+
+    context 'when a response is submitted' do
+      let!(:response) {
+        create(:response, :as_assessment_response, :submitted, responder: assessment)
+      }
+
+      it {
+        expect(assessment.response_submitted?).to be true
+      }
+    end
+
+    context 'when a response is not submitted' do
+      let!(:response) {
+        create(:response, :as_assessment_response, responder: assessment)
+      }
+
+      it {
+        expect(assessment.response_submitted?).to be false
+      }
+    end
+  end
+
+  describe '#percent_completed' do
+    let(:assessment) {
+      create(:assessment, :with_participants)
+    }
+
+    context 'when no responses have been submitted' do
+      let!(:responses) {
+        assessment.participants.each {|assessment_participant|
+          create(:response, :as_participant_response, responder: assessment_participant)
+        }
+      }
+
+      it {
+        expect(assessment.percent_completed).to be_within(0.01).of 0.0
+      }
+    end
+
+    context 'when half of the responses have been submitted' do
+      let!(:responses) {
+        submitted = false
+        assessment.participants.each {|assessment_participant|
+          if submitted
+            create(:response, :as_participant_response, responder: assessment_participant)
+          else
+            create(:response, :as_participant_response, :submitted, responder: assessment_participant)
+            submitted = true
+          end
+        }
+      }
+
+      it {
+        expect(assessment.percent_completed).to be_within(0.01).of 50.0
+      }
+    end
+
+    context 'when all of the responses have been submitted' do
+      let!(:responses) {
+        assessment.participants.each {|assessment_participant|
+          create(:response, :as_participant_response, :submitted, responder: assessment_participant)
+        }
+      }
+
+      it {
+        expect(assessment.percent_completed).to be_within(0.01).of 100.0
+      }
+    end
+  end
+
+  describe "#flush_cached_version" do
+
+    it {
+      is_expected.to respond_to(:flush_cached_version)
+    }
+
+    context 'when invoking the method' do
+      let!(:assessment) {
+        create(:assessment)
+      }
+
+      let!(:previous_updated_at_value) {
+        assessment.updated_at
+      }
+
+      before(:each) do
+        assessment.flush_cached_version
+        assessment.reload
+      end
+
+      it 'changes the updated_at for the assessment' do
+        expect(assessment.updated_at).to_not eq previous_updated_at_value
+      end
+    end
+  end
+
+  describe '#all_users' do
+    let(:assessment) {
+      create(:assessment, :with_participants, :with_network_partners)
+    }
+
+    let(:participants) {
+      assessment.participants.map(&:user)
+    }
+
+    let(:facilitators) {
+      assessment.facilitators
+    }
+
+    let(:network_partners) {
+      assessment.network_partners
+    }
+
+    let(:owner) {
+      [assessment.user]
+    }
+
+    it {
+      expect(assessment.all_users & participants).to eq participants
+    }
+
+    it {
+      expect(assessment.all_users & facilitators).to eq facilitators
+    }
+
+    it {
+      expect(assessment.all_users & network_partners).to eq network_partners
+    }
+
+    it {
+      expect(assessment.all_users & owner).to_not eq owner
+    }
+
+    it {
+      expect(assessment.all_users.uniq).to eq assessment.all_users
+    }
+  end
 end
-  
