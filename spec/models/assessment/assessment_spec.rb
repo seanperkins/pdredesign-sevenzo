@@ -1126,4 +1126,68 @@ describe Assessment do
       expect(assessment.all_users.uniq).to eq assessment.all_users
     }
   end
+
+  context '#facilitator?' do
+    context 'when user is a facilitator' do
+      let(:assessment) {
+        create(:assessment, :with_participants)
+       }
+
+      let(:user) {
+        assessment.facilitators.sample
+      }
+
+      it {
+        expect(assessment.facilitator?(user)).to be true
+      }
+    end
+
+    context 'when user is not a facilitator' do
+      let(:assessment) {
+        create(:assessment, :with_participants)
+       }
+
+      let(:user) {
+        create(:user, :with_district)
+      }
+
+      it {
+        expect(assessment.facilitator?(user)).to be false
+      }
+    end
+  end
+
+  context '#network_partner?' do
+    context 'when user is a network partner' do
+      let(:assessment) {
+        a = create(:assessment, :with_participants)
+        a.network_partners << user
+        a
+      }
+
+      let(:user) {
+        create(:user, :with_district)
+      }
+
+      it {
+        expect(assessment.network_partner?(user)).to be true
+      }
+    end
+
+    context 'when user is not a network partner' do
+      let(:assessment) {
+        a = create(:assessment, :with_participants)
+        a.network_partners << create(:user, :with_district)
+        a
+      }
+
+      let(:user) {
+        create(:user)
+      }
+
+      it {
+        expect(assessment.network_partner?(user)).to be false
+      }
+    end
+  end
 end
