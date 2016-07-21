@@ -1,20 +1,20 @@
 module Assessments
   class Subheading
-    
+
     attr_reader :assessment, :user
 
-    delegate :participant?,     to: :assessment
-    delegate :facilitator?,     to: :assessment
+    delegate :participant?, to: :assessment
+    delegate :facilitator?, to: :assessment
     delegate :network_partner?, to: :user
 
     def initialize(assessment, user)
       @assessment = assessment
-      @user       = user
+      @user = user
     end
 
     def execute
-      return invited           if participant?(user)
-      return viewed_report     if facilitator?(user) && consensus?
+      return invited if participant?(user)
+      return viewed_report if facilitator?(user) && consensus?
       return not_yet_submitted if facilitator?(user) && !consensus?
       facilitated
     end
@@ -63,6 +63,6 @@ module Assessments
     def users_from_participants(participants)
       participants.map(&:user)
     end
-    
+
   end
 end
