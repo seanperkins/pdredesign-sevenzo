@@ -2,43 +2,54 @@ require 'spec_helper'
 
 describe Link::Partner do
   let(:assessment) {
-    @assessment_with_participants
-  }
-
-  let(:subject) {
-    Link::Partner
+    create(:assessment, :with_participants)
   }
 
   let(:user) {
-    FactoryGirl.create(:user, :with_district)
+    create(:user, :with_district)
   }
 
-  before(:each) do
-    create_magic_assessments
-    create_responses
-  end
+  let(:link_partner) {
+    Link::Partner.new(assessment, user)
+  }
 
-  def links
-    subject.new(assessment, user).execute
-  end
+  context 'when user has no pending requests' do
+    context 'when user is not a network partner' do
+      before(:each) do
+        allow(assessment).to receive(:pending_requests?).with(user).and_return false
+        allow(assessment).to receive(:network_partner?).with(user).and_return false
+      end
 
-  describe 'access' do
-    it 'returns request access when no relation' do
-      allow(assessment).to receive(:network_partner?)
-                               .with(user)
-                               .and_return(false)
-
-      expect(links[:access][:title]).to eq('Request Access')
-      expect(links[:access][:type]).to eq(:request_access)
+      it {
+        expect(link_partner.execute).to eq({
+                                               access: {title: 'Request Access', type: :request_access}
+                                           })
+      }
     end
 
-    it 'returns pending when there is a pending request' do
-      AccessRequest.create!(user_id: user.id,
-                            assessment_id: assessment.id,
-                            roles: [:viewer])
+    context 'when user is a network partner' do
+      before(:each) do
+        allow(assessment).to receive(:pending_requests?).with(user).and_return false
+        allow(assessment).to receive(:network_partner?).with(user).and_return true
+      end
 
-      expect(links[:access][:type]).to eq(:pending)
+      it {
+        expect(link_partner.execute).to eq({
+                                               access: nil
+                                           })
+      }
     end
+  end
+
+  context 'when user has pending requests' do
+    before(:each) do
+      allow(assessment).to receive(:pending_requests?).with(user).and_return true
+    end
+
+    it {
+      expect(link_partner.execute).to eq({
+                                             access: {title: 'Access Pending', type: :pending}
+                                         })
+    }
   end
 end
-

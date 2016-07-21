@@ -13,7 +13,7 @@ describe Link::Facilitator do
 
     before(:each) do
       allow(assessment).to receive(:status).and_return :draft
-      allow(assessment).to receive('completed?').and_return false
+      allow(assessment).to receive(:completed?).and_return false
     end
 
     it {
@@ -34,7 +34,7 @@ describe Link::Facilitator do
 
     context 'when consensus has not yet been reached' do
       before(:each) do
-        allow(assessment).to receive('fully_complete?').and_return true
+        allow(assessment).to receive(:fully_complete?).and_return true
         allow(assessment).to receive(:status).and_return :assessment
       end
 
@@ -50,7 +50,7 @@ describe Link::Facilitator do
 
     context 'when consensus has been reached' do
       before(:each) do
-        allow(assessment).to receive('fully_complete?').and_return true
+        allow(assessment).to receive(:fully_complete?).and_return true
         allow(assessment).to receive(:status).and_return :consensus
       end
 
@@ -75,7 +75,7 @@ describe Link::Facilitator do
     }
 
     before(:each) do
-      allow(assessment).to receive('fully_complete?').and_return false
+      allow(assessment).to receive(:fully_complete?).and_return false
       allow(assessment).to receive(:status).and_return :consensus
     end
 
@@ -103,7 +103,7 @@ describe Link::Facilitator do
     }
 
     before(:each) do
-      allow(assessment).to receive('fully_complete?').and_return false
+      allow(assessment).to receive(:fully_complete?).and_return false
       allow(assessment).to receive(:status).and_return :assessment
     end
 
@@ -127,7 +127,7 @@ describe Link::Facilitator do
     }
 
     before(:each) do
-      allow(assessment).to receive('fully_complete?').and_return false
+      allow(assessment).to receive(:fully_complete?).and_return false
       allow(assessment).to receive(:status).and_return :assessment
     end
 
