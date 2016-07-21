@@ -15,27 +15,113 @@
 require 'spec_helper'
 
 describe Participant do
-  before           { create_magic_assessments }
-  before           { create_responses }
-  let(:assessment) { @assessment_with_participants }
-  let(:subject) { Participant }
 
-  describe '#remote_invitation' do
-    it 'deletes other user invitations' do
-      double = double('invitations')
-      expect(double).to receive(:destroy_all)
+  it {
+    is_expected.to belong_to(:user)
+  }
 
-      expect(UserInvitation).to receive(:where)
-        .with(email: @user.email, assessment: anything)
-        .and_return(double)
+  it {
+    is_expected.to belong_to(:assessment)
+  }
 
-      @participant.destroy
+  it {
+    is_expected.to have_one(:response)
+  }
+
+  describe 'after save' do
+    context 'when there is an assessment' do
+      let(:participant) {
+        build(:participant, :with_assessment)
+      }
+
+      it 'invokes flush_cached_version on the assessment' do
+        expect(participant.assessment).to receive(:flush_cached_version)
+        participant.save!
+      end
     end
 
-    it 'doesnt fail and cause a chain fail for destory' do
-      @participant.update(user: nil)
-      @participant.destroy
+    context 'when there is no assessment' do
+      let(:participant) {
+        build(:participant)
+      }
+
+      it 'does not invoke flush_cached_version on the assessment' do
+        expect(participant.assessment).not_to receive(:flush_cached_version)
+        participant.save!
+      end
     end
   end
 
+  describe 'before destroy' do
+    context 'when an invitation for a given user exists' do
+      let(:user) {
+        create(:user)
+      }
+
+      let(:user_invitation) {
+        create(:user_invitation, user: user, email: user.email)
+      }
+
+      let(:participant) {
+        create(:participant, user: user, assessment: user_invitation.assessment)
+      }
+
+      before(:each) do
+        participant.destroy
+      end
+
+      it {
+        expect(UserInvitation.where(id: user_invitation.id)).to be_empty
+      }
+    end
+
+    context 'when an invitation for a given user does not exist' do
+      let(:user) {
+        create(:user)
+      }
+
+      let(:user_invitation) {
+        create(:user_invitation)
+      }
+
+      let(:participant) {
+        create(:participant, user: user, assessment: user_invitation.assessment)
+      }
+
+      before(:each) do
+        participant.destroy
+      end
+
+      it {
+        expect(UserInvitation.find(user_invitation.id)).to eq user_invitation
+      }
+    end
+
+    context 'when no user is attached to the participant' do
+      let(:user) {
+        nil
+      }
+
+      let(:user_invitation) {
+        create(:user_invitation)
+      }
+
+      let(:participant) {
+        create(:participant, user: user, assessment: user_invitation.assessment)
+      }
+      it {
+        expect { participant.destroy }.not_to raise_error
+      }
+    end
+
+    context 'when no assessment is attached to the participant' do
+      let(:participant) {
+        create(:participant, assessment: nil)
+      }
+
+      it {
+        expect { participant.destroy }.not_to raise_error
+      }
+    end
+  end
 end
