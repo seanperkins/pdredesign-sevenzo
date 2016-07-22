@@ -29,7 +29,7 @@ FactoryGirl.define do
     trait :as_assessment_response do
       association :rubric, :as_assessment_rubric
       after(:create) do |response, _|
-        response.responder = create(:assessment, :with_participants)
+        response.responder = create(:assessment, :with_participants, response: response)
       end
     end
 

@@ -1,6 +1,46 @@
 require 'spec_helper'
 
-describe Assessments::Report do 
+describe Assessments::Report do
+
+  describe '#axes' do
+    context 'when no axes for the assessment exist' do
+      let(:assessment) {
+        create(:assessment, :with_participants)
+      }
+
+      let(:assessments_report) {
+        Assessments::Report.new(assessment)
+      }
+
+      it {
+        expect(assessments_report.axes).to be_empty
+      }
+    end
+
+    context 'when axes for the assessment exist' do
+      let(:assessment) {
+        response.responder
+      }
+
+      let(:response) {
+        create(:response, :as_assessment_response, rubric: rubric_with_axes)
+      }
+
+      let!(:rubric_with_axes) {
+        create(:rubric, :as_assessment_rubric, :with_questions_and_scores, question_count: 1)
+      }
+
+      let(:assessments_report) {
+        Assessments::Report.new(assessment)
+      }
+
+      it {
+        expect(assessments_report.axes).to_not be_empty
+      }
+
+    end
+  end
+
   let(:subject) { Assessments::Report }
 
   before { create_magic_assessments }
