@@ -16,14 +16,15 @@ describe Assessments::Subheading do
       }
 
       let(:facilitators) {
-        [assessment.user] + assessment.facilitators
+        Set.new([assessment.user] + assessment.facilitators)
       }
 
       it {
-        expect(assessments_subheading.execute).to eq({
-                                                         message: 'Invited by:',
-                                                         members: facilitators
-                                                     })
+        expect(assessments_subheading.execute[:message]).to eq 'Invited by:'
+      }
+
+      it {
+        expect(Set.new(assessments_subheading.execute[:members])).to eq facilitators
       }
     end
 
@@ -37,25 +38,22 @@ describe Assessments::Subheading do
       }
 
       context 'when the assessment is in the consensus state' do
-        let(:participants) {
-          []
-        }
-
         before(:each) do
           allow(assessment).to receive(:status).and_return :consensus
         end
 
         it {
-          expect(assessments_subheading.execute).to eq({
-                                                           message: 'Viewed report:',
-                                                           members: participants
-                                                       })
+          expect(assessments_subheading.execute[:message]).to eq 'Viewed report:'
+        }
+
+        it {
+          expect(assessments_subheading.execute[:members]).to be_empty
         }
       end
 
       context 'when the assessment is not in the consensus state' do
         let(:participants) {
-          assessment.participants.order(user_id: :desc).map(&:user)
+          Set.new(assessment.participants.map(&:user))
         }
 
         before(:each) do
@@ -63,10 +61,11 @@ describe Assessments::Subheading do
         end
 
         it {
-          expect(assessments_subheading.execute).to eq({
-                                                           message: 'Not yet submitted:',
-                                                           members: participants
-                                                       })
+          expect(assessments_subheading.execute[:message]).to eq 'Not yet submitted:'
+        }
+
+        it {
+          expect(Set.new(assessments_subheading.execute[:members])).to eq participants
         }
       end
     end
@@ -83,14 +82,15 @@ describe Assessments::Subheading do
       }
 
       let(:facilitators) {
-        [assessment.user] + assessment.facilitators
+        Set.new([assessment.user] + assessment.facilitators)
       }
 
       it {
-        expect(assessments_subheading.execute).to eq({
-                                                         message: 'Facilitated by:',
-                                                         members: facilitators
-                                                     })
+        expect(assessments_subheading.execute[:message]).to eq 'Facilitated by:'
+      }
+
+      it {
+        expect(Set.new(assessments_subheading.execute[:members])).to eq facilitators
       }
     end
   end
