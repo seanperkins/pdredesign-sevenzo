@@ -1,118 +1,294 @@
 require 'spec_helper'
 
 describe Invitation::InsertFromInvite do
-  before { create_magic_assessments }
-  let(:subject)    { Invitation::InsertFromInvite }
-  let(:assessment) { @assessment_with_participants }
+  describe '#create_or_update_user' do
+    context 'when the user account exists' do
+      let(:user) {
+        create(:user)
+      }
 
-  def create_valid_invite(email = 'john_doe@gmail.com')
-    UserInvitation.create!(assessment_id: assessment.id,
-      first_name:    "john",
-      last_name:     "doe",
-      team_role:     "Finance",
-      email:         email,
-      role:          "facilitator")
+      let(:user_invitation) {
+        create(:user_invitation, :without_default_user, email: user.email)
+      }
+
+      let(:insert_from_invite) {
+        Invitation::InsertFromInvite.new(user_invitation)
+      }
+
+      before(:each) do
+        insert_from_invite.create_or_update_user
+        user.reload
+      end
+
+      it {
+        expect(user.districts.include?(user_invitation.assessment.district)).to be true
+      }
+
+      it {
+        expect(user.team_role).to eq user_invitation.team_role
+      }
+    end
+
+    context 'when the user account does not exist' do
+      let(:user_args) {
+        {
+            email: Faker::Internet.safe_email,
+            first_name: Faker::Name.first_name,
+            last_name: Faker::Name.last_name
+        }
+      }
+
+      let(:user_invitation) {
+        create(:user_invitation, :without_default_user, user_args)
+      }
+
+      let(:insert_from_invite) {
+        Invitation::InsertFromInvite.new(user_invitation)
+      }
+
+      before(:each) do
+        insert_from_invite.create_or_update_user
+      end
+
+      it {
+        user = User.find_by(email: user_args[:email])
+        expect(user).to_not be_nil
+      }
+
+      it {
+        user = User.find_by(first_name: user_args[:first_name])
+        expect(user).to_not be_nil
+      }
+
+      it {
+        user = User.find_by(last_name: user_args[:last_name])
+        expect(user).to_not be_nil
+      }
+
+      it {
+        user = User.includes(:districts).where(districts: {id: user_invitation.assessment.district_id})
+        expect(user).to_not be_nil
+      }
+
+      it {
+        user = User.where(team_role: user_invitation.team_role)
+        expect(user).to_not be_nil
+      }
+    end
   end
 
-  def existing_user_invite
-    UserInvitation.create!(assessment_id: assessment.id,
-      first_name:    "john",
-      last_name:     "doe",
-      team_role:     "Finance",
-      email:         @user.email)
+  describe '#update_user_id' do
+    context 'when the user is not bound to the invitation' do
+      let(:user) {
+        create(:user, :with_district)
+      }
+
+      let(:user_invitation) {
+        create(:user_invitation, :without_default_user)
+      }
+
+      let(:insert_from_invite) {
+        Invitation::InsertFromInvite.new(user_invitation)
+      }
+
+      before(:each) do
+        insert_from_invite.update_user_id(user)
+        user_invitation.reload
+      end
+
+      it {
+        expect(user_invitation.user).to eq user
+      }
+    end
+
+    context 'when the user is bound to the invitation' do
+      let(:user) {
+        user_invitation.user
+      }
+
+      let(:user_invitation) {
+        create(:user_invitation)
+      }
+
+      let(:insert_from_invite) {
+        Invitation::InsertFromInvite.new(user_invitation)
+      }
+
+      before(:each) do
+        insert_from_invite.update_user_id(user)
+        user_invitation.reload
+      end
+
+      it {
+        expect(user_invitation.user).to eq user
+      }
+    end
+  end
+
+  describe '#create_participant' do
+    let(:user_invitation) {
+      create(:user_invitation, :with_matching_user_email)
+    }
+
+    let(:insert_from_invite) {
+      Invitation::InsertFromInvite.new(user_invitation)
+    }
+
+    before(:each) do
+      insert_from_invite.create_participant
+    end
+
+    it {
+      expect(Participant.find_by(assessment: user_invitation.assessment)).to_not be_nil
+    }
+
+    it {
+      expect(Participant.find_by(user: user_invitation.user)).to_not be_nil
+    }
+  end
+
+  describe '#set_permission' do
+    context 'if the user is a network partner' do
+      let(:user) {
+        create(:user, :with_network_partner_role, :with_district)
+      }
+
+      let(:user_invitation) {
+        create(:user_invitation, user: user, email: user.email)
+      }
+
+      let(:assessment_permission) {
+        double('Assessments::Permission')
+      }
+
+      let(:insert_from_invite) {
+        Invitation::InsertFromInvite.new(user_invitation)
+      }
+
+      let(:role) {
+        'facilitator'
+      }
+
+      before(:each) do
+        allow(Assessments::Permission).to receive(:new)
+                                              .with(user_invitation.assessment)
+                                              .and_return(assessment_permission)
+      end
+
+      it {
+        expect(assessment_permission).to receive(:add_level).with(user, role)
+        insert_from_invite.set_permission
+      }
+    end
+
+    context 'if the user is not a network partner' do
+      context 'if the role of the user is not defined' do
+        let(:user) {
+          create(:user, :without_role, :with_district)
+        }
+
+        let(:user_invitation) {
+          create(:user_invitation, user: user, email: user.email, role: nil)
+        }
+
+        let(:assessment_permission) {
+          double('Assessments::Permission')
+        }
+
+        let(:insert_from_invite) {
+          Invitation::InsertFromInvite.new(user_invitation)
+        }
+
+        it {
+          expect(Assessments::Permission).not_to receive(:new)
+          expect(assessment_permission).not_to receive(:add_level)
+          insert_from_invite.set_permission
+        }
+      end
+
+      context 'if the role of the user is defined' do
+        context 'if the role of the invitation is not defined' do
+          let(:user) {
+            create(:user, :with_district)
+          }
+
+          let(:user_invitation) {
+            create(:user_invitation, user: user, email: user.email, role: nil)
+          }
+
+          let(:assessment_permission) {
+            double('Assessments::Permission')
+          }
+
+          let(:insert_from_invite) {
+            Invitation::InsertFromInvite.new(user_invitation)
+          }
+
+          let(:role) {
+            user_invitation.role
+          }
+
+          it {
+            expect(Assessments::Permission).not_to receive(:new)
+            insert_from_invite.set_permission
+          }
+        end
+
+        context 'if the role of the invitation is defined' do
+          let(:user) {
+            create(:user, :with_district)
+          }
+
+          let(:user_invitation) {
+            create(:user_invitation, user: user, email: user.email)
+          }
+
+          let(:assessment_permission) {
+            double('Assessments::Permission')
+          }
+
+          let(:insert_from_invite) {
+            Invitation::InsertFromInvite.new(user_invitation)
+          }
+
+          let(:role) {
+            user_invitation.role
+          }
+
+          it {
+            expect(Assessments::Permission).to receive(:new)
+                                                   .with(user_invitation.assessment)
+                                                   .and_return(assessment_permission)
+
+            expect(assessment_permission).to receive(:add_level).with(user, role)
+            insert_from_invite.set_permission
+          }
+        end
+      end
+    end
   end
 
   describe '#execute' do
-    context 'inviting network partner as participant' do
-      let(:existing_user) { FactoryGirl.create(:user, :with_network_partner_role) }
-      let(:invitation) { FactoryGirl.create(:user_invitation, :as_participant, assessment_id: assessment.id ,email: existing_user.email) }
+    let(:user) {
+      create(:user, :with_district)
+    }
 
-      before(:each) do
-        subject.new(invitation).execute
-      end
+    let(:user_invitation) {
+      create(:user_invitation)
+    }
 
-      it 'overrides the role to be facilitator' do
-        expect(assessment.facilitator?(existing_user)).to be true
-      end
-    end
 
-    context 'inviting non network partner as participant' do
-      let(:existing_user) { FactoryGirl.create(:user, :without_role) }
-      let(:invitation) { FactoryGirl.create(:user_invitation, :as_participant, assessment_id: assessment.id ,email: existing_user.email) }
+    let(:insert_from_invite) {
+      Invitation::InsertFromInvite.new(user_invitation)
+    }
 
-      before(:each) do
-        subject.new(invitation).execute
-      end
+    it {
+      expect(insert_from_invite).to receive(:create_or_update_user).and_return(user)
+      expect(insert_from_invite).to receive(:update_user_id)
+      expect(insert_from_invite).to receive(:create_participant)
+      expect(insert_from_invite).to receive(:set_permission)
 
-      it do
-        expect(assessment.participant?(existing_user)).to be true
-      end
-    end
-  end
-
-  it 'creates a user account' do
-    subject.new(create_valid_invite).execute
-    expect(User.find_by(email: 'john_doe@gmail.com')).not_to be_nil
-  end
-
-  it 'creates a user account with mismatched case' do
-    subject.new(create_valid_invite('John_Doe@gmail.com')).execute
-    expect(User.find_by(email: 'john_doe@gmail.com')).not_to be_nil
-  end
-
-  it 'sets the correct district and team_role for a new user' do
-    subject.new(create_valid_invite).execute
-
-    user = User.find_by(email: 'john_doe@gmail.com')
-    expect(user.district_ids).to eq([@district2.id])
-    expect(user.team_role).to eq('Finance')
-  end
-
-  it 'appends the district_id and team_role to an already existing user' do
-    @user.update(district_ids: [])
-    expect(@user.district_ids).not_to include([@district2.id])
-    subject.new(existing_user_invite).execute
-
-    user = User.find_by(email: @user.email)
-    expect(user.district_ids).to include(@district2.id)
-    expect(user.team_role).to eq('Finance')
-  end
-
-  it 'does not create multiple district entries for existing user' do
-    @user.update(district_ids: [@district2.id])
-
-    subject.new(existing_user_invite).execute
-
-    user = User.find_by(email: @user.email)
-    expect(user.district_ids.count).to eq(1)
-
-  end
-
-  it 'updates the user_id after a user has been created' do
-    subject.new(existing_user_invite).execute
-
-    user = User.find_by(email: @user.email)
-    expect(UserInvitation.find_by(user_id: user.id)).not_to be_nil
-  end 
-
-  it 'can safely create two invites' do
-    subject.new(create_valid_invite).execute
-    user = User.find_by(email: 'john_doe@gmail.com')
-
-    Participant.find_by(user_id: user.id).delete
-  end
-
-  it 'creates a participant for an invite' do
-    subject.new(create_valid_invite).execute
-    user = User.find_by(email: 'john_doe@gmail.com')
-
-    expect(Participant.find_by(user_id: user.id)).not_to be_nil
-  end
-
-  it 'creates a participant and set the specified role' do
-    subject.new(create_valid_invite).execute
-    expect(
-      assessment.facilitator?(User.find_by(email: 'john_doe@gmail.com'))
-    ).to eq(true)
+      insert_from_invite.execute
+    }
   end
 end
