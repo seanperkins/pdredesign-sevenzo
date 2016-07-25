@@ -33,11 +33,11 @@ FactoryGirl.define do
       end
 
       after(:create) do |rubric, evaluator|
-        axis = create(:axis)
+        rubric.axis = create(:axis)
         questions = create_list(:question, evaluator.question_count,
                                 rubrics: [rubric],
                                 headline: Faker::Lorem.word,
-                                category: create(:category, axis: axis))
+                                category: create(:category, axis: rubric.axis))
         evaluator.scores.each_with_index { |score_hash, idx|
           score_hash[:question] = questions[idx]
           create(:score, score_hash)
