@@ -808,7 +808,10 @@ describe Assessment do
 
     context 'when a consensus is present' do
       let!(:response) {
-        create(:response, :as_assessment_response, responder: assessment)
+        r = create(:response, :as_assessment_response, responder: assessment)
+        r.responder = assessment
+        r.save!
+        r
       }
 
       it {
@@ -992,7 +995,10 @@ describe Assessment do
 
     context 'when a response is submitted' do
       let!(:response) {
-        create(:response, :as_assessment_response, :submitted, responder: assessment)
+        r = create(:response, :as_assessment_response, :submitted)
+        r.responder = assessment
+        r.save!
+        r
       }
 
       it {
@@ -1002,7 +1008,10 @@ describe Assessment do
 
     context 'when a response is not submitted' do
       let!(:response) {
-        create(:response, :as_assessment_response, responder: assessment)
+        r = create(:response, :as_assessment_response, responder: assessment)
+        r.responder = assessment
+        r.save!
+        r
       }
 
       it {
