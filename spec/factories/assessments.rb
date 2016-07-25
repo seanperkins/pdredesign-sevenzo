@@ -36,13 +36,21 @@ FactoryGirl.define do
     end
 
     trait :with_participants do
+      transient do
+        invited false
+      end
       name 'Assessment other'
       due_date 5.days.from_now
       message 'some message'
       association :user, factory: [:user, :with_district], districts: 1
 
-      before(:create) do |assessment|
-        assessment.participants = create_list(:participant, 2, :with_users)
+      before(:create) do |assessment, evaluator|
+        if evaluator.invited
+          assessment.participants = create_list(:participant, 2, :with_users, invited_at: Time.now)
+        else
+          assessment.participants = create_list(:participant, 2, :with_users)
+        end
+
         assessment.facilitators = create_list(:user, 1, :with_district)
       end
     end
