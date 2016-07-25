@@ -1,41 +1,52 @@
 require 'spec_helper'
 
 describe AccessRequestNotificationWorker do
-  let(:subject) {
-    AccessRequestNotificationWorker
-  }
 
-  let(:facilitator) {
-    FactoryGirl.create(:user, :with_district)
-  }
-
-  let(:assessment) {
-    @assessment_with_participants
-  }
-
-  let(:request) {
-    AccessRequest.create!(user: FactoryGirl.create(:user, :with_district),
-                          assessment: assessment,
-                          roles: [:facilitator])
-  }
-
-  before(:each) do
-    create_magic_assessments
+  context 'when no access request exists' do
+    it {
+      expect { subject.perform(0) }.to raise_error ActiveRecord::RecordNotFound
+    }
   end
 
-  it 'sends an email to each facilitator' do
-    double = double('mailer')
-    assessment.facilitators << facilitator
+  context 'when an access request exists' do
+    context 'when no facilitators are present' do
+      let(:assessment) {
+        create(:assessment, :with_owner)
+      }
 
-    expect(AccessRequestMailer).to receive(:request_access)
-                                       .with(request, facilitator.email)
-                                       .and_return(double)
+      let(:request) {
+        create(:access_request, assessment: assessment, roles: [:facilitator])
+      }
 
-    expect(AccessRequestMailer).to receive(:request_access)
-                                       .with(request, @facilitator2.email)
-                                       .and_return(double)
+      let(:mailer_double) {
+        double('mailer')
+      }
 
-    expect(double).to receive(:deliver_now).twice
-    subject.new.perform(request.id)
+      it {
+        expect(AccessRequestMailer).to receive(:request_access).with(request, assessment.user.email).and_return(mailer_double)
+        expect(mailer_double).to receive(:deliver_now).once
+        subject.perform(request.id)
+      }
+    end
+
+    context 'when there is at least one facilitator present' do
+      let(:assessment) {
+        create(:assessment, :with_participants)
+      }
+
+      let(:request) {
+        create(:access_request, assessment: assessment, roles: [:facilitator])
+      }
+
+      let(:mailer_double) {
+        double('mailer')
+      }
+
+      it {
+        expect(AccessRequestMailer).to receive(:request_access).at_least(:once).and_return(mailer_double)
+        expect(mailer_double).to receive(:deliver_now).exactly(assessment.facilitators.size + 1).times
+        subject.perform(request.id)
+      }
+    end
   end
 end
