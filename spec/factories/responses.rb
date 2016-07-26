@@ -27,9 +27,16 @@ FactoryGirl.define do
     end
 
     trait :as_assessment_response do
+      transient do
+        assessment nil
+      end
       association :rubric, :as_assessment_rubric
-      after(:create) do |response, _|
-        response.responder = create(:assessment, :with_participants, response: response)
+      after(:create) do |response, evaluator|
+        if evaluator.assessment.nil?
+          response.responder = create(:assessment, :with_participants, response: response)
+        else
+          response.responder = evaluator.assessment
+        end
       end
     end
 

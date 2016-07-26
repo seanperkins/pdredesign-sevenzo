@@ -1,56 +1,104 @@
 require 'spec_helper'
 
 describe ReminderNotificationWorker do
-  before { create_magic_assessments }
-  let(:subject)    { ReminderNotificationWorker }
-  let(:assessment) { @assessment_with_participants }
+  let(:reminder_notification_worker) {
+    ReminderNotificationWorker.new
+  }
 
-  it 'sends the email to each participants email address' do
-    double = double("mailer")
+  describe '#perform_for_assessment' do
+    context 'when the assessment does not exist' do
+      it {
+        expect { reminder_notification_worker.perform_for_assessment(assessment_id: 0, message: nil) }
+            .to raise_error(ActiveRecord::RecordNotFound)
+      }
+    end
 
-    expect(AssessmentsMailer).to receive(:reminder)
-      .exactly(2).times
-      .with(assessment, 'the message', anything)
-      .and_return(double)
+    context 'when an assessment exists' do
+      context 'when no participants are present' do
+        let(:assessment) {
+          create(:assessment)
+        }
 
-    expect(double).to receive(:deliver_now).twice
-    subject.new.perform(assessment.id, assessment.class.to_s, 'the message')
-  end
+        it {
+          expect(AssessmentsMailer).not_to receive(:reminder)
+          reminder_notification_worker.perform_for_assessment(assessment_id: assessment.id, message: nil)
+        }
+      end
 
-  it 'does not send an email to users that have completed a response' do
-    create_struct
-    create_responses
+      context 'when participants are present' do
+        context 'when all participants have responded and completed the assessment' do
+          let(:assessment) {
+            create(:assessment, :with_participants)
+          }
 
-    @participant.response.update(submitted_at: Time.now)
-    @participant2.response.update(submitted_at: nil)
+          let!(:responses) {
+            assessment.participants.each { |participant|
+              participant.response = create(:response, :as_assessment_response, :submitted, assessment: assessment)
+            }
+          }
 
-    double = double("mailer").as_null_object
-    expect(AssessmentsMailer).to receive(:reminder)
-      .exactly(1).times
-      .with(anything, anything, @participant2).and_return(double)
+          it {
+            expect(AssessmentsMailer).not_to receive(:reminder)
+            reminder_notification_worker.perform_for_assessment(assessment_id: assessment.id, message: nil)
+          }
+        end
 
-    subject.new.perform(assessment.id, assessment.class.to_s, 'the message')
+        context 'when all participants have responded to the assessment' do
+          let(:assessment) {
+            create(:assessment, :with_participants)
+          }
 
-  end
+          let(:assessments_mailer_double) {
+            double('AssessmentsMailer')
+          }
 
-  it 'sets the :reminded_at field' do
-    subject.new.perform(assessment.id, assessment.class.to_s, 'the message')
-    @participant.update(reminded_at: nil)
-    @participant2.update(reminded_at: nil)
+          let!(:responses) {
+            assessment.participants.each { |participant|
+              participant.response = create(:response, :as_assessment_response, assessment: assessment)
+            }
+          }
 
-    @participant.reload
-    @participant2.reload
+          it {
+            expect(AssessmentsMailer).to receive(:reminder).exactly(:twice).and_return(assessments_mailer_double)
+            expect(assessments_mailer_double).to receive(:deliver_now).exactly(:twice)
+            reminder_notification_worker.perform_for_assessment(assessment_id: assessment.id, message: nil)
+          }
 
-    expect(@participant.reminded_at).not_to be_nil
-    expect(@participant2.reminded_at).not_to be_nil
-  end
+          it {
+            expect(AssessmentsMailer).to receive(:reminder).exactly(:twice).and_return(assessments_mailer_double)
+            expect(assessments_mailer_double).to receive(:deliver_now).exactly(:twice)
+            reminder_notification_worker.perform_for_assessment(assessment_id: assessment.id, message: nil)
+            assessment.participants.reload
 
-  it 'adds a message entry for the assessment' do
-    subject.new.perform(assessment.id, assessment.class.to_s, 'the message')
-    message = Message
-      .find_by(tool_id: assessment.id,
-               content: 'the message')
+            expect(assessment.participants.all? { |participant| !participant.reminded_at.nil? })
+          }
+        end
 
-    expect(message).not_to be_nil
+        context 'when no participants have responded to the assessment' do
+          let(:assessment) {
+            create(:assessment, :with_participants)
+          }
+
+          let(:assessments_mailer_double) {
+            double('AssessmentsMailer')
+          }
+
+          it {
+            expect(AssessmentsMailer).to receive(:reminder).exactly(:twice).and_return(assessments_mailer_double)
+            expect(assessments_mailer_double).to receive(:deliver_now).exactly(:twice)
+            reminder_notification_worker.perform_for_assessment(assessment_id: assessment.id, message: nil)
+          }
+
+          it {
+            expect(AssessmentsMailer).to receive(:reminder).exactly(:twice).and_return(assessments_mailer_double)
+            expect(assessments_mailer_double).to receive(:deliver_now).exactly(:twice)
+            reminder_notification_worker.perform_for_assessment(assessment_id: assessment.id, message: nil)
+            assessment.participants.reload
+
+            expect(assessment.participants.all? { |participant| !participant.reminded_at.nil? })
+          }
+        end
+      end
+    end
   end
 end

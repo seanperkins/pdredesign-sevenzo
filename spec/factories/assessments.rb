@@ -45,12 +45,9 @@ FactoryGirl.define do
       association :user, factory: [:user, :with_district], districts: 1
 
       before(:create) do |assessment, evaluator|
-        if evaluator.invited
-          assessment.participants = create_list(:participant, 2, :with_users, invited_at: Time.now)
-        else
-          assessment.participants = create_list(:participant, 2, :with_users)
-        end
-
+        assessment.participants = create_list(:participant, 2, :with_users,
+                                              invited_at: (1.day.ago if evaluator.invited)
+        )
         assessment.facilitators = create_list(:user, 1, :with_district)
       end
     end
