@@ -38,18 +38,13 @@ describe AllParticipantsNotificationWorker do
         }
 
         before(:each) do
-          allow(AssessmentsMailer).to receive(:assigned).with(assessment, anything)
-                                          .exactly(2).times
+          allow(AssessmentsMailer).to receive(:assigned)
+                                          .at_least(:twice)
                                           .and_return assessments_mailer_double
-          allow(assessments_mailer_double).to receive(:deliver_now).exactly(2).times
-
+          expect(assessments_mailer_double).to receive(:deliver_now).exactly(:twice)
           all_participants_notification_worker.perform(assessment.id)
           assessment.participants.reload
         end
-
-        it {
-          expect(assessments_mailer_double).to receive(:deliver_now).exactly(2).times
-        }
 
         it {
           expect(assessment.participants.map(&:invited_at).all? { |value| !value.nil? }).to be true
@@ -82,104 +77,57 @@ describe AllParticipantsNotificationWorker do
           allow(AssessmentsMailer).to receive(:assigned).with(assessment, anything)
                                           .exactly(:once)
                                           .and_return assessments_mailer_double
-          allow(notifications_mailer_double).to receive(:deliver_now).exactly(:once)
-          allow(assessments_mailer_double).to receive(:deliver_now).exactly(:once)
+
+          expect(assessments_mailer_double).to receive(:deliver_now).exactly(:once)
+          expect(notifications_mailer_double).to receive(:deliver_now).exactly(:once)
 
           all_participants_notification_worker.perform(assessment.id)
           assessment.participants.reload
         end
 
         it {
-          expect(assessments_mailer_double).to receive(:deliver_now).exactly(:once)
-        }
-
-        it {
-          expect(notifications_mailer_double).to receive(:deliver_now).exactly(:once)
-        }
-
-        it {
           expect(participant.updated_at).to_not be_nil
         }
 
       end
-    end
-  end
 
-  it 'sends an email to each participant' do
-    double = double("mailer")
+      context 'when there is an invitation record for all participants' do
+        let(:participant) {
+          assessment.participants.sample.user
+        }
 
-    expect(AssessmentsMailer).to receive(:assigned)
-                                     .with(anything, @participant)
-                                     .and_return(double)
+        let(:assessment) {
+          create(:assessment, :with_participants)
+        }
 
-    expect(AssessmentsMailer).to receive(:assigned)
-                                     .with(anything, @participant2)
-                                     .and_return(double)
+        let(:assessments_mailer_double) {
+          double('assessments_mailer')
+        }
 
-    expect(double).to receive(:deliver_now).twice
-    subject.new.perform(assessment.id)
-  end
+        let(:notifications_mailer_double) {
+          double('notifications_mailer')
+        }
 
-  it 'updates the invited_at timestamp for each participant' do
-    double = double("mailer").as_null_object
-    allow(AssessmentsMailer).to receive(:assigned).and_return(double)
+        let!(:invitations) {
+          assessment.participants.each { |participant|
+            create(:user_invitation, assessment: assessment, user: participant.user)
+          }
+        }
 
-    @participant.update(invited_at: nil)
-    @participant2.update(invited_at: nil)
+        before(:each) do
+          allow(NotificationsMailer).to receive(:invite).exactly(:twice).and_return(notifications_mailer_double)
 
-    subject.new.perform(assessment.id)
+          expect(notifications_mailer_double).to receive(:deliver_now).exactly(:twice)
 
-    @participant.reload
-    @participant2.reload
+          all_participants_notification_worker.perform(assessment.id)
+          assessment.participants.reload
+        end
 
-    expect(@participant.invited_at).not_to be_nil
-    expect(@participant2.invited_at).not_to be_nil
-  end
+        it {
+          expect(assessment.participants.map(&:invited_at).all? { |value| !value.nil? }).to be true
+        }
 
-  it 'does not deliver to already invited users' do
-    double = double("mailer").as_null_object
-
-    @participant.update(invited_at: Time.now)
-
-    expect(AssessmentsMailer).to receive(:assigned)
-                                     .with(anything, @participant2)
-                                     .and_return(double)
-
-    expect(double).to receive(:deliver_now)
-
-    subject.new.perform(assessment.id)
-  end
-
-  context 'with invite' do
-    before do
-      @invite = UserInvitation.create!(
-          first_name: 'test',
-          last_name: 'test',
-          email: @participant.user.email,
-          team_role: 'worker',
-          token: 'token',
-          user: @participant.user,
-          assessment_id: assessment.id)
-
-    end
-
-    it 'sends an invitation email to invited participants' do
-      double = double("mailer").as_null_object
-
-
-      expect(NotificationsMailer).to receive(:invite)
-                                         .with(@invite)
-                                         .and_return(double)
-
-      expect(double).to receive(:deliver_now)
-
-      expect(AssessmentsMailer).to receive(:assigned)
-                                       .with(anything, @participant2)
-                                       .and_return(double)
-
-      expect(double).to receive(:deliver_now)
-
-      subject.new.perform(assessment.id)
+      end
     end
   end
 end
