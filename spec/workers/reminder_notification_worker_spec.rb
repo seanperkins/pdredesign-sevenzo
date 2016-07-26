@@ -5,6 +5,42 @@ describe ReminderNotificationWorker do
     ReminderNotificationWorker.new
   }
 
+  describe '#perform' do
+    context 'when type is Assessment' do
+      let(:type) {
+        'Assessment'
+      }
+
+      it {
+        expect(reminder_notification_worker).to receive(:perform_for_assessment)
+        reminder_notification_worker.perform(0, type, nil)
+      }
+    end
+
+    context 'when type is Inventory' do
+      let(:type) {
+        'Inventory'
+      }
+
+      it {
+        expect(reminder_notification_worker).to receive(:perform_for_inventory)
+        reminder_notification_worker.perform(0, type, nil)
+      }
+    end
+
+
+    context 'when type is Analysis' do
+      let(:type) {
+        'Analysis'
+      }
+
+      it {
+        expect(reminder_notification_worker).to receive(:perform_for_analysis)
+        reminder_notification_worker.perform(0, type, nil)
+      }
+    end
+  end
+
   describe '#perform_for_assessment' do
     context 'when the assessment does not exist' do
       it {
