@@ -126,7 +126,6 @@ describe AllParticipantsNotificationWorker do
         it {
           expect(assessment.participants.map(&:invited_at).all? { |value| !value.nil? }).to be true
         }
-
       end
     end
   end

@@ -17,5 +17,4 @@ class UserInvitationNotificationWorker
   def find_invite(invite_id)
     UserInvitation.find(invite_id)
   end
-
 end

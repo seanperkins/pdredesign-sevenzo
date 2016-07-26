@@ -1,51 +1,42 @@
 require 'spec_helper'
 
 describe UserInvitationNotificationWorker do
-  before { create_magic_assessments }
 
-  let(:subject) { UserInvitationNotificationWorker }
-  let(:assessment) { @assessment_with_participants }
+  describe '#perform' do
+    let(:user_invitation_notification_worker) {
+      UserInvitationNotificationWorker.new
+    }
 
-  before do
-    @invitation = UserInvitation.create!(
-                    user_id: @participant.user.id,
-                    email: @participant.user.email,
-                    assessment_id: assessment.id)
+    context 'when an invite cannot be found' do
+      it {
+        expect { user_invitation_notification_worker.perform(0) }
+        .to raise_error(ActiveRecord::RecordNotFound)
+      }
+    end
+
+    context 'when an invite exists' do
+      let(:user_invitation) {
+        create(:user_invitation, :with_associated_assessment_participant)
+      }
+
+      let(:participant) {
+        Participant.find_by(user: user_invitation.user)
+      }
+
+      let(:notifications_mailer_double) {
+        double('NotificationsMailer')
+      }
+
+      before(:each) do
+        expect(NotificationsMailer).to receive(:invite).with(user_invitation).and_return(notifications_mailer_double)
+        expect(notifications_mailer_double).to receive(:deliver_now)
+        user_invitation_notification_worker.perform(user_invitation.id)
+        participant.reload
+      end
+
+      it {
+        expect(participant.invited_at).to_not be_nil
+      }
+    end
   end
-
-  it 'queues the a job' do
-    subject.perform_async(@invitation.id)
-    expect(subject.jobs.count).to eq(1)
-  end
-
-  it 'finds the correct UserInvitation record' do
-    found_invite = subject.new.send(:find_invite, @invitation.id)
-    expect(found_invite).to eq(@invitation)
-  end
-
-  it 'sends the email to the new users email address' do
-    double = double("mailer")
-    expect(NotificationsMailer).to receive(:invite)
-      .with(@invitation)
-      .and_return(double)
-
-    expect(double).to receive(:deliver_now)
-
-    subject.new.perform(@invitation.id)
-  end
-
-  it 'sets the participant :invited_at' do
-    double = double("mailer").as_null_object
-
-    allow(NotificationsMailer).to receive(:invite).and_return(double)
-    @participant.update(invited_at: nil) 
-
-    subject.new.perform(@invitation.id)
-
-    @participant.reload
-    expect(@participant.invited_at).not_to be_nil
-  end
-    
-
-
 end

@@ -55,14 +55,12 @@ describe ReminderNotificationWorker do
           create(:assessment)
         }
 
-        it {
+        before(:each) do
           expect(AssessmentsMailer).not_to receive(:reminder)
           reminder_notification_worker.perform_for_assessment(assessment_id: assessment.id, message: nil)
-        }
+        end
 
         it {
-          expect(AssessmentsMailer).not_to receive(:reminder)
-          reminder_notification_worker.perform_for_assessment(assessment_id: assessment.id, message: nil)
           expect(Message.where(tool: assessment, content: nil, category: :reminder)).to_not be_empty
         }
       end
@@ -100,18 +98,15 @@ describe ReminderNotificationWorker do
             }
           }
 
-          it {
-            expect(AssessmentsMailer).to receive(:reminder).exactly(:twice).and_return(assessments_mailer_double)
-            expect(assessments_mailer_double).to receive(:deliver_now).exactly(:twice)
-            reminder_notification_worker.perform_for_assessment(assessment_id: assessment.id, message: nil)
-          }
-
-          it {
+          before(:each) do
             expect(AssessmentsMailer).to receive(:reminder).exactly(:twice).and_return(assessments_mailer_double)
             expect(assessments_mailer_double).to receive(:deliver_now).exactly(:twice)
             reminder_notification_worker.perform_for_assessment(assessment_id: assessment.id, message: nil)
             assessment.participants.reload
 
+          end
+
+          it {
             expect(assessment.participants.all? { |participant| !participant.reminded_at.nil? })
           }
         end
@@ -125,18 +120,14 @@ describe ReminderNotificationWorker do
             double('AssessmentsMailer')
           }
 
-          it {
-            expect(AssessmentsMailer).to receive(:reminder).exactly(:twice).and_return(assessments_mailer_double)
-            expect(assessments_mailer_double).to receive(:deliver_now).exactly(:twice)
-            reminder_notification_worker.perform_for_assessment(assessment_id: assessment.id, message: nil)
-          }
-
-          it {
+          before(:each) do
             expect(AssessmentsMailer).to receive(:reminder).exactly(:twice).and_return(assessments_mailer_double)
             expect(assessments_mailer_double).to receive(:deliver_now).exactly(:twice)
             reminder_notification_worker.perform_for_assessment(assessment_id: assessment.id, message: nil)
             assessment.participants.reload
+          end
 
+          it {
             expect(assessment.participants.all? { |participant| !participant.reminded_at.nil? })
           }
         end
@@ -158,14 +149,12 @@ describe ReminderNotificationWorker do
           create(:inventory)
         }
 
-        it {
+        before(:each) do
           expect(InventoryInvitationMailer).not_to receive(:reminder)
           reminder_notification_worker.perform_for_inventory(inventory_id: inventory.id, message: nil)
-        }
+        end
 
         it {
-          expect(InventoryInvitationMailer).not_to receive(:reminder)
-          reminder_notification_worker.perform_for_inventory(inventory_id: inventory.id, message: nil)
           expect(Message.where(tool: inventory, content: nil, category: :reminder)).to_not be_empty
         }
       end
@@ -179,18 +168,14 @@ describe ReminderNotificationWorker do
           double('InventoryInvitationMailer')
         }
 
-        it {
-          expect(InventoryInvitationMailer).to receive(:reminder).exactly(:twice).and_return(inventory_invitation_mailer_double)
-          expect(inventory_invitation_mailer_double).to receive(:deliver_now).exactly(:twice)
-          reminder_notification_worker.perform_for_inventory(inventory_id: inventory.id, message: nil)
-        }
+       before(:each) do
+         expect(InventoryInvitationMailer).to receive(:reminder).exactly(:twice).and_return(inventory_invitation_mailer_double)
+         expect(inventory_invitation_mailer_double).to receive(:deliver_now).exactly(:twice)
+         reminder_notification_worker.perform_for_inventory(inventory_id: inventory.id, message: nil)
+         inventory.participants.reload
+       end
 
         it {
-          expect(InventoryInvitationMailer).to receive(:reminder).exactly(:twice).and_return(inventory_invitation_mailer_double)
-          expect(inventory_invitation_mailer_double).to receive(:deliver_now).exactly(:twice)
-          reminder_notification_worker.perform_for_inventory(inventory_id: inventory.id, message: nil)
-          inventory.participants.reload
-
           expect(inventory.participants.all? { |participant| !participant.reminded_at.nil? })
         }
       end
@@ -211,14 +196,12 @@ describe ReminderNotificationWorker do
           create(:analysis)
         }
 
-        it {
+        before(:each) do
           expect(AnalysisInvitationMailer).not_to receive(:reminder)
           reminder_notification_worker.perform_for_analysis(analysis_id: analysis.id, message: nil)
-        }
+        end
 
         it {
-          expect(AnalysisInvitationMailer).not_to receive(:reminder)
-          reminder_notification_worker.perform_for_analysis(analysis_id: analysis.id, message: nil)
           expect(Message.where(tool: analysis, content: nil, category: :reminder)).to_not be_empty
         }
       end
@@ -232,18 +215,14 @@ describe ReminderNotificationWorker do
           double('AnalysisInvitationMailer')
         }
 
-        it {
-          expect(AnalysisInvitationMailer).to receive(:reminder).exactly(:twice).and_return(analysis_invitation_mailer_double)
-          expect(analysis_invitation_mailer_double).to receive(:deliver_now).exactly(:twice)
-          reminder_notification_worker.perform_for_analysis(analysis_id: analysis.id, message: nil)
-        }
-
-        it {
+        before(:each) do
           expect(AnalysisInvitationMailer).to receive(:reminder).exactly(:twice).and_return(analysis_invitation_mailer_double)
           expect(analysis_invitation_mailer_double).to receive(:deliver_now).exactly(:twice)
           reminder_notification_worker.perform_for_analysis(analysis_id: analysis.id, message: nil)
           analysis.participants.reload
+        end
 
+        it {
           expect(analysis.participants.all? { |participant| !participant.reminded_at.nil? })
         }
       end

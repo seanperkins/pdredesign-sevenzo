@@ -39,5 +39,11 @@ FactoryGirl.define do
         user_invitation.email = user_invitation.user.email
       end
     end
+
+    trait :with_associated_assessment_participant do
+      after(:create) do |user_invitation|
+        create(:participant, user: user_invitation.user, assessment: user_invitation.assessment)
+      end
+    end
   end
 end
