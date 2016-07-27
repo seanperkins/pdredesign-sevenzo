@@ -27,6 +27,7 @@ FactoryGirl.define do
 
     trait :with_questions_and_scores do
       transient do
+        category_count 1
         question_count 1
         scores Array.new
         answers Array.new
@@ -34,17 +35,20 @@ FactoryGirl.define do
 
       after(:create) do |rubric, evaluator|
         rubric.axis = create(:axis)
-        questions = create_list(:question, evaluator.question_count,
-                                rubrics: [rubric],
-                                headline: Faker::Lorem.word,
-                                category: create(:category, axis: rubric.axis))
-        evaluator.scores.each_with_index { |score_hash, idx|
-          score_hash[:question] = questions[idx]
-          create(:score, score_hash)
+        categories = create_list(:category, evaluator.category_count, axis: rubric.axis)
+        categories.each { |category|
+          questions = create_list(:question, evaluator.question_count,
+                                  rubrics: [rubric],
+                                  headline: Faker::Lorem.word,
+                                  category: category)
+          evaluator.scores.each_with_index { |score_hash, idx|
+            score_hash[:question] = questions[idx]
+            create(:score, score_hash)
 
-          evaluator.answers.each { |answer_hash|
-            answer_hash[:question] = questions[idx]
-            create(:answer, answer_hash)
+            evaluator.answers.each { |answer_hash|
+              answer_hash[:question] = questions[idx]
+              create(:answer, answer_hash)
+            }
           }
         }
       end
