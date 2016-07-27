@@ -19,7 +19,7 @@ FactoryGirl.define do
     team_role { Faker::Commerce.department }
     role { Faker::Commerce.department }
     email { Faker::Internet.email }
-    association :assessment
+    association :assessment, :with_participants
     association :user, :with_district
 
     trait :as_facilitator do
