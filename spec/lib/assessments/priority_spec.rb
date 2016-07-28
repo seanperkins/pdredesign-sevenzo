@@ -109,61 +109,102 @@ describe Assessments::Priority do
           expect(assessments_priority.categories.first[:average]).to be_within(0.01).of 0.0
         }
       end
-    end
-  end
 
-  before do
-    # create_magic_assessments
-    # create_struct
-    # create_responses
-    #
-    # @cat1 = Category.find_by(name: 'Some cat1')
-    # @cat2 = Category.find_by(name: 'Some cat2')
-    # @cat3 = Category.find_by(name: 'Some cat3')
-    #
-    # @priority = Priority.create!(
-    #     order: [@cat2.id, @cat1.id],
-    #     tool: assessment)
-  end
+      context 'when categories have a defined order' do
+        let(:response) {
+          create(:response, :as_assessment_response, :submitted)
+        }
 
-  let(:assessment) { @assessment_with_participants }
+        let(:rubric) {
+          create(:rubric, :as_assessment_rubric, :with_questions_and_scores, question_count: 3, category_count: 3, scores: [
+              {
+                  response: response,
+                  value: 12,
+                  evidence: 'First evidence'
+              },
+              {
+                  response: response,
+                  value: 71,
+                  evidence: 'Second evidence'
+              },
+              {
+                  response: response,
+                  value: 100,
+                  evidence: 'Third evidence'
+              },
+          ])
+        }
 
-  before do
-    @subject = Assessments::Priority.new(assessment)
-  end
+        let(:original_order) {
+          rubric.categories.pluck(:id)
+        }
 
-  context '#categories' do
+        let!(:priority) {
+          create(:priority, tool: assessment, order: original_order.reverse)
+        }
 
-    it 'returns correctly ordered categories' do
-      first = @subject.categories[0]
-      second = @subject.categories[1]
+        let(:assessment) {
+          a = response.responder
+          a.rubric = rubric
+          a
+        }
 
-      expect(first[:name]).to eq('Some cat2')
-      expect(first[:average]).to eq(3.0)
+        let(:assessments_priority) {
+          Assessments::Priority.new(assessment)
+        }
 
-      expect(second[:name]).to eq('Some cat1')
-    end
+        before(:each) do
+          response.rubric = rubric
+          response.save!
+        end
 
-    it 'returns distinct categories' do
-      @priority.delete
-      @priority = Priority.create!(
-          order: [@cat2.id, @cat2.id, @cat1.id],
-          tool: assessment)
+        it {
+          expect(assessments_priority.categories.map { |cat| cat[:id] }.first).to eq original_order.last
+        }
 
-      expect(@subject.categories.count).to eq(4)
-    end
+        it {
+          expect(assessments_priority.categories.map { |cat| cat[:id] }.second).to eq original_order.second
+        }
 
-    it 'returns cateogries not in order' do
-      @priority.delete
-      Priority.create!(order: [@cat3.id, @cat2.id], tool: assessment)
+        it {
+          expect(assessments_priority.categories.map { |cat| cat[:id] }.last).to eq original_order.first
+        }
+      end
 
-      first = @subject.categories[0]
-      second = @subject.categories[1]
-      third = @subject.categories[2]
+      context 'when the defined categories for a result are the same' do
+        let(:response) {
+          create(:response, :as_assessment_response, :submitted)
+        }
 
-      expect(first[:name]).to eq('Some cat3')
-      expect(second[:name]).to eq('Some cat2')
-      expect(third[:name]).not_to be_nil
+        let(:rubric) {
+          create(:rubric, :as_assessment_rubric, :with_questions_and_scores, question_count: 1, category_count: 10, distinct_categories: false, scores: [
+              {
+                  response: response,
+                  value: 12,
+                  evidence: 'First evidence'
+              }
+          ])
+        }
+
+        let(:assessment) {
+          a = response.responder
+          a.rubric = rubric
+          a
+        }
+
+        let(:assessments_priority) {
+          Assessments::Priority.new(assessment)
+        }
+
+        before(:each) do
+          response.rubric = rubric
+          response.save!
+        end
+
+        it {
+          expect(assessments_priority.categories.length).to eq 1
+        }
+      end
     end
   end
 end

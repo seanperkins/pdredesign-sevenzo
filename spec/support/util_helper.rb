@@ -28,39 +28,6 @@ def create_struct
   3.times { rubric.questions.create!(category: category3) }
 end
 
-
-def create_responses
-  response1 = Response.create(
-      responder_type: 'Participant',
-      responder_id: @participant.id,
-      submitted_at: Time.now)
-
-  response2 = Response.create(
-      responder_type: 'Participant',
-      responder_id: @participant2.id,
-      submitted_at: Time.now)
-
-  category1 = Category.create(name: "Some cat1")
-  category2 = Category.create(name: "Some cat2")
-  category3 = Category.create(name: "Some cat3")
-
-  question1 = @rubric.questions.create(category: category1, headline: "question1")
-  question2 = @rubric.questions.create(category: category2, headline: "question2")
-  question3 = @rubric.questions.create(category: category3, headline: "question3")
-
-  Score.create(value: 1,
-               response_id: response1.id,
-               question: question1)
-
-  Score.create(value: 3,
-               response_id: response2.id,
-               question: question2)
-
-  Score.create(value: nil,
-               response_id: response2.id,
-               question: question3)
-end
-
 def create_magic_assessments
   @district = create(:district)
   @facilitator = create(:user, districts: [@district])

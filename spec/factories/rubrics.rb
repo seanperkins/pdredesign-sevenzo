@@ -29,13 +29,23 @@ FactoryGirl.define do
       transient do
         category_count 1
         question_count 1
+        distinct_categories true
         scores Array.new
         answers Array.new
       end
 
       after(:create) do |rubric, evaluator|
         rubric.axis = create(:axis)
-        categories = create_list(:category, evaluator.category_count, axis: rubric.axis)
+        if evaluator.distinct_categories
+          categories = create_list(:category, evaluator.category_count, axis: rubric.axis)
+        else
+          categories = []
+          category = create(:category, axis: rubric.axis)
+          evaluator.category_count.times do
+            categories.push(category)
+          end
+        end
+
         categories.each { |category|
           questions = create_list(:question, evaluator.question_count,
                                   rubrics: [rubric],
