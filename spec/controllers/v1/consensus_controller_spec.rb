@@ -3,141 +3,213 @@ require 'spec_helper'
 describe V1::ConsensusController do
   render_views
 
-  before :each do
+  before(:each) do
     request.env["HTTP_ACCEPT"] = 'application/json'
   end
 
-  before { create_magic_assessments }
-  before { sign_in @user }
-  let(:assessment) { @assessment_with_participants }
+  describe 'PUT #update' do
+    let(:assessment) {
+      create(:assessment, :with_participants)
+    }
 
-  context 'fake non-consensus' do
-    before do
-      Response.create(responder_id:   @participant.id,
-                      responder_type: 'Participant',
-                      id: 42)
-      create_struct
-    end
+    let!(:response) {
+      create(:response, rubric: assessment.rubric, responder: assessment, submitted_at: nil)
+    }
 
-    it 'requires a login to show' do
-      sign_out :user
+    context 'when the user is not a facilitator for the assessment' do
+      let(:non_facilitator) {
+        create(:user)
+      }
 
-      get :show, assessment_id: 1, id: 1
-      assert_response 401
-    end
-
-    it 'only returns consensus response' do
-      sign_in @user3
-      get :show, assessment_id: assessment.id, id: 42
-      assert_response :not_found
-    end
-  end
-
-  context 'with valid consensus' do
-    before do
-      Response.create(responder_id:   @assessment_with_participants.id,
-                      responder_type: 'Assessment',
-                      id: 42)
-      create_struct
-    end
-
-    it 'can get a consensus' do
-      get :show, assessment_id: assessment.id, id: 42
-      assert_response :success
-    end
-
-    it 'renders the consensus partial' do
-      get :show, assessment_id: assessment.id, id: 42
-      assert_template partial: 'v1/consensus/_consensus'
-    end
-
-    describe '#show' do
-      it 'returns scores for provided team_role' do
-        get :show, assessment_id: assessment.id, id: 42, team_role: :stuff
-        expect(assigns(:team_role)).to eq("stuff")
+      before(:each) do
+        sign_in non_facilitator
+        put :update, assessment_id: assessment.id, id: response.id, submit: true
       end
 
-      it 'assigns :team_roles' do
-        get :show, assessment_id: assessment.id, id: 42
-        expect(assigns(:team_roles)).not_to be_nil
-      end
+      it {
+        is_expected.to respond_with :forbidden
+      }
     end
 
-    describe '#update' do
-      it 'doesnt allow user to update' do
-        sign_in @user
-        put :update, assessment_id: assessment.id, id: 42, submit: true
-        assert_response :forbidden
+    context 'when the user is a facilitator for the assessment' do
+      context 'when the submit parameter is false' do
+        let(:facilitator) {
+          assessment.facilitators.sample
+        }
+
+        before(:each) do
+          sign_in facilitator
+          put :update, assessment_id: assessment.id, id: response.id, submit: false
+          response.reload
+        end
+
+        it {
+          expect(response.submitted_at).to be_nil
+        }
       end
 
-      it 'submits consensus with the right owner' do
-        sign_in @facilitator2
+      context 'when the submit parameter is true' do
+        let(:facilitator) {
+          assessment.facilitators.sample
+        }
 
-        put :update, assessment_id: assessment.id, id: 42, submit: true
-        response = Response.find(42)
+        before(:each) do
+          sign_in facilitator
+          put :update, assessment_id: assessment.id, id: response.id, submit: true
+          response.reload
+        end
 
-        assert_response :success
-        expect(response.submitted_at).not_to be_nil
-      end
-
-      it "submits consensus and the assessment chached version should be flushed" do
-        sign_in @facilitator2
-        expect_flush_cached_assessment
-
-        put :update, assessment_id: assessment.id, id: assessment.consensus.id, submit: true; assessment.reload
+        it {
+          expect(response.submitted_at).not_to be_nil
+        }
       end
     end
   end
 
-  describe '#create' do
-    it 'requires a participant to create and owner' do
-      sign_out :user
+  describe 'GET #show' do
+    let(:assessment) {
+      create(:assessment, :with_participants)
+    }
 
-      post :create, assessment_id: assessment.id
-      assert_response 401
+    let(:response) {
+      create(:response, responder: assessment)
+    }
+
+    context 'when the user is not authenticated' do
+      before(:each) do
+        sign_out :user
+        get :show, assessment_id: assessment.id, id: response.id
+      end
+
+      it {
+        is_expected.to respond_with :unauthorized
+      }
     end
 
-    it 'only owner can create consensus' do
-      sign_in @user
+    context 'when the response does not exist' do
+      let(:user) {
+        create(:user)
+      }
 
-      post :create, assessment_id: assessment.id
-      assert_response :forbidden
+      before(:each) do
+        sign_in user
+        get :show, assessment_id: assessment.id, id: 0
+      end
+
+      it {
+        is_expected.to respond_with :not_found
+      }
     end
 
+    context 'when the response exists' do
 
-    it 'can create a new consensus' do
-      sign_in @facilitator2
+      context 'when the team_role param is not passed' do
+        let(:user) {
+          create(:user)
+        }
 
-      expect_flush_cached_assessment
+        before(:each) do
+          sign_in user
+          get :show, assessment_id: assessment.id, id: response.id
+        end
 
-      post :create, assessment_id: assessment.id
-      assert_response :success
+        it {
+          is_expected.to respond_with :success
+        }
 
-      consensus = Response.find_by(responder_type: 'Assessment',
-                       responder_id: assessment.id)
+        it {
+          expect(assigns(:team_roles)).to_not be_nil
+        }
+      end
 
-      expect(consensus).not_to be_nil
-      expect(consensus.rubric).not_to be_nil
-      expect(assessment.has_response?).to eq(true)
+      context 'when the team_role param is passed' do
+        let(:user) {
+          create(:user)
+        }
+
+        before(:each) do
+          sign_in user
+          get :show, assessment_id: assessment.id, id: response.id, team_role: 'role'
+        end
+
+        it {
+          expect(assigns(:team_role)).to eq 'role'
+        }
+      end
+    end
+  end
+
+  describe 'POST #create' do
+    let(:facilitator) {
+      assessment.facilitators.sample
+    }
+
+    let(:assessment) {
+      create(:assessment, :with_participants)
+    }
+
+    context 'when the user is not a facilitator of the assessment' do
+      let(:non_facilitator) {
+        create(:user)
+      }
+
+      let(:assessment) {
+        create(:assessment, :with_participants)
+      }
+
+      before(:each) do
+        sign_in non_facilitator
+        post :create, assessment_id: assessment.id
+      end
+
+      it {
+        is_expected.to respond_with :forbidden
+      }
     end
 
-    it 'does not error when a consensus already exists' do
-      consensus = Response.create!(
-                    rubric: assessment.rubric,
-                    responder_type: 'Assessment',
-                    responder_id: assessment.id)
+    context 'when a consensus does not exist for this assessment' do
+      before(:each) do
+        sign_in facilitator
+        post :create, assessment_id: assessment.id
+      end
 
-      sign_in @facilitator2
+      it {
+        is_expected.to respond_with :success
+      }
 
-      post :create, assessment_id: assessment.id
-      assert_response :success
+      it {
+        expect(Response.find_by(responder: assessment)).to_not be_nil
+      }
 
+      it {
+        expect(Response.find_by(responder: assessment).rubric).to_not be_nil
+      }
+
+      it {
+        assessment.reload
+        expect(assessment.has_response?).to be true
+      }
+    end
+
+    context 'when a consensus already exists for this assessment' do
+      let!(:response) {
+        create(:response, rubric: assessment.rubric, responder: assessment)
+      }
+
+      before(:each) do
+        sign_in facilitator
+        post :create, assessment_id: assessment.id
+      end
+
+      it {
+        is_expected.to respond_with :success
+      }
     end
   end
 
   describe 'GET #evidence' do
     before(:each) do
-      sign_out @user
+      sign_out :user
     end
 
     context 'when unauthenticated' do

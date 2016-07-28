@@ -3,16 +3,16 @@ class V1::ConsensusController < V1::ResponsesController
 
   def create
     @response = Response.find_or_initialize_by(
-                  responder_type: 'Assessment',
-                  responder_id: assessment.id,
-                  rubric: assessment.rubric)
+        responder_type: 'Assessment',
+        responder_id: assessment.id,
+        rubric: assessment.rubric)
 
     authorize_action_for @response
     @response.save
   end
 
   def update
-    authorize_action_for assessment 
+    authorize_action_for assessment
     @response = find_response
 
     if consensus_params[:submit]
@@ -23,12 +23,12 @@ class V1::ConsensusController < V1::ResponsesController
   end
 
   def show
-    @response  = find_response
+    @response = find_response
 
     if @response
-      @rubric     = assessment.rubric
+      @rubric = assessment.rubric
       @categories = @response.categories
-      @team_role  = params[:team_role]
+      @team_role = params[:team_role]
       @team_roles = assessment.team_roles_for_participants
       authorize_action_for @response
     else
