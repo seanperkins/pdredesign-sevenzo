@@ -3,10 +3,9 @@ require 'spec_helper'
 describe V1::SharedReportController do
   render_views
 
-  before { create_magic_assessments }
-  before { create_struct }
-  let(:assessment) { @assessment_with_participants }
-  let(:consensu) { assessment.response.nil? ? Response.create(responder_id: assessment.id, responder_type: 'Assessment') : assessment.response }
+  let(:assessment) {
+    create(:assessment, :with_participants)
+  }
 
   describe '#show' do
     it 'gets a report' do

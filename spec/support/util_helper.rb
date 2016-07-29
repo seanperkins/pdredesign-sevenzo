@@ -1,33 +1,3 @@
-def create_struct
-  Response.find_by(id: 99).tap { |r| r.destroy if r }
-
-  responder = Participant.create!(user: @user)
-  rubric = @rubric
-  response = Response.find_or_create_by!(
-      responder_type: 'Assessment',
-      responder: responder,
-      rubric: rubric,
-      id: 99)
-
-  axis = Axis.create!(name: 'something')
-  category1 = Category.create!(name: "first", axis: axis)
-  category2 = Category.create!(name: "second", axis: axis)
-  category3 = Category.create!(name: "third")
-
-  3.times do |i|
-    question = rubric
-                   .questions
-                   .create!(category: category1, headline: "headline #{i}")
-    4.times do |value|
-      Answer.create!(question: question, value: value+1, content: 'some content')
-    end
-    Score.create!(question: question, response: response, evidence: "expected", value: 1)
-  end
-
-  3.times { rubric.questions.create!(category: category2) }
-  3.times { rubric.questions.create!(category: category3) }
-end
-
 def create_magic_assessments
   @district = create(:district)
   @facilitator = create(:user, districts: [@district])
