@@ -1,31 +1,125 @@
 require 'spec_helper'
 
 describe V1::ResponsesController do
-  before :each do
+  before(:each) do
     request.env["HTTP_ACCEPT"] = 'application/json'
   end
   render_views
 
-  before { create_magic_assessments }
-  before { sign_in @user }
-  let(:assessment) { @assessment_with_participants }
+  describe '#create' do
+    let(:assessment) {
+      create(:assessment, :with_participants)
+    }
+
+    context 'when the user is not a participant of the assessment' do
+      let(:user) {
+        assessment.facilitators.sample
+      }
+
+      before(:each) do
+        sign_in user
+        post :create, assessment_id: assessment.id
+      end
+
+      it {
+        is_expected.to respond_with :forbidden
+      }
+    end
+
+    context 'when the user is a participant of the assessment' do
+      context 'when no response prior exists' do
+        let(:user) {
+          participant.user
+        }
+
+        let(:participant) {
+          assessment.participants.sample
+        }
+
+        before(:each) do
+          sign_in user
+          post :create, assessment_id: assessment.id
+        end
+
+        it {
+          is_expected.to respond_with :success
+        }
+
+        it {
+          expect(Response.where(responder_id: participant.id).count).to eq 1
+        }
+      end
+
+      context 'when a response exists' do
+        let(:user) {
+          participant.user
+        }
+
+        let(:participant) {
+          assessment.participants.sample
+        }
+
+        let!(:preexisting_response) {
+          create(:response, :as_participant_responder, responder: participant)
+        }
+
+        before(:each) do
+          sign_in user
+          post :create, assessment_id: assessment.id
+        end
+
+        it {
+          expect(json['id']).to eq preexisting_response.id
+        }
+      end
+    end
+  end
 
   context '#show' do
-    before do
-      Response.create(responder_id:   @participant.id,
-        responder_type: 'Participant',
-        id: 42)
-      create_struct
-    end
 
-    it 'assigns rubric' do
-      get :show, assessment_id: assessment.id, id: 42
-      expect(assigns(:rubric)[:id]).to eq(@rubric.id)
-    end
+    context 'when a valid response is passed' do
+      let(:assessment) {
+        create(:assessment, :with_participants)
+      }
 
-    it 'shows a users response' do
-      get :show, assessment_id: assessment.id, id: 42
-      expect(json["id"]).to eq(42)
+      let(:participant) {
+        assessment.participants.sample
+      }
+
+      let(:user) {
+        participant.user
+      }
+
+      let(:participant_response) {
+        create(:response, :as_participant_responder, responder: participant)
+      }
+
+      before(:each) do
+        sign_in user
+        get :show, assessment_id: assessment.id, id: participant_response.id
+      end
+
+      it {
+        expect(assigns(:rubric)[:id]).to eq assessment.rubric.id
+      }
+
+      it {
+        expect(json["id"]).to eq participant_response.id
+      }
+
+      it {
+        category = json["categories"].detect { |category| category["name"] == "first"}
+        expect(json["categories"].count).to eq 3
+        expect(category["name"]).not_to be_nil
+      }
+
+      it {
+        category  = json["categories"].detect { |category| category["name"] == "first"}
+        questions = category["questions"]
+
+        expect(questions.count).to eq(3)
+        expect(questions.first["headline"]).to match(/headline/)
+      }
     end
 
     it 'doesnt allow non-owners to view response' do
@@ -34,14 +128,6 @@ describe V1::ResponsesController do
       assert_response :forbidden
     end
 
-    it 'returns the category => question => score struct' do
-      get :show, assessment_id: assessment.id, id: 99
-
-      category = json["categories"].detect { |category| category["name"] == "first"}
-      expect(json["categories"].count).to eq(3)
-      expect(category["name"]).not_to be_nil
-
-    end
 
     it 'returns the rigth questions strct' do
       get :show, assessment_id: assessment.id, id: 99
@@ -233,30 +319,5 @@ describe V1::ResponsesController do
   end
 
 
-  context '#create' do 
-    it 'creates a response if non exist for a user' do
-      post :create, assessment_id: assessment.id
 
-      responses = Response.where(responder_id: @participant.id)
-      expect(responses.count).to eq(1)
-    end
-
-   
-    it 'finds the existing response if one exists' do
-      Response.create(responder_id:   @participant.id,
-                      responder_type: 'Participant',
-                      id: 42)
-
-      post :create, assessment_id: assessment.id
-      expect(json["id"]).to eq(42)
-    end
-
-
-    it 'only creates a response if the user is a participant' do
-      sign_in @user3
-      post :create, assessment_id: assessment.id
-
-      assert_response :forbidden
-    end
-  end
 end

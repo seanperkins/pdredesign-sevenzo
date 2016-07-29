@@ -9,8 +9,8 @@ class V1::ResponsesController < ApplicationController
   end
 
   def show
-    @response   = Response.find(params[:id])
-    @rubric     = assessment.rubric
+    @response = Response.find(params[:id])
+    @rubric = assessment.rubric
     @categories = @response.categories
     authorize_action_for @response
   end
@@ -25,21 +25,21 @@ class V1::ResponsesController < ApplicationController
   authority_actions show_slimmed: :read
 
   def update
-    @response   = Response.find(params[:id])
+    @response = Response.find(params[:id])
     authorize_action_for @response
 
     submit_response(@response) if response_params[:submit]
     render nothing: true
   end
- 
+
   def response_by(options)
-    options = { responder_type: 'Participant' }.merge(options) 
+    options = {responder_type: 'Participant'}.merge(options)
     Response.find_or_initialize_by(options)
   end
 
   def participant_from_user(user = current_user)
-    Participant.find_by(user_id: user.id, 
-      assessment_id: assessment.id) || Participant.new
+    Participant.find_by(user_id: user.id,
+                        assessment_id: assessment.id) || Participant.new
   end
 
   private
