@@ -1,128 +1,206 @@
 require 'spec_helper'
 
 describe V1::UserInvitationsController do
-
-  let(:assessment) { @assessment_with_participants }
   render_views
 
-  before do
+  before(:each) do
     request.env["HTTP_ACCEPT"] = 'application/json'
   end
 
   describe '#create' do
-    it 'requires logged in user' do
-      sign_out :user
-      post :create, assessment_id: assessment.id
+    let(:assessment) {
+      create(:assessment, :with_participants)
+    }
 
-      assert_response 401
+    context 'when the user is not authenticated' do
+      before(:each) do
+        sign_out :user
+        post :create, assessment_id: assessment.id
+      end
+
+      it {
+        is_expected.to respond_with :unauthorized
+      }
     end
 
-    it 'requires a facilitator to create a invite' do
-      sign_in @user
-      post :create, assessment_id: assessment.id
+    context 'when user is not a facilitator' do
+      let(:user) {
+        assessment.participants.sample.user
+      }
 
-      assert_response :forbidden
+      before(:each) do
+        sign_in user
+        post :create, assessment_id: assessment.id
+      end
+
+      it {
+        is_expected.to respond_with :forbidden
+      }
     end
 
-    context 'with facilitator' do
-      before { sign_in @facilitator2 }
-      def valid_post
-        post :create,
-          assessment_id: assessment.id,
-          first_name:    "john",
-          last_name:     "doe",
-          email:         "john_doe@gmail.com"
+    context 'when the user is a facilitator' do
+      let(:user) {
+        assessment.facilitators.sample
+      }
+
+      context 'when the user has not been invited prior' do
+        context 'when no team role is specified' do
+          before(:each) do
+            sign_in user
+            post :create,
+                 assessment_id: assessment.id,
+                 first_name: "john",
+                 last_name: "doe",
+                 email: "john_doe@gmail.com"
+          end
+
+          it {
+            is_expected.to respond_with :success
+          }
+
+          it {
+            expect(UserInvitation.where(email: 'john_doe@gmail.com').first).to_not be_nil
+          }
+
+          it {
+            expect(UserInvitation.where(email: 'john_doe@gmail.com').first.team_role).to be_nil
+          }
+        end
+
+        context 'when the team role is specified' do
+          before(:each) do
+            sign_in user
+            post :create,
+                 assessment_id: assessment.id,
+                 first_name: "john",
+                 last_name: "doe",
+                 email: "john_doe@gmail.com",
+                 team_role: 'Finance'
+          end
+
+          it {
+            is_expected.to respond_with :success
+          }
+
+          it {
+            expect(UserInvitation.where(email: 'john_doe@gmail.com').first).to_not be_nil
+          }
+
+          it {
+            expect(UserInvitation.where(email: 'john_doe@gmail.com').first.team_role).to eq 'Finance'
+          }
+        end
       end
 
-      it 'can create an invitation' do
-        valid_post
+      context 'when the user has been invited prior' do
+        let!(:prior_invitation) {
+          create(:user_invitation,
+                 last_name: 'doe',
+                 first_name: 'john',
+                 email: 'john_doe@gmail.com',
+                 assessment_id: assessment.id)
+        }
 
-        assert_response :success
-        expect(UserInvitation.find_by_email('john_doe@gmail.com')).not_to be_nil
+        before(:each) do
+          sign_in user
+          post :create,
+               assessment_id: assessment.id,
+               first_name: "john",
+               last_name: "doe",
+               email: "john_doe@gmail.com"
+        end
+
+        it {
+          is_expected.to respond_with :unprocessable_entity
+        }
+
+        it {
+          expect(json["errors"]["email"]).to include "User has already been invited"
+        }
       end
 
-      it 'sets the team_role when is a new participant' do
-        params = { first_name: "john", last_name: "doe", email: "johndoe+newuser@mobility-labs.com", team_role: "Finance", assessment_id: assessment.id }
-        post :create, params
+      context 'when the :send_invite flag is not passed' do
+        before(:each) do
+          sign_in user
+          post :create,
+               assessment_id: assessment.id,
+               first_name: "john",
+               last_name: "doe",
+               email: "john_doe@gmail.com"
+        end
 
-        assert_response :success
-        expect(UserInvitation.find_by(email: 'johndoe+newuser@mobility-labs.com').team_role).not_to be_nil
+        it {
+          expect(UserInvitationNotificationWorker.jobs.count).to eq 0
+        }
       end
 
-      it 'returns errors gracefully with errors' do
-        post :create,
-          assessment_id: assessment.id,
-          first_name:    "john",
-          last_name:     "doe"
+      context 'when the :send_invite flag is passed' do
+        before(:each) do
+          sign_in user
+          post :create,
+               assessment_id: assessment.id,
+               first_name: "john",
+               last_name: "doe",
+               email: "john_doe@gmail.com",
+               send_invite: true
+        end
 
-        assert_response 422
-        expect(json["errors"]).not_to be_empty
+        it {
+          expect(UserInvitationNotificationWorker.jobs.count).to eq 1
+        }
       end
 
-      it 'doesnt allow an already invited user to get invited to the same assessment' do
-        UserInvitation.create!(last_name: 'doe',
-          first_name: 'john',
-          email: 'john_doe@gmail.com',
-          assessment_id: assessment.id)
-        
-        valid_post
+      context 'when the user is already invited to one assessment' do
+        let(:other_assessment) {
+          create(:assessment, :with_participants)
+        }
 
-        assert_response 422
-        expect(json["errors"]["email"]).to include("User has already been invited")
+        let(:other_user) {
+          other_assessment.facilitators.sample
+        }
+
+        let!(:prior_invitation) {
+          create(:user_invitation,
+                 last_name: 'doe',
+                 first_name: 'john',
+                 email: 'john_doe@gmail.com',
+                 assessment_id: assessment.id)
+        }
+
+        before(:each) do
+          sign_in other_user
+          post :create,
+               assessment_id: other_assessment.id,
+               first_name: "john",
+               last_name: "doe",
+               email: "john_doe@gmail.com"
+        end
+
+        it {
+          is_expected.to respond_with :success
+        }
+
+        it {
+          expect(UserInvitation.where(email: 'john_doe@gmail.com').size).to eq 2
+        }
       end
 
-      it 'allows a user to be invited to two assessments' do
-        UserInvitation.create!(last_name: 'doe',
-          first_name: 'john',
-          email: 'john_doe@gmail.com',
-          assessment_id: 1)
-        
-        valid_post
+      context 'when the facilitator role is provided' do
+        before(:each) do
+          sign_in user
+          post :create,
+               assessment_id: assessment.id,
+               first_name: "john",
+               last_name: "doe",
+               email: "john_doe@gmail.com",
+               role: "facilitator"
+        end
 
-        assert_response :success
+        it {
+          expect(
+              assessment.facilitator?(User.find_by(email: 'john_doe@gmail.com'))).to be true
+        }
       end
-
-      it 'allows a user to be a facilitator' do
-        post :create,
-          assessment_id: assessment.id,
-          first_name:    "john",
-          last_name:     "doe",
-          email:         "john_doe@gmail.com",
-          role:          "facilitator"
-
-        expect(
-          assessment.facilitator?(
-            User.find_by(email: 'john_doe@gmail.com'))
-        ).to eq(true)
-      end
-
     end
-
-    context 'worker' do
-      before { sign_in @facilitator2 }
-
-      it 'sends an invite when :send_invite is present' do
-        post :create,
-          send_invite: true,
-          assessment_id: assessment.id,
-          first_name:    "john",
-          last_name:     "doe",
-          email:         "john_doe@gmail.com"
-
-        expect(UserInvitationNotificationWorker.jobs.count).to eq(1)
-
-      end
-
-      it 'does not send an invite' do
-        post :create,
-          assessment_id: assessment.id,
-          first_name:    "john",
-          last_name:     "doe",
-          email:         "john_doe@gmail.com"
-
-        expect(UserInvitationNotificationWorker.jobs.count).to eq(0)
-      end
-    end 
-
-  end 
+  end
 end
