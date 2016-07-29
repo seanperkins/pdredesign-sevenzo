@@ -1,4 +1,4 @@
-require  'spec_helper'
+require 'spec_helper'
 
 describe V1::SharedReportController do
   render_views
@@ -6,7 +6,7 @@ describe V1::SharedReportController do
   before { create_magic_assessments }
   before { create_struct }
   let(:assessment) { @assessment_with_participants }
-  let(:consensu){ assessment.response.nil? ? Response.create(responder_id:   assessment.id, responder_type: 'Assessment') : assessment.response }
+  let(:consensu) { assessment.response.nil? ? Response.create(responder_id: assessment.id, responder_type: 'Assessment') : assessment.response }
 
   describe '#show' do
     it 'gets a report' do
@@ -22,6 +22,6 @@ describe V1::SharedReportController do
     it 'assigns the axes' do
       get :show, shared_token: assessment.share_token, format: :json
       expect(assigns(:axes)).not_to be_nil
-    end 
+    end
   end
 end

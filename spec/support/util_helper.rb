@@ -64,7 +64,3 @@ def create_magic_assessments
       message: 'some message',
   )
 end
-
-def expect_flush_cached_assessment
-  expect_any_instance_of(Assessment).to receive(:flush_cached_version)
-end
