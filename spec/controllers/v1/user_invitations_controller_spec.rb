@@ -1,9 +1,8 @@
 require 'spec_helper'
 
 describe V1::UserInvitationsController do
-  before { create_magic_assessments }
+
   let(:assessment) { @assessment_with_participants }
-  let(:subject) { V1::UserInvitationsController }
   render_views
 
   before do
