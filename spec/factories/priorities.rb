@@ -1,16 +1,15 @@
 # == Schema Information
 #
-# Table name: categories
+# Table name: priorities
 #
 #  id         :integer          not null, primary key
-#  name       :string(255)
+#  tool_id    :integer
+#  order      :integer          is an Array
 #  created_at :datetime
 #  updated_at :datetime
-#  axis_id    :integer
+#  tool_type  :string
 #
 
 FactoryGirl.define do
-  factory :category do
-    name { Faker::Hacker.ingverb }
-  end
+  factory :priority
 end

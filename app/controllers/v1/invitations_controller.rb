@@ -1,6 +1,6 @@
 class V1::InvitationsController < ApplicationController
   def redeem
-    not_found    and return unless invitation
+    not_found and return unless invitation
     unauthorized and return unless invited_user
 
     sign_in(:user, invited_user)
@@ -15,16 +15,16 @@ class V1::InvitationsController < ApplicationController
   end
 
   def show
-    not_found    and return unless invitation
+    not_found and return unless invitation
     unauthorized and return unless invited_user
 
-    locals =  {
-      user: invited_user
+    locals = {
+        user: invited_user
     }
     if invitation.is_a? InventoryInvitation
-      locals[:inventory_id] =  invitation.inventory_id
+      locals[:inventory_id] = invitation.inventory_id
     else
-      locals[:assessment_id] =  invitation.assessment_id
+      locals[:assessment_id] = invitation.assessment_id
     end
 
     render :show, locals: locals
@@ -33,10 +33,10 @@ class V1::InvitationsController < ApplicationController
   private
   def permitted_params
     params.permit :first_name,
-      :last_name,
-      :email,
-      :password,
-      :team_role
+                  :last_name,
+                  :email,
+                  :password,
+                  :team_role
   end
 
   def invited_user

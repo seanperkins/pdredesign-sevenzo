@@ -20,5 +20,9 @@ FactoryGirl.define do
         participant.user = FactoryGirl.create(:user, :with_district)
       end
     end
+
+    trait :with_assessment do
+      association :assessment
+    end
   end
 end

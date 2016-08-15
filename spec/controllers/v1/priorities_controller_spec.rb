@@ -2,89 +2,152 @@ require 'spec_helper'
 
 describe V1::PrioritiesController do
   render_views
-  before :each do
+
+  before(:each) do
     request.env["HTTP_ACCEPT"] = 'application/json'
   end
 
-  before { create_magic_assessments }
-  before { sign_in @facilitator2 }
-  let(:assessment) { @assessment_with_participants }
+  describe '#create' do
 
-  context '#create' do
-    it 'requires a user to create' do
-      sign_out :user
-      post :create, assessment_id: assessment.id,
-        order: [1,2,3]
+    let(:assessment) {
+      create(:assessment, :with_participants)
+    }
 
-      assert_response 401
+    context 'when a user is unauthenticated' do
+      before(:each) do
+        sign_out :user
+        post :create, assessment_id: assessment.id,
+             order: [1, 2, 3]
+
+      end
+
+      it {
+        is_expected.to respond_with :unauthorized
+      }
     end
 
-    it 'requires the owner to create priorities' do
-      sign_in @user2
-      post :create, assessment_id: assessment.id,
-        order: [1,2,3]
+    context 'when the user is a facilitator' do
+      let(:user) {
+        assessment.facilitators.sample
+      }
 
-      assert_response :forbidden
+      before(:each) do
+        sign_in user
+        post :create, assessment_id: assessment.id, order: [1, 2, 3]
+      end
+
+      it {
+        is_expected.to respond_with :success
+      }
     end
 
-    it 'owner can create priority' do
-      post :create, assessment_id: assessment.id,
-        order: [1,2,3]
+    context 'when the user is a participant' do
+      let(:user) {
+        assessment.participants.sample.user
+      }
 
-      assert_response :success
+      before(:each) do
+        sign_in user
+        post :create, assessment_id: assessment.id, order: [1, 2, 3]
+      end
+
+      it {
+        is_expected.to respond_with :forbidden
+      }
     end
 
-    it 'creates a priority record' do
-      post :create, assessment_id: assessment.id,
-        order: [1,2,3]
-      priority = Priority.find_by(tool: assessment)
+    context 'when the user is the owner' do
+      context 'with a defined order' do
+        let(:user) {
+          assessment.user
+        }
 
-      expect(priority.order).to eq([1,2,3])
-    end
+        before(:each) do
+          sign_in user
+          post :create, assessment_id: assessment.id, order: [1, 2, 3]
+        end
 
-    it 'does not allow an empty :order' do
-      post :create, assessment_id: assessment.id
-      assert_response 422
+        it {
+          is_expected.to respond_with :success
+        }
+
+        it {
+          expect(Priority.find_by(tool: assessment).order).to eq [1, 2, 3]
+        }
+      end
+
+      context 'wtih an empty order' do
+        let(:user) {
+          assessment.user
+        }
+
+        before(:each) do
+          sign_in user
+          post :create, assessment_id: assessment.id, order: nil
+        end
+
+        it {
+          is_expected.to respond_with :unprocessable_entity
+        }
+      end
     end
   end
 
   context '#index' do
-    before do
-      expect(controller).to receive(:categories)
-        .and_return(fake_categories)
-    end
 
-    def fake_categories
-      [{ id:   1, 
-         name: 'Some cat2',
-         average: 3.0 },
-       { id:   2, 
+    let(:assessment) {
+      create(:assessment, :with_participants)
+    }
+
+    let(:user) {
+      assessment.user
+    }
+
+    let(:fake_categories) {
+      [{id: 1,
+        name: 'Some cat2',
+        average: 3.0},
+       {id: 2,
         name: 'Some cat1',
-        average: 3.0 }
+        average: 3.0}
       ]
-    end
+    }
 
-    it 'assigns categories' do
+    before(:each) do
+      allow(controller).to receive(:categories)
+                                .and_return(fake_categories)
+
+      sign_in user
       get :index, assessment_id: assessment.id
-      expect(assigns(:categories)).to eq(fake_categories)
     end
 
-    it 'gets the order of the priority' do
-      get :index, assessment_id: assessment.id
-      assert_response :success
-      expect(json.count).to eq(2)
-    end
+    it {
+      is_expected.to respond_with :success
+    }
 
-    it 'returns the category name and order' do
-      get :index, assessment_id: assessment.id
-      assert_response :success
-      expect(json[0]["name"]).to eq('Some cat2')
-      expect(json[0]["order"]).to eq(1)
-      expect(json[0]["average"]).to eq(3.0)
-      expect(json[0]["diagnostic_min"]).to eq(2)
+    it {
+      expect(assigns(:categories)).to eq fake_categories
+    }
 
-      expect(json[1]["name"]).to eq('Some cat1')
-    end
+    it {
+      expect(json.count).to eq 2
+    }
+
+    it {
+      expect(json[0]["name"]).to eq 'Some cat2'
+    }
+    it {
+      expect(json[0]["order"]).to eq 1
+    }
+    it {
+      expect(json[0]["average"]).to be_within(0.01).of 3.0
+    }
+    it {
+      expect(json[0]["diagnostic_min"]).to eq 2
+    }
+    it {
+      expect(json[1]["name"]).to eq 'Some cat1'
+    }
   end
 end
 

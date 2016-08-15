@@ -22,6 +22,9 @@ class Rubric < ActiveRecord::Base
   scope :assessment_driven, -> { where(tool_type: Assessment.to_s) }
   scope :analysis_driven, -> { where(tool_type: Analysis.to_s) }
 
+  # Exposed for testing purposes
+  attr_accessor :axis
+
   def versioned_name
     "#{name} v#{version}"
   end

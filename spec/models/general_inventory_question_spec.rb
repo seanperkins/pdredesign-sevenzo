@@ -14,6 +14,7 @@
 #  created_at                  :datetime
 #  updated_at                  :datetime
 #  product_entry_id            :integer
+#  deleted_at                  :datetime
 #
 
 require 'spec_helper'

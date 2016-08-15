@@ -26,26 +26,46 @@ FactoryGirl.define do
     association :district
 
     trait :with_response do
+      assigned_at Time.now
+      due_date 5.days.from_now
       association :response, :as_assessment_responder
     end
 
+    trait :with_owner do
+      association :user, factory: [:user, :with_district], districts: 1
+    end
+
     trait :with_participants do
+      transient do
+        invited false
+      end
       name 'Assessment other'
-      due_date Time.now
+      due_date 5.days.from_now
       message 'some message'
-      association :rubric
-      association :district
+      association :user, factory: [:user, :with_district], districts: 1
+
+      before(:create) do |assessment, evaluator|
+        assessment.participants = create_list(:participant, 2, :with_users,
+                                              invited_at: (1.day.ago if evaluator.invited)
+        )
+        assessment.facilitators = create_list(:user, 1, :with_district)
+      end
+    end
+
+    trait :with_network_partners do
+      name 'Assessment other'
+      due_date 5.days.from_now
+      message 'some message'
       association :user, factory: [:user, :with_district], districts: 1
 
       before(:create) do |assessment|
-        assessment.participants = FactoryGirl.create_list(:participant, 2, :with_users)
-        assessment.facilitators = [FactoryGirl.create(:user, :with_district)]
+        assessment.network_partners = create_list(:user, 1, :with_network_partner_role, :with_district)
       end
     end
 
     trait :with_consensus do
       after(:create) do |assessment|
-        assessment.update_attributes(response: FactoryGirl.create(:response, responder: assessment))
+        assessment.update_attributes(response: create(:response, responder: assessment))
       end
     end
   end

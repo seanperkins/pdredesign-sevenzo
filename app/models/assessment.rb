@@ -69,7 +69,7 @@ class Assessment < ActiveRecord::Base
 
 	def validate_participants
     return unless self.participants.empty?
-		errors.add :participant_ids, "You must assign participants to this assessment."
+		errors.add :participant_ids, 'You must assign participants to this assessment.'
 	end
 
 	## ASSESSMENT METHODS FOR RESPONSES
@@ -234,6 +234,8 @@ class Assessment < ActiveRecord::Base
 	end
 
   def participants_not_responded
+    # Code smell; should likely be inner or even right join instead of left join to prevent pulling in
+    # participants without responses
     participants
       .joins('LEFT JOIN responses ON responses.responder_id = participants.id')
       .where('responses.submitted_at IS NULL')
@@ -268,6 +270,7 @@ class Assessment < ActiveRecord::Base
 
   def self.assessments_for_user(user)
     districts = user.district_ids
+    # Code smell; we're only looking at participants when we should probably look at members
     includes(participants: :user).where(district_id: districts)
   end
 

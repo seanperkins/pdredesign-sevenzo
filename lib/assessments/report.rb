@@ -1,5 +1,5 @@
 module Assessments
-  class Report 
+  class Report
     attr_reader :assessment
 
     def initialize(assessment)
@@ -16,18 +16,18 @@ module Assessments
 
     def axis_questions(axis)
       response
-        .questions
-        .joins(:category)
-        .where(categories: {axis_id: axis.id})
+          .questions
+          .joins(:category)
+          .where(categories: {axis_id: axis.id})
     end
 
     def average(axis)
       Score
-        .joins(question: { category:  :axis })
-        .where(response_id: response_id)
-        .where.not(value: nil)
-        .where("categories.axis_id = ? ", axis.id)
-        .average(:value)
+          .joins(question: {category: :axis})
+          .where(response_id: response_id)
+          .where.not(value: nil)
+          .where("categories.axis_id = ? ", axis.id)
+          .average(:value)
     end
 
     private
@@ -37,10 +37,10 @@ module Assessments
 
     def axes_ids
       response
-        .questions
-        .joins(:axis)
-        .pluck(:axis_id)
-        .uniq
+          .questions
+          .joins(:axis)
+          .pluck(:axis_id)
+          .uniq
     end
   end
 end

@@ -1,137 +1,142 @@
 require 'spec_helper'
 
 describe Link::Facilitator do
-  before           { create_magic_assessments }
-  before           { create_responses }
-  let(:assessment) { @assessment_with_participants }
-  let(:subject)    { Link::Facilitator }
 
-  before do
-    allow(assessment).to receive(:status).and_return(:consensus)
-    allow(assessment).to receive(:completed?).and_return(false)
+  context 'when assessment is in draft state' do
+    let(:assessment) {
+      create(:assessment, :with_participants)
+    }
+
+    let(:link_facilitator) {
+      Link::Facilitator.new(assessment)
+    }
+
+    before(:each) do
+      allow(assessment).to receive(:status).and_return :draft
+      allow(assessment).to receive(:completed?).and_return false
+    end
+
+    it {
+      expect(link_facilitator.execute)
+          .to eq({finish: {title: 'Finish & Assign', active: true, type: :finish}})
+    }
   end
 
-  def links
-    subject.new(assessment).execute
-  end
+  context 'when assessment is fully complete' do
 
-  it 'returns a dashboard link when an assessment is not a draft' do
-    allow(assessment).to receive(:status).and_return(:assessment)
+    let(:assessment) {
+      create(:assessment, :with_participants)
+    }
 
-    expect(links[:dashboard][:title]).to  eq("View Dashboard")
-    expect(links[:dashboard][:active]).to eq(true)
-    expect(links[:dashboard][:type]).to   eq(:dashboard)
+    let(:link_facilitator) {
+      Link::Facilitator.new(assessment)
+    }
 
+    context 'when consensus has not yet been reached' do
+      before(:each) do
+        allow(assessment).to receive(:fully_complete?).and_return true
+        allow(assessment).to receive(:status).and_return :assessment
+      end
 
-    allow(assessment).to receive(:status).and_return(:draft)
-
-    expect(links[:dashboard]).to be_nil
-
-    expect(links[:finish][:title]).to  eq("Finish & Assign")
-    expect(links[:finish][:active]).to eq(true)
-    expect(links[:finish][:type]).to   eq(:finish)
-  end
-
-  describe 'dashboard' do
-    it 'returns a dashboard link' do
-      expect(links[:dashboard][:title]).to  eq("View Dashboard")
-      expect(links[:dashboard][:active]).to eq(true)
-      expect(links[:dashboard][:type]).to   eq(:dashboard)
-    end
-  end
-
-  describe 'consensus' do
-    it 'returns a new consensus link when there isnt one' do
-      allow(assessment).to receive(:status).and_return(:assessment)
-
-      expect(links[:consensus][:title]).to  eq("Create Consensus")
-      expect(links[:consensus][:active]).to eq(true)
-      expect(links[:consensus][:type]).to   eq(:new_consensus)
+      it {
+        expect(link_facilitator.execute)
+            .to eq({
+                       consensus: {title: 'Create Consensus', active: true, type: :new_consensus},
+                       report: {title: 'View Report', active: false, type: :report},
+                       dashboard: {title: 'View Dashboard', active: true, type: :dashboard}
+                   })
+      }
     end
 
-    it 'returns a consensus link when is a consensus' do
-      allow(assessment).to receive(:status).and_return(:consensus)
+    context 'when consensus has been reached' do
+      before(:each) do
+        allow(assessment).to receive(:fully_complete?).and_return true
+        allow(assessment).to receive(:status).and_return :consensus
+      end
 
-      expect(links[:consensus][:type]).to   eq(:consensus)
-    end
-
-    it 'returns a no consensus link when is a draft' do
-      allow(assessment).to receive(:status).and_return(:draft)
-
-      expect(links[:consensus]).to  eq(nil)
-    end
-  end
-
-  describe 'report' do
-    it 'returns no report link when assessment is not completed' do
-      allow(assessment).to receive(:status).and_return(:assessment)
-
-      expect(links[:report]).to  eq(nil)
-    end
-
-    it 'returns report link when assessment is completed' do
-      allow(assessment).to receive(:status).and_return(:assessment)
-      allow(assessment).to receive(:completed?).and_return(true)
-
-      expect(links[:report]).not_to  eq(nil)
-    end
-
-    it 'returns no report link when is draft' do
-      allow(assessment).to receive(:status).and_return(:draft)
-
-      expect(links[:report]).to  eq(nil)
-    end
-
-    it 'returns an active report link when consensus is fully complete' do
-      allow(assessment).to receive(:status).and_return(:consensus)
-      allow(assessment).to receive(:fully_complete?).and_return(true)
-
-      expect(links[:report][:active]).to eq(true)
+      it {
+        expect(link_facilitator.execute)
+            .to eq({
+                       consensus: {title: 'View Consensus', active: true, type: :consensus},
+                       report: {title: 'View Report', active: true, type: :report},
+                       dashboard: {title: 'View Dashboard', active: true, type: :dashboard}
+                   })
+      }
     end
   end
 
-  describe 'execute' do
-    it 'only returns finish when is draft' do
-      allow(assessment).to receive(:status).and_return(:draft)
-      expect(links.length).to eq(1)
-      expect(links[:finish][:title]).to eq('Finish & Assign')
+  context 'when assessment is in consensus state' do
+    let(:assessment) {
+      create(:assessment, :with_participants)
+    }
+
+    let(:link_facilitator) {
+      Link::Facilitator.new(assessment)
+    }
+
+    before(:each) do
+      allow(assessment).to receive(:fully_complete?).and_return false
+      allow(assessment).to receive(:status).and_return :consensus
     end
 
-    it 'returns dashboard, report, and consensus finish when is fully complete' do
-      allow(assessment).to receive(:status).and_return(:consensus)
-      allow(assessment).to receive(:fully_complete?).and_return(true)
-
-      expect(links.length).to eq(3)
-      expect(links[:dashboard][:title]).to eq('View Dashboard')
-      expect(links[:report][:title]).to eq('View Report')
-      expect(links[:consensus][:title]).to eq('View Consensus')
-    end
-
-    it 'returns dashboard and consensus finish when consensus but not  fully complete' do
-      allow(assessment).to receive(:status).and_return(:consensus)
-      allow(assessment).to receive(:fully_complete?).and_return(false)
-
-      expect(links.length).to eq(2)
-      expect(links[:dashboard][:title]).to eq('View Dashboard')
-      expect(links[:consensus][:title]).to eq('View Consensus')
-    end
-
-    it 'returns response, consensus, and dashboard when assessment and is participant' do
-      allow(assessment).to receive(:participant?).and_return(:true)
-      allow(assessment).to receive(:status).and_return(:assessment)
-
-      expect(links.length).to eq(3)
-      expect(links[:dashboard][:title]).to eq('View Dashboard')
-      expect(links[:response][:title]).to eq('Complete Survey')
-      expect(links[:consensus][:title]).to eq('Create Consensus')
-    end
-
-    it 'returns consensus and dashboard when assessment and is not participant' do
-      allow(assessment).to receive(:status).and_return(:assessment)
-      expect(links.length).to eq(2)
-      expect(links[:dashboard][:title]).to eq('View Dashboard')
-      expect(links[:consensus][:title]).to eq('Create Consensus')
-    end
+    it {
+      expect(link_facilitator.execute)
+          .to eq({
+                     consensus: {title: 'View Consensus', active: true, type: :consensus},
+                     dashboard: {title: 'View Dashboard', active: true, type: :dashboard}
+                 })
+    }
   end
 
+
+  context 'when the user is a participant of the assessment' do
+    let(:assessment) {
+      create(:assessment, :with_participants)
+    }
+
+    let!(:owner_as_participant) {
+      assessment.participants << create(:participant, user: assessment.user)
+    }
+
+    let(:link_facilitator) {
+      Link::Facilitator.new(assessment)
+    }
+
+    before(:each) do
+      allow(assessment).to receive(:fully_complete?).and_return false
+      allow(assessment).to receive(:status).and_return :assessment
+    end
+
+    it {
+      expect(link_facilitator.execute)
+          .to eq({
+                     response: {title: 'Complete Survey', active: true, type: :response},
+                     consensus: {title: 'Create Consensus', active: true, type: :new_consensus},
+                     dashboard: {title: 'View Dashboard', active: true, type: :dashboard}
+                 })
+    }
+  end
+
+  context 'when in any other state' do
+    let(:assessment) {
+      create(:assessment, :with_participants)
+    }
+
+    let(:link_facilitator) {
+      Link::Facilitator.new(assessment)
+    }
+
+    before(:each) do
+      allow(assessment).to receive(:fully_complete?).and_return false
+      allow(assessment).to receive(:status).and_return :assessment
+    end
+
+    it {
+      expect(link_facilitator.execute)
+          .to eq({
+                     consensus: {title: 'Create Consensus', active: true, type: :new_consensus},
+                     dashboard: {title: 'View Dashboard', active: true, type: :dashboard}
+                 })
+    }
+  end
 end
