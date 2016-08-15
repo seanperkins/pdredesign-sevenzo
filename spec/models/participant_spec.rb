@@ -45,9 +45,11 @@ describe Participant do
         build(:participant)
       }
 
+      # Because the assessment is nil, if we attempt to call a function on it, we would result
+      # in a NoMethodError.  This is what we attempt to look for instead of seeing if
+      # nil ever receives a message.
       it 'does not invoke flush_cached_version on the assessment' do
-        expect(participant.assessment).not_to receive(:flush_cached_version)
-        participant.save!
+        expect { participant.save! }.not_to raise_error
       end
     end
   end

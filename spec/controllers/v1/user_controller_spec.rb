@@ -3,11 +3,11 @@ require 'spec_helper'
 describe V1::UserController do
 
   let(:user) {
-    FactoryGirl.create(:user, :with_district)
+    create(:user, :with_district)
   }
 
-  let!(:magic_assessments) {
-    create_magic_assessments
+  let(:assessment) {
+    create(:assessment, :with_participants)
   }
 
   let(:district) {
@@ -208,7 +208,7 @@ describe V1::UserController do
         let!(:user_invitation) {
           create(:user_invitation,
                  email: 'kim@gov.nk',
-                 assessment: @assessment_with_participants,
+                 assessment: assessment,
                  first_name: 'Kim',
                  last_name: 'Possible',
                  team_role: 'role;')
@@ -229,7 +229,7 @@ describe V1::UserController do
         let!(:user_invitation) {
           create(:user_invitation,
                  email: 'kim@gov.nk',
-                 assessment: @assessment_with_participants,
+                 assessment: assessment,
                  first_name: 'Kim',
                  last_name: 'Possible',
                  team_role: 'role;',
