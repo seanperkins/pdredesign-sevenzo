@@ -27,7 +27,9 @@
 
 FactoryGirl.define do
   factory :user do
-    email { Faker::Internet.safe_email }
+    sequence :email do |n|
+      "testuser#{n}@example.com"
+    end
     password { Faker::Internet.password(12) }
     role :district_member
     admin false

@@ -1,72 +1,108 @@
 require 'spec_helper'
 
 describe Link::Participant do
-  before           { create_magic_assessments }
-  before           { create_responses }
-  let(:assessment) { @assessment_with_participants }
-  let(:subject)    { Link::Participant }
+  context 'when the assessment is in draft state' do
+    let(:assessment) {
+      create(:assessment, :with_participants)
+    }
 
-  before do
-    allow(assessment).to receive(:completed?).and_return(false)
+    let(:link_participant) {
+      Link::Participant.new(assessment)
+    }
+
+    before(:each) do
+      allow(assessment).to receive(:status).and_return :draft
+    end
+
+    it {
+      expect(link_participant.execute).to be_nil
+    }
   end
 
-  def links
-    subject.new(assessment).execute
+  context 'when the assessment is not in consensus state' do
+    context 'when the assessment is not completed' do
+      let(:assessment) {
+        create(:assessment, :with_participants)
+      }
+
+      let(:link_participant) {
+        Link::Participant.new(assessment)
+      }
+
+      before(:each) do
+        allow(assessment).to receive(:status).and_return :assessment
+        allow(assessment).to receive(:completed?).and_return false
+      end
+
+      it {
+        expect(link_participant.execute).to eq({action: {title: 'Complete Survey', active: true, type: :response}})
+      }
+    end
+
+    context 'when the assessment is completed' do
+      let(:assessment) {
+        create(:assessment, :with_participants)
+      }
+
+      let(:link_participant) {
+        Link::Participant.new(assessment)
+      }
+
+      before(:each) do
+        allow(assessment).to receive(:status).and_return :assessment
+        allow(assessment).to receive(:completed?).and_return true
+      end
+
+      it {
+        expect(link_participant.execute).to eq({
+                                                   report: {title: 'View Report', active: false, type: :report},
+                                                   action: {title: 'Complete Survey', active: true, type: :response}})
+      }
+    end
+
   end
 
-  describe 'draft'  do
-    it "returns nil if assesment is a draft" do
-      allow(assessment).to receive(:status).and_return(:draft)
+  context 'when the assessment is in consensus state' do
+    context 'when the assessment is not fully complete' do
+      let(:assessment) {
+        create(:assessment, :with_participants)
+      }
 
-      expect(links).to  eq(nil)
-    end
-  end
+      let(:link_participant) {
+        Link::Participant.new(assessment)
+      }
 
-  describe 'report' do
-    it 'does not return a report link when not fully_complete and consensus' do
-      allow(assessment).to receive(:fully_complete?).and_return(false)
-      allow(assessment).to receive(:status).and_return(:consensus)
+      before(:each) do
+        allow(assessment).to receive(:status).and_return :consensus
+        allow(assessment).to receive(:fully_complete?).and_return false
+      end
 
-      expect(links[:report]).to  eq(nil)
-    end
-
-    it 'returns report link when fully_complete and consensus' do
-      allow(assessment).to receive(:fully_complete?).and_return(true)
-      allow(assessment).to receive(:status).and_return(:consensus)
-
-      expect(links[:report][:active]).to eq(true)
+      it {
+        expect(link_participant.execute).to eq({action: {title: 'Edit Survey', active: true, type: :response}})
+      }
     end
 
-    it 'returns report link when assessment is completed and no consensus' do
-      allow(assessment).to receive(:completed?).and_return(true)
-      allow(assessment).to receive(:status).and_return(:assessment)
+    context 'when the assessment is fully complete' do
+      let(:assessment) {
+        create(:assessment, :with_participants)
+      }
 
-      expect(links[:report]).not_to eq(nil)
-    end
-  end
+      let(:link_participant) {
+        Link::Participant.new(assessment)
+      }
 
-  describe 'action' do
-    it 'returns a vote now when not consensus' do
-      allow(assessment).to receive(:status).and_return(:assessment)
+      before(:each) do
+        allow(assessment).to receive(:status).and_return :consensus
+        allow(assessment).to receive(:fully_complete?).and_return true
+      end
 
-      expect(links[:action][:title]).to  eq('Complete Survey')
-      expect(links[:action][:active]).to eq(true)
-      expect(links[:action][:type]).to   eq(:response)
-    end
+      it {
+        expect(link_participant.execute).to eq({
+                                                   report: {title: 'View Report', active: true, type: :report},
+                                                   action: {title: 'Consensus', active: true, type: :consensus}
 
-    it 'returns a edit_response link when not fully_complete' do
-      allow(assessment).to receive(:status).and_return(:consensus)
-      allow(assessment).to receive(:fully_complete?).and_return(false)
-
-      expect(links[:action][:title]).to  eq('Edit Survey')
-    end
-
-    it 'returns a consensus link when completed consensus' do
-      allow(assessment).to receive(:status).and_return(:consensus)
-      allow(assessment).to receive(:fully_complete?).and_return(true)
-
-      expect(links[:action][:active]).to eq(true)
+                                               })
+      }
     end
   end
 end
-

@@ -1,33 +1,49 @@
 require 'spec_helper'
 
 describe V1::RemindersController do
-  before :each do
-    request.env["HTTP_ACCEPT"] = 'application/json'
-  end
   render_views
 
+  before(:each) do
+    request.env["HTTP_ACCEPT"] = 'application/json'
+  end
 
-  before { create_magic_assessments }
-  let(:assessment) { @assessment_with_participants }
+  describe 'POST #create' do
+    let(:assessment) {
+      create(:assessment, :with_participants)
+    }
 
-  describe '#create' do
-    before { sign_in @facilitator2 }
+    context 'when the user is a participant' do
+      let(:user) {
+        assessment.participants.sample.user
+      }
 
-    it 'requires a facilitator to create' do
-      sign_in @user
-      post :create, assessment_id: assessment.id, message: 'Some reminder'
-      assert_response :forbidden
+      before(:each) do
+        sign_in user
+        post :create, assessment_id: assessment.id, message: 'Some reminder'
+      end
+
+      it {
+        is_expected.to respond_with :forbidden
+      }
     end
 
-    it 'can be created by a facilitator' do
-      post :create, assessment_id: assessment.id, message: 'Some reminder'
-      assert_response :success
-    end
+    context 'when the user is a facilitator' do
+      let(:user) {
+        assessment.facilitators.sample
+      }
 
-    it 'calls the ReminderNotificationWorker' do
-      expect(ReminderNotificationWorker).to receive(:perform_async)
-        .with(assessment.id, assessment.class.to_s, 'Some reminder')
-      post :create, assessment_id: assessment.id, message: 'Some reminder'
+      before(:each) do
+        sign_in user
+        post :create, assessment_id: assessment.id, message: 'Reminder'
+      end
+
+      it {
+        is_expected.to respond_with :success
+      }
+
+      it {
+        expect(ReminderNotificationWorker.jobs.size).to eq 1
+      }
     end
   end
 end

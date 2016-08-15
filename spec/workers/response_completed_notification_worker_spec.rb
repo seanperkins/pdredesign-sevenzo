@@ -1,22 +1,34 @@
 require 'spec_helper'
 
 describe ResponseCompletedNotificationWorker do
-  before { create_magic_assessments }
-  before { create_responses }
 
-  let(:subject)    { ResponseCompletedNotificationWorker }
-  let(:assessment) { @assessment_with_participants }
+  describe '#perform' do
 
-  it 'sends the email to each participants email address' do
-    double   = double("mailer")
-    response = Response.find_by(responder_id: @participant.id)
+    let(:response_completed_notification_worker) {
+      ResponseCompletedNotificationWorker.new
+    }
 
-    expect(ResponsesMailer).to receive(:submitted)
-      .with(response)
-      .and_return(double)
+    context 'when no response exists' do
+      it {
+        expect { response_completed_notification_worker.perform(0) }
+            .to raise_error(ActiveRecord::RecordNotFound)
+      }
+    end
 
-    expect(double).to receive(:deliver_now)
-    subject.new.perform(response.id)
+    context 'when the response exists' do
+      let(:response) {
+        create(:response)
+      }
+
+      let(:responses_mailer_double) {
+        double(ResponsesMailer)
+      }
+
+      it {
+        expect(ResponsesMailer).to receive(:submitted).with(response).and_return responses_mailer_double
+        expect(responses_mailer_double).to receive(:deliver_now)
+        response_completed_notification_worker.perform(response.id)
+      }
+    end
   end
-
 end

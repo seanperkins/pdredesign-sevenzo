@@ -1,9 +1,9 @@
 class AccessRequestMailer < ApplicationMailer
 
   def request_access(record, email)
-    @access_link     = access_link(record.token)
-    @requestor_name  = record.user.name
-    @roles           = record.roles.join(",")
+    @access_link = access_link(record.token)
+    @requestor_name = record.user.name
+    @roles = record.roles.join(",")
     @assessment_name = record.assessment.name
     mail(to: email)
   end

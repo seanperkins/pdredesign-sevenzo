@@ -3,40 +3,88 @@ require  'spec_helper'
 describe V1::AccessRequestController do
   render_views
 
-  before { create_magic_assessments }
-  before { sign_in @facilitator2 }
-  let(:assessment) { @assessment_with_participants }
+  let(:assessment) {
+    create(:assessment, :with_participants)
+  }
+
+  let(:facilitator) {
+    assessment.facilitators.sample
+  }
+
+  before(:each) do
+    request.env['HTTP_ACCEPT'] = 'application/json'
+  end
 
   describe '#create' do
-    it 'creates a AccessRequest record' do
-      post :create,
-        assessment_id: assessment.id,
-        roles: [:facilitator, :participant], format: :json
+    context 'when not authenticated' do
+      before(:each) do
+        sign_out :user
+        post :create, assessment_id: assessment.id, roles: %i|facilitator participant|
+      end
 
-      access_request = AccessRequest.find(json["id"])
-      expect(access_request.user_id).to eq(@facilitator2.id)
-      expect(access_request.roles).to eq(['facilitator', 'participant'])
-      expect(access_request.assessment_id).to eq(assessment.id)
-      expect(access_request.hash).not_to be_nil
-      expect(response).to have_http_status(:success)
+      it {
+        is_expected.to respond_with :unauthorized
+      }
     end
 
-    it 'returns errors if not successful' do
-      post :create,
-        assessment_id: assessment.id, format: :json
+    context 'when authenticated' do
+      context 'when successful' do
+        before(:each) do
+          sign_in facilitator
+          post :create, assessment_id: assessment.id, roles: %i|facilitator participant|
+        end
 
-      expect(response).to have_http_status(:unprocessable_entity)
-      expect(json["errors"]).not_to be_empty
-    end
+        it {
+          is_expected.to respond_with :success
+        }
 
-    it 'queues a notification worker' do
-      expect(AccessRequestNotificationWorker).to receive(:perform_async)
+        it {
+          access_request = AccessRequest.find(json["id"])
+          expect(access_request.user_id).to eq(facilitator.id)
+        }
 
-      post :create,
-        assessment_id: assessment.id,
-        roles: [:facilitator, :participant], format: :json
+        it {
+          access_request = AccessRequest.find(json["id"])
+          expect(access_request.roles).to eq(%w(facilitator participant))
+        }
 
-      expect(response).to have_http_status(:success)
+        it {
+          access_request = AccessRequest.find(json["id"])
+          expect(access_request.assessment_id).to eq(assessment.id)
+        }
+
+        it {
+          access_request = AccessRequest.find(json["id"])
+          expect(access_request.hash).not_to be_nil
+        }
+      end
+
+      context 'when unsuccessful' do
+        before(:each) do
+          sign_in facilitator
+          post :create, assessment_id: assessment.id
+        end
+
+        it {
+          is_expected.to respond_with :unprocessable_entity
+        }
+
+        it {
+          expect(json['errors']).not_to be_empty
+        }
+      end
+
+      context 'when successful and queuing a notification worker' do
+        before(:each) do
+          sign_in facilitator
+          expect(AccessRequestNotificationWorker).to receive(:perform_async)
+          post :create, assessment_id: assessment.id, roles: %i|facilitator participant|
+        end
+
+        it {
+          is_expected.to respond_with :success
+        }
+      end
     end
   end
 end

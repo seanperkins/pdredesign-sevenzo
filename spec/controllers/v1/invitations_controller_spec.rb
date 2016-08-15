@@ -1,128 +1,221 @@
 require 'spec_helper'
 
 describe V1::InvitationsController do
-  before { create_magic_assessments }
-  before :each do
-    request.env["HTTP_ACCEPT"] = 'application/json'
+  before(:each) do
+    request.env['HTTP_ACCEPT'] = 'application/json'
   end
-
-  let(:assessment) { @assessment_with_participants }
   render_views
 
- 
-  it 'returns 404 when an invitation is not found' do
-    get :redeem, token: 'xyz'
-    assert_response 404
-  end
-
-  context 'with invitation' do
-    before do 
-      @invitation = UserInvitation
-        .create!(email: @user.email,
-                 assessment: assessment,
-                 token: 'expected_token')
-    end
-
-    describe '#show' do
-      context 'assessment' do
-        it 'shows the invitation by the token' do
-          get :show, token: 'expected_token'
-          assert_response :success
-
-          expect(json["token"]).to be_nil
-          expect(json["email"]).to eq(@user.email)
-        end
-
-        it 'returns an assessment_id' do
-          get :show, token: 'expected_token'
-          assert_response :success
-
-          expect(json["assessment_id"]).to eq(assessment.id)
-        end
+  describe 'POST #redeem' do
+    context 'when an invitation is not found' do
+      before(:each) do
+        post :redeem, token: 'token'
       end
 
-      context 'inventory' do
-        let!(:user) { FactoryGirl.create(:user) }
-        let!(:invitation) { FactoryGirl.create(:inventory_invitation, user: user, email: user.email) }
+      it {
+        is_expected.to respond_with :not_found
+      }
+    end
+
+    context 'when an invitation is found' do
+      context 'when the user account exists' do
+        let(:user) {
+          create(:user, :with_district)
+        }
+
+        let(:user_invitation) {
+          create(:user_invitation, email: user.email)
+        }
 
         before(:each) do
-          get :show, token: invitation.token
+          post :redeem, token: user_invitation.token
         end
 
-        it{ expect(response).to have_http_status(:success) }
+        it {
+          is_expected.to respond_with :success
+        }
 
-        it 'shows the invitation by the token' do
-          expect(json["token"]).to be_nil
-          expect(json["email"]).to eq(invitation.email)
+        it {
+          expect(controller.current_user).to eq user
+        }
+
+        it {
+          expect(UserInvitation.find_by(token: user_invitation.token)).to be_nil
+        }
+      end
+
+      context 'when the user account does not exist' do
+        let(:user_invitation) {
+          create(:user_invitation, email: 'doesnotexisteveratallnope@example.com')
+        }
+
+        before(:each) do
+          post :redeem, token: user_invitation.token
         end
 
-        it 'returns an inventory_id' do
-          expect(json["inventory_id"]).to eq(invitation.inventory.id)
+        it {
+          expect(controller.current_user).to be_nil
+        }
+
+        it {
+          is_expected.to respond_with :unauthorized
+        }
+      end
+
+      context 'when passing information to update the user with' do
+        let(:user) {
+          create(:user, :with_district)
+        }
+
+        let(:user_invitation) {
+          create(:user_invitation, email: user.email)
+        }
+
+        context 'when updating the first name' do
+          before(:each) do
+            post :redeem, token: user_invitation.token, first_name: '1OptimusPrime'
+            user.reload
+          end
+
+          it {
+            is_expected.to respond_with :success
+          }
+
+          it {
+            expect(user.first_name).to eq '1OptimusPrime'
+          }
         end
-      end
-    end
 
-    describe '#redeem' do
-      it 'authorizes a user if they already have an account' do
-        post :redeem, token: 'expected_token'
-        expect(controller.current_user).not_to be_nil
-      end
+        context 'when updating the last name' do
+          before(:each) do
+            post :redeem, token: user_invitation.token, last_name: '2Autobots'
+            user.reload
+          end
 
-      it 'gives a 401 when a user does exist' do
-        @user.delete
+          it {
+            is_expected.to respond_with :success
+          }
 
-        post :redeem, token: 'expected_token'
-        expect(controller.current_user).to be_nil
 
-        assert_response :unauthorized
-      end
+          it {
+            expect(user.last_name).to eq '2Autobots'
+          }
+        end
 
-      it 'allows an update for the users information' do
-        post :redeem,
-          token:      'expected_token',
-          first_name: 'new',
-          last_name:  'user',
-          team_role:  'teacher',
-          email:      'some_other@email.com'
+        context 'when updating the team role' do
+          before(:each) do
+            post :redeem, token: user_invitation.token, team_role: '3LevitatingGuru'
+            user.reload
+          end
 
-        assert_response :success
+          it {
+            is_expected.to respond_with :success
+          }
 
-        @user.reload
+          it {
+            expect(user.team_role).to eq '3LevitatingGuru'
+          }
+        end
 
-        expect(@user.first_name).to eq('new')
-        expect(@user.last_name).to eq('user')
-        expect(@user.team_role).to eq('teacher')
-        expect(@user.email).to eq('some_other@email.com')
-      end
+        context 'when updating the email' do
+          before(:each) do
+            post :redeem, token: user_invitation.token, email: '4email@example.com'
+            user.reload
+          end
 
-      it 'returns errors if a users  fields cant be updated' do
-        post :redeem,
-          token:      'expected_token',
-          password:   '123'
+          it {
+            is_expected.to respond_with :success
+          }
 
-        assert_response 422
-        expect(json["errors"]["password"]).not_to be_empty
-      end
+          it {
+            expect(user.email).to eq '4email@example.com'
+          }
+        end
 
-      it 'allows an update to set the users password' do
-        post :redeem,
-          token:      'expected_token',
-          password:   'some_password'
+        context 'when updating the password' do
+          context 'when the password is invalid' do
+            before(:each) do
+              post :redeem, token: user_invitation.token, password: '123'
+            end
 
-        assert_response :success
+            it {
+              is_expected.to respond_with :unprocessable_entity
+            }
+          end
 
-        user = User.find_for_database_authentication(email: @user.email)
-        expect(user.valid_password?('some_password')).to eq(true)
-      end
+          context 'when the password is valid' do
+            before(:each) do
+              post :redeem, token: user_invitation.token, password: 'avalidpassword'
+            end
 
-      it 'deletes the invitation once it has been redeemed' do
-        post :redeem,
-          token:      'expected_token',
-          password:   'some_password'
-
-        expect(UserInvitation.find_by(token: 'expected_token')).to be_nil
+            it {
+              is_expected.to respond_with :success
+            }
+          end
+        end
       end
     end
   end
 
+  describe 'GET #show' do
+    context 'when an assessment invitation is found' do
+      let(:user) {
+        create(:user, :with_district)
+      }
+
+      let(:user_invitation) {
+        create(:user_invitation, email: user.email)
+      }
+
+      before(:each) do
+        get :show, token: user_invitation.token
+      end
+
+      it {
+        is_expected.to respond_with :success
+      }
+
+      it {
+        expect(json['token']).to be_nil
+      }
+
+      it {
+        expect(json['email']).to eq user_invitation.email
+      }
+
+      it {
+        expect(json['assessment_id']).to eq user_invitation.assessment.id
+      }
+    end
+
+    context 'when an inventory invitation is found' do
+      let(:user) {
+        create(:user, :with_district)
+      }
+
+      let(:invitation) {
+        create(:inventory_invitation, user: user, email: user.email)
+      }
+
+      before(:each) do
+        get :show, token: invitation.token
+      end
+
+      it {
+        is_expected.to respond_with :success
+      }
+
+      it {
+        expect(json['token']).to be_nil
+      }
+
+      it {
+        expect(json['email']).to eq invitation.email
+      }
+
+      it {
+        expect(json['inventory_id']).to eq invitation.inventory.id
+      }
+    end
+  end
 end

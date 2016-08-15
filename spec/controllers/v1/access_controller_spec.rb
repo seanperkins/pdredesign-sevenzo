@@ -3,83 +3,128 @@ require  'spec_helper'
 describe V1::AccessController do
   render_views
 
-  let(:assessment) {
-    @assessment_with_participants
-  }
-
-  let(:user) {
-    FactoryGirl.create(:user, :with_district)
-  }
-
   before(:each) do
     request.env['HTTP_ACCEPT'] = 'application/json'
-    create_magic_assessments
-    sign_in @facilitator2
   end
 
-  def create_token_chain(roles = [:facilitator])
-    @record = AccessRequest.create!(user: user,
-      assessment: assessment,
-      roles: roles,
-      token: 'expected_token')
-  end
-
-  describe '#grant' do
-    it 'requires a login' do
-      sign_out :user
-      post :grant, token: 'stuff'
-      assert_response :unauthorized
-    end
-
-    it 'requires a facilitator of the assessment' do
-      sign_in user
-      create_token_chain
-
-      post :grant, token: @record.token
-      assert_response :unauthorized
-    end
-
-    it 'returns 404 when a token is not found' do
-      post :grant, token: 'stuff'
-      assert_response :missing
-    end
-
-    it 'grants a user permission with :facilitator' do
-      create_token_chain
-
-      post :grant, token: @record.token
-      expect(assessment.facilitator?(user)).to eq(true)
-    end
-
-    context 'user permission is :participant' do
-      before :each do
-        create_token_chain([:participant])
-        post :grant, token: @record.token
+  describe 'POST #grant' do
+    context 'when not authenticated' do
+      before(:each) do
+        sign_out :user
+        post :grant, token: 'stuff'
       end
 
-      it 'grants a user permission with :participant' do
+      it {
+        is_expected.to respond_with :unauthorized
+      }
+    end
+
+    context 'when not a facilitator on the assessment' do
+      let(:access_request) {
+        create(:access_request)
+      }
+
+      let(:non_facilitator) {
+        create(:user, :with_district)
+      }
+
+      before(:each) do
+        sign_in non_facilitator
+        post :grant, token: access_request.token
+      end
+
+      it {
+        is_expected.to respond_with :unauthorized
+      }
+    end
+
+    context 'when a token is not found' do
+      let(:assessment) {
+        access_request.assessment
+      }
+
+      let(:user) {
+        assessment.user
+      }
+
+      let(:access_request) {
+        create(:access_request)
+      }
+
+      before(:each) do
+        sign_in user
+        post :grant, token: 'stuff'
+      end
+
+      it {
+        is_expected.to respond_with :missing
+      }
+    end
+
+    context 'with user permission defined as facilitator' do
+      let(:assessment) {
+        access_request.assessment
+      }
+
+      let(:user) {
+        access_request.user
+      }
+
+      let(:facilitator) {
+        assessment.facilitators.sample
+      }
+
+      let(:access_request) {
+        create(:access_request)
+      }
+
+      before(:each) do
+        sign_in facilitator
+        post :grant, token: access_request.token
+      end
+
+      it {
+        is_expected.to respond_with :success
+      }
+
+      it {
+        expect(assessment.facilitator?(user)).to be true
+      }
+    end
+
+    context 'with user permission defined as participant' do
+      let(:assessment) {
+        access_request.assessment
+      }
+
+      let(:user) {
+        access_request.user
+      }
+
+      let(:facilitator) {
+        assessment.facilitators.sample
+      }
+
+      let(:access_request) {
+        create(:access_request, :with_participant_role)
+      }
+
+      before(:each) do
+        sign_in facilitator
+        post :grant, token: access_request.token
+      end
+
+      it {
+        is_expected.to respond_with :success
+      }
+
+      it  {
         expect(assessment.participant?(user)).to eq(true)
-      end
+      }
 
-      it 'sets participant param invited_at to not be nil ' do
-        participant = Participant.find_by_user_id(user.id)
-        expect(participant.invited_at).not_to eq(nil)
-      end
+      it {
+        expect(Participant.find_by_user_id(user.id).invited_at).to_not be_nil
+      }
     end
-
-    it 'grants a user permission with :viewer' do
-      create_token_chain([:viewer])
-
-      post :grant, token: @record.token
-      expect(assessment.viewer?(user)).to eq(true)
-    end
-
-    it 'removes the request after granting' do
-      create_token_chain([:viewer])
-
-      post :grant, token: @record.token
-      expect(AccessRequest.find_by(token: 'expected_token')).to eq(nil)
-    end
-
   end
 end

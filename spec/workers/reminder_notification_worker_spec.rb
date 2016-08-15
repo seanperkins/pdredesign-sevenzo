@@ -1,56 +1,231 @@
 require 'spec_helper'
 
 describe ReminderNotificationWorker do
-  before { create_magic_assessments }
-  let(:subject)    { ReminderNotificationWorker }
-  let(:assessment) { @assessment_with_participants }
+  let(:reminder_notification_worker) {
+    ReminderNotificationWorker.new
+  }
 
-  it 'sends the email to each participants email address' do
-    double = double("mailer")
+  describe '#perform' do
+    context 'when type is Assessment' do
+      let(:type) {
+        'Assessment'
+      }
 
-    expect(AssessmentsMailer).to receive(:reminder)
-      .exactly(2).times
-      .with(assessment, 'the message', anything)
-      .and_return(double)
+      it {
+        expect(reminder_notification_worker).to receive(:perform_for_assessment)
+        reminder_notification_worker.perform(0, type, nil)
+      }
+    end
 
-    expect(double).to receive(:deliver_now).twice
-    subject.new.perform(assessment.id, assessment.class.to_s, 'the message')
+    context 'when type is Inventory' do
+      let(:type) {
+        'Inventory'
+      }
+
+      it {
+        expect(reminder_notification_worker).to receive(:perform_for_inventory)
+        reminder_notification_worker.perform(0, type, nil)
+      }
+    end
+
+
+    context 'when type is Analysis' do
+      let(:type) {
+        'Analysis'
+      }
+
+      it {
+        expect(reminder_notification_worker).to receive(:perform_for_analysis)
+        reminder_notification_worker.perform(0, type, nil)
+      }
+    end
   end
 
-  it 'does not send an email to users that have completed a response' do
-    create_struct
-    create_responses
+  describe '#perform_for_assessment' do
+    context 'when the assessment does not exist' do
+      it {
+        expect { reminder_notification_worker.perform_for_assessment(assessment_id: 0, message: nil) }
+            .to raise_error(ActiveRecord::RecordNotFound)
+      }
+    end
 
-    @participant.response.update(submitted_at: Time.now)
-    @participant2.response.update(submitted_at: nil)
+    context 'when an assessment exists' do
+      context 'when no participants are present' do
+        let(:assessment) {
+          create(:assessment)
+        }
 
-    double = double("mailer").as_null_object
-    expect(AssessmentsMailer).to receive(:reminder)
-      .exactly(1).times
-      .with(anything, anything, @participant2).and_return(double)
+        before(:each) do
+          expect(AssessmentsMailer).not_to receive(:reminder)
+          reminder_notification_worker.perform_for_assessment(assessment_id: assessment.id, message: nil)
+        end
 
-    subject.new.perform(assessment.id, assessment.class.to_s, 'the message')
+        it {
+          expect(Message.where(tool: assessment, content: nil, category: :reminder)).to_not be_empty
+        }
+      end
 
+      context 'when participants are present' do
+        context 'when all participants have responded and completed the assessment' do
+          let(:assessment) {
+            create(:assessment, :with_participants)
+          }
+
+          let!(:responses) {
+            assessment.participants.each { |participant|
+              participant.response = create(:response, :as_assessment_response, :submitted, assessment: assessment)
+            }
+          }
+
+          it {
+            expect(AssessmentsMailer).not_to receive(:reminder)
+            reminder_notification_worker.perform_for_assessment(assessment_id: assessment.id, message: nil)
+          }
+        end
+
+        context 'when all participants have responded to the assessment' do
+          let(:assessment) {
+            create(:assessment, :with_participants)
+          }
+
+          let(:assessments_mailer_double) {
+            double('AssessmentsMailer')
+          }
+
+          let!(:responses) {
+            assessment.participants.each { |participant|
+              participant.response = create(:response, :as_assessment_response, assessment: assessment)
+            }
+          }
+
+          before(:each) do
+            expect(AssessmentsMailer).to receive(:reminder).exactly(:twice).and_return(assessments_mailer_double)
+            expect(assessments_mailer_double).to receive(:deliver_now).exactly(:twice)
+            reminder_notification_worker.perform_for_assessment(assessment_id: assessment.id, message: nil)
+            assessment.participants.reload
+
+          end
+
+          it {
+            expect(assessment.participants.all? { |participant| !participant.reminded_at.nil? })
+          }
+        end
+
+        context 'when no participants have responded to the assessment' do
+          let(:assessment) {
+            create(:assessment, :with_participants)
+          }
+
+          let(:assessments_mailer_double) {
+            double('AssessmentsMailer')
+          }
+
+          before(:each) do
+            expect(AssessmentsMailer).to receive(:reminder).exactly(:twice).and_return(assessments_mailer_double)
+            expect(assessments_mailer_double).to receive(:deliver_now).exactly(:twice)
+            reminder_notification_worker.perform_for_assessment(assessment_id: assessment.id, message: nil)
+            assessment.participants.reload
+          end
+
+          it {
+            expect(assessment.participants.all? { |participant| !participant.reminded_at.nil? })
+          }
+        end
+      end
+    end
   end
 
-  it 'sets the :reminded_at field' do
-    subject.new.perform(assessment.id, assessment.class.to_s, 'the message')
-    @participant.update(reminded_at: nil)
-    @participant2.update(reminded_at: nil)
+  describe '#perform_for_inventory' do
+    context 'when the inventory does not exist' do
+      it {
+        expect { reminder_notification_worker.perform_for_inventory(inventory_id: 0, message: nil) }
+            .to raise_error(ActiveRecord::RecordNotFound)
+      }
+    end
 
-    @participant.reload
-    @participant2.reload
+    context 'when an inventory exists' do
+      context 'when no participants are present' do
+        let(:inventory) {
+          create(:inventory)
+        }
 
-    expect(@participant.reminded_at).not_to be_nil
-    expect(@participant2.reminded_at).not_to be_nil
+        before(:each) do
+          expect(InventoryInvitationMailer).not_to receive(:reminder)
+          reminder_notification_worker.perform_for_inventory(inventory_id: inventory.id, message: nil)
+        end
+
+        it {
+          expect(Message.where(tool: inventory, content: nil, category: :reminder)).to_not be_empty
+        }
+      end
+
+      context 'when participants are present' do
+        let(:inventory) {
+          create(:inventory, :with_participants, participants: 2)
+        }
+
+        let(:inventory_invitation_mailer_double) {
+          double('InventoryInvitationMailer')
+        }
+
+       before(:each) do
+         expect(InventoryInvitationMailer).to receive(:reminder).exactly(:twice).and_return(inventory_invitation_mailer_double)
+         expect(inventory_invitation_mailer_double).to receive(:deliver_now).exactly(:twice)
+         reminder_notification_worker.perform_for_inventory(inventory_id: inventory.id, message: nil)
+         inventory.participants.reload
+       end
+
+        it {
+          expect(inventory.participants.all? { |participant| !participant.reminded_at.nil? })
+        }
+      end
+    end
   end
 
-  it 'adds a message entry for the assessment' do
-    subject.new.perform(assessment.id, assessment.class.to_s, 'the message')
-    message = Message
-      .find_by(tool_id: assessment.id,
-               content: 'the message')
+  describe '#perform_for_analysis' do
+    context 'when the analysis does not exist' do
+      it {
+        expect { reminder_notification_worker.perform_for_analysis(analysis_id: 0, message: nil) }
+            .to raise_error(ActiveRecord::RecordNotFound)
+      }
+    end
 
-    expect(message).not_to be_nil
+    context 'when an analysis exists' do
+      context 'when no participants are present' do
+        let(:analysis) {
+          create(:analysis)
+        }
+
+        before(:each) do
+          expect(AnalysisInvitationMailer).not_to receive(:reminder)
+          reminder_notification_worker.perform_for_analysis(analysis_id: analysis.id, message: nil)
+        end
+
+        it {
+          expect(Message.where(tool: analysis, content: nil, category: :reminder)).to_not be_empty
+        }
+      end
+
+      context 'when participants are present' do
+        let(:analysis) {
+          create(:analysis, :with_participants, participants: 2)
+        }
+
+        let(:analysis_invitation_mailer_double) {
+          double('AnalysisInvitationMailer')
+        }
+
+        before(:each) do
+          expect(AnalysisInvitationMailer).to receive(:reminder).exactly(:twice).and_return(analysis_invitation_mailer_double)
+          expect(analysis_invitation_mailer_double).to receive(:deliver_now).exactly(:twice)
+          reminder_notification_worker.perform_for_analysis(analysis_id: analysis.id, message: nil)
+          analysis.participants.reload
+        end
+
+        it {
+          expect(analysis.participants.all? { |participant| !participant.reminded_at.nil? })
+        }
+      end
+    end
   end
 end

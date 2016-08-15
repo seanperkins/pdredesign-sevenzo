@@ -1,58 +1,99 @@
 require 'spec_helper'
 
 describe Link::Response do
-  before(:each) do
-    create_magic_assessments
-    create_responses
-  end
 
   let(:assessment) {
-    @assessment_with_participants
+    create(:assessment, :with_participants)
   }
 
-  let(:subject) {
-    Link::Response
+  let(:user) {
+    create(:user, :with_district)
   }
 
-  describe '#assessment_link' do
+  let(:link_response) {
+    Link::Response.new(assessment, user)
+  }
 
-    let(:new_user) {
-      FactoryGirl.create(:user, :with_district)
-    }
-
+  context 'when user is not associated' do
     before(:each) do
-      assessment.update(assigned_at: Time.now)
+      allow(assessment).to receive(:participant?).and_return false
+      allow(assessment).to receive(:facilitator?).and_return false
+      allow(assessment).to receive(:network_partner?).and_return false
     end
 
-    def link_for(user)
-      subject.new(assessment, user).execute
+    it {
+      expect(link_response.execute).to eq :none
+    }
+  end
+
+  context 'when user is associated' do
+    context 'when user is not assigned' do
+      before(:each) do
+        allow(assessment).to receive(:participant?).and_return true
+        allow(assessment).to receive(:assigned?).and_return false
+      end
+
+      it {
+        expect(link_response.execute).to eq :none
+      }
     end
 
-    it 'returns :consensus when status is consensus and is submitted' do
-      Response.first.update(submitted_at: Time.now)
-      assessment.update(response: Response.first)
+    context 'when user is assigned' do
+      context 'when the assessment is not fully complete' do
+        context 'when the user has no responses' do
+          context 'when the user is not a participant' do
+            before(:each) do
+              allow(assessment).to receive(:participant?).and_return false
+              allow(assessment).to receive(:facilitator?).and_return true
+              allow(assessment).to receive(:assigned?).and_return true
+              allow(assessment).to receive(:fully_complete?).and_return false
+              allow(link_response).to receive(:user_has_responses?).and_return false
+            end
 
-      expect(link_for(@user)).to eq(:consensus)
-    end
+            it {
+              expect(link_response.execute).to eq :none
+            }
+          end
 
-    it 'returns :new_response when no response for the participant' do
-      @participant.response.delete
-      expect(link_for(@participant.user)).to eq(:new_response)
-    end
+          context 'when the user is a participant' do
+            before(:each) do
+              allow(assessment).to receive(:participant?).and_return true
+              allow(assessment).to receive(:assigned?).and_return true
+              allow(assessment).to receive(:fully_complete?).and_return false
+              allow(link_response).to receive(:user_has_responses?).and_return false
+            end
 
-    it 'returns :none when a user is not a participant' do
-      Response.first.update(submitted_at: Time.now)
-      assessment.update(response: Response.first)
-      expect(link_for(new_user)).to eq(:none)
-    end
+            it {
+              expect(link_response.execute).to eq :new_response
+            }
+          end
+        end
 
-    it 'returns new_response when there is no response for the user' do
-      expect(link_for(@participant.user)).to eq(:response)
-    end
+        context 'when the user has responses' do
+          before(:each) do
+            allow(assessment).to receive(:participant?).and_return true
+            allow(assessment).to receive(:assigned?).and_return true
+            allow(assessment).to receive(:fully_complete?).and_return false
+            allow(link_response).to receive(:user_has_responses?).and_return true
+          end
 
-    it 'returns :none when the assessment is not assigned' do
-      assessment.update(assigned_at: nil)
-      expect(link_for(@participant.user)).to eq(:none)
+          it {
+            expect(link_response.execute).to eq :response
+          }
+        end
+      end
+
+      context 'when the assessment is fully complete' do
+        before(:each) do
+          allow(assessment).to receive(:participant?).and_return true
+          allow(assessment).to receive(:assigned?).and_return true
+          allow(assessment).to receive(:fully_complete?).and_return true
+        end
+
+        it {
+          expect(link_response.execute).to eq :consensus
+        }
+      end
     end
   end
 end

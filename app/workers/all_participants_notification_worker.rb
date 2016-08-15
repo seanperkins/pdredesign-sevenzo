@@ -12,7 +12,6 @@ class AllParticipantsNotificationWorker
       else
         send_assessment_mail(assessment, participant)
       end
-      
       mark_invited(participant)
     end
   end

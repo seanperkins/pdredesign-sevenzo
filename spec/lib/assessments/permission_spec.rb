@@ -1,26 +1,30 @@
 require 'spec_helper'
 
 describe Assessments::Permission do
+  describe '#initialize' do
+    let(:assessment) {
+      create(:assessment)
+    }
 
-  let(:assessment) {
-    @assessment_with_participants
-  }
-
-  let(:user) {
-    FactoryGirl.create(:user)
-  }
-
-  before(:each) do
-    create_magic_assessments
+    it {
+      expect(Assessments::Permission.new(assessment).assessment).to eq assessment
+    }
   end
 
   describe '#available_permissions' do
-    it 'contains the correct available permissions' do
-      expect(Assessments::Permission.available_permissions).to eq([:facilitator, :participant])
-    end
+    it {
+      expect(Assessments::Permission.available_permissions).to eq [:facilitator, :participant]
+    }
   end
 
-  context 'when requesting access to an assessment' do
+  describe '#request_access' do
+    let(:assessment) {
+      create(:assessment, :with_participants)
+    }
+
+    let(:user) {
+      create(:user, :with_district)
+    }
 
     before(:each) do
       Assessments::Permission.request_access(
@@ -29,164 +33,568 @@ describe Assessments::Permission do
           assessment_id: assessment.id)
     end
 
-    it 'creates the access request object' do
+    it {
       expect(AccessRequest.find_by(assessment_id: assessment.id, user_id: user.id)).not_to be_nil
+    }
+  end
+
+  describe '#requested' do
+    let(:access_request) {
+      create(:access_request)
+    }
+
+    let(:access_permission) {
+      Assessments::Permission.new(assessment)
+    }
+
+    let(:assessment) {
+      access_request.assessment
+    }
+
+    it {
+      expect(access_permission.requested.first).to eq access_request
+    }
+  end
+
+  describe '#get_access_request' do
+    let(:access_request) {
+      create(:access_request)
+    }
+
+    let(:assessment) {
+      access_request.assessment
+    }
+
+    let(:access_permission) {
+      Assessments::Permission.new(assessment)
+    }
+
+    context 'when the user is a member of the request' do
+      let(:user) {
+        access_request.user
+      }
+
+      it {
+        expect(access_permission.get_access_request(user)).to eq access_request
+      }
+    end
+
+    context 'when the user is not a member of the request' do
+      let(:user) {
+        create(:user, :with_district)
+      }
+
+      it {
+        expect(access_permission.get_access_request(user)).to be_nil
+      }
     end
   end
 
-  context 'when determining the possible levels for a user' do
+  describe '#possible_roles_permissions' do
+    let(:assessment_permission) {
+      Assessments::Permission.new(assessment)
+    }
+
+    let(:assessment) {
+      create(:assessment, :with_participants)
+    }
+
+
+    let(:user) {
+      create(:user, :with_district)
+    }
+
+    context 'when the user is a participant' do
+      let!(:participant) {
+        create(:participant, user: user, assessment: assessment)
+      }
+
+      it {
+        expect(assessment_permission.possible_roles_permissions(user)).to eq [:facilitator]
+      }
+    end
+
+    context 'when the user is a facilitator' do
+      before(:each) do
+        assessment.facilitators << user
+      end
+
+      it {
+        expect(assessment_permission.possible_roles_permissions(user)).to eq [:participant]
+      }
+    end
+  end
+
+  describe '#get_level' do
+    let(:assessment) {
+      create(:assessment, :with_participants)
+    }
 
     let(:assessment_permission) {
       Assessments::Permission.new(assessment)
     }
 
-    before(:each) do
-      participant = Participant.new(user: user, assessment: assessment)
-      participant.save!
+    context 'when the user is a facilitator' do
+      let(:user) {
+        assessment.facilitators.sample
+      }
+
+      it {
+        expect(assessment_permission.get_level(user)).to eq :facilitator
+      }
     end
 
-    it 'returns the correct permission levels for a user' do
-      expect(assessment_permission.possible_roles_permissions(user)).to eq([:facilitator])
+    context 'when the user is a participant' do
+      let(:user) {
+        assessment.participants.sample.user
+      }
+
+      it {
+        expect(assessment_permission.get_level(user)).to eq :participant
+      }
+    end
+
+    context 'when the user is a network partner' do
+      let(:user) {
+        u = create(:user, :with_network_partner_role)
+        assessment.network_partners << u
+        u
+      }
+
+      it {
+        expect(assessment_permission.get_level(user)).to eq :network_partner
+      }
     end
   end
 
-  context 'permission level' do
+  describe '#add_level' do
+    let(:assessment) {
+      create(:assessment, :with_participants)
+    }
 
     let(:assessment_permission) {
       Assessments::Permission.new(assessment)
     }
 
-    context 'when requesting access as a facilitator' do
-      let!(:request_access) {
-        Application.request_access_to_assessment(assessment: assessment, user: user, roles: ['facilitator'])
+    let(:user) {
+      create(:user)
+    }
+
+    context 'when adding a facilitator' do
+      before(:each) do
+        expect(AccessGrantedNotificationWorker).to receive(:perform_async).with(assessment.id, user.id, :facilitator)
+        assessment_permission.add_level(user, :facilitator)
+      end
+
+      it {
+        expect(assessment.facilitators.include?(user)).to be true
       }
-
-      it 'accepts a facilitator request via asynchronous call' do
-        expect(AccessGrantedNotificationWorker).to receive(:perform_async)
-        assessment_permission.accept_permission_requested(user)
-        expect(assessment.facilitator?(user)).to be true
-      end
-
-      it "returns the user's permission level" do
-        assessment_permission.accept_permission_requested(user)
-        expect(assessment_permission.get_level(user)).to eq(:facilitator)
-      end
-
-      it 'should respond with the list of users requesting access' do
-        expect(assessment_permission.requested).to include(request_access)
-      end
     end
 
-    context 'when requesting access as a participant' do
-      let(:new_user) {
-        FactoryGirl.create(:user)
+    context 'when adding a network partner' do
+      before(:each) do
+        expect(AccessGrantedNotificationWorker).to receive(:perform_async).with(assessment.id, user.id, :network_partner)
+        assessment_permission.add_level(user, :network_partner)
+      end
+
+      it {
+        expect(assessment.network_partners.include?(user)).to be true
       }
+    end
+
+    context 'when adding a viewer' do
+      before(:each) do
+        expect(AccessGrantedNotificationWorker).to receive(:perform_async).with(assessment.id, user.id, :viewer)
+        assessment_permission.add_level(user, :viewer)
+      end
+
+      it {
+        expect(assessment.viewers.include?(user)).to be true
+      }
+    end
+
+    context 'when adding any other level' do
 
       before(:each) do
-        Application.request_access_to_assessment(
-            assessment: assessment, user: new_user, roles: ['participant'])
+        expect(AccessGrantedNotificationWorker).not_to receive(:perform_async).with(assessment.id, user.id, :admin)
       end
 
-      it 'accepts a participant request' do
-        assessment_permission.accept_permission_requested(new_user)
-        expect(assessment.participant?(new_user)).to be true
-      end
-    end
-
-    it 'adds a permission level to user' do
-      assessment_permission.add_level(user, 'network_partner')
-      expect(assessment.network_partner?(user)).to be true
-    end
-
-
-    it 'updates the permission level' do
-      assessment.facilitators << @facilitator
-      assessment_permission.update_level(@facilitator, 'viewer')
-
-      expect(assessment.facilitator?(@facilitator)).to be false
-      expect(assessment_permission.get_level(@facilitator)).to eq(:viewer)
-    end
-
-    it 'updates only when the new level is different' do
-      assessment.facilitators << @facilitator
-      expect(AccessGrantedNotificationWorker).not_to receive(:perform_async)
-
-      assessment_permission.update_level(@facilitator, 'facilitator')
-      expect(assessment.facilitator?(@facilitator)).to eq(true)
-    end
-
-    it 'does not update the owner' do
-      owner = assessment.user
-
-      assessment_permission.update_level(assessment.user, 'viewer')
-
-      expect(assessment.owner?(owner)).to be true
-      expect(assessment.viewer?(owner)).to be false
+      it {
+        expect(assessment_permission.add_level(user, :admin)).to be false
+      }
     end
   end
 
-  context 'when denying a permission request' do
+  describe '#update_level' do
+    let(:assessment) {
+      create(:assessment, :with_participants)
+    }
+
     let(:assessment_permission) {
       Assessments::Permission.new(assessment)
     }
 
+    context 'when the user is the owner of the assessment' do
+      let(:user) {
+        assessment.user
+      }
+
+      context 'when attempting to update to network partner' do
+        let(:level) {
+          :network_partner
+        }
+
+        before(:each) do
+          assessment_permission.update_level(user, level)
+        end
+
+        it {
+          expect(assessment.network_partner?(user)).to be false
+        }
+      end
+
+      context 'when attempting to update to viewer' do
+        let(:level) {
+          :viewer
+        }
+
+        before(:each) do
+          assessment_permission.update_level(user, level)
+        end
+
+        it {
+          expect(assessment.viewer?(user)).to be false
+        }
+      end
+
+      context 'when attempting to update to participant' do
+        let(:level) {
+          :participant
+        }
+
+        before(:each) do
+          assessment_permission.update_level(user, level)
+        end
+
+        it {
+          expect(assessment.participant?(user)).to be false
+        }
+      end
+    end
+
+    context 'when the user is a facilitator of the assessment' do
+      let(:user) {
+        assessment.facilitators.sample
+      }
+
+      context 'when attempting to update to network partner' do
+        let(:level) {
+          :network_partner
+        }
+
+        before(:each) do
+          assessment_permission.update_level(user, level)
+        end
+
+        it {
+          expect(assessment.network_partner?(user)).to be true
+        }
+      end
+
+      context 'when attempting to update to viewer' do
+        let(:level) {
+          :viewer
+        }
+
+        before(:each) do
+          assessment_permission.update_level(user, level)
+        end
+
+        it {
+          expect(assessment.viewer?(user)).to be true
+        }
+      end
+
+      context 'when attempting to update to participant' do
+        let(:level) {
+          :participant
+        }
+
+        before(:each) do
+          assessment_permission.update_level(user, level)
+        end
+
+        it {
+          expect(assessment.participant?(user)).to be false
+        }
+      end
+    end
+
+    context 'when the user is a participant of the assessment' do
+      let(:user) {
+        assessment.participants.sample.user
+      }
+
+      context 'when attempting to update to network partner' do
+        let(:level) {
+          :network_partner
+        }
+
+        before(:each) do
+          assessment_permission.update_level(user, level)
+        end
+
+        it {
+          expect(assessment.network_partner?(user)).to be true
+        }
+      end
+
+      context 'when attempting to update to viewer' do
+        let(:level) {
+          :viewer
+        }
+
+        before(:each) do
+          assessment_permission.update_level(user, level)
+        end
+
+        it {
+          expect(assessment.viewer?(user)).to be true
+        }
+      end
+
+      context 'when attempting to update to facilitator' do
+        let(:level) {
+          :facilitator
+        }
+
+        before(:each) do
+          assessment_permission.update_level(user, level)
+        end
+
+        it {
+          expect(assessment.facilitator?(user)).to be true
+        }
+      end
+    end
+
+    context 'when the user is a network partner of the assessment' do
+      let(:user) {
+        u = create(:user, :with_network_partner_role)
+        assessment.network_partners << u
+        u
+      }
+
+      context 'when attempting to update to participant' do
+        let(:level) {
+          :participant
+        }
+
+        before(:each) do
+          assessment_permission.update_level(user, level)
+        end
+
+        it {
+          expect(assessment.participant?(user)).to be false
+        }
+      end
+
+      context 'when attempting to update to viewer' do
+        let(:level) {
+          :viewer
+        }
+
+        before(:each) do
+          assessment_permission.update_level(user, level)
+        end
+
+        it {
+          expect(assessment.viewer?(user)).to be true
+        }
+      end
+
+      context 'when attempting to update to facilitator' do
+        let(:level) {
+          :facilitator
+        }
+
+        before(:each) do
+          assessment_permission.update_level(user, level)
+        end
+
+        it {
+          expect(assessment.facilitator?(user)).to be true
+        }
+      end
+    end
+
+    context 'when the user is a viewer of the assessment' do
+      let(:user) {
+        u = create(:user, :with_district)
+        assessment.viewers << u
+        u
+      }
+
+      context 'when attempting to update to network partner' do
+        let(:level) {
+          :network_partner
+        }
+
+        before(:each) do
+          assessment_permission.update_level(user, level)
+        end
+
+        it {
+          expect(assessment.network_partner?(user)).to be true
+        }
+      end
+
+      context 'when attempting to update to viewer' do
+        let(:level) {
+          :viewer
+        }
+
+        before(:each) do
+          assessment_permission.update_level(user, level)
+        end
+
+        it {
+          expect(assessment.viewer?(user)).to be true
+        }
+      end
+
+      context 'when attempting to update to facilitator' do
+        let(:level) {
+          :facilitator
+        }
+
+        before(:each) do
+          assessment_permission.update_level(user, level)
+        end
+
+        it {
+          expect(assessment.facilitator?(user)).to be true
+        }
+      end
+    end
+
+    context 'when updating to the same role' do
+      let(:user) {
+        assessment.facilitators.sample
+      }
+
+      let(:level) {
+        :facilitator
+      }
+
+      it {
+        expect(assessment_permission).not_to receive(:revoke_level).with(user)
+        expect(assessment_permission).not_to receive(:add_level).with(user, level)
+        assessment_permission.update_level(user, level)
+      }
+    end
+  end
+
+  describe '#deny' do
+    let(:assessment_permission) {
+      Assessments::Permission.new(assessment)
+    }
+
+    let(:assessment) {
+      access_request.assessment
+    }
+
+    let(:user) {
+      access_request.user
+    }
+
+    let(:access_request) {
+      create(:access_request)
+    }
+
     before(:each) do
-      Application.request_access_to_assessment(assessment: assessment, user: user, roles: ['facilitator'])
       assessment_permission.deny(user)
     end
 
-    it 'deletes the request' do
-      expect(assessment_permission.get_access_request(user)).to be_nil
-    end
+    it {
+      expect(AccessRequest.find_by(assessment: assessment, user: user)).to be_nil
+    }
   end
 
-  context 'participants' do
-    it 'does not send notification for permission granted when is participant' do
-      Application.request_access_to_assessment(assessment: assessment, user: user, roles: ['participant'])
-      expect(AccessGrantedNotificationWorker).not_to receive(:perform_async)
-
-      assessment_permission = Assessments::Permission.new(assessment)
-      assessment_permission.accept_permission_requested(user)
-    end
-  end
-
-  context 'notification emails' do
+  describe '#accept_permission_requested' do
 
     let(:assessment_permission) {
       Assessments::Permission.new(assessment)
     }
 
-    let(:access_granted_notification_worker) {
-      class_spy(AccessGrantedNotificationWorker)
+    let(:assessment) {
+      access_request.assessment
     }
 
-    context 'when the role is a facilitator' do
-      before(:each) do
-        Application.request_access_to_assessment(assessment: assessment, user: user, roles: ['facilitator'])
-        allow(AccessGrantedNotificationWorker).to receive(:perform_async)
-      end
+    let(:access_request) {
+      create(:access_request)
+    }
 
-      it 'notifies the user by email' do
+    let(:user) {
+      access_request.user
+    }
+
+    it {
+      expect(AccessGrantedNotificationWorker).to receive(:perform_async)
+      assessment_permission.accept_permission_requested(user)
+      expect(assessment.facilitator?(user)).to be true
+    }
+
+    it {
+      expect(assessment_permission.requested).to include(access_request)
+    }
+  end
+
+  describe '#accept_permission_requested' do
+    context 'when the access request is for a participant' do
+      let(:access_request) {
+        create(:access_request, :with_participant_role)
+      }
+
+      let(:assessment) {
+        access_request.assessment
+      }
+
+      let(:user) {
+        access_request.user
+      }
+
+      let(:assessment_permission) {
+        Assessments::Permission.new(assessment)
+      }
+
+      it {
+        expect(AccessGrantedNotificationWorker).not_to receive(:perform_async)
         assessment_permission.accept_permission_requested(user)
-        expect(AccessGrantedNotificationWorker).to have_received(:perform_async)
-      end
-
-      it 'sends an email when the facilitator permission level is added' do
-        assessment_permission.add_level(user, 'facilitator')
-        expect(AccessGrantedNotificationWorker).to have_received(:perform_async)
-      end
+      }
     end
 
-    context 'when the role is a participant' do
-      before(:each) do
-        Application.request_access_to_assessment(assessment: assessment, user: user, roles: [:participant])
-        allow(AccessGrantedNotificationWorker).to receive(:perform_async)
-      end
+    context 'when the access request is not for a participant' do
+      let(:access_request) {
+        create(:access_request)
+      }
 
-      it 'does not notify the user by email' do
+      let(:assessment) {
+        access_request.assessment
+      }
+
+      let(:user) {
+        access_request.user
+      }
+
+      let(:assessment_permission) {
+        Assessments::Permission.new(assessment)
+      }
+
+      it {
+        expect(AccessGrantedNotificationWorker).to receive(:perform_async)
         assessment_permission.accept_permission_requested(user)
-        expect(AccessGrantedNotificationWorker).to_not have_received(:perform_async)
-      end
+      }
     end
   end
 end

@@ -28,7 +28,7 @@ class ReminderNotificationWorker
   end
 
   def perform_for_inventory(inventory_id:, message:)
-    inventory = Inventory.where(id: inventory_id).first
+    inventory = Inventory.find(inventory_id)
     create_message_entry(inventory, message)
 
     inventory.participants.each do |participant|
@@ -42,7 +42,7 @@ class ReminderNotificationWorker
   end
 
   def perform_for_analysis(analysis_id:, message:)
-    analysis = Analysis.where(id: analysis_id).first
+    analysis = Analysis.find(analysis_id)
     create_message_entry(analysis, message)
 
     analysis.participants.each do |participant|

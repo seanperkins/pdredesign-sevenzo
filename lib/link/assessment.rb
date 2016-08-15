@@ -7,13 +7,12 @@ module Link
 
     def initialize(assessment, user)
       @assessment = assessment
-      @user       = user
-    end       
+      @user = user
+    end
 
     def execute
-      target
-        .new(assessment, user)
-        .execute
+      target.new(assessment, user)
+            .execute
     end
 
     private
@@ -24,4 +23,3 @@ module Link
     end
   end
 end
- 

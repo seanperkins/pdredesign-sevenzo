@@ -3,202 +3,352 @@ require 'spec_helper'
 describe V1::ParticipantsController do
   render_views
 
-  before :each do
+  before(:each) do
     request.env["HTTP_ACCEPT"] = 'application/json'
   end
 
-  before { create_magic_assessments }
-  before { sign_in @facilitator2 }
-  let(:assessment) { @assessment_with_participants }
+  describe 'GET #index' do
+    context 'when not authenticated' do
 
-  context '#index' do
-    it 'can get participants' do
-      get :index, assessment_id: assessment.id
-      assert_response :success 
-    end
-    
-    it 'requires a user' do
-      sign_out :user
-      get :index, assessment_id: assessment.id
-      assert_response 401
-    end
+      let(:assessment) {
+        create(:assessment, :with_participants)
+      }
 
-    it 'gets a list of participants' do
-      get :index, assessment_id: assessment.id
-      participants = assigns(:participants)
-      expect(participants.count).to eq(2) 
-    end
-
-    it 'gets a list of participants' do
-      get :index, assessment_id: assessment.id
-
-      participants = assigns(:participants)
-      expect(participants.count).to eq(2) 
-    end
-  end
-
-  context '#create' do
-    it 'sends an invite when :send_invite is present' do
-      sign_in @facilitator
-
-      double = double("AssessmentMailer")
-
-      expect(double).to receive(:deliver_now)
-      expect(AssessmentsMailer).to receive(:assigned).and_return(double)
-
-      other = Assessment.find_by_name("Assessment 1")
-      post :create, assessment_id: other.id, user_id: @user.id, send_invite: true
-      assert_response :success
-    end
-
-    it 'can create a participant' do
-      sign_in @facilitator
-
-      other = Assessment.find_by_name("Assessment 1")
-
-      expect_flush_cached_assessment
-
-      post :create, assessment_id: other.id, user_id: @user.id 
-
-      assert_response :success
-      participants = Participant
-        .where(assessment_id: other.id, user_id: @user.id)
-
-      expect(participants.count).to eq(1)
-    end
-
-    it 'forbids non-owner to create' do
-      sign_in @user
-
-      other = Assessment.find_by_name("Assessment 1")
-      post :create, assessment_id: other.id, user_id: @user.id 
-      assert_response :forbidden
-    end
-  end
-
-  context '#destroy' do
-    it 'can delete a participant' do
-      expect(Participant.where(id: @participant.id).count).to eq(1)
-
-      delete :destroy, assessment_id: assessment.id, id: @participant.id 
-      assert_response :success
-
-      expect(Participant.where(id: @participant.id).count).to eq(0)
-    end
-    
-    it 'deletes any invitations that are pending for the user' do
-      user_id = @participant.user.id
-
-      UserInvitation
-        .create!(id: 42,
-                 first_name: 'some',
-                 last_name: 'user',
-                 assessment_id: assessment.id,
-                 user_id: user_id,
-                 email: @participant.user.email) 
-
-      delete :destroy, assessment_id: assessment.id, id: @participant.id 
-      expect(UserInvitation.where(user_id: user_id)).to be_empty
-    end
-
-    it 'returns 404 when missing participant' do
-      delete :destroy, assessment_id: assessment.id, id: 000000
-      assert_response :missing
-    end
-
-    it 'forbids non-owner to delete' do
-      sign_in @user
-      delete :destroy, assessment_id: assessment.id, id: @participant.id
-      assert_response :forbidden
-    end
-  end
-
-  context '#all' do
-    it 'gives a list of all participants in assessment district' do
-      Application::create_sample_user(
-        districts: [@district2],
-        role: :district_member)
-
-      get :all, assessment_id: assessment.id  
-
-      assert_response :success
-      participants = assigns(:users)
-
-      expect(participants.count).to eq(2)
-    end
-
-    it 'does not return participants already in assessment' do
-      get :all, assessment_id: assessment.id  
-
-      participants = assigns(:users)
-      expect(participants.count).to eq(1)
-    end
-
-    it 'does not return network partners' do
-
-      Application::create_sample_user(
-        districts: [@district2],
-        role: :network_partner)
-
-      Application::create_sample_user(
-        districts: [@district2],
-        role: nil)
-
-      get :all, assessment_id: assessment.id  
-
-      participants = assigns(:users)
-      expect(participants.count).to eq(2)
-    end
-
-
-    it 'forbids non-facilitators users' do
-      sign_in @user
-      get :all, assessment_id: assessment.id  
-      assert_response :forbidden
-    end
-  end
-
-  describe '#mail' do
-    it 'does not allow a non-facilitator user' do
-      sign_in @user
-      get :mail, assessment_id: assessment.id, participant_id: @participant.id
-      assert_response :forbidden
-    end
-
-    it 'allows facilitators' do
-      sign_in @facilitator2
-      get :mail, assessment_id: assessment.id, participant_id: @participant.id
-      assert_response :success
-    end
-
-    context 'with facilitator' do
-      before { sign_in @facilitator2 }
-
-      it 'returns a 404 when the participant is not found' do
-        get :mail, assessment_id: assessment.id, participant_id: 0
-        assert_response :missing
+      before(:each) do
+        sign_out :user
+        get :index, assessment_id: assessment.id
       end
 
-      it 'returns the invitation email body of assigned email' do
-        double = double('AssessmentMailer', text_part: OpenStruct.new(body: 'expected'))
-        allow(AssessmentsMailer).to receive(:assigned).and_return(double)
+      it {
+        is_expected.to respond_with :unauthorized
+      }
+    end
 
-        get :mail, assessment_id: assessment.id, participant_id: @participant.id
-        expect(response.body).to eq('expected')
+    context 'when authenticated' do
+      let(:assessment) {
+        create(:assessment, :with_participants)
+      }
+
+      let(:user) {
+        assessment.user
+      }
+
+      before(:each) do
+        sign_in user
+        get :index, assessment_id: assessment.id
       end
 
-      it 'returns the invitation email body of the user invitation email' do
-        double = double('AssessmentMailer', text_part: OpenStruct.new(body: 'expected'))
-        allow(NotificationsMailer).to receive(:invite).and_return(double)
+      it {
+        is_expected.to respond_with :success
+      }
 
-        UserInvitation.create!(user_id: @participant.user.id,
-                               assessment_id: assessment.id,
-                               email: 'example_user@gmail.com')
-        get :mail, assessment_id: assessment.id, participant_id: @participant.id
-        expect(response.body).to eq('expected')
-
+      it 'gets a list of participants' do
+        participants = assigns(:participants)
+        expect(participants.count).to eq 2
       end
     end
   end
 
+  describe 'POST #create' do
+    context 'when not authenticated' do
+
+      let(:assessment) {
+        create(:assessment, :with_participants)
+      }
+
+      before(:each) do
+        sign_out :user
+        post :create, assessment_id: assessment.id
+      end
+
+      it {
+        is_expected.to respond_with :unauthorized
+      }
+    end
+
+    context 'when authenticated' do
+      context 'when not the owner of the assessment' do
+
+        let(:user) {
+          create(:user)
+        }
+
+        let(:assessment) {
+          create(:assessment, :with_participants)
+        }
+
+        before(:each) do
+          sign_in user
+          post :create, assessment_id: assessment.id, user_id: user.id
+        end
+
+        it {
+          is_expected.to respond_with :forbidden
+        }
+      end
+
+      context 'when the owner of the assessment' do
+        let(:assessment) {
+          create(:assessment, :with_participants)
+        }
+
+        let(:user) {
+          create(:user)
+        }
+
+        let(:facilitator) {
+          assessment.user
+        }
+
+        context 'when :send_invite is true' do
+          before(:each) do
+            sign_in facilitator
+            double = double('AssessmentMailer')
+
+            expect(double).to receive(:deliver_now)
+            expect(AssessmentsMailer).to receive(:assigned).and_return(double)
+
+            post :create, assessment_id: assessment.id, user_id: user.id, send_invite: true
+          end
+
+          it {
+            is_expected.to respond_with :success
+          }
+        end
+
+        context 'when :send_invite is not true' do
+          before(:each) do
+            sign_in facilitator
+            post :create, assessment_id: assessment.id, user_id: user.id
+          end
+
+          it {
+            is_expected.to respond_with :success
+          }
+
+          it 'creates a participant' do
+            participants = Participant.where(assessment_id: assessment.id, user_id: user.id)
+            expect(participants.count).to eq 1
+          end
+        end
+      end
+    end
+  end
+
+  describe 'DELETE #destroy' do
+    let(:assessment) {
+      create(:assessment, :with_participants)
+    }
+
+    let(:participant) {
+      assessment.participants.first
+    }
+
+    let(:user) {
+      assessment.user
+    }
+
+    context 'when there are no pending invitations for the participant' do
+      before(:each) do
+        sign_in user
+        delete :destroy, assessment_id: assessment.id, id: participant.id
+      end
+
+      it {
+        is_expected.to respond_with :success
+      }
+
+      it {
+        expect(Participant.where(id: participant.id)).to be_empty
+      }
+    end
+
+    context 'when there is a pending invitation for the participant' do
+      let!(:user_invitation) {
+        create(:user_invitation,
+               user_id: user.id,
+               email: participant.user.email,
+               assessment_id: assessment.id)
+      }
+
+      before(:each) do
+        sign_in user
+        delete :destroy, assessment_id: assessment.id, id: participant.id
+      end
+
+      it {
+        expect(UserInvitation.where(user_id: user.id)).to be_empty
+      }
+    end
+
+    context 'when the participant is not associated with this assessment' do
+      before(:each) do
+        sign_in user
+        delete :destroy, assessment_id: assessment.id, id: 0
+      end
+
+      it {
+        is_expected.to respond_with :missing
+      }
+    end
+
+    context 'when not the owner of the assessment' do
+      let(:non_owner) {
+        create(:user)
+      }
+
+      before(:each) do
+        sign_in non_owner
+        delete :destroy, assessment_id: assessment.id, id: participant.id
+      end
+
+      it {
+        is_expected.to respond_with :forbidden
+      }
+    end
+  end
+
+  describe 'GET #all' do
+
+    let(:assessment) {
+      create(:assessment, :with_participants)
+    }
+
+    context 'when the user is not a facilitator' do
+      let(:user) {
+        assessment.participants.first.user
+      }
+
+      before(:each) do
+        sign_in user
+        get :all, assessment_id: assessment.id
+      end
+
+      it {
+        is_expected.to respond_with :forbidden
+      }
+    end
+
+    context 'when the user is a facilitator' do
+      let(:user) {
+        assessment.user
+      }
+
+      let!(:users_not_associated_with_assessment) {
+        create_list(:user, 2, districts: [assessment.district])
+      }
+
+      before(:each) do
+        sign_in user
+        get :all, assessment_id: assessment.id
+      end
+
+      it 'gives a list of all participants in assessment district' do
+        participants = assigns(:users)
+        expect(participants.count).to eq 2
+      end
+
+
+      it 'does not return participants already in assessment' do
+        participants = assigns(:users)
+        expect(participants.to_set.intersect? assessment.participants.to_set).to be false
+      end
+
+      context 'when network partners are part of this district' do
+        let!(:network_partners_not_associated_with_district) {
+          create_list(:user, 3, :with_network_partner_role, districts: [assessment.district])
+        }
+
+        before(:each) do
+          sign_in user
+          get :all, assessment_id: assessment.id
+        end
+
+        it 'does not include them' do
+          participants = assigns(:users)
+          expect(participants.to_set.intersect? network_partners_not_associated_with_district.to_set).to be false
+        end
+      end
+    end
+  end
+
+  describe 'GET #mail' do
+    let(:assessment) {
+      create(:assessment, :with_participants)
+    }
+
+    context 'when the user is not a facilitator' do
+      let(:user) {
+        assessment.participants.first.user
+      }
+
+      before(:each) do
+        sign_in user
+        get :mail, assessment_id: assessment.id, participant_id: assessment.participants.first.id
+      end
+
+      it {
+        is_expected.to respond_with :forbidden
+      }
+    end
+
+    context 'when the user is a facilitator' do
+      let(:user) {
+        assessment.user
+      }
+
+      let(:participant) {
+        assessment.participants.first
+      }
+
+      before(:each) do
+        sign_in user
+        get :mail, assessment_id: assessment.id, participant_id: participant.id
+      end
+
+      it {
+        is_expected.to respond_with :success
+      }
+
+      context 'when the participant does not belong to that assessment' do
+        let(:user) {
+          assessment.user
+        }
+
+        before(:each) do
+          sign_in user
+          get :mail, assessment_id: assessment.id, participant_id: 0
+        end
+
+        it {
+          is_expected.to respond_with :missing
+        }
+      end
+
+      context 'when inspecting the invitation email' do
+
+        let!(:user_invitation) {
+          create(:user_invitation, user: participant.user, assessment: assessment)
+        }
+
+        before(:each) do
+          sign_in user
+
+          double = double('AssessmentMailer', text_part: OpenStruct.new(body: 'expected'))
+          allow(NotificationsMailer).to receive(:invite).and_return(double)
+          allow(AssessmentsMailer).to receive(:assigned).and_return(double)
+
+          get :mail, assessment_id: assessment.id, participant_id: participant.id
+        end
+
+        it 'returns the invitation email body of assigned email' do
+          expect(response.body).to eq('expected')
+        end
+
+        it 'returns the invitation email body of the user invitation email' do
+          expect(response.body).to eq('expected')
+        end
+      end
+    end
+  end
 end

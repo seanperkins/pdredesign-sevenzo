@@ -21,10 +21,22 @@ FactoryGirl.define do
       responder { create(:user) }
     end
 
+    trait :as_participant_responder do
+      responder_type 'Participant'
+      responder { create(:participant) }
+    end
+
     trait :as_assessment_response do
+      transient do
+        assessment nil
+      end
       association :rubric, :as_assessment_rubric
-      after(:create) do |response, _|
-        response.responder = create(:assessment)
+      after(:create) do |response, evaluator|
+        if evaluator.assessment.nil?
+          response.responder = create(:assessment, :with_participants, response: response)
+        else
+          response.responder = evaluator.assessment
+        end
       end
     end
 
@@ -36,10 +48,16 @@ FactoryGirl.define do
     end
 
     trait :as_participant_response do
+      responder_type 'Participant'
       association :rubric, :as_assessment_rubric
       after(:create) do |response, _|
         response.responder = create(:participant)
       end
     end
+
+    trait :submitted do
+      submitted_at Time.now
+    end
+
   end
 end

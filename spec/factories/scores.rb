@@ -13,7 +13,6 @@
 
 FactoryGirl.define do
   factory :score do
-    value { rand(1..4) }
     evidence { Faker::Hacker.say_something_smart }
     association :question
 

@@ -1,25 +1,29 @@
 require 'spec_helper' 
 
 describe ResponsesMailer do
-  before { create_magic_assessments }
-  before { create_responses }
+  describe '#submitted' do
 
-  context '#submitted' do
+    let(:response) {
+      create(:response, :as_participant_responder)
+    }
 
-    let(:mail) do
-      response = Response.find_by(responder_id: @participant.id)
-      response.responder.assessment.user.update(email: 'some@user.com')
-      ResponsesMailer.submitted(response)
-    end
+    let!(:participant) {
+      p = response.responder
+      p.assessment = assessment
+      p.user = p.assessment.user
+      p
+    }
 
-    it 'sends the invite mail to the user on invite' do
-      expect(mail.to).to include('some@user.com')
-    end
+    let(:assessment) {
+      create(:assessment, :with_participants)
+    }
 
-    it 'has the correct assessment link' do
-      assessment_id = @assessment_with_participants.id
-      expect(mail.body).to include("/\#/assessments/#{assessment_id}/dashboard")
-    end
+    it {
+      expect(ResponsesMailer.submitted(response).to).to include participant.user.email
+    }
 
+    it {
+      expect(ResponsesMailer.submitted(response).body).to include "/\#/assessments/#{assessment.id}/dashboard"
+    }
   end
 end

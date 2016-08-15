@@ -27,10 +27,10 @@ class Participant < ActiveRecord::Base
   end
 
   def remove_invitation
-    UserInvitation
-      .where(email: user.email, assessment: assessment)
-      .destroy_all
-  rescue
-    nil
+    if user
+      UserInvitation
+          .where(email: user.email, assessment: assessment)
+          .destroy_all
+    end
   end
 end

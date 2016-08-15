@@ -3,11 +3,19 @@ require 'spec_helper'
 describe V1::UserController do
 
   let(:user) {
-    FactoryGirl.create(:user, :with_district)
+    create(:user, :with_district)
   }
 
-  let!(:magic_assessments) {
-    create_magic_assessments
+  let(:assessment) {
+    create(:assessment, :with_participants)
+  }
+
+  let(:district) {
+    create(:district)
+  }
+
+  let(:district2) {
+    create(:district)
   }
 
   before do
@@ -61,7 +69,6 @@ describe V1::UserController do
       post :request_reset, email: 'notexisting@user.com'
       assert_response 422
     end
-
   end
 
   context '#reset' do
@@ -109,15 +116,15 @@ describe V1::UserController do
   end
 
   context '#create' do
-    before { @district = District.create! }
-    before { @district2 = District.create! }
-    before { sign_out :user }
+    before(:each) do
+      sign_out :user
+    end
 
     def post_create_user(options = {})
       opts = {first_name: 'kim',
               email: 'kim@gov.nk',
               last_name: 'jong',
-              district_ids: @district.id,
+              district_ids: district.id,
               password: 'some_password',
               team_role: 'leader'}
 
@@ -134,7 +141,7 @@ describe V1::UserController do
       expect(kim[:last_name]).to eq('jong')
       expect(kim[:team_role]).to eq('leader')
 
-      expect(kim.district_ids).to eq([@district.id])
+      expect(kim.district_ids).to eq([district.id])
       expect(kim.valid_password?('some_password')).to eq(true)
     end
 
@@ -165,7 +172,7 @@ describe V1::UserController do
     end
 
     it 'it can take multiple districts_ids' do
-      post_create_user(district_ids: "#{@district.id}, #{@district2.id}")
+      post_create_user(district_ids: "#{district.id}, #{district2.id}")
 
       kim = User.find_by(email: 'kim@gov.nk')
       expect(kim.districts.count).to eq(2)
@@ -201,7 +208,7 @@ describe V1::UserController do
         let!(:user_invitation) {
           create(:user_invitation,
                  email: 'kim@gov.nk',
-                 assessment: @assessment_with_participants,
+                 assessment: assessment,
                  first_name: 'Kim',
                  last_name: 'Possible',
                  team_role: 'role;')
@@ -222,7 +229,7 @@ describe V1::UserController do
         let!(:user_invitation) {
           create(:user_invitation,
                  email: 'kim@gov.nk',
-                 assessment: @assessment_with_participants,
+                 assessment: assessment,
                  first_name: 'Kim',
                  last_name: 'Possible',
                  team_role: 'role;',
@@ -327,9 +334,6 @@ describe V1::UserController do
     end
 
     it 'can take multiple districts' do
-      district = District.create!
-      district2 = District.create!
-
       put :update, {district_ids: "#{district.id}, #{district2.id}"}
       expect(json["district_ids"].count).to eq(2)
     end
@@ -343,7 +347,6 @@ describe V1::UserController do
 
     context 'extract_ids' do
       it 'should not reset the district_ids' do
-        district = District.create!
         user.update(districts: [district])
 
         put :update, {email: 'some@user.com'}
@@ -363,7 +366,6 @@ describe V1::UserController do
       end
 
       it 'resets :district_ids when a key is explicitly set to nil' do
-        district = District.create!
         user.update(districts: [district])
 
         put :update, {email: 'some@user.com', district_ids: nil}

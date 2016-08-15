@@ -2,67 +2,53 @@ require 'spec_helper'
 
 describe Link::Assessment do
   let(:assessment) {
-    @assessment_with_participants
+    create(:assessment, :with_participants)
   }
-
-  let(:subject) {
-    Link::Assessment
-  }
-  before(:each) do
-    create_magic_assessments
-    create_responses
-  end
-
-
-  describe '#target' do
-    let(:partner) {
-      FactoryGirl.create(:user, :with_district, :with_network_partner_role)
-    }
-
-    let(:user) {
-      FactoryGirl.create(:user, :with_district)
-    }
-
-    it 'returns Partner when a user is a network_partner' do
-      target = subject.new(assessment, partner).send(:target)
-      expect(target).to eq(Link::Partner)
-    end
-
-    it 'returns Facilitator when a user is a facilitator for an assessment' do
-      target = subject.new(assessment, @facilitator2).send(:target)
-      expect(target).to eq(Link::Facilitator)
-    end
-
-    it 'returns Participant when a user is a participant of an assessment' do
-      target = subject.new(assessment, @participant.user).send(:target)
-      expect(target).to eq(Link::Participant)
-    end
-
-    it 'returns partner when a network_partner is a viewer of an assessment' do
-      assessment.viewers << partner
-      target = subject.new(assessment, partner).send(:target)
-      expect(target).to eq(Link::Partner)
-    end
-
-    it 'defaults to partner when its a random user' do
-      target = subject.new(assessment, user).send(:target)
-      expect(target).to eq(Link::Partner)
-    end
-  end
 
   describe '#execute' do
-    let(:user) {
-      FactoryGirl.create(:user, :with_district)
-    }
+    context 'when user is a facilitator' do
+      let(:user) {
+        assessment.facilitators.sample
+      }
 
-    it 'passes to the target' do
-      links = subject.new(assessment, user)
-      double = double('Target')
+      let(:link_assessment) {
+        Link::Assessment.new(assessment, user)
+      }
 
-      expect(double).to receive_message_chain(:new, :execute)
-      allow(links).to receive(:target).and_return(double)
+      it {
+        expect_any_instance_of(Link::Facilitator).to receive(:execute)
+        link_assessment.execute
+      }
+    end
 
-      links.execute
+    context 'when the user is a participant' do
+      let(:user) {
+        assessment.participants.sample.user
+      }
+
+      let(:link_assessment) {
+        Link::Assessment.new(assessment, user)
+      }
+
+      it {
+        expect_any_instance_of(Link::Participant).to receive(:execute)
+        link_assessment.execute
+      }
+    end
+
+    context 'when the user is anything else' do
+      let(:user) {
+        create(:user)
+      }
+
+      let(:link_assessment) {
+        Link::Assessment.new(assessment, user)
+      }
+
+      it {
+        expect_any_instance_of(Link::Partner).to receive(:execute)
+        link_assessment.execute
+      }
     end
   end
 end

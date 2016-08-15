@@ -30,8 +30,4 @@ class AnalysisInvitationMailer < ApplicationMailer
   def invite_url(token)
     "#{ENV['BASE_URL']}/#/inventories/#{@analysis.inventory_id}/analyses/#{@analysis.id}/invitations/#{token}"
   end
-
-  def default_avatar
-    ActionController::Base.helpers.asset_path('fallback/default.png')
-  end
 end

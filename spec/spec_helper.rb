@@ -6,7 +6,6 @@ require 'shoulda/matchers'
 require 'database_cleaner'
 require 'sidekiq/testing'
 
-
 Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }
 ActiveRecord::Migration.check_pending! if defined?(ActiveRecord::Migration)
 
@@ -20,7 +19,7 @@ RSpec.configure do |config|
   config.infer_spec_type_from_file_location!
 
   config.include Requests::JsonHelpers, type: :controller
-  config.include Devise::TestHelpers,   type: :controller
+  config.include Devise::TestHelpers, type: :controller
 
   config.order = 'random'
 
@@ -33,18 +32,14 @@ RSpec.configure do |config|
     DatabaseCleaner.clean_with(:truncation)
   end
 
+  config.before(:each) do
+    Sidekiq::Worker.clear_all
+  end
+
   config.around(:each) do |example|
     DatabaseCleaner.cleaning do
       example.run
     end
-  end
-end
-
-RSpec::Matchers.define :include_only_one_of do |expected|
-  match do |array|
-    elements = 0
-	array.each{ |elm| elements += 1 if elm == expected }
-	elements == 1
   end
 end
 
