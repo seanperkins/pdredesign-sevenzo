@@ -33,6 +33,46 @@ describe Assessment do
     is_expected.to validate_presence_of :district_id
   }
 
+  context 'when meeting date is set to be in the past' do
+    context 'when first saving the assessment' do
+      let(:assessment) {
+        build(:assessment)
+      }
+
+      before(:each) do
+        assessment.meeting_date = 5.weeks.ago
+        assessment.save
+      end
+
+      it {
+        expect(assessment.valid?).to be false
+      }
+
+      it {
+        expect(assessment.errors.get(:meeting_date)).to include "can't be in the past"
+      }
+    end
+
+    context 'when the assessment has previously existed' do
+      let(:assessment) {
+        create(:assessment)
+      }
+
+      before(:each) do
+        assessment.meeting_date = 5.weeks.ago
+        assessment.save
+      end
+
+      it {
+        expect(assessment.valid?).to be false
+      }
+
+      it {
+        expect(assessment.errors.get(:meeting_date)).to include "can't be in the past"
+      }
+    end
+  end
+
   context 'when assigned_at is present' do
     context 'when due_date is invalid' do
       let(:participants) {
