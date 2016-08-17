@@ -74,14 +74,8 @@ class Assessment < ActiveRecord::Base
   end
 
   def meeting_date_not_in_the_past
-    if self.created_at.present?
-      if self.meeting_date < self.created_at
-        errors.add(:meeting_date, "can't be in the past")
-      end
-    else
-      if self.meeting_date < Date.today
-        errors.add(:meeting_date, "can't be in the past")
-      end
+    if self.meeting_date < (self.created_at || Date.today)
+      errors.add(:meeting_date, "can't be in the past")
     end
   end
 
