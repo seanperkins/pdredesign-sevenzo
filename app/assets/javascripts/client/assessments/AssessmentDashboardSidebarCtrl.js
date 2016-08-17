@@ -15,116 +15,121 @@
   ];
 
   function AssessmentDashboardSidebarCtrl($scope, $modal, $location, Assessment, $state, $stateParams, Reminder, AssessmentService) {
+    var vm = this;
+    vm.id = $stateParams.id;
 
-    $scope.id = $stateParams.id;
-
-    $scope.fetchAssessment = function () {
-      return Assessment.get({id: $scope.id});
+    vm.fetchAssessment = function () {
+      return Assessment.get({id: vm.id});
     };
 
-    $scope.assessment = $scope.fetchAssessment();
+    vm.assessment = vm.fetchAssessment();
 
-    $scope.$watch('assessment', function (assessment) {
-      $scope.shareURL = $state.href(
+    $scope.$watch('vm.assessment', function (assessment) {
+      vm.shareURL = $state.href(
         'shared_assessment_report',
         {token: assessment.share_token},
         {absolute: true}
       );
     }, true);
 
-    $scope.modifySchedule = function () {
-      $scope.modal = $modal.open({
+    vm.modifySchedule = function () {
+      vm.modal = $modal.open({
         templateUrl: 'client/views/modals/modify_schedule.html',
-        scope: $scope
+        controller: 'ModifyScheduleCtrl as vm',
+        resolve: {
+          assessment: function() {
+            return vm.assessment;
+          }
+        }
       });
     };
 
-    $scope.createConsensus = function () {
-      $scope.modal = $modal.open({
+    vm.createConsensus = function () {
+      vm.modal = $modal.open({
         templateUrl: 'client/views/modals/create_consensus.html',
         scope: $scope
       });
     };
 
-    $scope.redirectToCreateConsensus = function () {
-      $scope.close();
-      $location.url('/assessments/' + $scope.id + '/consensus');
+    vm.redirectToCreateConsensus = function () {
+      vm.close();
+      $location.url('/assessments/' + vm.id + '/consensus');
     };
 
-    $scope.newReminder = function () {
-      $scope.modal = $modal.open({
+    vm.newReminder = function () {
+      vm.modal = $modal.open({
         template: '<reminder-modal context="assessment"></reminder-modal>',
         scope: $scope
       });
     };
 
     $scope.$on('close-reminder-modal', function() {
-      $scope.modal.dismiss('cancel');
+      vm.modal.dismiss('cancel');
     });
 
 
-    $scope.close = function () {
-      $scope.modal.dismiss('cancel');
+    vm.close = function () {
+      vm.modal.dismiss('cancel');
     };
 
-    $scope.sendReminder = function (message) {
+    vm.sendReminder = function (message) {
       Reminder
-        .save({assessment_id: $scope.id}, {message: message})
+        .save({assessment_id: vm.id}, {message: message})
         .$promise
         .then(function () {
-          $scope.close();
+          vm.close();
         });
     };
 
-    $scope.addLearningQuestion = function () {
-      $scope.modal = $modal.open({
+    vm.addLearningQuestion = function () {
+      vm.modal = $modal.open({
         template: '<learning-question-modal context="assessment" reminder="false"></learning-question-modal>',
         scope: $scope
       });
     };
 
-    $scope.meetingDateDaysAgo = function () {
-      return moment().diff($scope.assessment.meeting_date, 'days');
+    vm.meetingDateDaysAgo = function () {
+      return moment().diff(vm.assessment.meeting_date, 'days');
     };
 
-    $scope.postMeetingDate = function () {
-      if (!$scope.assessment.meeting_date)
+    vm.postMeetingDate = function () {
+      if (!vm.assessment.meeting_date)
         return false;
-      return moment().isAfter($scope.assessment.meeting_date);
+      return moment().isAfter(vm.assessment.meeting_date);
     };
 
-    $scope.preMeetingDate = function () {
-      if (!$scope.assessment.meeting_date)
+    vm.preMeetingDate = function () {
+      if (!vm.assessment.meeting_date)
         return false;
-      return moment().isBefore($scope.assessment.meeting_date);
+      return moment().isBefore(vm.assessment.meeting_date);
     };
 
-    $scope.noMeetingDate = function () {
-      return $scope.assessment.meeting_date == null;
+    vm.noMeetingDate = function () {
+      return vm.assessment.meeting_date == null;
     };
 
-    $scope.reportPresent = function () {
-      return $scope.assessment.submitted_at !== null;
+    vm.reportPresent = function () {
+      return vm.assessment.submitted_at !== null;
     };
 
-    $scope.meetingDayNumber = function () {
-      return moment($scope.assessment.meeting_date).format('D');
+    vm.meetingDayNumber = function () {
+      return moment(vm.assessment.meeting_date).format('D');
     };
 
-    $scope.meetingDayName = function () {
-      return moment($scope.assessment.meeting_date).format('dddd');
+    vm.meetingDayName = function () {
+      return moment(vm.assessment.meeting_date).format('dddd');
     };
 
-    $scope.meetingMonthName = function () {
-      return moment($scope.assessment.meeting_date).format('MMM');
+    vm.meetingMonthName = function () {
+      return moment(vm.assessment.meeting_date).format('MMM');
     };
 
-    $scope.consensusStarted = function () {
-      return $scope.assessment.status == 'consensus';
+    vm.consensusStarted = function () {
+      return vm.assessment.status == 'consensus';
     };
 
     $scope.$on('close-learning-question-modal', function() {
-      $scope.modal.close('cancel');
+      vm.modal.close('cancel');
     });
   }
 })();

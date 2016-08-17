@@ -1,44 +1,44 @@
 <div class="row secondary">
   <div class="col-md-12">
     <h1>Readiness Assessment List</h1>
-    <p>Hi, {{user.first_name}}. This is your Readiness Assessment List. Create a new Assessment or check the status of an
+    <p>Hi, {{vm.user.first_name}}. This is your Readiness Assessment List. Create a new Assessment or check the status of an
       existing one to proceed.</p>
   </div>
 </div>
 <div class="row tertiary">
   <div class="col-md-12">
-    <primary-button icon="fa-bullhorn" text="{{ text() }}"
-                    click-fn="openAssessmentModal()"></primary-button>
+    <primary-button icon="fa-bullhorn" text="{{ vm.text() }}"
+                    click-fn="vm.openAssessmentModal()"></primary-button>
     <div class="row">
       <div class="assessments-filter">
-        <div ng-show="isNetworkPartner()">
+        <div ng-show="vm.isNetworkPartner()">
           <div class="col-md-4">
             <district-filter
-                districts="districts"
-                selected-district="selectedDistrict">
+                districts="vm.districts"
+                selected-district="vm.selectedDistrict">
             </district-filter>
           </div>
         </div>
         <div class="col-md-4">
           <permission-filter
-              types="permissionTypes"
-              selected-permission="selectedPermission">
+              types="vm.permissionTypes"
+              selected-permission="vm.selectedPermission">
           </permission-filter>
         </div>
         <div class="col-md-4">
           <status-filter
-              statuses="statuses"
-              selected-status="selectedStatus">
+              statuses="vm.statuses"
+              selected-status="vm.selectedStatus">
           </status-filter>
         </div>
       </div>
     </div>
   </div>
 </div>
-<div ng-repeat="assessment in assessments
- | filter: {district_name: selectedDistrict}
- | filter: permissionsFilter(selectedPermission)
- | filter: {status: selectedStatus}">
+<div ng-repeat="assessment in vm.assessments
+ | filter: {district_name: vm.selectedDistrict}
+ | filter: vm.permissionsFilter(vm.selectedPermission)
+ | filter: {status: vm.selectedStatus}">
 
-  <entry role="{{role}}" context="assessment" entity="assessment"></entry>
+  <entry role="{{vm.role}}" context="assessment" entity="assessment"></entry>
 </div>

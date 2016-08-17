@@ -1,30 +1,39 @@
-PDRClient.controller('ModifyScheduleCtrl', [
-  '$scope',
-  '$timeout',
-  'Assessment',
-    function($scope, $timeout, Assessment) {
-      $timeout(function() {
-        if($scope.assessment.due_date != null)
-          $scope.modal_due_date = moment($scope.assessment.due_date).format("MM/DD/YYYY");
+(function() {
+  'use strict';
 
-        if($scope.assessment.meeting_date != null)
-          $scope.modal_meeting_date = moment($scope.assessment.meeting_date).format("MM/DD/YYYY");
+  angular.module('PDRClient')
+      .controller('ModifyScheduleCtrl', ModifyScheduleCtrl);
 
-        $('.datetime').datetimepicker({pickTime: false});
+  ModifyScheduleCtrl.$inject = [
+    '$scope',
+    '$timeout',
+    'AssessmentService',
+    'assessment'
+  ];
 
-      });
+  function ModifyScheduleCtrl($scope, $timeout, AssessmentService, assessment) {
+    $timeout(function() {
+      if (assessment.due_date != null) {
+        $scope.modal_due_date = moment(assessment.due_date).format("MM/DD/YYYY");
+      }
 
-      $scope.updateAssessment = function() {
-        $scope.assessment.due_date     = moment($('#due-date').val()).toISOString();
-        $scope.assessment.meeting_date = moment($('#meeting-date').val()).toISOString();
+      if (assessment.meeting_date != null) {
+        $scope.modal_meeting_date = moment(assessment.meeting_date).format("MM/DD/YYYY");
+      }
 
-        Assessment
-          .save({id: $scope.assessment.id}, $scope.assessment)
-          .$promise
-          .then(function(){
-            $scope.$close(true); 
+      $('.datetime').datetimepicker({pickTime: false});
+
+    });
+
+    $scope.updateAssessment = function() {
+      assessment.due_date = moment($('#due-date').val()).toISOString();
+      assessment.meeting_date = moment($('#meeting-date').val()).toISOString();
+      AssessmentService.save(assessment)
+          .then(function() {
+            $scope.$close(true);
+          }).catch(function(errMsg) {
+            console.log(errMsg.data.errors);
           });
-      };
-
-    }
-]);
+    };
+  }
+})();
