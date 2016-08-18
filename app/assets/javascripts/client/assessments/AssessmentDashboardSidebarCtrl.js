@@ -34,13 +34,8 @@
 
     vm.modifySchedule = function () {
       vm.modal = $modal.open({
-        templateUrl: 'client/views/modals/modify_schedule.html',
-        controller: 'ModifyScheduleCtrl as vm',
-        resolve: {
-          assessment: function() {
-            return vm.assessment;
-          }
-        }
+        template: '<modify-schedule assessment="assessment" close="$modal.close()"></modify-schedule>',
+        scope: $scope
       });
     };
 
