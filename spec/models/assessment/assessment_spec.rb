@@ -49,7 +49,7 @@ describe Assessment do
       }
 
       it {
-        expect(assessment.errors.get(:meeting_date)).to include "can't be in the past"
+        expect(assessment.errors.get(:meeting_date)).to include 'must be set 1 day after the assessment has been created'
       }
     end
 
@@ -68,7 +68,26 @@ describe Assessment do
       }
 
       it {
-        expect(assessment.errors.get(:meeting_date)).to include "can't be in the past"
+        expect(assessment.errors.get(:meeting_date)).to include 'must be set 1 day after the assessment has been created'
+      }
+    end
+
+    context 'when the meeting date is within 24 hours of the creation date' do
+      let(:assessment) {
+        create(:assessment)
+      }
+
+      before(:each) do
+        assessment.meeting_date = assessment.created_at + 1.second
+        assessment.save
+      end
+
+      it {
+        expect(assessment.valid?).to be false
+      }
+
+      it {
+        expect(assessment.errors.get(:meeting_date)).to include 'must be set 1 day after the assessment has been created'
       }
     end
   end

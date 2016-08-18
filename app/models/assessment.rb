@@ -74,8 +74,8 @@ class Assessment < ActiveRecord::Base
   end
 
   def meeting_date_not_in_the_past
-    if self.meeting_date < (self.created_at || Date.today)
-      errors.add(:meeting_date, "can't be in the past")
+    if self.meeting_date < (self.created_at || Date.today) + 1.day
+      errors.add(:meeting_date, 'must be set 1 day after the assessment has been created')
     end
   end
 
