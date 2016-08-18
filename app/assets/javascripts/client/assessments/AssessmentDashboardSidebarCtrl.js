@@ -34,7 +34,7 @@
 
     vm.modifySchedule = function () {
       vm.modal = $modal.open({
-        template: '<modify-schedule assessment="assessment" close="$modal.close()"></modify-schedule>',
+        template: '<modify-schedule assessment="vm.assessment"></modify-schedule>',
         scope: $scope
       });
     };
