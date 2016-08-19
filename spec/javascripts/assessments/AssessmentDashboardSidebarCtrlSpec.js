@@ -1,98 +1,215 @@
-(function() {
+(function () {
   'use strict';
-  describe('Controller: AssessmentDashboardSidebarCtrl', function() {
-    var $scope, $q, $location, $httpBackend, subject;
 
-    var today = new Date();
-    var nextWeek = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+  describe('Controller: AssessmentDashboardSidebarCtrl', function () {
+    var $scope,
+      $modal,
+      $location,
+      $state,
+      $stateParams,
+      Assessment,
+      AssessmentReminder,
+      $q,
+      $rootScope,
+      subject;
 
-    beforeEach(function() {
+    beforeEach(function () {
       module('PDRClient');
-      inject(function($injector, $controller, $rootScope) {
-        $scope = $rootScope.$new(true);
-        $q = $injector.get('$q');
-        $httpBackend = $injector.get('$httpBackend');
-        $location = $injector.get('$location');
 
-        subject = $controller('AssessmentDashboardSidebarCtrl', {
-          $scope: $scope
+      inject(function (_$rootScope_, _$modal_, _$location_, _$state_, _Assessment_, _AssessmentReminder_, _$q_, _$controller_) {
+        $rootScope = _$rootScope_;
+        $scope = _$rootScope_.$new(true);
+        $modal = _$modal_;
+        $location = _$location_;
+        Assessment = _Assessment_;
+        AssessmentReminder = _AssessmentReminder_;
+        $q = _$q_;
+        $state = _$state_;
+        $stateParams = {id: 1};
+
+        spyOn(Assessment, 'get').and.returnValue({share_token: '1'});
+
+        subject = _$controller_('AssessmentDashboardSidebarCtrl', {
+          $scope: $scope,
+          $modal: $modal,
+          $location: $location,
+          $state: $state,
+          $stateParams: $stateParams,
+          Assessment: Assessment,
+          AssessmentReminder: AssessmentReminder
         });
-
-        $httpBackend.when('GET', '/v1/assessments').respond({});
-      })
+      });
     });
 
-    it('sends a reminder to the server', function() {
-      $scope.close = function() { };
-      $httpBackend.expectPOST('/v1/assessments/99/reminders').respond({});
-
-      $scope.id = 99;
-      $scope.sendReminder("Something");
-      $httpBackend.flush();
-    });
-
-    it('closes the modal after a reminder has been sent', function() {
-      spyOn($scope, 'close');
-      $httpBackend.when('POST', '/v1/assessments/99/reminders').respond({});
-
-      $scope.id = 99;
-      $scope.sendReminder("Something");
-      $httpBackend.flush();
-
-      expect($scope.close).toHaveBeenCalled();
-    });
-
-    it('postMeetingDate should be false for meeting date that is nextWeek', function() {
-      $scope.assessment.meeting_date = nextWeek;
-      expect($scope.postMeetingDate()).toEqual(false);
-    });
-
-    it('preMeetingDate should be true for meeting date that is nextWeek', function() {
-      $scope.assessment.meeting_date = nextWeek;
-      expect($scope.preMeetingDate()).toEqual(true);
-    });
-
-    it('noMeetingDate should be true for meeting date that is null', function() {
-      $scope.assessment.meeting_date = null;
-      expect($scope.noMeetingDate()).toEqual(true);
-    });
-
-    it("reportPresent should be true if consensus has been submitted ", function() {
-      $scope.assessment.submitted_at = "something";
-      expect($scope.reportPresent()).toEqual(true);
-    });
-
-    it("reportPresent should be false if consensus submitted_at is null", function() {
-      $scope.assessment.submitted_at = null;
-      expect($scope.reportPresent()).toEqual(false);
-    });
-
-    describe('#redirectToCreateConsensus', function() {
-      beforeEach(function() {
-        spyOn($scope, 'close');
+    describe('#sendReminder', function () {
+      beforeEach(function () {
+        spyOn(subject, 'close');
+        spyOn(AssessmentReminder, 'save').and.returnValue({$promise: $q.when({})});
       });
 
-      it('sends user to correct URL by passing scope.id', function() {
-        $scope.id = 1;
-        $scope.redirectToCreateConsensus();
+      it('sends a reminder to the server', function () {
+        subject.sendReminder('Something');
+        $rootScope.$digest();
+        expect(AssessmentReminder.save).toHaveBeenCalledWith({assessment_id: 1}, {message: 'Something'});
+      });
+
+      it('closes the modal', function () {
+        subject.sendReminder('Something');
+        $rootScope.$digest();
+        expect(subject.close).toHaveBeenCalled();
+      });
+    });
+
+    describe('#postMeetingDate', function () {
+      describe('when the meeting date is set for next week', function () {
+        var nextWeek = moment().add(7, 'days').toDate();
+
+        beforeEach(function () {
+          subject.assessment.meeting_date = nextWeek;
+        });
+
+        it('returns false', function () {
+          expect(subject.postMeetingDate()).toEqual(false);
+        });
+      });
+
+      describe('when the meeting date is not set on the assessment', function () {
+        beforeEach(function () {
+          subject.assessment.meeting_date = null;
+        });
+
+        it('returns false', function () {
+          expect(subject.postMeetingDate()).toEqual(false);
+        });
+      });
+
+      describe('when the meeting date is set for a day prior', function () {
+        var yesterday = moment().subtract(1, 'days').toDate();
+
+        beforeEach(function () {
+          subject.assessment.meeting_date = yesterday;
+        });
+
+        it('returns true', function () {
+          expect(subject.postMeetingDate()).toEqual(true);
+        });
+      });
+    });
+
+    describe('#preMeetingDate', function () {
+      describe('when the meeting date is set for next week', function () {
+        var nextWeek = moment().add(7, 'days').toDate();
+        beforeEach(function () {
+          subject.assessment.meeting_date = nextWeek;
+        });
+
+        it('returns true', function () {
+          expect(subject.preMeetingDate()).toEqual(true);
+        });
+      });
+
+      describe('when the meeting date is not set on the assessment', function () {
+        beforeEach(function () {
+          subject.assessment.meeting_date = null;
+        });
+
+        it('returns false', function () {
+          expect(subject.preMeetingDate()).toEqual(false);
+        });
+      });
+
+      describe('when the meeting date is set for a day prior', function () {
+        var yesterday = moment().subtract(1, 'days').toDate();
+        beforeEach(function () {
+          subject.assessment.meeting_date = yesterday;
+        });
+
+        it('returns false', function () {
+          expect(subject.preMeetingDate()).toEqual(false);
+        });
+      });
+    });
+
+    describe('#noMeetingDate', function () {
+      describe('when a meeting date is not present', function () {
+        beforeEach(function () {
+          subject.assessment.meeting_date = null;
+        });
+
+        it('returns true', function () {
+          expect(subject.noMeetingDate()).toEqual(true);
+        });
+      });
+
+      describe('when a meeting date is present', function () {
+        beforeEach(function () {
+          subject.assessment.meeting_date = new Date();
+        });
+
+        it('returns false', function () {
+          expect(subject.noMeetingDate()).toEqual(false);
+        });
+      });
+    });
+
+    describe('#reportPresent', function () {
+      describe('if the assessment has been submitted', function () {
+        beforeEach(function () {
+          subject.assessment.submitted_at = new Date();
+        });
+        it('returns true', function () {
+          expect(subject.reportPresent()).toEqual(true);
+        });
+      });
+
+      describe('if the assessment has not been submitted', function () {
+        beforeEach(function () {
+          subject.assessment.submitted_at = null;
+        });
+
+        it('returns false', function () {
+          expect(subject.reportPresent()).toEqual(false);
+        });
+      });
+    });
+
+
+    describe('#redirectToCreateConsensus', function () {
+      beforeEach(function () {
+        spyOn(subject, 'close');
+      });
+
+      it('sends user to correct URL by passing scope.id', function () {
+        subject.id = 1;
+        subject.redirectToCreateConsensus();
         expect($location.path()).toEqual('/assessments/1/consensus')
       });
 
-      it('closes the currently open modal', function() {
-        $scope.redirectToCreateConsensus();
-        expect($scope.close).toHaveBeenCalled();
+      it('closes the currently open modal', function () {
+        subject.redirectToCreateConsensus();
+        expect(subject.close).toHaveBeenCalled();
       });
     });
 
-    describe('#consensusStarted', function() {
-      it('returns false if status is assessment', function() {
-        $scope.assessment.status = 'assessment';
-        expect($scope.consensusStarted()).toEqual(false);
+    describe('#consensusStarted', function () {
+      describe('when the status is assessment', function () {
+        beforeEach(function () {
+          subject.assessment.status = 'assessment';
+        });
+
+        it('returns false', function () {
+          expect(subject.consensusStarted()).toEqual(false);
+        });
       });
 
-      it('returns true if status is consensus', function() {
-        $scope.assessment.status = 'consensus';
-        expect($scope.consensusStarted()).toEqual(true);
+      describe('when the status is consensus', function () {
+        beforeEach(function () {
+          subject.assessment.status = 'consensus';
+        });
+
+        it('returns true', function () {
+          expect(subject.consensusStarted()).toEqual(true);
+        });
       });
     });
   });

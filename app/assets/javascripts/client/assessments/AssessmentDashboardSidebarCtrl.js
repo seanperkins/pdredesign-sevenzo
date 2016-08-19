@@ -7,14 +7,13 @@
     '$scope',
     '$modal',
     '$location',
-    'Assessment',
     '$state',
     '$stateParams',
-    'AssessmentReminder',
-    'AssessmentService'
+    'Assessment',
+    'AssessmentReminder'
   ];
 
-  function AssessmentDashboardSidebarCtrl($scope, $modal, $location, Assessment, $state, $stateParams, Reminder, AssessmentService) {
+  function AssessmentDashboardSidebarCtrl($scope, $modal, $location, $state, $stateParams, Assessment, AssessmentReminder) {
     var vm = this;
     vm.id = $stateParams.id;
 
@@ -24,10 +23,10 @@
 
     vm.assessment = vm.fetchAssessment();
 
-    $scope.$watch('vm.assessment', function (assessment) {
+    $scope.$watch('vm.assessment', function () {
       vm.shareURL = $state.href(
         'shared_assessment_report',
-        {token: assessment.share_token},
+        {token: vm.assessment.share_token},
         {absolute: true}
       );
     }, true);
@@ -68,7 +67,7 @@
     };
 
     vm.sendReminder = function (message) {
-      Reminder
+      AssessmentReminder
         .save({assessment_id: vm.id}, {message: message})
         .$promise
         .then(function () {
