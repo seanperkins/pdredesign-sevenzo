@@ -61,7 +61,7 @@ describe V1::AssessmentsController do
         }
 
         it {
-          expect(json['errors']['meeting_date'][0]).to eq "can't be in the past"
+          expect(json['errors']['meeting_date'][0]).to include 'must be set no earlier than'
         }
       end
     end
