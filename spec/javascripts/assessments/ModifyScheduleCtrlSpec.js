@@ -55,14 +55,16 @@
     });
 
     describe('#updateAssessment', function() {
+      var meetingDateDom,
+          dueDateDom;
       describe('when the assessment submission is successful', function() {
         var assessment = {};
         var closeSpy = jasmine.createSpy('close');
 
         beforeEach(function() {
           inject(function(_$compile_) {
-            var meetingDateDom = angular.element('<input id="meeting-date">');
-            var dueDateDom = angular.element('<input id="due-date">');
+            meetingDateDom = angular.element('<input id="meeting-date">');
+            dueDateDom = angular.element('<input id="due-date">');
 
             dueDateDom.val('11/18/2017');
             meetingDateDom.val('12/18/2017');
@@ -79,6 +81,13 @@
           subject.updateAssessment();
           $rootScope.$digest();
         });
+
+        afterEach(function() {
+          meetingDateDom.remove();
+          dueDateDom.remove();
+        });
+
+
 
         it('sets the assessment due date', function() {
           expect(assessment.due_date).toEqual(moment('11/18/2017', 'MM/DD/YYYY').toISOString());
@@ -98,8 +107,8 @@
 
         beforeEach(function() {
           inject(function(_$compile_) {
-            var meetingDateDom = angular.element('<input id="meeting-date">');
-            var dueDateDom = angular.element('<input id="due-date">');
+            meetingDateDom = angular.element('<input id="meeting-date">');
+            dueDateDom = angular.element('<input id="due-date">');
 
             dueDateDom.val('11/18/2017');
             meetingDateDom.val('12/18/2017');
@@ -124,12 +133,15 @@
           $rootScope.$digest();
         });
 
+        afterEach(function() {
+          meetingDateDom.remove();
+          dueDateDom.remove();
+        });
+
         it('sends the error to AlertService#addAlert', function() {
           expect(AlertService.addAlert).toHaveBeenCalledWith('danger', 'bad Not good!');
         });
-
       });
-
     });
   });
 })();
