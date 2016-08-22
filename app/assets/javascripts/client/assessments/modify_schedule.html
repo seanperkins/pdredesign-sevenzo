@@ -1,0 +1,38 @@
+<div id="modify-schedule">
+  <button ng-click="close()" type="button" class="close" aria-hidden="true">×</button>
+  <alert ng-repeat="alert in vm.alerts()" type="{{alert.type}}" close="vm.closeAlert($index)">
+    {{alert.message}}
+  </alert>
+  <form ng-submit="vm.updateAssessment()">
+    <div class="control-group">
+      <label for="due-date">Response due date</label>
+      <div class="due-date input-group date datetime">
+        <input
+            class="form-control"
+            data-date-format="MM/DD/YYYY"
+            ng-model="vm.modal_due_date"
+            id="due-date">
+        <span class="input-group-addon">
+        <i class="fa fa-calendar"></i>
+      </span>
+      </div>
+    </div>
+
+    <div class="control-group">
+      <label for="meeting-date">Consensus meeting date</label>
+      <div class="meeting-date input-group date datetime">
+        <input
+            required
+            ng-model="vm.modal_meeting_date"
+            data-date-format="MM/DD/YYYY"
+            class="form-control"
+            id="meeting-date">
+        <span class="input-group-addon">
+        <i class="fa fa-calendar"></i>
+      </span>
+      </div>
+    </div>
+    <button class="btn btn-primary">Submit</button>
+  </form>
+</div>
+

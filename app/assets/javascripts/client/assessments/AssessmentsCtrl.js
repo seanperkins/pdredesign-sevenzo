@@ -12,33 +12,34 @@
   ];
 
   function AssessmentsCtrl($scope, $modal, SessionService, RecommendationTextService, assessments) {
+    var vm = this;
 
-    $scope.assessments = assessments;
-    $scope.user = SessionService.getCurrentUser();
-    $scope.role = null;
+    vm.assessments = assessments;
+    vm.user = SessionService.getCurrentUser();
+    vm.role = null;
 
-    $scope.selectedPermission = '';
-    $scope.selectedDistrict = '';
-    $scope.selectedStatus = '';
-    $scope.permissionTypes = ['Organizer', 'Observer'];
+    vm.selectedPermission = '';
+    vm.selectedDistrict = '';
+    vm.selectedStatus = '';
+    vm.permissionTypes = ['Organizer', 'Observer'];
 
-    $scope.text = function() {
+    vm.text = function() {
       return RecommendationTextService.assessmentText();
     };
 
     $scope.$watch('user', function() {
-      if (!$scope.user) {
+      if (!vm.user) {
         return;
       }
 
-      $scope.role = $scope.user.role;
+      vm.role = vm.user.role;
     });
 
-    $scope.isNetworkPartner = function() {
+    vm.isNetworkPartner = function() {
       return SessionService.isNetworkPartner();
     };
 
-    $scope.districtOptions = function(assessments) {
+    vm.districtOptions = function(assessments) {
 
       var districts = [];
       angular.forEach(assessments, function(assessment, key) {
@@ -50,7 +51,7 @@
       return districts;
     };
 
-    $scope.statusesOptions = function(assessments) {
+    vm.statusesOptions = function(assessments) {
       var statuses = [];
       angular.forEach(assessments, function(assessment, key) {
         if (statuses.indexOf(assessment.status) == -1) {
@@ -60,7 +61,7 @@
       return statuses;
     };
 
-    $scope.permissionsFilter = function(filter) {
+    vm.permissionsFilter = function(filter) {
       if (filter === 'Observer') {
         return {is_participant: true};
       }
@@ -70,16 +71,16 @@
       }
     };
 
-    $scope.statuses = $scope.statusesOptions(assessments);
+    vm.statuses = vm.statusesOptions(assessments);
 
-    $scope.districts = $scope.districtOptions(assessments);
+    vm.districts = vm.districtOptions(assessments);
 
-    $scope.responseLinkDisabled = function(assessment) {
+    vm.responseLinkDisabled = function(assessment) {
       return !!(_.isEmpty(assessment.responses) && !assessment.is_participant);
     };
 
-    $scope.openAssessmentModal = function() {
-      $scope.assessmentModal = $modal.open({
+    vm.openAssessmentModal = function() {
+      vm.assessmentModal = $modal.open({
         templateUrl: 'client/home/assessment_modal.html',
         controller: 'AssessmentModalCtrl',
         controllerAs: 'assessmentModal'

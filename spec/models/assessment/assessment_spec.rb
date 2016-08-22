@@ -33,6 +33,95 @@ describe Assessment do
     is_expected.to validate_presence_of :district_id
   }
 
+  context 'when meeting date is set to be in the past' do
+    context 'when first saving the assessment' do
+      context 'when the assessment is created before noon' do
+        let(:assessment) {
+          build(:assessment)
+        }
+
+        let(:current_time) {
+          Time.current.at_beginning_of_day + 11.hours
+        }
+
+        let(:current_date) {
+          current_time.strftime('%D')
+        }
+
+        before(:each) do
+          allow(Time).to receive(:current).and_return(current_time)
+          assessment.meeting_date = 5.weeks.ago
+          assessment.save
+        end
+
+        it {
+          expect(assessment.valid?).to be false
+        }
+
+        it {
+          expect(assessment.errors.get(:meeting_date)).to include "must be set no earlier than #{(Time.current + 1.day).strftime('%D')}"
+        }
+      end
+
+      context 'when the assessment is created at noon' do
+        let(:assessment) {
+          build(:assessment)
+        }
+
+        let(:current_time) {
+          Time.current.at_beginning_of_day + 12.hours
+        }
+
+        let(:current_date) {
+          current_time.strftime('%D')
+        }
+
+        before(:each) do
+          allow(Time).to receive(:current).and_return(current_time)
+          assessment.meeting_date = 5.weeks.ago
+          assessment.save
+        end
+
+        it {
+          expect(assessment.valid?).to be false
+        }
+
+        it {
+          expect(assessment.errors.get(:meeting_date)).to include "must be set no earlier than #{(Time.current + 2.days).strftime('%D')}"
+        }
+      end
+
+      context 'when the assessment is created after noon' do
+        let(:assessment) {
+          build(:assessment)
+        }
+
+        let(:current_time) {
+          Time.current.at_beginning_of_day + 12.hours
+        }
+
+        let(:current_date) {
+          current_time.strftime('%D')
+        }
+
+        before(:each) do
+          allow(Time).to receive(:current).and_return(current_time)
+          assessment.meeting_date = 5.weeks.ago
+          assessment.save
+        end
+
+        it {
+          expect(assessment.valid?).to be false
+        }
+
+        it {
+          expect(assessment.errors.get(:meeting_date)).to include "must be set no earlier than #{(Time.current + 2.days).strftime('%D')}"
+        }
+      end
+
+    end
+  end
+
   context 'when assigned_at is present' do
     context 'when due_date is invalid' do
       let(:participants) {

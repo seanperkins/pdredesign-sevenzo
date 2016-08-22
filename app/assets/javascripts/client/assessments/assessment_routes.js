@@ -21,6 +21,7 @@
                 }]
               },
               controller: 'AssessmentsCtrl',
+              controllerAs: 'vm',
               templateUrl: 'client/assessments/index.html'
             },
             'sidebar': {
@@ -38,6 +39,7 @@
           views: {
             '': {
               controller: 'AssessmentDashboardCtrl',
+              controllerAs: 'vm',
               templateUrl: 'client/assessments/dashboard.html'
             },
             'sidebar': {
