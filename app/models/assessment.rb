@@ -74,9 +74,9 @@ class Assessment < ActiveRecord::Base
   end
 
   def meeting_date_not_in_the_past
-    eligible_date = (self.created_at || Time.current) + 1.day
+    eligible_date = Time.current + 1.day + 12.hours
     if self.meeting_date < eligible_date
-      errors.add(:meeting_date, "must be set no earlier than #{(eligible_date + 12.hours).strftime('%D')}")
+      errors.add(:meeting_date, "must be set no earlier than #{(eligible_date).strftime('%D')}")
     end
   end
 
