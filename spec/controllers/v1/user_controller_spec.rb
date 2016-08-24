@@ -166,11 +166,6 @@ describe V1::UserController do
       expect(kim[:role]).to eq('other')
     end
 
-    it 'sends the signup notification to the user' do
-      post_create_user
-      expect(SignupNotificationWorker.jobs.count).to eq(1)
-    end
-
     it 'it can take multiple districts_ids' do
       post_create_user(district_ids: "#{district.id}, #{district2.id}")
 

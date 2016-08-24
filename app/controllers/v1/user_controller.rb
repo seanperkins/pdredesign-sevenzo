@@ -27,7 +27,6 @@ class V1::UserController < ApplicationController
           invitation_token: user_invitation.token
       ), status: :unprocessable_entity
     elsif @user.save
-      send_notification_email
       render status: 200, nothing: true
     else
       render_errors @user.errors
@@ -95,9 +94,6 @@ class V1::UserController < ApplicationController
     User.find_by(reset_password_token: token)
   end
 
-  def send_notification_email
-    SignupNotificationWorker.perform_async(@user.id)
-  end
 
   def downcase_email
     params[:email].downcase! unless params[:email].nil?
