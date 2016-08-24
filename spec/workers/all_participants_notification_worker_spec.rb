@@ -64,8 +64,8 @@ describe AllParticipantsNotificationWorker do
           double('assessments_mailer')
         }
 
-        let(:notifications_mailer_double) {
-          double('notifications_mailer')
+        let(:assessment_invitation_mailer_double) {
+          double('assessment_invitation_mailer')
         }
 
         let!(:invitation) {
@@ -73,13 +73,13 @@ describe AllParticipantsNotificationWorker do
         }
 
         before(:each) do
-          allow(NotificationsMailer).to receive(:invite).with(invitation).exactly(:once).and_return(notifications_mailer_double)
+          allow(AssessmentInvitationMailer).to receive(:invite).with(invitation).exactly(:once).and_return(assessment_invitation_mailer_double)
           allow(AssessmentsMailer).to receive(:assigned).with(assessment, anything)
                                           .exactly(:once)
                                           .and_return assessments_mailer_double
 
           expect(assessments_mailer_double).to receive(:deliver_now).exactly(:once)
-          expect(notifications_mailer_double).to receive(:deliver_now).exactly(:once)
+          expect(assessment_invitation_mailer_double).to receive(:deliver_now).exactly(:once)
 
           all_participants_notification_worker.perform(assessment.id)
           assessment.participants.reload
@@ -104,8 +104,8 @@ describe AllParticipantsNotificationWorker do
           double('assessments_mailer')
         }
 
-        let(:notifications_mailer_double) {
-          double('notifications_mailer')
+        let(:assessment_invitation_mailer_double) {
+          double('assessment_invitation_mailer')
         }
 
         let!(:invitations) {
@@ -115,9 +115,9 @@ describe AllParticipantsNotificationWorker do
         }
 
         before(:each) do
-          allow(NotificationsMailer).to receive(:invite).exactly(:twice).and_return(notifications_mailer_double)
+          allow(AssessmentInvitationMailer).to receive(:invite).exactly(:twice).and_return(assessment_invitation_mailer_double)
 
-          expect(notifications_mailer_double).to receive(:deliver_now).exactly(:twice)
+          expect(assessment_invitation_mailer_double).to receive(:deliver_now).exactly(:twice)
 
           all_participants_notification_worker.perform(assessment.id)
           assessment.participants.reload

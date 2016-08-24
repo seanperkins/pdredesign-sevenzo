@@ -4,7 +4,7 @@ class SignupNotificationWorker
   def perform(user_id)
     user = find_user(user_id)
 
-    NotificationsMailer
+    AssessmentInvitationMailer
       .signup(user)
       .deliver_now
   end

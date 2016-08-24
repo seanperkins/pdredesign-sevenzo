@@ -21,7 +21,7 @@ describe SignupNotificationWorker do
 
   it 'sends the email to the new users email address' do
     double = double('mailer')
-    expect(NotificationsMailer).to receive(:signup)
+    expect(AssessmentInvitationMailer).to receive(:signup)
                                        .with(user)
                                        .and_return(double)
 

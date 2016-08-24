@@ -1,4 +1,4 @@
-class NotificationsMailer < ApplicationMailer
+class AssessmentInvitationMailer < ApplicationMailer
 
   def signup(user)
 

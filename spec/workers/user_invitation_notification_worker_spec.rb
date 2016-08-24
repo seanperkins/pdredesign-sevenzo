@@ -23,13 +23,13 @@ describe UserInvitationNotificationWorker do
         Participant.find_by(user: user_invitation.user)
       }
 
-      let(:notifications_mailer_double) {
+      let(:assessment_invitation_mailer_double) {
         double('NotificationsMailer')
       }
 
       before(:each) do
-        expect(NotificationsMailer).to receive(:invite).with(user_invitation).and_return(notifications_mailer_double)
-        expect(notifications_mailer_double).to receive(:deliver_now)
+        expect(AssessmentInvitationMailer).to receive(:invite).with(user_invitation).and_return(assessment_invitation_mailer_double)
+        expect(assessment_invitation_mailer_double).to receive(:deliver_now)
         user_invitation_notification_worker.perform(user_invitation.id)
         participant.reload
       end
