@@ -1,16 +1,41 @@
-require 'spec_helper' 
+require 'spec_helper'
+require_relative './invitation_mailer_concern'
 
 describe AnalysisInvitationMailer do
-  context '#invite' do
-    let(:inventory) { FactoryGirl.create(:inventory, :with_analysis) }
-    let(:analysis) { inventory.analyses.first }
-    let(:invitation) { FactoryGirl.create(:analysis_invitation, analysis: analysis)  }
-    let(:invitation_link) { "/#/inventories/#{inventory.id}/analyses/#{analysis.id}/invitations/#{invitation.token}" }
-    let(:mail) { AnalysisInvitationMailer.invite(invitation.id) }
+  it_behaves_like 'an invitation mailer' do
+    let(:invitation) {
+      create(:analysis_invitation)
+    }
 
-    it 'sends the invite mail to the user on invite' do
-      expect(mail.to).to include(invitation.email)
-    end
+    let(:tool) {
+      invitation.analysis
+    }
+
+    let(:result) {
+      AnalysisInvitationMailer.invite(invitation)
+    }
+  end
+
+  context '#invite' do
+    let(:invitation) {
+      create(:analysis_invitation)
+    }
+
+    let(:analysis) {
+      invitation.analysis
+    }
+
+    let(:inventory) {
+      analysis.inventory
+    }
+
+    let(:invitation_link) {
+      "/#/inventories/#{inventory.id}/analyses/#{analysis.id}/invitations/#{invitation.token}"
+    }
+
+    let(:mail) {
+      AnalysisInvitationMailer.invite(invitation.id)
+    }
 
     context 'html' do
       it 'has the correct invite link' do

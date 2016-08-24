@@ -1,6 +1,21 @@
-require 'spec_helper' 
+require 'spec_helper'
+require_relative './invitation_mailer_concern'
 
 describe InventoryInvitationMailer do
+  it_behaves_like 'an invitation mailer' do
+    let(:invitation) {
+      create(:inventory_invitation)
+    }
+
+    let(:tool) {
+      invitation.inventory
+    }
+
+    let(:result) {
+      InventoryInvitationMailer.invite(invitation)
+    }
+  end
+
   context '#invite' do
     let(:invitation) { FactoryGirl.create(:inventory_invitation)  }
     let(:invitation_link) { "/#/inventories/invitations/#{invitation.token}" }
