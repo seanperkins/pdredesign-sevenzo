@@ -11,6 +11,10 @@ describe AssessmentInvitationMailer do
       invitation.assessment
     }
 
+    let(:tool_link) {
+      "/#/invitations/#{invitation.token}"
+    }
+
     let(:result) {
       AssessmentInvitationMailer.invite(invitation)
     }

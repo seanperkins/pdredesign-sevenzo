@@ -4,7 +4,7 @@ Hello <%= @first_name %>,
 for <%= @district_name %>.
 
 
-<%= sanitize(@message, tags: []).gsub('&amp;', '&') %>
+<%= sanitize(@message, tags: []).try(:gsub, '&amp;', '&') %>
 
 Please complete this analysis by <%= @deadline %>.
 

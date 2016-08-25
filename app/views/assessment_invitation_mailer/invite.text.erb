@@ -3,7 +3,7 @@ Hello <%= @first_name %>,
 <%= @facilitator_name %> has invited you to participate in <%= @assessment_name %>
 for <%= @district_name %>.
 
-<%= sanitize(@message, tags: []).gsub('&amp;', '&') %>
+<%= sanitize(@message, tags: []).try(:gsub, '&amp;', '&') %>
 
 Please complete this assessment by <%= @due_date %>.
 
