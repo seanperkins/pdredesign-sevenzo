@@ -5,7 +5,7 @@ class AnalysisInvitationMailer < ApplicationMailer
     @analysis = invite.analysis
 
     @first_name = user.first_name
-    @facilitator = @analysis.inventory.owner
+    @facilitator_name = @analysis.inventory.owner.first_name
     @analysis_name = @analysis.name
     @district_name = @analysis.inventory.district.name
     @deadline = @analysis.deadline.strftime("%B %d, %Y")

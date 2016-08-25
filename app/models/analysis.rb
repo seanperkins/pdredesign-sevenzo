@@ -26,6 +26,12 @@ class Analysis < ActiveRecord::Base
 
   attr_accessor :assign
 
+  #Exposed alias for testing
+  alias_attribute :due_date, :deadline
+  alias_attribute :user, :owner
+
+  delegate :district, to: :inventory, prefix: false
+
   validates_presence_of :name, :deadline, :inventory, :rubric, :owner
   validates :message, presence: true, if: "assigned_at.present?"
   has_many :messages, as: :tool

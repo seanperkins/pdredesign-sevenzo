@@ -335,7 +335,7 @@ describe V1::ParticipantsController do
           sign_in user
 
           double = double('AssessmentMailer', text_part: OpenStruct.new(body: 'expected'))
-          allow(NotificationsMailer).to receive(:invite).and_return(double)
+          allow(AssessmentInvitationMailer).to receive(:invite).and_return(double)
           allow(AssessmentsMailer).to receive(:assigned).and_return(double)
 
           get :mail, assessment_id: assessment.id, participant_id: participant.id

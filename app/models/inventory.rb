@@ -32,8 +32,9 @@ class Inventory < ActiveRecord::Base
 
   self.authorizer_name = 'InventoryAuthorizer'
 
-  # Exposed alias for test
+  # Exposed alias for testing
   alias_attribute :user, :owner
+  alias_attribute :due_date, :deadline
 
   validates_length_of :name, minimum: 1, maximum: 255
   validates_presence_of :owner
