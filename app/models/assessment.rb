@@ -13,8 +13,6 @@
 #  district_id     :integer
 #  message         :text
 #  assigned_at     :datetime
-#  mandrill_id     :string(255)
-#  mandrill_html   :text
 #  report_takeaway :text
 #  share_token     :string
 #

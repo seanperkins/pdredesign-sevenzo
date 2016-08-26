@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160712201921) do
+ActiveRecord::Schema.define(version: 20160826165137) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -97,8 +97,6 @@ ActiveRecord::Schema.define(version: 20160712201921) do
     t.integer  "district_id"
     t.text     "message"
     t.datetime "assigned_at"
-    t.string   "mandrill_id",     limit: 255
-    t.text     "mandrill_html"
     t.text     "report_takeaway"
     t.string   "share_token"
   end
@@ -392,13 +390,11 @@ ActiveRecord::Schema.define(version: 20160712201921) do
 
   create_table "messages", force: :cascade do |t|
     t.text     "content"
-    t.string   "category",      limit: 255
+    t.string   "category",   limit: 255
     t.datetime "sent_at"
     t.integer  "tool_id"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "mandrill_id",   limit: 255
-    t.text     "mandrill_html"
     t.string   "tool_type"
   end
 
