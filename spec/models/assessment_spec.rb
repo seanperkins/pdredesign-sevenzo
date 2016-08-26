@@ -19,8 +19,11 @@
 #
 
 require 'spec_helper'
+require_relative './message_migration_concern_spec'
 
 describe Assessment do
+  it_behaves_like 'a tool which adds initial messages', described_class.to_s.downcase
+
   it {
     is_expected.to validate_presence_of :name
   }

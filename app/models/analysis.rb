@@ -18,6 +18,8 @@
 
 class Analysis < ActiveRecord::Base
   include Authority::Abilities
+  include MessageMigrationConcern
+
   self.authorizer_name = 'AnalysisAuthorizer'
 
   belongs_to :inventory

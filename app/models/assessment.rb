@@ -19,6 +19,8 @@
 
 class Assessment < ActiveRecord::Base
   include Authority::Abilities
+  include MessageMigrationConcern
+
   self.authorizer_name = 'AssessmentAuthorizer'
 
   default_scope { order("created_at DESC") }
