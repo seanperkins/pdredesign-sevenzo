@@ -42,7 +42,7 @@ FactoryGirl.define do
       message 'some message'
       association :user, factory: [:user, :with_district], districts: 1
 
-      before(:create) do |assessment, evaluator|
+      after(:build) do |assessment, evaluator|
         assessment.participants = create_list(:participant, 2, :with_users,
                                               invited_at: (1.day.ago if evaluator.invited)
         )

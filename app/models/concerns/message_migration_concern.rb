@@ -11,8 +11,11 @@ module MessageMigrationConcern
 
   def add_initial_message
     return if Message.exists?(tool: self)
+    return unless self.assigned_at.present?
     Message.create!(tool: self,
                     sent_at: self.assigned_at,
-                    content: sanitize(self.message, tags: []))
+                    content: sanitize(self.message, tags: []),
+                    category: 'welcome'
+    )
   end
 end

@@ -34,7 +34,7 @@ FactoryGirl.define do
         participants 1
       end
 
-      after(:create) do |analysis, evaluator|
+      after(:build) do |analysis, evaluator|
         create_list(:analysis_member, evaluator.participants, :as_participant, analysis: analysis)
       end
     end

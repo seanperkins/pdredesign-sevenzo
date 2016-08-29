@@ -7,6 +7,7 @@ class MoveToolMessageToEndOfMessagesList < ActiveRecord::Migration
       model.all.each { |tool|
         Message.create!(tool: tool,
                         sent_at: tool.assigned_at,
+                        category: 'welcome',
                         content: sanitize(tool.message, tags: []))
       }
     }
