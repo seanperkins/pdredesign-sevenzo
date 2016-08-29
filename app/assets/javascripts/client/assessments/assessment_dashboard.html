@@ -1,57 +1,57 @@
 <div class="sidebar">
-  <div id="assessment_dashboard_consensus_sidebar" ng-controller="AssessmentDashboardSidebarCtrl">
-    <div class='consensus'>
-      <p ng-show="noMeetingDate()" class='header'>Consensus meeting not yet scheduled</p>
-      <p ng-show="preMeetingDate()" class='header'>Consensus meeting will be on</p>
-      <p ng-show="postMeetingDate()" class='header'>Consensus meeting was held</p>
-      <div class='outer'>
-        <div class='inner'>
-          <div ng-show="postMeetingDate()">
-            <p class='date'>{{meetingDateDaysAgo()}}</p>
-            <p class='month'>days ago</p>
+  <div id="assessment_dashboard_consensus_sidebar" ng-controller="AssessmentDashboardSidebarCtrl as vm">
+    <div class="consensus">
+      <p ng-show="vm.noMeetingDate()" class="header">Consensus meeting not yet scheduled</p>
+      <p ng-show="vm.preMeetingDate()" class="header">Consensus meeting will be on</p>
+      <p ng-show="vm.postMeetingDate()" class="header">Consensus meeting was held</p>
+      <div class="outer">
+        <div class="inner">
+          <div ng-show="vm.postMeetingDate()">
+            <p class="date">{{vm.meetingDateDaysAgo()}}</p>
+            <p class="month">days ago</p>
           </div>
 
-          <div ng-show="preMeetingDate()">
-            <p class='day'>{{meetingDayName()}}</p>
-            <p class='date'>{{meetingDayNumber()}}</p>
-            <p class='month'>{{meetingMonthName()}}</p>
+          <div ng-show="vm.preMeetingDate()">
+            <p class="day">{{vm.meetingDayName()}}</p>
+            <p class="date">{{vm.meetingDayNumber()}}</p>
+            <p class="month">{{vm.meetingMonthName()}}</p>
           </div>
 
-          <div ng-show="noMeetingDate()">
-            <p class='date'>?</p>
+          <div ng-show="vm.noMeetingDate()">
+            <p class="date">?</p>
           </div>
         </div>
       </div>
     </div>
     <ul class="links">
-      <li ng-show="noMeetingDate()">
-        <a class="btn btn-block btn-default" ng-click="modifySchedule()" href="">Schedule Consensus Meeting</a>
-        <a class="btn btn-block btn-default" ng-click="newReminder()" href="">Send Reminder</a>
+      <li ng-show="vm.noMeetingDate()">
+        <a class="btn btn-block btn-default" ng-click="vm.modifySchedule()" href="">Schedule Consensus Meeting</a>
+        <a class="btn btn-block btn-default" ng-click="vm.newReminder()" href="">Send Reminder</a>
       </li>
-      <li ng-show="preMeetingDate()">
-        <a class="btn btn-block btn-default" ng-click="modifySchedule()" href="">Modify Schedule</a>
-        <a class="btn btn-block btn-default" ng-click="createConsensus()" href="" >Create Consensus</a>
-        <a class="btn btn-block btn-default" ng-click="newReminder()" href="">Send Reminder</a>
+      <li ng-show="vm.preMeetingDate()">
+        <a class="btn btn-block btn-default" ng-click="vm.modifySchedule()" href="">Modify Schedule</a>
+        <a class="btn btn-block btn-default" ng-click="vm.createConsensus()" href="" >Create Consensus</a>
+        <a class="btn btn-block btn-default" ng-click="vm.newReminder()" href="">Send Reminder</a>
       </li>
-      <li ng-show="postMeetingDate()">
-        <a class="btn btn-block btn-default" ng-show="consensusStarted()" href="#/assessments/{{assessment.id}}/consensus/{{assessment.consensus.id}}">View Consensus</a>
-        <a class="btn btn-block btn-default" ng-hide="consensusStarted()" ng-click="createConsensus()" href="" >Create Consensus</a>
+      <li ng-show="vm.postMeetingDate()">
+        <a class="btn btn-block btn-default" ng-show="vm.consensusStarted()" href="#/assessments/{{vm.assessment.id}}/consensus/{{vm.assessment.consensus.id}}">View Consensus</a>
+        <a class="btn btn-block btn-default" ng-hide="vm.consensusStarted()" ng-click="vm.createConsensus()" href="" >Create Consensus</a>
       </li>
       <li ng-show="!$state.includes('assessment_dashboard')">
-        <a class="btn btn-block btn-default" href="#/assessments/{{assessment.id}}/dashboard">Dashboard</a>
+        <a class="btn btn-block btn-default" href="#/assessments/{{vm.assessment.id}}/dashboard">Dashboard</a>
       </li>
-      <li ng-show="reportPresent() && !$state.includes('assessment_report')">
-        <a class="btn btn-block btn-default" href="#/assessments/{{assessment.id}}/report">Report</a>
+      <li ng-show="vm.reportPresent() && !$state.includes('assessment_report')">
+        <a class="btn btn-block btn-default" href="#/assessments/{{vm.assessment.id}}/report">Report</a>
       </li>
       <li>
-        <a class="btn btn-block btn-secondary" ng-if="true || noMeetingDate() || preMeetingDate()" ng-click="addLearningQuestion()">Add/Review Learning Questions</a>
+        <a class="btn btn-block btn-secondary" ng-click="vm.addLearningQuestion()">Add/Review Learning Questions</a>
       </li>
     </ul>
 
     <div class="share-report">
       <h3>Share this report</h3>
       <p>Copy this link to share this page.</p>
-      <share-url url="{{shareURL}}"></share-url>
+      <share-url url="{{vm.shareURL}}"></share-url>
     </div>
   </div>
 

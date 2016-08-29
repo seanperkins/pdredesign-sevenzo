@@ -1,11 +1,6 @@
-class NotificationsMailer < ApplicationMailer
-
-  def signup(user)
-
-  end
-
+class AssessmentInvitationMailer < ApplicationMailer
   def invite(user_invitation)
-    invite = find_invite(user_invitation)
+    invite = UserInvitation.find(user_invitation)
     user = invite.user
 
     @first_name = user.first_name
@@ -22,9 +17,5 @@ class NotificationsMailer < ApplicationMailer
   private
   def invite_url(token)
     "#{ENV['BASE_URL']}/#/invitations/#{token}"
-  end
-
-  def find_invite(invite_id)
-    UserInvitation.find(invite_id)
   end
 end

@@ -22,7 +22,7 @@ class AllParticipantsNotificationWorker
   end
 
   def send_invitation_email(invitation_record)
-    NotificationsMailer
+    AssessmentInvitationMailer
       .invite(invitation_record)
       .deliver_now
   end

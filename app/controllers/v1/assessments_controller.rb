@@ -3,35 +3,40 @@ class V1::AssessmentsController < ApplicationController
 
   def index
     @assessments = user_assessments
-    @role        = user_role
+    @role = user_role
   end
 
   def show
     @assessment = assessment
     authorize_action_for @assessment
-    @messages   = messages
+    @messages = messages
   end
 
   def update
-    @assessment  = assessment
+    @assessment = assessment
     authorize_action_for @assessment
 
     update_params = assessment_params
 
     @assessment.update(update_params)
-    if update_params[:assign]
-      invite_all_users(@assessment)
+    if @assessment.valid?
+      if update_params[:assign]
+        invite_all_users(@assessment)
+      end
+      render nothing: true
+    else
+      @errors = @assessment.errors
+      render 'v1/shared/errors', status: :bad_request
     end
-    render nothing: true
   end
 
   def create
     @assessment = Assessment.new(assessment_create_params)
     authorize_action_for @assessment
 
-    @assessment.user        = current_user
+    @assessment.user = current_user
     @assessment.district_id = current_user.district_ids.first
-    @assessment.rubric_id   = pick_rubric unless @assessment.rubric_id
+    @assessment.rubric_id = pick_rubric unless @assessment.rubric_id
 
     if assessment_create_params[:district_id]
       @assessment.district_id = assessment_create_params[:district_id]
@@ -73,9 +78,9 @@ class V1::AssessmentsController < ApplicationController
 
   def welcome_message
     OpenStruct.new(id: nil,
-      category: "welcome",
-      sent_at:  assessment.updated_at,
-      teaser:  assessment.message)
+                   category: "welcome",
+                   sent_at: assessment.updated_at,
+                   teaser: assessment.message)
   end
 
   def assessment_create_params
@@ -84,7 +89,7 @@ class V1::AssessmentsController < ApplicationController
 
   def assessment_params
     params.permit(:rubric_id, :name, :meeting_date, :due_date,
-      :message, :assign, :district_id, :report_takeaway)
+                  :message, :assign, :district_id, :report_takeaway)
   end
 
   def assessment

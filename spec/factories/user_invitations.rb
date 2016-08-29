@@ -18,7 +18,9 @@ FactoryGirl.define do
     last_name { Faker::Name.last_name }
     team_role { Faker::Commerce.department }
     role { Faker::Commerce.department }
-    email { Faker::Internet.email }
+    sequence :email do |n|
+      "testuser#{n}@example.com"
+    end
     association :assessment, :with_participants
     association :user, :with_district
 

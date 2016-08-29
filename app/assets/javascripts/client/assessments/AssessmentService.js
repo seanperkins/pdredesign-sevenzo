@@ -28,6 +28,10 @@
 
     service.create = function(assessment) {
       return Assessment.create(assessment).$promise;
+    };
+
+    service.save = function(assessment) {
+      return Assessment.save({id: assessment.id}, assessment).$promise;
     }
   }
 })();

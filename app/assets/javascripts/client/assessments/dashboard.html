@@ -1,31 +1,32 @@
 <div class='dashboard'>
   <div class='row row-bg row-header'>
     <div class="col-md-12">
-      <h1  class="greeting">{{assessment.name}}</h1>
-      <h4 class="byline">organized by: <a href="#">{{assessment.facilitator.full_name}} </a>
-        on {{assessment.created_at | amDateFormat:'MMMM Do, YYYY'}}
+      <h1  class="greeting">{{vm.assessment.name}}</h1>
+      <h4 class="byline">organized by: <a href="#">{{vm.assessment.facilitator.full_name}} </a>
+        on {{vm.assessment.created_at | amDateFormat:'MMMM Do, YYYY'}}
       </h4>
 
       <p id="report-header">
-      {{assessment.overview.text}}
-      <a  ng-if="assessment.overview.link == 'view_consensus' " href="#/assessments/{{assessment.id}}/consensus/{{assessment.consensus.id}}">View Consensus</a>
-      <a  ng-if="assessment.overview.link == 'edit_consensus' " href="#/assessments/{{assessment.id}}/consensus/{{assessment.consensus.id}}">Edit Consensus</a>
+      {{vm.assessment.overview.text}}
+      <a  ng-if="vm.assessment.overview.link == 'view_consensus' " href="#/assessments/{{vm.assessment.id}}/consensus/{{vm.assessment.consensus.id}}">View Consensus</a>
+      <a  ng-if="vm.assessment.overview.link == 'edit_consensus' " href="#/assessments/{{vm.assessment.id}}/consensus/{{vm.assessment.consensus.id}}">Edit Consensus</a>
       </p>
     </div>
   </div>
 
   <div class='row'>
-    <div id='participants' ng-show="assessment.is_facilitator">
+    <div id='participants' ng-show="vm.assessment.is_facilitator">
       <div class='row'>
         <div class='col-md-12 header'>
           <h2 ng-pluralize
-              count="assessment.participant_count"
+              count="vm.assessment.participant_count"
               when="{'0': 'No Participants',
                      '1': '{} Participant',
                      'other' : '{} Participants'}">
+            </h2>
         </div>
         <div class="participant-list">
-          <participant ng-repeat="user in assessment.participants" user="user"></participant>
+          <participant ng-repeat="user in vm.assessment.participants" user="user"></participant>
         </div>
       </div>
     </div>
@@ -35,9 +36,9 @@
           <add-new-participants send-invite="true"></add-new-participants>
         </div>
         <div class="col-lg-12">
-          <manage-participants auto-show="{{showModal}}"
+          <manage-participants auto-show="{{vm.showModal}}"
                                send-invite="true"
-                               number-of-requests="{{assessment.number_of_requests}}" ng-if="assessment">
+                               number-of-requests="{{vm.assessment.number_of_requests}}" ng-if="vm.assessment">
           </manage-participants>
         </div>
         <div class="col-lg-12">
@@ -48,22 +49,23 @@
       </div>
     </div>
 
-    <div id='messages' ng-show="assessment.messages">
+    <div id='messages' ng-show="vm.assessment.messages">
       <div class='col-md-12 header'>
           <h2 ng-pluralize
-              count="assessment.messages.length"
+              count="vm.assessment.messages.length"
               when="{'0': 'No Sent Messages',
                      '1': '{} Sent Message',
                      'other' : '{} Sent Messages'}">
+            </h2>
       </div>
 
-      <div class="col-md-12" ng-repeat="message in assessment.messages">
+      <div class="col-md-12" ng-repeat="message in vm.assessment.messages">
         <message-element kind="Assessment" message="message"></message-element>
       </div>
 
       <div class="col-md-12">
         <div class="plus-button">
-          <a ng-click="createReminder()" href="">
+          <a ng-click="vm.createReminder()" href="">
             <span class="fa-stack fa-2x">
               <i class="fa fa-circle fa-stack-2x"></i>
               <i class="fa fa-envelope fa-stack-1x fa-icon"></i>

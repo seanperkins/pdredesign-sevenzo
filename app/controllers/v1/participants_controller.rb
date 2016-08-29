@@ -61,7 +61,7 @@ class V1::ParticipantsController < ApplicationController
   end
 
   def invite_mailer(record)
-    NotificationsMailer.invite(record)
+    AssessmentInvitationMailer.invite(record)
   end
 
   def assessments_mailer(assessment, participant)

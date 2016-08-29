@@ -64,6 +64,7 @@ end
 group :development, :test do
   gem 'foreman'
   gem 'dotenv-rails'
+  gem 'spring', '~> 1.7.0'
   gem 'spring-commands-rspec'
   gem 'better_errors'
   gem 'binding_of_caller'
