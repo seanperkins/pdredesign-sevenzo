@@ -21,19 +21,49 @@ describe V1::AssessmentsController do
     }
 
     context 'when updating an existing assessment' do
-      before(:each) do
-        sign_in facilitator
-        put :update, {id: assessment.id, rubric_id: assessment.rubric}
-        assessment.reload
+      context 'when the assessment is considered valid' do
+        before(:each) do
+          sign_in facilitator
+          put :update, {id: assessment.id, rubric_id: assessment.rubric}
+          assessment.reload
+        end
+
+        it {
+          expect(assigns(:assessment).valid?).to be true
+        }
+
+        it {
+          is_expected.to respond_with :success
+        }
+
+        it {
+          expect(assessment.assigned_at).to be_nil
+        }
       end
 
-      it {
-        is_expected.to respond_with :success
-      }
+      context 'when the assessment is considered invalid' do
+        before(:each) do
+          sign_in facilitator
+          put :update, {id: assessment.id, rubric_id: assessment.rubric, meeting_date: 1.day.ago}
+          assessment.reload
+        end
 
-      it {
-        expect(assessment.assigned_at).to be_nil
-      }
+        it {
+          expect(assigns(:assessment).valid?).to be false
+        }
+
+        it {
+          is_expected.to respond_with :bad_request
+        }
+
+        it {
+          expect(assessment.assigned_at).to be_nil
+        }
+
+        it {
+          expect(json['errors']['meeting_date'][0]).to include 'must be set no earlier than'
+        }
+      end
     end
 
     context 'when updating an entire record' do

@@ -4,7 +4,7 @@ Hello <%= @first_name %>,
 for <%= @district_name %>.
 
 
-<%= @message %>
+<%= sanitize(@message, tags: []).try(:gsub, '&amp;', '&') %>
 
 Please complete this inventory by <%= @deadline %>.
 

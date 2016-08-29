@@ -5,7 +5,7 @@ class InventoryInvitationMailer < ApplicationMailer
     inventory = invite.inventory
 
     @first_name = user.first_name
-    @facilitator = inventory.owner
+    @facilitator_name = inventory.owner.first_name
     @inventory_name = inventory.name
     @district_name = inventory.district.name
     @deadline = inventory.deadline.strftime("%B %d, %Y")
@@ -17,7 +17,7 @@ class InventoryInvitationMailer < ApplicationMailer
 
   def reminder(inventory, message, participant)
     @first_name = participant.user.first_name
-    @facilitator = inventory.owner
+    @facilitator_name = inventory.owner.first_name
     @inventory_name = inventory.name
     @district_name = inventory.district.name
     @deadline = inventory.deadline.strftime("%B %d, %Y")

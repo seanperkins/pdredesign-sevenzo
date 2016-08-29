@@ -23,15 +23,20 @@ FactoryGirl.define do
     association :inventory
     association :rubric
     association :owner, factory: :user
-  end
 
-  trait :with_participants do
-    transient do
-      participants 1
+    trait :assigned do
+      assigned_at Time.now
+      message 'some message'
     end
 
-    after(:create) do |analysis, evaluator|
-      create_list(:analysis_member, evaluator.participants, :as_participant, analysis: analysis)
+    trait :with_participants do
+      transient do
+        participants 1
+      end
+
+      after(:create) do |analysis, evaluator|
+        create_list(:analysis_member, evaluator.participants, :as_participant, analysis: analysis)
+      end
     end
   end
 end

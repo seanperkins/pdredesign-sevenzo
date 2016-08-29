@@ -21,6 +21,11 @@ FactoryGirl.define do
     association :district
     association :owner, factory: :user
 
+    trait :assigned do
+      assigned_at Time.now
+      message 'some message'
+    end
+
     trait :with_members do
       transient do
         members 1
