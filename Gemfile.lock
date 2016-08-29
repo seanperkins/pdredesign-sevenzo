@@ -462,7 +462,7 @@ GEM
       redis-namespace (>= 1.3.1)
     simple_oauth (0.3.1)
     slop (3.6.0)
-    spring (1.3.6)
+    spring (1.7.2)
     spring-commands-rspec (1.0.4)
       spring (>= 0.9.1)
     sprockets (2.12.4)
@@ -580,6 +580,7 @@ DEPENDENCIES
   selectize-rails (= 0.12.1)
   shoulda-matchers (~> 3.1.1)
   sidekiq
+  spring (~> 1.7.0)
   spring-commands-rspec
   twitter
   uglifier (>= 1.3.0)
@@ -587,5 +588,8 @@ DEPENDENCIES
   yajl-ruby
   zurb-ink-rails (~> 1.0.5)
 
+RUBY VERSION
+   ruby 2.2.3p173
+
 BUNDLED WITH
-   1.11.2
+   1.12.5
