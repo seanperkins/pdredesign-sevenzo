@@ -10,16 +10,18 @@
     '$stateParams',
     'SessionService',
     'Assessment',
-    'Participant'
+    'Participant',
+    'messages'
   ];
 
-  function AssessmentDashboardCtrl($modal, $scope, $stateParams, SessionService, Assessment, Participant) {
+  function AssessmentDashboardCtrl($modal, $scope, $stateParams, SessionService, Assessment, Participant, messages) {
     var vm = this;
 
     vm.id = $stateParams.id;
 
     vm.showModal = $stateParams.showModal || false;
     vm.currentUser = SessionService.getCurrentUser();
+    vm.messages = messages.messages;
 
     $scope.$on('update_participants', function() {
       vm.updateParticipantsList();

@@ -12,7 +12,7 @@
       scope: {
         context: '@'
       },
-      templateUrl: 'client/reminders/reminder_modal.html',
+      templateUrl: 'client/messages/reminder_modal.html',
       controller: 'ReminderModalCtrl',
       controllerAs: 'reminderModal'
     }

@@ -81,7 +81,7 @@ PdrServer::Application.routes.draw do
     end
 
     resources :inventories, only: [:create, :index, :show, :update] do
-      post 'reminders', to: 'inventory_reminders#create'
+      post 'messages', to: 'inventory_reminders#create'
       patch '', to: 'inventories#mark_complete'
       post 'save_response', to: 'inventories#save_response'
       get 'participant_response', to: 'inventories#participant_response'

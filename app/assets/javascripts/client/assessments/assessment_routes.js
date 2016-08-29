@@ -40,7 +40,12 @@
             '': {
               controller: 'AssessmentDashboardCtrl',
               controllerAs: 'vm',
-              templateUrl: 'client/assessments/dashboard.html'
+              templateUrl: 'client/assessments/dashboard.html',
+              resolve: {
+                messages: ['$stateParams', 'AssessmentMessage', function($stateParams, AssessmentMessage) {
+                  return AssessmentMessage.get({assessment_id: $stateParams.id}).$promise;
+                }]
+              }
             },
             'sidebar': {
               controller: 'SidebarCtrl',

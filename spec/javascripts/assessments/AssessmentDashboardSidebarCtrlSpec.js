@@ -36,7 +36,7 @@
           $state: $state,
           $stateParams: $stateParams,
           Assessment: Assessment,
-          AssessmentReminder: AssessmentReminder
+          AssessmentMessage: AssessmentReminder
         });
       });
     });
