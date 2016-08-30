@@ -10,6 +10,6 @@
   ];
 
   function AnalysisMessage($resource, UrlService) {
-    return $resource(UrlService.url('inventories/:inventory_id/analyses/:id/messages'));
+    return $resource(UrlService.url('analyses/:analysis_id/messages'));
   }
 })();

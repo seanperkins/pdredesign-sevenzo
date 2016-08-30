@@ -19,7 +19,7 @@
     };
 
     service.extractId = function() {
-      return $stateParams.inventory_id || $stateParams.assessment_id || $stateParams.id;
+      return $stateParams.id || $stateParams.analysis_id || $stateParams.inventory_id || $stateParams.assessment_id;
     };
 
     service.sendMessage = function(message) {
@@ -30,7 +30,7 @@
         return InventoryMessage.save({inventory_id: service.extractId()}, {message: message})
             .$promise;
       } else if (service.context === 'analysis') {
-        return AnalysisMessage.save({inventory_id: $stateParams.inventory_id, id: $stateParams.id}, {message: message})
+        return AnalysisMessage.save({analysis_id: service.extractId()}, {message: message})
             .$promise;
       }
     };

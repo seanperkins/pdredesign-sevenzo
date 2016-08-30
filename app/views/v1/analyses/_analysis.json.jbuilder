@@ -18,13 +18,6 @@ json.inventory_id analysis.inventory_id
 json.message analysis.message || default_analysis_message if current_user
 json.is_facilitator analysis.facilitator?(current_user)
 json.participant_count analysis.participants.count
-json.messages @messages, :id, :category, :teaser, :sent_at do |message|
-  json.id       message.id
-  json.category message.category
-  json.teaser   sanitize(message.teaser, tags: [])
-  json.sent_at  message.sent_at
-end
-
 json.report_takeaway analysis.report_takeaway
 json.share_token analysis.share_token
 
@@ -35,4 +28,3 @@ if analysis.consensus
     json.is_completed analysis.fully_complete?
   end
 end
-
