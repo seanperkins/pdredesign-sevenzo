@@ -14,14 +14,14 @@
     'messages'
   ];
 
-  function AssessmentDashboardCtrl($modal, $scope, $stateParams, SessionService, Assessment, Participant, messages) {
+  function AssessmentDashboardCtrl($modal, $scope, $stateParams, SessionService, Assessment, Participant, assessmentMessages) {
     var vm = this;
 
     vm.id = $stateParams.id;
 
     vm.showModal = $stateParams.showModal || false;
     vm.currentUser = SessionService.getCurrentUser();
-    vm.messages = messages.messages;
+    vm.messages = assessmentMessages.messages;
 
     $scope.$on('update_participants', function() {
       vm.updateParticipantsList();
