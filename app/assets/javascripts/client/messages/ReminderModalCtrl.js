@@ -18,7 +18,7 @@
       $scope.$emit('close-reminder-modal');
     };
 
-    vm.sendReminder = function(message) {
+    vm.sendMessage = function(message) {
       MessageService.sendMessage(message)
           .then(function() {
             vm.closeModal();

@@ -34,6 +34,61 @@ describe V1::MessagesController do
     end
 
     context 'when authenticated' do
+      context 'when newer messages exist' do
+        let(:new_assessment) {
+          create(:assessment, :with_participants)
+        }
+
+        let!(:first_message) {
+          create(:message, tool: new_assessment, sent_at: 5.days.ago)
+        }
+
+        let!(:second_message) {
+          create(:message, tool: new_assessment, sent_at: 4.days.ago)
+        }
+
+        let!(:third_message) {
+          create(:message, tool: new_assessment, sent_at: 3.days.ago)
+        }
+
+        let!(:fourth_message) {
+          create(:message, tool: new_assessment, sent_at: 2.days.ago)
+        }
+
+        let!(:fifth_message) {
+          create(:message, tool: new_assessment, sent_at: 1.day.ago)
+        }
+
+        let(:user) {
+          new_assessment.user
+        }
+
+        before(:each) do
+          sign_in user
+          get :index, assessment_id: new_assessment.id, format: :json
+        end
+
+        it {
+          expect(Time.parse(json['messages'][0]['sent_at']).to_i).to eq fifth_message.sent_at.to_i
+        }
+
+        it {
+          expect(Time.parse(json['messages'][1]['sent_at']).to_i).to eq fourth_message.sent_at.to_i
+        }
+
+        it {
+          expect(Time.parse(json['messages'][2]['sent_at']).to_i).to eq third_message.sent_at.to_i
+        }
+
+        it {
+          expect(Time.parse(json['messages'][3]['sent_at']).to_i).to eq second_message.sent_at.to_i
+        }
+
+        it {
+          expect(Time.parse(json['messages'][4]['sent_at']).to_i).to eq first_message.sent_at.to_i
+        }
+      end
+
       context 'when fetching assessment messages' do
         let(:user) {
           assessment.user

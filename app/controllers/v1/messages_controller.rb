@@ -17,7 +17,7 @@ class V1::MessagesController < ApplicationController
   authority_actions create: 'update'
 
   def index
-    @messages ||= Message.where(tool: find_tool)
+    @messages ||= Message.where(tool: find_tool).order(sent_at: :desc)
     render 'v1/messages/index'
   end
 
