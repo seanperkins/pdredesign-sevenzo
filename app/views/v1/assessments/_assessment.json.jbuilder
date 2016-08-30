@@ -25,13 +25,6 @@ json.participant_count   assessment.participants.count
 json.percent_completed   assessment.percent_completed
 json.completed_responses assessment.participant_responses.count
 
-json.messages @messages, :id, :category, :teaser, :sent_at do |message|
-  json.id       message.id
-  json.category message.category
-  json.teaser   sanitize(message.teaser, tags: [])
-  json.sent_at  message.sent_at
-end
-
 json.is_participant assessment.participant?(current_user)
 json.is_facilitator assessment.facilitator?(current_user)
 json.has_access assessment.has_access?(current_user)
