@@ -8,7 +8,7 @@
       $state,
       $stateParams,
       Assessment,
-      AssessmentReminder,
+      AssessmentMessage,
       $q,
       $rootScope,
       subject;
@@ -16,13 +16,13 @@
     beforeEach(function () {
       module('PDRClient');
 
-      inject(function (_$rootScope_, _$modal_, _$location_, _$state_, _Assessment_, _AssessmentReminder_, _$q_, _$controller_) {
+      inject(function (_$rootScope_, _$modal_, _$location_, _$state_, _Assessment_, _AssessmentMessage_, _$q_, _$controller_) {
         $rootScope = _$rootScope_;
         $scope = _$rootScope_.$new(true);
         $modal = _$modal_;
         $location = _$location_;
         Assessment = _Assessment_;
-        AssessmentReminder = _AssessmentReminder_;
+        AssessmentMessage = _AssessmentMessage_;
         $q = _$q_;
         $state = _$state_;
         $stateParams = {id: 1};
@@ -36,7 +36,7 @@
           $state: $state,
           $stateParams: $stateParams,
           Assessment: Assessment,
-          AssessmentMessage: AssessmentReminder
+          AssessmentMessage: AssessmentMessage
         });
       });
     });
@@ -44,13 +44,13 @@
     describe('#sendReminder', function () {
       beforeEach(function () {
         spyOn(subject, 'close');
-        spyOn(AssessmentReminder, 'save').and.returnValue({$promise: $q.when({})});
+        spyOn(AssessmentMessage, 'save').and.returnValue({$promise: $q.when({})});
       });
 
       it('sends a reminder to the server', function () {
         subject.sendReminder('Something');
         $rootScope.$digest();
-        expect(AssessmentReminder.save).toHaveBeenCalledWith({assessment_id: 1}, {message: 'Something'});
+        expect(AssessmentMessage.save).toHaveBeenCalledWith({assessment_id: 1}, {message: 'Something'});
       });
 
       it('closes the modal', function () {
