@@ -24,10 +24,10 @@ FactoryGirl.define do
     name { Faker::Lorem.word }
     association :rubric
     association :district
+    due_date 5.days.from_now
 
     trait :with_response do
       assigned_at Time.now
-      due_date 5.days.from_now
       association :response, :as_assessment_responder
     end
 
@@ -40,7 +40,6 @@ FactoryGirl.define do
         invited false
       end
       name 'Assessment other'
-      due_date 5.days.from_now
       message 'some message'
       association :user, factory: [:user, :with_district], districts: 1
 
@@ -54,7 +53,6 @@ FactoryGirl.define do
 
     trait :with_network_partners do
       name 'Assessment other'
-      due_date 5.days.from_now
       message 'some message'
       association :user, factory: [:user, :with_district], districts: 1
 
