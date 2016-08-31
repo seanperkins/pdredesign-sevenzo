@@ -130,7 +130,7 @@ PdrServer::Application.routes.draw do
       end
 
       member do
-        get :district_product_entries
+        get :product_entries
       end
     end
 
