@@ -53,7 +53,6 @@ describe Inventory do
     it 'gives back the correct error message' do
       expect(subject.errors[:deadline][0]).to eq 'cannot be in the past'
     end
-
   end
 
   describe '#save' do
