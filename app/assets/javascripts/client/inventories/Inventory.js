@@ -21,9 +21,9 @@
       'save': {
         method: 'PUT'
       },
-      'districtProductEntries': {
+      'productEntries': {
         method: 'GET',
-        url: UrlService.url('inventories/:inventory_id/district_product_entries')
+        url: UrlService.url('inventories/:inventory_id/product_entries')
       },
       'markComplete': {
         method: 'PATCH',

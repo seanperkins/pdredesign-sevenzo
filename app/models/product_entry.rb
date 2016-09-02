@@ -44,12 +44,4 @@ class ProductEntry < ActiveRecord::Base
   default_scope {
     includes(:general_inventory_question, :product_question, :usage_question, :technical_question)
   }
-
-  scope :for_district, -> (district_id) {
-    joins(:inventory).
-    where(inventories: {
-      district_id: Inventory.select(:district_id).where(id: district_id)
-    }).
-    uniq
-  }
 end

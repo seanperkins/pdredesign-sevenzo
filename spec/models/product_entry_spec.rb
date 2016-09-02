@@ -33,28 +33,4 @@ describe ProductEntry do
 
     it { expect(subject.new_record?).to be false }
   end
-
-  describe 'for district' do
-    let(:district1) { FactoryGirl.create(:district) }
-    let(:district2) { FactoryGirl.create(:district) }
-    it 'returns inventories from the district of a certain inventory_id' do
-      district1_inventory1 = FactoryGirl.create(:inventory, district: district1)
-      district1_inventory2 = FactoryGirl.create(:inventory, district: district1)
-      FactoryGirl.create(:inventory)
-
-      district1_inventory1_product_entry1 = FactoryGirl.create(:product_entry, inventory: district1_inventory1)
-      district1_inventory1_product_entry2 = FactoryGirl.create(:product_entry, inventory: district1_inventory1)
-      district1_inventory2_product_entry1 = FactoryGirl.create(:product_entry, inventory: district1_inventory2)
-      district1_inventory2_product_entry2 = FactoryGirl.create(:product_entry, inventory: district1_inventory2)
-
-      FactoryGirl.create(:product_entry)
-
-      expect(ProductEntry.for_district(district1_inventory1.id)).to match_array([
-        district1_inventory1_product_entry1,
-        district1_inventory1_product_entry2,
-        district1_inventory2_product_entry1,
-        district1_inventory2_product_entry2
-      ])
-    end
-  end
 end

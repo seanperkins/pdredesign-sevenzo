@@ -81,9 +81,9 @@
         'platforms'
       );
 
-      Inventory.districtProductEntries({inventory_id: vm.inventory.id})
+      Inventory.productEntries({inventory_id: vm.inventory.id})
           .$promise.then(function (response) {
-            vm.districtProductEntries = response.product_entries;
+            vm.productEntries = response.product_entries;
 
             var options = _.reduce(response.product_entries, function (result, productEntry) {
               result[productEntry.id] = productEntry.id;
@@ -101,7 +101,7 @@
     };
 
     vm.getProductEntryName = function (id) {
-      return _.findWhere(vm.districtProductEntries, {id: id}).general_inventory_question.product_name;
+      return _.findWhere(vm.productEntries, {id: id}).general_inventory_question.product_name;
     };
 
     vm.save = function () {
