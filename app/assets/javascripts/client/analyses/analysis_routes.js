@@ -43,7 +43,12 @@
         '': {
           controller: 'AnalysisDashboardCtrl',
           controllerAs: 'analysisDashboard',
-          templateUrl: 'client/inventories/analysis_dashboard.html'
+          templateUrl: 'client/inventories/analysis_dashboard.html',
+          resolve: {
+            analysisMessages: ['$stateParams', 'AnalysisMessage', function($stateParams, AnalysisMessage) {
+              return AnalysisMessage.get({analysis_id: $stateParams.id}).$promise;
+            }]
+          }
         },
         'sidebar': {
           controller: 'AnalysisSidebarCtrl',

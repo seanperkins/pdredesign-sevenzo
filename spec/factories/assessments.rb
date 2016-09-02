@@ -13,8 +13,6 @@
 #  district_id     :integer
 #  message         :text
 #  assigned_at     :datetime
-#  mandrill_id     :string(255)
-#  mandrill_html   :text
 #  report_takeaway :text
 #  share_token     :string
 #
@@ -43,7 +41,7 @@ FactoryGirl.define do
       message 'some message'
       association :user, factory: [:user, :with_district], districts: 1
 
-      before(:create) do |assessment, evaluator|
+      after(:build) do |assessment, evaluator|
         assessment.participants = create_list(:participant, 2, :with_users,
                                               invited_at: (1.day.ago if evaluator.invited)
         )

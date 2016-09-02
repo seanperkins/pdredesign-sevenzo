@@ -13,14 +13,14 @@
 #  district_id     :integer
 #  message         :text
 #  assigned_at     :datetime
-#  mandrill_id     :string(255)
-#  mandrill_html   :text
 #  report_takeaway :text
 #  share_token     :string
 #
 
 class Assessment < ActiveRecord::Base
   include Authority::Abilities
+  include MessageMigrationConcern
+
   self.authorizer_name = 'AssessmentAuthorizer'
 
   default_scope { order("created_at DESC") }

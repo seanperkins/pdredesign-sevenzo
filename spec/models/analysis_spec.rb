@@ -17,8 +17,11 @@
 #
 
 require 'spec_helper'
+require_relative './message_migration_concern_spec'
 
 describe Analysis do
+  it_behaves_like 'a tool which adds initial messages', described_class.to_s.downcase
+
   describe 'validations' do
     it { is_expected.to belong_to(:inventory) }
     it { is_expected.to have_one(:response) }

@@ -9,7 +9,6 @@ class V1::AssessmentsController < ApplicationController
   def show
     @assessment = assessment
     authorize_action_for @assessment
-    @messages = messages
   end
 
   def update

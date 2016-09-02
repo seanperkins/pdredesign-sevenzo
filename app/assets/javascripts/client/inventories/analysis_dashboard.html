@@ -35,16 +35,16 @@
         <invite-analysis-user-link send-invite="true"></invite-analysis-user-link>
       </div>
     </div>
-    <div id="messages" ng-if="analysisDashboard.currentAnalysis.messages">
+    <div id="messages">
       <div class="col-md-12 header">
-        <h2 ng-pluralize count="analysisDashboard.currentAnalysis.messages.length"
+        <h2 ng-pluralize count="analysisDashboard.messages.length"
                           when="{'0': 'No Sent Messages',
                                  '1': '{} Sent Message',
                                  'other': '{} Sent Messages'}">
 
         </h2>
       </div>
-      <div class="col-md-12" ng-repeat="message in analysisDashboard.currentAnalysis.messages">
+      <div class="col-md-12" ng-repeat="message in analysisDashboard.messages">
         <message-element kind="Analysis" message="message"></message-element>
       </div>
     </div>

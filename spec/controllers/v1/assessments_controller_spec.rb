@@ -198,7 +198,7 @@ describe V1::AssessmentsController do
         }
       end
 
-      context 'when message is set on the assessment' do
+      xcontext 'when message is set on the assessment', 'Revisit; will be changing how messages are retrieved' do
 
         let(:assessment_with_message) {
           a = assessment

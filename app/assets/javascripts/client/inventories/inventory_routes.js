@@ -56,7 +56,12 @@
         '': {
           controller: 'InventoryDashboardCtrl',
           controllerAs: 'inventoryDashboard',
-          templateUrl: 'client/inventories/dashboard.html'
+          templateUrl: 'client/inventories/dashboard.html',
+          resolve: {
+            inventoryMessages: ['$stateParams', 'InventoryMessage', function($stateParams, InventoryMessage) {
+              return InventoryMessage.get({inventory_id: $stateParams.inventory_id}).$promise;
+            }]
+          }
         },
         'sidebar': {
           controller: 'InventorySidebarCtrl',

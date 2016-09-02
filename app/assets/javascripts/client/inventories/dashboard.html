@@ -42,16 +42,16 @@
         </div>
       </div>
     </div>
-    <div id="messages" ng-if="inventoryDashboard.inventory.messages">
+    <div id="messages">
       <div class="col-md-12 header">
-        <h2 ng-pluralize count="inventoryDashboard.inventory.messages.length"
+        <h2 ng-pluralize count="inventoryDashboard.messages.length"
                           when="{'0': 'No Sent Messages',
                                  '1': '{} Sent Message',
                                  'other': '{} Sent Messages'}">
 
         </h2>
       </div>
-      <div class="col-md-12" ng-repeat="message in inventoryDashboard.inventory.messages">
+      <div class="col-md-12" ng-repeat="message in inventoryDashboard.messages">
         <message-element message="message"></message-element>
       </div>
     </div>

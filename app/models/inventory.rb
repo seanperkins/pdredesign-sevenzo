@@ -16,6 +16,7 @@
 
 class Inventory < ActiveRecord::Base
   include Authority::Abilities
+  include MessageMigrationConcern
 
   default_scope { order(created_at: :desc) }
 
