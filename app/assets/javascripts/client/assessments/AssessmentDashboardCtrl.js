@@ -11,7 +11,7 @@
     'SessionService',
     'Assessment',
     'Participant',
-    'messages'
+    'assessmentMessages'
   ];
 
   function AssessmentDashboardCtrl($modal, $scope, $stateParams, SessionService, Assessment, Participant, assessmentMessages) {
