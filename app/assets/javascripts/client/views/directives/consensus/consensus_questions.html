@@ -4,15 +4,14 @@
       <sort-by categories="categories" data="data" />
     </div>
     <div>
-      <ng-include src="'client/views/directives/consensus/filter_by_role.html'">
-      </ng-include>
+      <ng-include src="client/views/directives/consensus/filter_by_role.html"></ng-include>
     </div>
   </div>
   <div class="category" ng-repeat="category in categories">
     <div class="row">
       <p class="category-label" ng-click="toggleCategoryAnswers(category)" ng-if="isAssessment">
         <i class="fa fa-chevron-right" ng-class="{'fa-chevron-down' : category.toggled === true}"></i>
-        {{category.name}}
+        {{category.name}}N
       </p>
       <div
         class="question-container question-{{question.id}}" 

@@ -14,9 +14,9 @@
     vm.changeViewMode = function(mode) {
       var correctedMode = mode.toLowerCase();
       if (correctedMode === 'variance') {
-        vm.categories = vm.sortByVariance(vm.data);
+        $scope.$parent.categories = vm.sortByVariance(vm.data);
       } else if (correctedMode === 'category') {
-        vm.categories = vm.sortByCategory();
+        $scope.$parent.categories = vm.sortByCategory();
       }
     };
 
@@ -52,11 +52,11 @@
       return sorted;
     };
 
-    $scope.$watch('data', function(val) {
+    $scope.$watch('$parent.data', function(val) {
       vm.data = val;
     }).bind(vm);
 
-    $scope.$watch('categories', function(val) {
+    $scope.$watch('$parent.categories', function(val) {
       vm.categories = val;
     }).bind(vm);
   }

@@ -9,6 +9,7 @@
       restrict: 'E',
       replace: true,
       transclude: true,
+      require: '^consensus',
       scope: {
         data: '=',
         categories: '='

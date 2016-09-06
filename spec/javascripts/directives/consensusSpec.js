@@ -36,20 +36,6 @@ describe('Directive: consensus', function() {
     isolatedScope = element.isolateScope();
   }));
 
-  describe('#scoreFilter', function(){
-    var $filter, scores;
-
-    beforeEach(inject(function($injector) {
-      $filter = $injector.get('$filter');
-    }));
-
-    it('filters the right scores', function() {
-      scores = [{question_id: 1}, {question_id:1}, {question_id:2}];
-      expect($filter('scoreFilter')(scores, 1).length).toEqual(2);
-      expect($filter('scoreFilter')(scores, 2).length).toEqual(1);
-    });
-  });
-
   it('isConsensus will be true by default ', function() {
     expect(isolatedScope.isConsensus).toEqual(true);
   });
