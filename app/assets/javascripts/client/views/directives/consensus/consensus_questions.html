@@ -1,28 +1,28 @@
 <div class="categories">
-  <div class="row sort-by" ng-if="isAssessment">
+  <div class="row sort-by" ng-if="vm.isAssessment">
     <div>
-      <sort-by categories="categories" data="data" />
+      <sort-by categories="vm.categories" data="vm.data" />
     </div>
     <div>
       <ng-include src="client/views/directives/consensus/filter_by_role.html"></ng-include>
     </div>
   </div>
-  <div class="category" ng-repeat="category in categories">
+  <div class="category" ng-repeat="category in vm.categories">
     <div class="row">
-      <p class="category-label" ng-click="toggleCategoryAnswers(category)" ng-if="isAssessment">
+      <p class="category-label" ng-click="vm.toggleCategoryAnswers(category)" ng-if="vm.isAssessment">
         <i class="fa fa-chevron-right" ng-class="{'fa-chevron-down' : category.toggled === true}"></i>
-        {{category.name}}N
+        {{category.name}}
       </p>
       <div
         class="question-container question-{{question.id}}" 
-        ng-class="{'analysis-consensus-question': isAnalysis}"
+        ng-class="{'analysis-consensus-question': vm.isAnalysis}"
         ng-repeat="question in category.questions">
-        <div class="question-row" ng-click="toggleAnswers(question, $event)">
+        <div class="question-row" ng-click="vm.toggleAnswers(question, $event)">
           <div class="question">
             <p class="question-id scored-{{question.score.value}}" ng-show="question.loading">
               <i class="fa fa-spinner fa-spin"></i>
             </p>
-            <p id="question-{{question.number}}" class="question-id {{questionColor(question, isConsensus)}}"
+            <p id="question-{{question.number}}" class="question-id {{vm.questionColor(question, isConsensus)}}"
                ng-hide="question.loading">
               <a ng-href="#question-{{question.id}}"></a>
               {{question.number}}
@@ -33,8 +33,8 @@
               <p class="question-headline">{{question.headline}}</p>
               <p class="content">{{question.content}}</p>
              </div>
-            <response-answer-group question="question" is-consensus="true" ng-if="isAssessment" scores="scores" show-skip=false></response-answer-group>
-            <analysis-consensus-answer question="question" ng-if="isAnalysis" product-entries="productEntries" inventory-data-entries="dataEntries"></analysis-consensus-answer>
+            <response-answer-group question="question" is-consensus="true" ng-if="vm.isAssessment" scores="vm.scores" show-skip=false></response-answer-group>
+            <analysis-consensus-answer question="question" ng-if="vm.isAnalysis" product-entries="vm.productEntries" inventory-data-entries="vm.dataEntries"></analysis-consensus-answer>
           </div>
         </div>
       </div>

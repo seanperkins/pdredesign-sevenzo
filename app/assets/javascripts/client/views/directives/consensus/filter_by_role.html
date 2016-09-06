@@ -6,15 +6,15 @@
     <select 
       class="form-control text-capitalize" 
       id="status" 
-      ng-change="updateTeamRole(teamRole)"
+      ng-change="vm.updateTeamRole(teamRole)"
       ng-model="teamRole">
       <option value="" selected>All</option>
-      <option value="{{role}}" ng-repeat="role in teamRoles">
+      <option value="{{role}}" ng-repeat="role in vm.teamRoles">
         {{role}}
       </option>
     </select>
   </div>
   <div>
-    <i class="fa fa-spinner fa-spin" ng-show="isLoading()"></i>
+    <i class="fa fa-spinner fa-spin" ng-show="vm.isLoading()"></i>
   </div>
 </div>
