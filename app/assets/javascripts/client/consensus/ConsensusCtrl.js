@@ -36,29 +36,12 @@
       return vm.loading;
     };
 
-    vm.toggleCategoryAnswers = function (category) {
-      category.toggled = !category.toggled;
-      angular.forEach(category.questions, function (question) {
-        ResponseHelper.toggleCategoryAnswers(question);
-        $scope.$broadcast('question-toggled', question.id);
-      });
-    };
-
-    vm.toggleAnswers = function (question, $event) {
-      ResponseHelper.toggleAnswers(question, $event);
-    };
-
     vm.questionColor = ResponseHelper.questionColor;
     vm.answerCount = ResponseHelper.answerCount;
     vm.saveEvidence = ResponseHelper.saveEvidence;
     vm.editAnswer = ResponseHelper.editAnswer;
     vm.answerTitle = ResponseHelper.answerTitle;
     vm.percentageByResponse = ResponseHelper.percentageByResponse;
-
-    vm.toggleAnswers = function (question, $event) {
-      $scope.$broadcast('question-toggled', question.id);
-      ResponseHelper.toggleAnswers(question, $event);
-    };
 
     vm.assignAnswerToQuestion = function (answer, question) {
       switch (true) {

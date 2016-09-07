@@ -1,0 +1,14 @@
+<div class="category" ng-repeat="category in categories">
+  <div class="row">
+    <p class="category-label" ng-click="vm.toggleCategoryAnswers(category)" ng-if="questionType === 'assessment'">
+      <i class="fa fa-chevron-right" ng-class="{'fa-chevron-down' : category.toggled === true}"></i>
+      {{category.name}}
+    </p>
+    <question-container category="category"
+                        is-consensus="{{isConsensus}}"
+                        scores="scores"
+                        question-type="{{questionType}}"
+                        product-entries="productEntries"
+                        data-entries="dataEntries"></question-container>
+  </div>
+</div>
