@@ -11,12 +11,16 @@
   function SortByCtrl($scope) {
     var vm = this;
 
-    vm.changeViewMode = function(mode) {
-      var correctedMode = mode.toLowerCase();
-      if (correctedMode === 'variance') {
-        $scope.$parent.categories = vm.sortByVariance(vm.data);
-      } else if (correctedMode === 'category') {
-        $scope.$parent.categories = vm.sortByCategory();
+    vm.changeViewMode = function(viewMode) {
+      switch(viewMode.toLowerCase()) {
+        case 'variance':
+          $scope.$parent.vm.displayMode = 'variance';
+          $scope.$parent.vm.varianceOrderedQuestions = vm.sortByVariance(vm.data);
+          break;
+        case 'category':
+          $scope.$parent.vm.displayMode = 'category';
+          $scope.$parent.vm.categories = vm.sortByCategory();
+          break;
       }
     };
 
@@ -25,38 +29,26 @@
     };
 
     vm.sortByVariance = function(categories) {
-      var tmpObject = {};
-      var keys = [];
+      var questions = [];
 
-      var sorted = {};
-
-      angular.forEach(categories, function(category, _key) {
-        angular.forEach(category.questions, function(question, key) {
-          if (typeof tmpObject[question.variance] === 'undefined') {
-            tmpObject[question.variance] = {
-              name: question.variance,
-              questions: []
-            };
-          }
-          keys.push(question.variance);
-          tmpObject[question.variance]['questions'].push(question);
+      angular.forEach(categories, function(category) {
+        angular.forEach(category.questions, function(question) {
+          questions.push(question);
         });
       });
 
-      keys.sort().reverse();
-
-      angular.forEach(keys, function(key) {
-        sorted[key] = tmpObject[key];
+      questions.sort(function(a, b) {
+        return b.variance - a.variance;
       });
 
-      return sorted;
+      return questions;
     };
 
-    $scope.$watch('$parent.data', function(val) {
+    $scope.$watch('$parent.vm.data', function(val) {
       vm.data = val;
     }).bind(vm);
 
-    $scope.$watch('$parent.categories', function(val) {
+    $scope.$watch('$parent.vm.categories', function(val) {
       vm.categories = val;
     }).bind(vm);
   }

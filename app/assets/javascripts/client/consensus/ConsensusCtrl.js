@@ -6,12 +6,13 @@
 
   ConsensusCtrl.$inject = [
     '$scope',
+    '$timeout',
     'ResponseHelper',
     'ConsensusStateService',
     'ConsensusService'
   ];
 
-  function ConsensusCtrl($scope, ResponseHelper, ConsensusStateService, ConsensusService) {
+  function ConsensusCtrl($scope, $timeout, ResponseHelper, ConsensusStateService, ConsensusService) {
     var vm = this;
     vm.isConsensus = true;
     vm.isReadOnly = true;
@@ -19,6 +20,7 @@
     vm.teamRoles = [];
     vm.loading = false;
     vm.answerPercentages = [];
+    vm.displayMode = 'category';
 
     vm.assessmentId = $scope.assessmentId;
     vm.responseId = $scope.responseId;
@@ -36,7 +38,7 @@
 
     vm.toggleCategoryAnswers = function (category) {
       category.toggled = !category.toggled;
-      angular.forEach(category.questions, function (question, key) {
+      angular.forEach(category.questions, function (question) {
         ResponseHelper.toggleCategoryAnswers(question);
         $scope.$broadcast('question-toggled', question.id);
       });
@@ -124,6 +126,10 @@
 
     $scope.$watch('vm.data', function (val) {
       console.log(val);
+    });
+
+    $timeout(function () {
+      vm.updateConsensus();
     });
   }
 })();

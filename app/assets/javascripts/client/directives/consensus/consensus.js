@@ -17,13 +17,7 @@
         },
         templateUrl: 'client/views/directives/consensus/consensus_questions.html',
         controller: 'ConsensusCtrl',
-        controllerAs: 'vm',
-        link: consensusLink
+        controllerAs: 'vm'
     }
   }
-
-  function consensusLink(scope, element, attrs, controller) {
-    controller.updateConsensus();
-  }
 })();
-
