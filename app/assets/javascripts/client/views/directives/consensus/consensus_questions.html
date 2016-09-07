@@ -1,10 +1,25 @@
 <div class="categories">
   <div class="row sort-by" ng-if="vm.isAssessment">
-    <div>
-      <sort-by categories="vm.categories" data="vm.data"></sort-by>
-    </div>
-    <div>
-      <ng-include src="client/views/directives/consensus/filter_by_role.html"></ng-include>
+    <sort-by categories="vm.categories" data="vm.data"></sort-by>
+    <div class="col-md-6 col-sm-12 ">
+      <div class="label">
+        Filter by Team Role:
+      </div>
+      <div>
+        <select
+            class="form-control text-capitalize"
+            id="status"
+            ng-change="vm.updateTeamRole(teamRole)"
+            ng-model="teamRole">
+          <option value="" selected>All</option>
+          <option value="{{role}}" ng-repeat="role in vm.teamRoles">
+            {{role}}
+          </option>
+        </select>
+      </div>
+      <div>
+        <i class="fa fa-spinner fa-spin" ng-show="vm.isLoading()"></i>
+      </div>
     </div>
   </div>
   <div ng-if="vm.displayMode === 'category'">

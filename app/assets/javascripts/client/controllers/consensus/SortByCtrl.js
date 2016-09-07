@@ -33,6 +33,7 @@
 
       angular.forEach(categories, function(category) {
         angular.forEach(category.questions, function(question) {
+          question.variance = question.variance || 0;
           questions.push(question);
         });
       });

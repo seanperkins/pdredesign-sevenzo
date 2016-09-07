@@ -48,7 +48,7 @@
         case vm.isReadOnly:
           return false;
         case !question || !question.score:
-        case question.score.evidence == null || question.score.evidence == '':
+        case question.score.evidence === null || question.score.evidence === '':
           question.isAlert = true;
           return false;
       }
@@ -88,7 +88,7 @@
     };
 
     vm.updateTeamRole = function (teamRole) {
-      if (teamRole.trim() == "") teamRole = null;
+      if (teamRole.trim() === "") teamRole = null;
       vm.teamRole = teamRole;
 
       vm.loading = true;
@@ -106,10 +106,6 @@
           vm.dataEntries = data[1].data_entries;
         });
     }
-
-    $scope.$watch('vm.data', function (val) {
-      console.log(val);
-    });
 
     $timeout(function () {
       vm.updateConsensus();

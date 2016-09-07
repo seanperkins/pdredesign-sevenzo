@@ -5,10 +5,11 @@
     .controller('QuestionContainerCtrl', QuestionContainerCtrl);
 
   QuestionContainerCtrl.$inject = [
+    '$scope',
     'ResponseHelper'
   ];
 
-  function QuestionContainerCtrl(ResponseHelper) {
+  function QuestionContainerCtrl($scope, ResponseHelper) {
     var vm = this;
 
     vm.questionColor = ResponseHelper.questionColor;

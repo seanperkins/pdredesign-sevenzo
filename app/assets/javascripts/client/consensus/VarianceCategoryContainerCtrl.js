@@ -5,10 +5,11 @@
     .controller('VarianceCategoryContainerCtrl', VarianceCategoryContainerCtrl);
 
   VarianceCategoryContainerCtrl.$inject = [
+    '$scope',
     'ResponseHelper'
   ];
 
-  function VarianceCategoryContainerCtrl(ResponseHelper) {
+  function VarianceCategoryContainerCtrl($scope, ResponseHelper) {
     var vm = this;
 
     vm.questionColor = ResponseHelper.questionColor;
