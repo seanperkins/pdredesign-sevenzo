@@ -37,9 +37,9 @@
     vm.saveScore = function () {
       var params = {
         inventory_id: $stateParams.inventory_id,
-        response_id: $scope.$parent.consensus.id,
-        analysis_id: $scope.$parent.entity.id
-      }
+        response_id: $stateParams.id,
+        analysis_id: $stateParams.analysis_id
+      };
 
       var score = angular.copy($scope.question.score);
       score.supporting_inventory_response_attributes = score.supporting_inventory_response;

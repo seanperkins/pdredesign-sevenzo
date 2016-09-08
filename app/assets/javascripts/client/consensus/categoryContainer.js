@@ -14,8 +14,6 @@
         isConsensus: '@',
         scores: '=',
         questionType: '@',
-        productEntries: '=',
-        dataEntries: '='
       },
       templateUrl: 'client/consensus/category_container.html',
       controller: 'CategoryContainerCtrl',

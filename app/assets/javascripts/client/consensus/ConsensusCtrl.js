@@ -98,15 +98,6 @@
         });
     };
 
-    if (vm.context === "analysis") {
-      ConsensusService
-        .getInventoryProductAndDataEntries()
-        .then(function (data) {
-          vm.productEntries = data[0].product_entries;
-          vm.dataEntries = data[1].data_entries;
-        });
-    }
-
     $timeout(function () {
       vm.updateConsensus();
     });

@@ -8,15 +8,13 @@
     '$scope',
     '$rootScope',
     'SessionService',
-    'Assessment',
-    '$stateParams',
     'ConsensusService',
     'current_context',
     'current_entity',
     'consensus'
   ];
 
-  function ConsensusShowCtrl($scope, $rootScope, SessionService, Assessment, $stateParams, ConsensusService, current_context, current_entity, consensus) {
+  function ConsensusShowCtrl($scope, $rootScope, SessionService, ConsensusService, current_context, current_entity, consensus) {
     $scope.user = SessionService.getCurrentUser();
 
     $scope.entity = current_entity;

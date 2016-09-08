@@ -15,8 +15,6 @@
         isConsensus: '@',
         scores: '=',
         questionType: '@',
-        productEntries: '=',
-        dataEntries: '='
       },
       templateUrl: 'client/consensus/question_container.html',
       controller: 'QuestionContainerCtrl',
