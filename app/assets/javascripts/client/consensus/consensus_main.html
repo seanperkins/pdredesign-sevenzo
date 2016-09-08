@@ -1,5 +1,5 @@
 <div class="categories">
-  <div class="row sort-by" ng-if="vm.isAssessment">
+  <div class="row sort-by" ng-if="questionType === 'assessment'">
     <sort-by categories="vm.categories" data="vm.data"></sort-by>
     <div class="col-md-6 col-sm-12 ">
       <div class="label">
@@ -24,7 +24,7 @@
   </div>
   <div ng-if="vm.displayMode === 'category'">
     <category-container categories="vm.categories"
-                        question-type="{{vm.context}}"
+                        question-type="{{questionType}}"
                         scores="vm.scores"
                         is-consensus="{{vm.isConsensus}}">
     </category-container>

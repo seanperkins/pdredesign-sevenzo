@@ -13,7 +13,7 @@
         categories: '=',
         isConsensus: '@',
         scores: '=',
-        questionType: '@',
+        questionType: '@'
       },
       templateUrl: 'client/consensus/category_container.html',
       controller: 'CategoryContainerCtrl',

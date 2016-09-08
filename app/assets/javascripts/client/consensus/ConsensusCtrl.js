@@ -19,18 +19,10 @@
     vm.teamRole = null;
     vm.teamRoles = [];
     vm.loading = false;
-    vm.answerPercentages = [];
     vm.displayMode = 'category';
-
-    vm.assessmentId = $scope.assessmentId;
-    vm.responseId = $scope.responseId;
-    vm.entity = $scope.entity;
     vm.consensus = $scope.consensus;
-    vm.context = $scope.context;
 
-    ConsensusService.setContext(vm.context);
-    vm.isAssessment = vm.context === 'assessment';
-    vm.isAnalysis = vm.context === 'analysis';
+    ConsensusService.setContext($scope.questionType);
 
     vm.isLoading = function () {
       return vm.loading;
@@ -56,7 +48,7 @@
       ResponseHelper.assignAnswerToQuestion(vm, answer, question);
     };
 
-    vm.viewModes = [{label: "Category"}, {label: "Variance"}];
+    vm.viewModes = [{label: 'Category'}, {label: 'Variance'}];
     vm.viewMode = vm.viewModes[0];
 
     $scope.$on('submit_consensus', function () {
@@ -88,7 +80,10 @@
     };
 
     vm.updateTeamRole = function (teamRole) {
-      if (teamRole.trim() === "") teamRole = null;
+      if (teamRole.trim() === '') {
+        teamRole = null;
+      }
+
       vm.teamRole = teamRole;
 
       vm.loading = true;
