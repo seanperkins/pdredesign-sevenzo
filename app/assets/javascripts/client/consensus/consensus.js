@@ -9,7 +9,6 @@
       restrict: 'E',
       replace: true,
       scope: {
-        entity: '=',
         consensus: '=',
         questionType: '@'
       },

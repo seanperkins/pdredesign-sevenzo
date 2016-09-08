@@ -1,160 +1,82 @@
-describe('Directive: consensus', function() {
-  var $scope,
-      $timeout,
-      $location,
-      $rootScope,
-      $httpBackend,
-      $q,
-      isolatedScope,
-      element,
-      ConsensusService;
+(function () {
+  'use strict';
 
-  var score1    = {id: 1, evidence: "hello", value: 1, editMode: null};
-  var question1 = {id: 1, score: score1 };
-  var answer1   = {id: 1, value: 2};
+  describe('Directive: consensus', function () {
+    var compile, rootScope;
 
-  beforeEach(module('PDRClient'));
+    beforeEach(module('PDRClient'));
+    beforeEach(module('templates'));
 
-  beforeEach(inject(function($injector) {
-    var $compile      = $injector.get('$compile');
-    $rootScope        = $injector.get('$rootScope');
-    $timeout          = $injector.get('$timeout');
-    $location         = $injector.get('$location');
-    $stateParams      = $injector.get('$stateParams');
-    $httpBackend      = $injector.get('$httpBackend');
-    $q                = $injector.get('$q');
-    $scope            = $rootScope.$new();
-    ConsensusService  = $injector.get('ConsensusService');
-
-    $rootScope.consensus = {id: 1};
-    element    = angular.element('<consensus consensus="consensus">'
-                               + '</consensus>');
-
-    $compile(element)($scope);
-    $scope.$digest();
-
-    isolatedScope = element.isolateScope();
-  }));
-
-  it('isConsensus will be true by default ', function() {
-    expect(isolatedScope.isConsensus).toEqual(true);
-  });
-
-  describe('#assignAnswerToQuestion', function() {
-    beforeEach(inject(function($injector) {
-      isolatedScope.isReadOnly = false;
+    beforeEach(inject(function (_$compile_, _$rootScope_) {
+      compile = _$compile_;
+      rootScope = _$rootScope_;
     }));
 
-    it('will return false if $scope.isReadOnly is true', function() {
-      isolatedScope.isReadOnly = true;
-      expect(isolatedScope.assignAnswerToQuestion(answer1, question1)).toEqual(false);
-    });
+    describe('on initialization', function () {
+      describe('when the question type is declared to be assessment', function () {
+        var template = '<consensus question-type="assessment"></consensus>',
+          element,
+          isolateScope,
+          viewModel;
 
-    it('isAlert should be true if score evidence is missing', function() {
-      var score2 = {id: 1, evidence: "", value: 1, editMode: null};
-      var question2 = {id: 1, score: score2 };
-      isolatedScope.assignAnswerToQuestion(answer1, question2)
-      expect(question2.isAlert).toEqual(true);
-    });
 
-    it('does not error on an undefined score', function(){
-      var score2 = {id: 1, evidence: "", value: 1, editMode: null};
-      var question2 = {id: 1};
-      isolatedScope.assignAnswerToQuestion(answer1, question2)
-    })
+        beforeEach(function () {
+          element = compile(template)(rootScope);
+          rootScope.$digest();
+          isolateScope = element.isolateScope();
+          viewModel = isolateScope.vm;
+        });
 
-  });
+        it('sets the question type appropriately', function () {
+          expect(isolateScope.questionType).toEqual('assessment');
+        });
 
-  describe('#updateConsensus', function() {
-    beforeEach(inject(function($injector) {
-      spyOn(ConsensusService, 'loadConsensus').and.callFake(function () {
-        return {
-          then: function (callback) {
-            return callback({
-              scores: [score1],
-              categories: [1,2,3],
-              team_roles: ['some', 'role'],
-              is_completed: true,
-              participant_count: 5
-            });
-          }
-        };
+        it('defines its display mode as category', function () {
+          expect(viewModel.displayMode).toEqual('category');
+        });
+
+        it('defines isConsensus as true', function () {
+          expect(viewModel.isConsensus).toEqual(true)
+        });
+
+        it('defines initial loading state to false', function () {
+          expect(viewModel.loading).toEqual(false);
+        });
+
+        describe('sort buttons', function () {
+          it('includes the numeric sort button', function () {
+            var numericButton = element.find('.fa-sort-numeric-asc').parent();
+            expect(numericButton.text().trim()).toEqual('Numeric');
+          });
+
+          it('includes the variance sort button', function () {
+            var varianceButton = element.find('.fa-bar-chart-o').parent();
+            expect(varianceButton.text().trim()).toEqual('Variance');
+          });
+        });
+
+        describe('filter selection', function () {
+          var selectElement;
+
+          beforeEach(function () {
+            selectElement = element.find('select');
+          });
+
+          it('includes the team role select element', function () {
+            expect(selectElement[0].id).toEqual('status');
+          });
+
+          it('has the "All" option selected', function () {
+            expect(selectElement.find('option')[0].attributes['selected']).not.toBeUndefined();
+          });
+        });
+
+
+
+
+
       });
-    }));
-
-    it('gets data on callback and sets scores, data,' +
-       ' categories, isReadOnly, and participantCount', function() {
-      isolatedScope.updateConsensus();
-
-      expect(isolatedScope.scores).toEqual([score1]);
-      expect(isolatedScope.categories).toEqual([1,2,3]);
-      expect(isolatedScope.isReadOnly).toEqual(true);
-      expect(isolatedScope.teamRoles).toEqual(['some', 'role']);
-      expect(isolatedScope.participantCount).toEqual(5);
-    });
-
-    it('sends the teamRole when its set', function() {
-      isolatedScope.teamRole = 'some_role';
-      isolatedScope.updateConsensus();
-
-      expect(ConsensusService.loadConsensus).toHaveBeenCalledWith(1, 'some_role');
-    });
-
-  });
-
-  describe('#updateTeamRole', function(){
-    beforeEach(inject(function($injector) {
-      spyOn(isolatedScope, 'updateConsensus').and.returnValue($q.when());
-    }));
-
-    it('updates the $scope.teamRole var', function(){
-      isolatedScope.teamRole = null;
-      isolatedScope.updateTeamRole("some_role");
-      expect(isolatedScope.teamRole).toEqual('some_role');
-    });
-
-    it('updates the $scope.teamRole var to null when empty', function(){
-      isolatedScope.teamRole = "some role";
-      isolatedScope.updateTeamRole("");
-      expect(isolatedScope.teamRole).toEqual(null);
-    });
-
-    it('triggers a consensus update', function(){
-      isolatedScope.updateTeamRole("some_role");
-      expect(isolatedScope.updateConsensus).toHaveBeenCalled();
     });
   });
+})();
 
-  describe('#submit_consensus', function() {
-
-    it('calls function redirectToReport()', function(){
-      spyOn(ConsensusService, 'submitConsensus').and.callFake(function () {
-        return {
-          then: function (callback) {
-            return callback({
-              scores: [score1],
-              categories: [1,2,3],
-              team_roles: ['some', 'role'],
-              is_completed: true,
-              participant_count: 5
-            });
-          }
-        };
-      });
-      spyOn(ConsensusService, 'redirectToReport');
-      $rootScope.$broadcast("submit_consensus");
-
-      expect(ConsensusService.redirectToReport).toHaveBeenCalled();
-    });
-
-    it('redirects to assessment correct report', function() {
-      ConsensusService.setContext("assessment");
-      $stateParams.assessment_id = 1;
-
-      ConsensusService.redirectToReport();
-      expect($location.path()).toEqual('/assessments/1/report')
-    });
-
-  });
-
-});

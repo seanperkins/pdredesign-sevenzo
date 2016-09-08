@@ -9,6 +9,7 @@
       restrict: 'E',
       transclude: true,
       replace: true,
+      require: '^consensus',
       scope: {
         isConsensus: '@',
         varianceQuestions: '=',
