@@ -7,8 +7,6 @@
   function categoryContainer() {
     return {
       restrict: 'E',
-      transclude: true,
-      replace: true,
       require: '^consensus',
       scope: {
         categories: '=',

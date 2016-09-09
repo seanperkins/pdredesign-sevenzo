@@ -7,7 +7,6 @@
   function consensus() {
     return {
       restrict: 'E',
-      replace: true,
       scope: {
         consensus: '=',
         questionType: '@'

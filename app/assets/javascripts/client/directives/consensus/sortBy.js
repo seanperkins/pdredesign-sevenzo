@@ -7,7 +7,6 @@
   function sortBy() {
     return {
       restrict: 'E',
-      replace: true,
       transclude: true,
       require: '^consensus',
       scope: {
