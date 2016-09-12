@@ -35,6 +35,40 @@
       });
 
       describe('at all times', function () {
+        describe('on initial page load', function () {
+          var $timeout,
+            $q,
+            $scope,
+            ConsensusService,
+            viewModel;
+
+          beforeEach(inject(function (_$timeout_, _ConsensusService_, _$q_) {
+            $timeout = _$timeout_;
+            ConsensusService = _ConsensusService_;
+            $scope = element.isolateScope();
+            $q = _$q_;
+
+            viewModel = element.isolateScope().vm;
+          }));
+
+          it('updates the consensus', function () {
+            spyOn(viewModel, 'updateConsensus');
+            $timeout.flush();
+            expect(viewModel.updateConsensus).toHaveBeenCalled();
+          });
+
+          it('broadcasts the correct event', function () {
+            viewModel.consensus = {id: 1};
+            spyOn(ConsensusService, 'loadConsensus').and.returnValue($q.when({categories: ['foo', 'bar']}));
+            spyOn($scope, '$broadcast');
+
+            rootScope.$digest();
+            $timeout.flush();
+
+            expect($scope.$broadcast).toHaveBeenCalledWith('receiveCategoryData', ['foo', 'bar']);
+          });
+        });
+
 
         it('includes the sortBy directive', function () {
           expect(element.find('sort-by').length).toEqual(1);
