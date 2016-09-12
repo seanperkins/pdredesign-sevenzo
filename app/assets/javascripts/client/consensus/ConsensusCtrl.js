@@ -51,13 +51,6 @@
     vm.viewModes = [{label: 'Category'}, {label: 'Variance'}];
     vm.viewMode = vm.viewModes[0];
 
-    $scope.$on('submit_consensus', function () {
-      ConsensusService
-        .submitConsensus(vm.consensus.id)
-        .then(function () {
-          ConsensusService.redirectToReport();
-        });
-    });
 
     vm.updateConsensus = function () {
       return ConsensusService
@@ -70,7 +63,7 @@
           vm.teamRoles = data.team_roles;
           vm.isReadOnly = data.is_completed || false;
           vm.participantCount = data.participant_count;
-
+          $scope.$broadcast('receiveCategoryData', vm.data);
           return true;
         });
     };
@@ -95,6 +88,24 @@
 
     $timeout(function () {
       vm.updateConsensus();
+    });
+
+    $scope.$on('submit_consensus', function () {
+      ConsensusService
+        .submitConsensus(vm.consensus.id)
+        .then(function () {
+          ConsensusService.redirectToReport();
+        });
+    });
+
+    $scope.$on('updateCategory', function (event, val) {
+      vm.displayMode = 'category';
+      vm.categories = val;
+    });
+
+    $scope.$on('updateVariance', function (event, val) {
+      vm.displayMode = 'variance';
+      vm.varianceOrderedQuestions = val;
     });
   }
 })();

@@ -12,14 +12,15 @@
     var vm = this;
 
     vm.changeViewMode = function(viewMode) {
+      var emittedValue;
       switch(viewMode.toLowerCase()) {
         case 'variance':
-          $scope.$parent.vm.displayMode = 'variance';
-          $scope.$parent.vm.varianceOrderedQuestions = vm.sortByVariance(vm.data);
+          emittedValue = vm.sortByVariance(vm.data);
+          $scope.$emit('updateVariance', emittedValue);
           break;
         case 'category':
-          $scope.$parent.vm.displayMode = 'category';
-          $scope.$parent.vm.categories = vm.sortByCategory();
+          emittedValue = vm.sortByCategory();
+          $scope.$emit('updateCategory', emittedValue);
           break;
       }
     };
@@ -45,12 +46,8 @@
       return questions;
     };
 
-    $scope.$watch('$parent.vm.data', function(val) {
+    $scope.$on('receiveCategoryData', function (event, val) {
       vm.data = val;
-    }).bind(vm);
-
-    $scope.$watch('$parent.vm.categories', function(val) {
-      vm.categories = val;
-    }).bind(vm);
+    });
   }
 })();

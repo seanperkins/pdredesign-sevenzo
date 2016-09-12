@@ -40,14 +40,6 @@
           expect(element.find('sort-by').length).toEqual(1);
         });
 
-        it('passes the categories value to the sortBy directive', function () {
-          expect(element.find('sort-by')[0].attributes['categories'].value).toEqual('vm.categories');
-        });
-
-        it('passes the data value to the sortBy directive', function () {
-          expect(element.find('sort-by')[0].attributes['data'].value).toEqual('vm.data');
-        });
-
         it('includes the team role select element', function () {
           var selectElement = element.find('select');
           expect(selectElement[0].id).toEqual('status');

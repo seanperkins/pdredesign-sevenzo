@@ -9,10 +9,7 @@
       restrict: 'E',
       transclude: true,
       require: '^consensus',
-      scope: {
-        data: '=',
-        categories: '='
-      },
+      scope: {},
       templateUrl: 'client/views/directives/consensus/sort_by.html',
       controller: 'SortByCtrl',
       controllerAs: 'sortBy'
