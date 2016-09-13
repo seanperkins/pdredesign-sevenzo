@@ -16,7 +16,6 @@ class V1::AnalysesController < ApplicationController
 
   def show
     @analysis = analysis
-    @messages = messages if current_user
     render template: 'v1/analyses/show', status: 200
   end
 

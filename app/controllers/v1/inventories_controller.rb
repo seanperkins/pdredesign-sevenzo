@@ -8,7 +8,6 @@ class V1::InventoriesController < ApplicationController
 
   def show
     @inventory = inventory
-    @messages = messages if @inventory
   end
 
   def create
@@ -40,8 +39,8 @@ class V1::InventoriesController < ApplicationController
     end
   end
 
-  def district_product_entries
-    @product_entries = ProductEntry.for_district(params[:id])
+  def product_entries
+    @product_entries = ProductEntry.where(id: params[:id])
 
     render template: 'v1/product_entries/index'
   end

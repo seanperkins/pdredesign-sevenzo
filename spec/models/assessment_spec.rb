@@ -19,8 +19,11 @@
 #
 
 require 'spec_helper'
+require_relative './message_migration_concern_spec'
 
 describe Assessment do
+  it_behaves_like 'a tool which adds initial messages', described_class.to_s.downcase
+
   it {
     is_expected.to validate_presence_of :name
   }
@@ -32,6 +35,29 @@ describe Assessment do
   it {
     is_expected.to validate_presence_of :district_id
   }
+
+  it {
+    is_expected.to validate_presence_of :due_date
+  }
+
+  context 'when the due date is in the past' do
+    subject {
+      build(:assessment, :with_owner)
+    }
+
+    before(:each) do
+      subject.due_date = 1.minute.ago
+      subject.save
+    end
+
+    it 'has only one error' do
+      expect(subject.errors.size).to eq 1
+    end
+
+    it 'gives back the correct error message' do
+      expect(subject.errors[:due_date][0]).to eq 'cannot be in the past'
+    end
+  end
 
   context 'when meeting date is set to be in the past' do
     context 'when first saving the assessment' do
@@ -123,28 +149,6 @@ describe Assessment do
   end
 
   context 'when assigned_at is present' do
-    context 'when due_date is invalid' do
-      let(:participants) {
-        create_list(:participant, 2)
-      }
-
-      let(:assessment) {
-        build(:assessment, participants: participants, assigned_at: Time.now, message: 'msg')
-      }
-
-      before(:each) do
-        assessment.save
-      end
-
-      it {
-        expect(assessment.valid?).to be false
-      }
-
-      it {
-        expect(assessment.errors[:due_date]).to include 'can\'t be blank'
-      }
-    end
-
     context 'when message is invalid' do
       let(:participants) {
         create_list(:participant, 2)

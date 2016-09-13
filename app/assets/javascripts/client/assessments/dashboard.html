@@ -49,17 +49,17 @@
       </div>
     </div>
 
-    <div id='messages' ng-show="vm.assessment.messages">
+    <div id='messages'>
       <div class='col-md-12 header'>
           <h2 ng-pluralize
-              count="vm.assessment.messages.length"
+              count="vm.messages.length"
               when="{'0': 'No Sent Messages',
                      '1': '{} Sent Message',
                      'other' : '{} Sent Messages'}">
             </h2>
       </div>
 
-      <div class="col-md-12" ng-repeat="message in vm.assessment.messages">
+      <div class="col-md-12" ng-repeat="message in vm.messages">
         <message-element kind="Assessment" message="message"></message-element>
       </div>
 

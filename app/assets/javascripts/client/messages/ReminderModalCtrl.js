@@ -6,20 +6,20 @@
 
   ReminderModalCtrl.$inject = [
     '$scope',
-    'ReminderService'
+    'MessageService'
   ];
 
-  function ReminderModalCtrl($scope, ReminderService) {
+  function ReminderModalCtrl($scope, MessageService) {
     var vm = this;
 
-    ReminderService.setContext($scope.context);
+    MessageService.setContext($scope.context);
 
     vm.closeModal = function() {
       $scope.$emit('close-reminder-modal');
     };
 
-    vm.sendReminder = function(message) {
-      ReminderService.sendReminder(message)
+    vm.sendMessage = function(message) {
+      MessageService.sendMessage(message)
           .then(function() {
             vm.closeModal();
           });

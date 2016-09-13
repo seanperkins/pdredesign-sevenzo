@@ -15,8 +15,10 @@
 #
 
 require 'spec_helper'
+require_relative './message_migration_concern_spec'
 
 describe Inventory do
+  it_behaves_like 'a tool which adds initial messages', described_class.to_s.downcase
   it { is_expected.to have_many(:product_entries) }
   it { is_expected.to have_many(:data_entries) }
   it { is_expected.to have_many(:access_requests) }
@@ -53,7 +55,6 @@ describe Inventory do
     it 'gives back the correct error message' do
       expect(subject.errors[:deadline][0]).to eq 'cannot be in the past'
     end
-
   end
 
   describe '#save' do

@@ -44,7 +44,7 @@ module PdrServer
                                                Rails.root.join('app', 'assets', 'javascripts', 'client', 'assessments'),
                                                Rails.root.join('app', 'assets', 'javascripts', 'client', 'permissions'),
                                                Rails.root.join('app', 'assets', 'javascripts', 'client', 'proprietary'),
-                                               Rails.root.join('app', 'assets', 'javascripts', 'client', 'reminders'),
+                                               Rails.root.join('app', 'assets', 'javascripts', 'client', 'messages'),
                                                Rails.root.join('app', 'assets', 'javascripts', 'client', 'home'),
                                                Rails.root.join('app', 'assets', 'javascripts', 'client', 'learning_questions'),
                                                Rails.root.join('app', 'assets', 'javascripts', 'client', 'buttons'),

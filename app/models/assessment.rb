@@ -13,14 +13,14 @@
 #  district_id     :integer
 #  message         :text
 #  assigned_at     :datetime
-#  mandrill_id     :string(255)
-#  mandrill_html   :text
 #  report_takeaway :text
 #  share_token     :string
 #
 
 class Assessment < ActiveRecord::Base
   include Authority::Abilities
+  include MessageMigrationConcern
+
   self.authorizer_name = 'AssessmentAuthorizer'
 
   default_scope { order("created_at DESC") }
@@ -59,11 +59,12 @@ class Assessment < ActiveRecord::Base
   validates :name, presence: true
   validates :rubric_id, presence: true
   validates :district_id, presence: true
-  validates :due_date, presence: true, if: 'assigned_at.present?'
+  validates :due_date, presence: true, date: true
   validates :message, presence: true, if: 'assigned_at.present?'
 
   validate :validate_participants, if: 'assigned_at.present?'
   validate :meeting_date_not_in_the_past, if: 'meeting_date.present?'
+
 
   before_save :set_assigned_at
   before_save :ensure_share_token

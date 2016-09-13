@@ -10,10 +10,10 @@
     '$state',
     '$stateParams',
     'Assessment',
-    'AssessmentReminder'
+    'AssessmentMessage'
   ];
 
-  function AssessmentDashboardSidebarCtrl($scope, $modal, $location, $state, $stateParams, Assessment, AssessmentReminder) {
+  function AssessmentDashboardSidebarCtrl($scope, $modal, $location, $state, $stateParams, Assessment, AssessmentMessage) {
     var vm = this;
     vm.id = $stateParams.id;
 
@@ -67,7 +67,7 @@
     };
 
     vm.sendReminder = function (message) {
-      AssessmentReminder
+      AssessmentMessage
         .save({assessment_id: vm.id}, {message: message})
         .$promise
         .then(function () {

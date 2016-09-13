@@ -51,7 +51,7 @@ FactoryGirl.define do
         participants 1
       end
 
-      after(:create) do |inventory, evaluator|
+      after(:build) do |inventory, evaluator|
         create_list(:inventory_member, evaluator.participants, :as_participant, inventory: inventory)
       end
     end

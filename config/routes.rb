@@ -23,11 +23,11 @@ PdrServer::Application.routes.draw do
     resources :organizations, only: [:create, :update, :show] do
       post 'logo', to: 'organizations#upload'
     end
-    resources  :district_messages, only: [:create]
-    resources  :tools, only: [:index, :create]
-    resources  :categories, only: :index
-    resources  :prospective_users, only: :create
-    resources  :assessments, only: [:index, :show, :update, :create] do
+    resources :district_messages, only: [:create]
+    resources :tools, only: [:index, :create]
+    resources :categories, only: :index
+    resources :prospective_users, only: :create
+    resources :assessments, only: [:index, :show, :update, :create] do
       collection do
         resources :shared, controller: 'shared_assessments', only: [:show], param: :token do
           get :report, to: 'shared_report#show'
@@ -77,10 +77,11 @@ PdrServer::Application.routes.draw do
         end
       end
 
+      resources :messages, only: [:index, :create]
     end
 
     resources :inventories, only: [:create, :index, :show, :update] do
-      post 'reminders', to: 'inventory_reminders#create'
+      post 'messages', to: 'inventory_reminders#create'
       patch '', to: 'inventories#mark_complete'
       post 'save_response', to: 'inventories#save_response'
       get 'participant_response', to: 'inventories#participant_response'
@@ -89,7 +90,7 @@ PdrServer::Application.routes.draw do
       resources :access_requests, controller: 'inventory_access_requests', only: [:index, :create, :update]
       resource :permissions, controller: 'inventory_permissions', only: [:show, :update]
       resources :participants, controller: 'inventory_participants', only: [:create, :destroy, :index]
-        get 'participants/all', to: 'inventory_participants#all'
+      get 'participants/all', to: 'inventory_participants#all'
       resources :product_entries, only: [:index, :show, :create, :update, :destroy] do
         member do
           put 'restore', to: 'product_entries#restore'
@@ -105,6 +106,8 @@ PdrServer::Application.routes.draw do
           get 'exists', to: 'learning_questions#exists'
         end
       end
+
+      resources :messages, only: [:index, :create]
 
       resources :analyses, only: [:index, :show, :create, :update] do
         put '/', to: "analyses#update", on: :collection
@@ -130,8 +133,12 @@ PdrServer::Application.routes.draw do
       end
 
       member do
-        get :district_product_entries
+        get :product_entries
       end
+    end
+
+    resources :analyses, only: [] do
+      resources :messages, only: [:index, :create]
     end
 
     get '/analyses', to: 'analyses#all'

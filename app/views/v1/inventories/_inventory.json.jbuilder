@@ -14,12 +14,6 @@ json.status inventory.status
 json.has_access inventory.member?(user: current_user) || inventory.owner == current_user if current_user
 json.participant_count inventory.participants.count
 json.message inventory.message || default_inventory_message if current_user
-json.messages @messages, :id, :category, :teaser, :sent_at do |message|
-  json.id       message.id
-  json.category message.category
-  json.teaser   sanitize(message.teaser, tags: [])
-  json.sent_at  message.sent_at
-end
 json.share_token inventory.share_token
 json.analysis_count inventory.analyses.count
 json.analysis inventory.current_analysis

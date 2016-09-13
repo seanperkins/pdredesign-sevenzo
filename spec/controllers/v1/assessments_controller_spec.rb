@@ -68,7 +68,7 @@ describe V1::AssessmentsController do
 
     context 'when updating an entire record' do
       let(:time) {
-        Time.now
+        5.days.from_now
       }
 
       context 'when assign is not passed' do
@@ -198,7 +198,7 @@ describe V1::AssessmentsController do
         }
       end
 
-      context 'when message is set on the assessment' do
+      xcontext 'when message is set on the assessment', 'Revisit; will be changing how messages are retrieved' do
 
         let(:assessment_with_message) {
           a = assessment
@@ -429,7 +429,7 @@ describe V1::AssessmentsController do
           post :create,
                name: 'some assessment',
                rubric_id: rubric.id,
-               due_date: Time.now
+               due_date: 5.days.from_now
         end
 
         it {
@@ -461,7 +461,7 @@ describe V1::AssessmentsController do
           post :create,
                name: 'some assessment',
                rubric_id: rubric.id,
-               due_date: Time.now
+               due_date: 5.days.from_now
         end
 
         it {
@@ -481,7 +481,7 @@ describe V1::AssessmentsController do
 
         before(:each) do
           sign_in facilitator
-          post :create, name: 'some assessment', due_date: Time.now
+          post :create, name: 'some assessment', due_date: 5.days.from_now
         end
 
         it {
@@ -500,7 +500,7 @@ describe V1::AssessmentsController do
 
         before(:each) do
           sign_in facilitator
-          post :create, name: 'some assessment', due_date: Time.now, district_id: new_district.id
+          post :create, name: 'some assessment', due_date: 5.days.from_now, district_id: new_district.id
         end
 
         it {
@@ -517,7 +517,7 @@ describe V1::AssessmentsController do
 
       before(:each) do
         sign_in facilitator
-        post :create, rubric_id: rubric.id, due_date: Time.now
+        post :create, rubric_id: rubric.id, due_date: 5.days.from_now
       end
 
       it {

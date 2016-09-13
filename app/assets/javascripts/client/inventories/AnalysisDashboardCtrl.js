@@ -9,15 +9,17 @@
     '$scope',
     'CreateService',
     'inventory',
-    'current_analysis'
+    'current_analysis',
+    'analysisMessages'
   ];
 
-  function AnalysisDashboardCtrl($modal, $scope, CreateService, inventory, current_analysis) {
+  function AnalysisDashboardCtrl($modal, $scope, CreateService, inventory, current_analysis, analysisMessages) {
     var vm = this;
     vm.currentAnalysis = current_analysis;
     CreateService.setContext('analysis');
     vm.inventory = inventory;
     vm.participants = CreateService.loadParticipants();
+    vm.messages = analysisMessages.messages;
 
     vm.createReminder = function() {
       vm.modal = $modal.open({
