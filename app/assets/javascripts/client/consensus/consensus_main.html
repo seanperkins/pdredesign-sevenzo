@@ -1,0 +1,38 @@
+<div class="categories">
+  <div class="row sort-by" ng-if="questionType === 'assessment'">
+    <sort-by></sort-by>
+    <div class="col-md-6 col-sm-12 ">
+      <div class="label">
+        Filter by Team Role:
+      </div>
+      <div>
+        <select
+            class="form-control text-capitalize"
+            id="status"
+            ng-change="vm.updateTeamRole(teamRole)"
+            ng-model="teamRole">
+          <option value="" selected>All</option>
+          <option value="{{role}}" ng-repeat="role in vm.teamRoles">
+            {{role}}
+          </option>
+        </select>
+      </div>
+      <div>
+        <i class="fa fa-spinner fa-spin" ng-if="vm.isLoading()"></i>
+      </div>
+    </div>
+  </div>
+  <div ng-if="vm.displayMode === 'category'">
+    <category-container categories="vm.categories"
+                        question-type="{{questionType}}"
+                        scores="vm.scores"
+                        is-consensus="{{vm.isConsensus}}">
+    </category-container>
+  </div>
+
+  <div class="category" ng-if="vm.displayMode === 'variance'">
+    <variance-category-container is-consensus="{{vm.isConsensus}}"
+                                 variance-questions="vm.varianceOrderedQuestions"
+                                 scores="vm.scores"></variance-category-container>
+  </div>
+</div>

@@ -1,0 +1,29 @@
+<div
+    class="question-container question-{{question.id}}"
+    ng-class="{'analysis-consensus-question': questionType === 'analysis'}"
+    ng-repeat="question in category.questions">
+  <div class="question-row" ng-click="vm.toggleAnswers(question, $event)">
+    <div class="question">
+      <p class="question-id scored-{{question.score.value}}" ng-show="question.loading">
+        <i class="fa fa-spinner fa-spin"></i>
+      </p>
+      <p id="question-{{question.number}}" class="question-id {{vm.questionColor(question, isConsensus)}}"
+         ng-hide="question.loading">
+        <a ng-href="#question-{{question.id}}"></a>
+        {{question.number}}
+      </p>
+    </div>
+    <div class="question-content" ng-class="{expanded: question.answersVisible}">
+      <div class="question-header">
+        <p class="question-headline">{{question.headline}}</p>
+        <p class="content">{{question.content}}</p>
+      </div>
+      <response-answer-group question="question" is-consensus="true" ng-if="questionType === 'assessment'"
+                             scores="scores"
+                             show-skip=false></response-answer-group>
+      <analysis-consensus-answer question="question" ng-if="questionType === 'analysis'"
+                                 product-entries="vm.productEntries"
+                                 inventory-data-entries="vm.dataEntries"></analysis-consensus-answer>
+    </div>
+  </div>
+</div>

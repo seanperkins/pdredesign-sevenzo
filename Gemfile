@@ -86,6 +86,7 @@ group :test do
   gem 'rspec-sidekiq', '~> 2.2.0'
   gem 'factory_girl_rails', '~> 4.6.0'
   gem 'database_cleaner', '~>1.5.1'
+  gem 'rails-assets-karma-runner--karma-ng-html2js-preprocessor', source: 'https://rails-assets.org'
 end
 
 group :production do

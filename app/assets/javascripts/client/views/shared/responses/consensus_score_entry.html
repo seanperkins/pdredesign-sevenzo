@@ -27,10 +27,9 @@
             <div class="answer col-md-3"
                  ng-repeat="answer in question.answers">
 
-              <p
-                  ng-class="{'inactive': answer.value != question.score.value}"
-                  class="scored-{{$index+1}}"
-                  ng-click="responseAnswerGroup.assignAnswerToQuestion(answer, question)">
+              <p ng-class="{'inactive': answer.value != question.score.value}"
+                 class="scored-{{$index+1}}"
+                 ng-click="responseAnswerGroup.assignAnswerToQuestion(answer, question)">
                 {{$index+1}}
               </p>
             </div>
