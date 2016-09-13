@@ -6,17 +6,19 @@
       rootScope,
       compile;
 
-    beforeEach(module('templates'));
-    beforeEach(module('PDRClient', function ($provide) {
-      $provide.factory('questionContainerDirective', function () {
-        return {};
+    beforeEach(function () {
+      module('templates');
+      module('PDRClient', function ($provide) {
+        $provide.factory('questionContainerDirective', function () {
+          return {};
+        });
       });
-    }));
 
-    beforeEach(inject(function (_$rootScope_, _$compile_) {
-      rootScope = _$rootScope_;
-      compile = _$compile_;
-    }));
+      inject(function (_$rootScope_, _$compile_) {
+        rootScope = _$rootScope_;
+        compile = _$compile_;
+      });
+    });
 
     describe('with no categories provided', function () {
       var template = '<category-container></category-container>';
