@@ -13,7 +13,7 @@ class V1::UserController < ApplicationController
         organization_ids: extract_ids_from_params(:organization_ids)
     ))
 
-    user_invitation = [UserInvitation, InventoryInvitation].map { |i|
+    user_invitation = [UserInvitation, InventoryInvitation, AnalysisInvitation].map { |i|
       i.find_by(email: user_params[:email])
     }.compact.first
     invite_user = user_invitation.try(:user)
