@@ -1,4 +1,4 @@
-describe('Controller: InvitationCtrl', function() {
+describe('Controller: RedeemInvitationCtrl', function() {
   var subject,
       $httpBackend,
       $q,
@@ -21,7 +21,7 @@ describe('Controller: InvitationCtrl', function() {
     SessionService = $injector.get('SessionService');
 
     $scope.token = 1;
-    subject  = $controller('InvitationCtrl', { $scope: $scope });
+    subject  = $controller('RedeemInvitationCtrl', { $scope: $scope });
     
   }));
 

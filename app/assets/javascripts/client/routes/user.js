@@ -69,8 +69,8 @@ PDRClient.config(['$stateProvider', '$urlRouterProvider',
       url: '/invitations/:token',
       views: {
         '': {
-          controller: 'InvitationCtrl',
-          templateUrl: 'client/views/invitation/redeem.html'
+          controller: 'RedeemInvitationCtrl',
+          templateUrl: 'client/invitations/invitation_landing.html'
         },
         'sidebar': {
           controller: 'SidebarCtrl',

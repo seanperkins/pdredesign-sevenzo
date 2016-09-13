@@ -2,9 +2,9 @@
   'use strict';
 
   angular.module('PDRClient')
-      .controller('InvitationCtrl', InvitationCtrl);
+      .controller('RedeemInvitationCtrl', RedeemInvitationCtrl);
 
-  InvitationCtrl.$inject = [
+  RedeemInvitationCtrl.$inject = [
     '$scope',
     '$stateParams',
     '$rootScope',
@@ -12,7 +12,7 @@
     'SessionService'
   ];
 
-  function InvitationCtrl($scope, $stateParams, $rootScope, Invitation, SessionService) {
+  function RedeemInvitationCtrl($scope, $stateParams, $rootScope, Invitation, SessionService) {
     $scope.token = $stateParams.token;
     $scope.invitedUser = Invitation.get({token: $scope.token});
     $scope.inviteObject = {};
