@@ -14,18 +14,9 @@
 
   function RedeemInvitationCtrl($scope, $state, $rootScope, InvitationService, SessionService) {
     var vm = this;
-    var invitationMessage = sessionStorage.getItem('invitationMessage');
 
     vm.invitedUser = InvitationService.getInvitedUser($scope.token);
-    vm.isError = null;
-    vm.errors = null;
-    vm.showalert = false;
     vm.alerts = [];
-
-    if (invitationMessage) {
-      vm.alerts.push({type: 'info', msg: invitationMessage});
-      sessionStorage.removeItem('invitationMessage');
-    }
 
     vm.showError = function (msg) {
       vm.alerts.push({type: 'danger', msg: msg});

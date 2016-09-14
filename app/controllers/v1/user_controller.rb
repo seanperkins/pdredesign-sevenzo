@@ -27,7 +27,7 @@ class V1::UserController < ApplicationController
           invitation_token: user_invitation.token
       ), status: :unprocessable_entity
     elsif @user.save
-      render status: 200, nothing: true
+      render status: :ok, nothing: true
     else
       render_errors @user.errors
     end
