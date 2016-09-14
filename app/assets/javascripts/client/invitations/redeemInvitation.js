@@ -11,7 +11,8 @@
         token: '@'
       },
       templateUrl: 'client/invitations/redeem_invitation.html',
-      controller: 'RedeemInvitationCtrl'
+      controller: 'RedeemInvitationCtrl',
+      controllerAs: 'vm'
     }
   }
 })();

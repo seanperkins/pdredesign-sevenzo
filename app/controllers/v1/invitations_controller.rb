@@ -27,6 +27,7 @@ class V1::InvitationsController < ApplicationController
       when UserInvitation.to_s
         locals[:assessment_id] = invitation.assessment_id
       when AnalysisInvitation.to_s
+        locals[:inventory_id] = invitation.analysis.inventory.id
         locals[:analysis_id] = invitation.analysis_id
       else
         raise 'Invitation not valid'

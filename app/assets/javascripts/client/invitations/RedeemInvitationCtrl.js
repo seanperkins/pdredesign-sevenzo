@@ -1,76 +1,71 @@
-(function() {
+(function () {
   'use strict';
 
   angular.module('PDRClient')
-      .controller('RedeemInvitationCtrl', RedeemInvitationCtrl);
+    .controller('RedeemInvitationCtrl', RedeemInvitationCtrl);
 
   RedeemInvitationCtrl.$inject = [
     '$scope',
-    '$stateParams',
+    '$state',
     '$rootScope',
-    'Invitation',
+    'InvitationService',
     'SessionService'
   ];
 
-  function RedeemInvitationCtrl($scope, $stateParams, $rootScope, Invitation, SessionService) {
-    $scope.token = $stateParams.token;
-    $scope.invitedUser = Invitation.get({token: $scope.token});
-    $scope.inviteObject = {};
-    $scope.isError = null;
-    $scope.errors = null;
-    $scope.showalert = false;
-    $scope.alerts = [];
+  function RedeemInvitationCtrl($scope, $state, $rootScope, InvitationService, SessionService) {
+    var vm = this;
+    var invitationMessage = sessionStorage.getItem('invitationMessage');
 
-    var invitation_message = sessionStorage.getItem('invitation_message');
-    if (invitation_message) {
-      $scope.alerts.push({type: 'info', msg: invitation_message});
-      sessionStorage.removeItem('invitation_message');
+    vm.invitedUser = InvitationService.getInvitedUser($scope.token);
+    vm.isError = null;
+    vm.errors = null;
+    vm.showalert = false;
+    vm.alerts = [];
+
+    if (invitationMessage) {
+      vm.alerts.push({type: 'info', msg: invitationMessage});
+      sessionStorage.removeItem('invitationMessage');
     }
 
-    $scope.showError = function(msg) {
-      $scope.alerts.push({type: 'danger', msg: msg});
+    vm.showError = function (msg) {
+      vm.alerts.push({type: 'danger', msg: msg});
     };
 
-    $scope.closeAlert = function(index) {
-      $scope.alerts.splice(index, 1);
+    vm.closeAlert = function (index) {
+      vm.alerts.splice(index, 1);
     };
 
-    $scope.populateErrors = function(errors) {
-      angular.forEach(errors, function(error, key) {
-        angular.forEach(error, function(e) {
+    vm.populateErrors = function (errors) {
+      angular.forEach(errors, function (error, key) {
+        angular.forEach(error, function (e) {
           var message = key + ": " + e;
-          $scope.showError(message);
+          vm.showError(message);
         });
       });
     };
 
-    $scope.redeemInvite = function() {
-      $scope.inviteObject = {
-        first_name: $scope.invitedUser.first_name,
-        last_name: $scope.invitedUser.last_name,
-        team_role: $scope.invitedUser.team_role,
-        password: $scope.invitedUser.password,
-        email: $scope.invitedUser.email
-      };
-      Invitation
-          .save({token: $scope.token}, $scope.inviteObject)
-          .$promise
-          .then(function() {
-            SessionService
-                .authenticate($scope.inviteObject.email, $scope.inviteObject.password)
-                .then(function() {
-                  $rootScope.$broadcast('session_updated');
-                  var redirectUrl = null;
-                  if ($scope.invitedUser.inventory_id) {
-                    redirectUrl = '/inventories/' + $scope.invitedUser.inventory_id + '/report';
-                  } else {
-                    redirectUrl = '/assessments/' + $scope.invitedUser.assessment_id + '/responses';
-                  }
-                  SessionService.syncAndRedirect(redirectUrl);
-                });
-          }, function(response) {
-            $scope.populateErrors(response.data.errors)
-          });
+    vm.redeemInvite = function () {
+      InvitationService.saveInvitation($scope.token, vm.invitedUser)
+        .then(function () {
+          SessionService.authenticate(vm.invitedUser.email, vm.invitedUser.password)
+            .then(function () {
+              $rootScope.$broadcast('session_updated');
+              SessionService.syncUser().then(function () {
+                if (vm.invitedUser.inventory_id) {
+                  $state.go('inventories_report', {inventory_id: vm.invitedUser.inventory_id});
+                } else if (vm.invitedUser.analysis_id) {
+                  $state.go('inventory_analysis_dashboard', {
+                    inventory_id: vm.invitedUser.inventory_id,
+                    id: vm.invitedUser.analysis_id
+                  });
+                } else {
+                  $state.go('response_create', {assessment_id: vm.invitedUser.assessment_id});
+                }
+              });
+            });
+        }, function (response) {
+          vm.populateErrors(response.data.errors)
+        });
     };
   }
 })();

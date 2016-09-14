@@ -1,4 +1,4 @@
-<div class='row row-bg row-header'>
+<div class="row row-bg row-header">
   <div class="col-md-12">
     <div class="col-md-12">
       <h1>Create Password</h1>
@@ -13,7 +13,7 @@
         <div class="row">
           <div class="col-md-12">
             <div class="alert">
-              <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
+              <alert ng-repeat="alert in vm.alerts" type="{{alert.type}}" close="vm.closeAlert($index)">{{alert.msg}}</alert>
             </div>
           </div>
         </div>
@@ -22,20 +22,20 @@
           <div class="col-md-5">
             <label for="user-first-name">First Name*</label>
             <input id="user-first-name"
-                   class="form-control ng-pristine ng-valid"
+                   class="form-control"
                    placeholder="First Name*"
                    type="text"
                    required
-                   ng-model="invitedUser.first_name">
+                   ng-model="vm.invitedUser.first_name">
           </div>
           <div class="col-md-offset-1 col-md-6">
             <label for="user-last-name">Last Name*</label>
             <input id="user-last-name"
-                   class="form-control ng-pristine ng-valid"
+                   class="form-control"
                    placeholder="Last Name*"
                    type="text"
                    required
-                   ng-model="invitedUser.last_name">
+                   ng-model="vm.invitedUser.last_name">
           </div>
         </div>
 
@@ -43,10 +43,10 @@
           <div class="col-md-12">
             <label for="user-team-role">Team Role</label>
             <input id="user-team-role"
-                   class="form-control ng-pristine ng-valid"
+                   class="form-control"
                    placeholder="Team Role"
                    type="text"
-                   ng-model="invitedUser.team_role">
+                   ng-model="vm.invitedUser.team_role">
           </div>
         </div>
 
@@ -54,11 +54,11 @@
           <div class="col-md-12">
             <label for="user-email">Email*</label>
             <input id="user-email"
-                   class="form-control ng-pristine ng-valid"
+                   class="form-control"
                    placeholder="Email*"
                    type="text"
                    required
-                   ng-model="invitedUser.email">
+                   ng-model="vm.invitedUser.email">
           </div>
         </div>
 
@@ -67,23 +67,23 @@
             <label for="user-password">Password*</label>
             <input
                 id="user-password"
-                class="form-control ng-pristine ng-valid"
+                class="form-control"
                 placeholder="Password*"
                 type="password"
                 required
-                ng-model="invitedUser.password">
+                ng-model="vm.invitedUser.password">
           </div>
           <div class="col-md-6">
             <label for="user-password-confirmation">Confirm Password*</label>
             <input
                 id="user-password-confirmation"
-                ui-validate="'$value==invitedUser.password'"
-                ui-validate-watch="'invitedUser.password'"
-                class="form-control ng-pristine ng-valid"
+                ui-validate="'$value == vm.invitedUser.password'"
+                ui-validate-watch="'vm.invitedUser.password'"
+                class="form-control"
                 placeholder="Password Confirm*"
                 type="password"
                 required
-                ng-model="invitedUser.password_confirm">
+                ng-model="vm.invitedUser.password_confirm">
           </div>
         </div>
 
@@ -91,7 +91,7 @@
           <div class="col-md-12">
             <button
                 ng-disabled="invitation.$invalid"
-                ng-click="redeemInvite()"
+                ng-click="vm.redeemInvite()"
                 class="btn btn-primary pull-right">
               Continue
             </button>
