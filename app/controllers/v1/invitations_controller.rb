@@ -21,10 +21,16 @@ class V1::InvitationsController < ApplicationController
     locals = {
         user: invited_user
     }
-    if invitation.is_a? InventoryInvitation
-      locals[:inventory_id] = invitation.inventory_id
-    else
-      locals[:assessment_id] = invitation.assessment_id
+    case invitation.class.to_s
+      when InventoryInvitation.to_s
+        locals[:inventory_id] = invitation.inventory_id
+      when UserInvitation.to_s
+        locals[:assessment_id] = invitation.assessment_id
+      when AnalysisInvitation.to_s
+        locals[:inventory_id] = invitation.analysis.inventory.id
+        locals[:analysis_id] = invitation.analysis_id
+      else
+        raise 'Invitation not valid'
     end
 
     render :show, locals: locals
@@ -48,7 +54,9 @@ class V1::InvitationsController < ApplicationController
   end
 
   def find_invitation(token)
-    UserInvitation.find_by(token: token) || InventoryInvitation.find_by(token: token)
+    UserInvitation.find_by(token: token) ||
+        InventoryInvitation.find_by(token: token) ||
+        AnalysisInvitation.find_by(token: token)
   end
 
 end

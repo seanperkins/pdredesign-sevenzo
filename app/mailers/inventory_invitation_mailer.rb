@@ -30,6 +30,6 @@ class InventoryInvitationMailer < ApplicationMailer
 
   private
   def invite_url(token)
-    "#{ENV['BASE_URL']}/#/inventories/invitations/#{token}"
+    "#{ENV['BASE_URL']}/#/invitations/#{token}"
   end
 end
