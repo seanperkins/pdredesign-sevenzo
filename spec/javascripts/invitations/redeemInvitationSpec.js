@@ -250,6 +250,31 @@
       });
     });
 
+    describe('when a message is stored in session storage', function () {
+      var template = '<redeem-invitation></redeem-invitation>',
+        sessionStorage;
+
+      beforeEach(function () {
+        inject(function (_$window_) {
+          sessionStorage = _$window_.sessionStorage;
+        });
+
+        spyOn(InvitationService, 'getInvitedUser').and.returnValue({});
+
+        sessionStorage.setItem('invitation_message', 'This is a test!');
+        element = compile(template)(rootScope);
+        rootScope.$digest();
+      });
+
+      it('generates an alert message', function () {
+        expect(element.find('.alert').length).toEqual(1);
+      });
+
+      it('removes the element from local storage', function () {
+        expect(sessionStorage.getItem('invitation_message')).toBeNull();
+      });
+    });
+
     describe('when a token is present', function () {
       var template = '<redeem-invitation token="test-token"></redeem-invitation>',
         SessionService,
