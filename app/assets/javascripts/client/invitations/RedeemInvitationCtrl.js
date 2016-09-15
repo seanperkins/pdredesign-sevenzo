@@ -42,13 +42,13 @@
             .then(function () {
               $rootScope.$broadcast('session_updated');
               SessionService.syncUser().then(function () {
-                if (vm.invitedUser.inventory_id) {
-                  $state.go('inventories_report', {inventory_id: vm.invitedUser.inventory_id});
-                } else if (vm.invitedUser.analysis_id) {
+                if (vm.invitedUser.analysis_id) {
                   $state.go('inventory_analysis_dashboard', {
                     inventory_id: vm.invitedUser.inventory_id,
                     id: vm.invitedUser.analysis_id
                   });
+                } else if (vm.invitedUser.inventory_id) {
+                  $state.go('inventories_report', {inventory_id: vm.invitedUser.inventory_id});
                 } else {
                   $state.go('response_create', {assessment_id: vm.invitedUser.assessment_id});
                 }
