@@ -49,8 +49,10 @@
                   });
                 } else if (vm.invitedUser.inventory_id) {
                   $state.go('inventories_report', {inventory_id: vm.invitedUser.inventory_id});
-                } else {
+                } else if (vm.invitedUser.assessment_id) {
                   $state.go('response_create', {assessment_id: vm.invitedUser.assessment_id});
+                } else {
+                  vm.populateErrors([{redirect: 'No path to redirect to.  Be sure the tool is supported.'}]);
                 }
               });
             });

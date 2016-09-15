@@ -396,6 +396,82 @@
             expect($state.go).toHaveBeenCalledWith('response_create', {assessment_id: invitedUser.assessment_id});
           });
         });
+
+        describe('when the invitation does not contain a supported tool ID', function () {
+          var invitedUser = {
+            email: 'foo@example.com',
+            password: 'test_password'
+          };
+
+          beforeEach(function () {
+            spyOn(InvitationService, 'getInvitedUser').and.returnValue(invitedUser);
+            element = compile(template)(rootScope);
+            rootScope.$digest();
+
+            scope = element.isolateScope();
+            scope.invitation.firstName.$setViewValue('Test');
+            scope.invitation.lastName.$setViewValue('User');
+            scope.invitation.email.$setViewValue('testuser@example.com');
+            scope.invitation.password.$setViewValue('testuser12345');
+            scope.invitation.passwordConfirm.$setViewValue('testuser12345');
+            rootScope.$digest();
+
+            element.find('button').trigger('click');
+          });
+
+          it('saves the invitation', function () {
+            expect(InvitationService.saveInvitation).toHaveBeenCalledWith('test-token', invitedUser);
+          });
+
+          it('authenticates the user', function () {
+            expect(SessionService.authenticate).toHaveBeenCalledWith(invitedUser.email, invitedUser.password);
+          });
+
+          it('syncs the user', function () {
+            expect(SessionService.syncUser).toHaveBeenCalled();
+          });
+
+          it('adds an error notice to the DOM', function () {
+            expect(element.find('.alert').length).toEqual(1);
+          });
+        })
+      });
+
+      describe('when the invitation is not successfully saved', function () {
+        var invitedUser = {
+          email: 'foo@example.com',
+          password: 'test_password',
+          assessment_id: 1
+        };
+
+        beforeEach(function () {
+          spyOn(InvitationService, 'getInvitedUser').and.returnValue(invitedUser);
+          spyOn(InvitationService, 'saveInvitation').and.returnValue($q.reject({
+            data: {
+              errors: [{foo: 'bar'}, {baz: 'bing'}]
+            }
+          }));
+          element = compile(template)(rootScope);
+          rootScope.$digest();
+
+          scope = element.isolateScope();
+          scope.invitation.firstName.$setViewValue('Test');
+          scope.invitation.lastName.$setViewValue('User');
+          scope.invitation.email.$setViewValue('testuser@example.com');
+          scope.invitation.password.$setViewValue('testuser12345');
+          scope.invitation.passwordConfirm.$setViewValue('testuser12345');
+          rootScope.$digest();
+
+          element.find('button').trigger('click');
+        });
+
+        it('attempts to save the invitation', function () {
+          expect(InvitationService.saveInvitation).toHaveBeenCalledWith('test-token', invitedUser);
+        });
+
+        it('generates alerts on screen', function () {
+          expect(element.find('.alert').length).toEqual(2);
+        });
       });
     });
   });
