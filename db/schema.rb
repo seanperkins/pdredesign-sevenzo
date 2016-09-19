@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160831174134) do
+ActiveRecord::Schema.define(version: 20160919151705) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -596,6 +596,19 @@ ActiveRecord::Schema.define(version: 20160831174134) do
     t.integer "display_order"
     t.integer "tool_phase_id"
   end
+
+  create_table "tool_members", id: false, force: :cascade do |t|
+    t.string   "tool_type"
+    t.integer  "tool_id"
+    t.integer  "role"
+    t.integer  "user_id",     null: false
+    t.datetime "invited_at"
+    t.datetime "reminded_at"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+  end
+
+  add_index "tool_members", ["user_id", "role", "tool_id", "tool_type"], name: "idx_tool_members_unique", unique: true, using: :btree
 
   create_table "tool_phases", force: :cascade do |t|
     t.string  "title"
