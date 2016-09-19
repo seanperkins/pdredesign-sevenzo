@@ -1,13 +1,9 @@
 module MembershipHelper
-  def participant?(tool, user)
-    ToolMember.exists?(tool: tool, user: user, role: ToolMember.member_roles[:participant])
+  def self.participant?(tool, user)
+    ToolMember.where(tool: tool, user: user, role: ToolMember.member_roles[:participant]).exists?
   end
 
-  def facilitator?(tool, user)
-    ToolMember.exists?(tool: tool, user: user, role: ToolMember.member_roles[:facilitator])
-  end
-
-  def owner?(tool, user)
-    tool.user == user
+  def self.facilitator?(tool, user)
+    ToolMember.where(tool: tool, user: user, role: ToolMember.member_roles[:facilitator]).exists?
   end
 end

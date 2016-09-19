@@ -13,6 +13,8 @@
 #
 
 class ToolMember < ActiveRecord::Base
+  include Authority::Abilities
+
   belongs_to :user
   belongs_to :tool, polymorphic: true
 

@@ -141,6 +141,9 @@ PdrServer::Application.routes.draw do
       resources :messages, only: [:index, :create]
     end
 
+    #Tool Members Routes
+    post 'tool_members', to: 'tool_members#create'
+
     get '/analyses', to: 'analyses#all'
 
     scope '/constants' do
