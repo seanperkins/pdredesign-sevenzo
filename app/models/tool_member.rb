@@ -23,4 +23,6 @@ class ToolMember < ActiveRecord::Base
 
   validates_inclusion_of :role, in: ToolMember.member_roles.values
   validates_uniqueness_of :role, scope: [:user_id, :tool_id, :tool_type]
+
+  self.primary_keys = [:tool_type, :tool_id, :user_id, :role]
 end
