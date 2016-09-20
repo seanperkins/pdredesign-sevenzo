@@ -12,6 +12,10 @@ class V1::ToolMembersController < ApplicationController
     end
   end
 
+  def show
+    @tool_members = ToolMember.eager_load(:user).where(tool_id: params[:tool_id], tool_type: params[:tool_type])
+  end
+
   private
   def tool_member_params
     params.require(:tool_member).permit(:tool_type, :tool_id, :role, :user_id)
