@@ -12,7 +12,7 @@ describe AnalysisInvitationMailer do
     }
 
     let(:tool_link) {
-      "/#/inventories/#{tool.inventory.id}/analyses/#{tool.id}/invitations/#{invitation.token}"
+      "/#/invitations/#{invitation.token}"
     }
 
     let(:result) {

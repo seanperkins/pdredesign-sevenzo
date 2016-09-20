@@ -7,12 +7,9 @@
   function sortBy() {
     return {
       restrict: 'E',
-      replace: true,
       transclude: true,
-      scope: {
-        data: '=',
-        categories: '='
-      },
+      require: '^consensus',
+      scope: {},
       templateUrl: 'client/views/directives/consensus/sort_by.html',
       controller: 'SortByCtrl',
       controllerAs: 'sortBy'

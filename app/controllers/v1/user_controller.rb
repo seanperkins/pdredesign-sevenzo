@@ -13,7 +13,7 @@ class V1::UserController < ApplicationController
         organization_ids: extract_ids_from_params(:organization_ids)
     ))
 
-    user_invitation = [UserInvitation, InventoryInvitation].map { |i|
+    user_invitation = [UserInvitation, InventoryInvitation, AnalysisInvitation].map { |i|
       i.find_by(email: user_params[:email])
     }.compact.first
     invite_user = user_invitation.try(:user)
@@ -27,7 +27,7 @@ class V1::UserController < ApplicationController
           invitation_token: user_invitation.token
       ), status: :unprocessable_entity
     elsif @user.save
-      render status: 200, nothing: true
+      render status: :ok, nothing: true
     else
       render_errors @user.errors
     end

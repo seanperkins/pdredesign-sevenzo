@@ -371,6 +371,7 @@ GEM
       rails-assets-jquery (>= 1.7.0)
     rails-assets-highcharts (3.0.10)
     rails-assets-jquery (2.1.4)
+    rails-assets-karma-runner--karma-ng-html2js-preprocessor (1.0.0)
     rails-assets-moment (2.13.0)
     rails-assets-rollbar (1.2.2)
     rails-assets-underscore (1.8.3)
@@ -565,6 +566,7 @@ DEPENDENCIES
   rails-assets-datatables-buttons (~> 1.0.0)!
   rails-assets-highcharts (= 3.0.10)!
   rails-assets-jquery (= 2.1.4)!
+  rails-assets-karma-runner--karma-ng-html2js-preprocessor!
   rails-assets-moment (= 2.13.0)!
   rails-assets-rollbar (= 1.2.2)!
   rails-assets-underscore (= 1.8.3)!

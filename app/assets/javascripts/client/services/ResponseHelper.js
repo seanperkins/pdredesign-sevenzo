@@ -33,6 +33,7 @@
       var target = $event.target;
       if (target.id === 'question-' + question.id
           || target.classList.contains('question-headline')
+          || target.classList.contains('question-content')
           || target.classList.contains('content')) {
         question.answersVisible = !question.answersVisible;
       }
