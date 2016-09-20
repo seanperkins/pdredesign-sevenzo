@@ -10,6 +10,8 @@
 #  reminded_at :datetime
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
+#  response_id :integer
+#  id          :integer          not null, primary key
 #
 
 FactoryGirl.define do

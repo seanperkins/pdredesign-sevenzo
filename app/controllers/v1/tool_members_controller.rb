@@ -13,7 +13,7 @@ class V1::ToolMembersController < ApplicationController
   end
 
   def show
-    @tool_members = ToolMember.eager_load(:user).where(tool_id: params[:tool_id], tool_type: params[:tool_type])
+    @tool_members = ToolMember.eager_load(:user, :response).where(tool_id: params[:tool_id], tool_type: params[:tool_type])
   end
 
   private

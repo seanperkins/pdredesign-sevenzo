@@ -10,6 +10,8 @@
 #  reminded_at :datetime
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
+#  response_id :integer
+#  id          :integer          not null, primary key
 #
 
 class ToolMember < ActiveRecord::Base
@@ -18,6 +20,8 @@ class ToolMember < ActiveRecord::Base
   belongs_to :user
   belongs_to :tool, polymorphic: true
 
+  has_one :response, as: :responder
+
   enum member_role: {
       facilitator: 0,
       participant: 1
@@ -25,6 +29,4 @@ class ToolMember < ActiveRecord::Base
 
   validates_inclusion_of :role, in: ToolMember.member_roles.values
   validates_uniqueness_of :role, scope: [:user_id, :tool_id, :tool_type]
-
-  self.primary_keys = [:tool_type, :tool_id, :user_id, :role]
 end
