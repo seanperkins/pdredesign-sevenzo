@@ -14,7 +14,9 @@ class V1::ToolMembersController < ApplicationController
 
   def show
     @tool_members = ToolMember.includes(:response, :user)
-                        .where(tool_id: params[:tool_id], tool_type: params[:tool_type].titlecase, role: ToolMember.member_roles[:participant])
+                        .where(tool_id: params[:tool_id],
+                               tool_type: params[:tool_type].titlecase,
+                               role: ToolMember.member_roles[:participant])
   end
 
   private
