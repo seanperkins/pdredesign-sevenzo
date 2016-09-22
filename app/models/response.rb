@@ -23,8 +23,8 @@ class Response < ActiveRecord::Base
 	has_many :questions, through: :rubric
   has_many :categories, -> { uniq.order('id ASC') }, through: :questions
 
-	has_many :scores, dependent: :destroy
-	has_many :feedbacks, dependent: :destroy
+	has_many :scores
+	has_many :feedbacks
 
 	accepts_nested_attributes_for :scores
 	accepts_nested_attributes_for :feedbacks
