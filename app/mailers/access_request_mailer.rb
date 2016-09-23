@@ -4,7 +4,7 @@ class AccessRequestMailer < ApplicationMailer
     @access_link = access_link(record.token)
     @requestor_name = record.user.name
     @roles = record.roles.join(",")
-    @assessment_name = record.assessment.name
+    @assessment_name = record.tool.name
     mail(to: email)
   end
 

@@ -11,19 +11,22 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160922171606) do
+ActiveRecord::Schema.define(version: 20160923152203) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "access_requests", force: :cascade do |t|
-    t.integer  "assessment_id"
+    t.integer  "tool_id"
     t.integer  "user_id"
-    t.string   "roles",         default: [], array: true
+    t.string   "roles",      default: [], array: true
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "token"
+    t.string   "tool_type"
   end
+
+  add_index "access_requests", ["tool_type", "tool_id"], name: "index_access_requests_on_tool_type_and_tool_id", using: :btree
 
   create_table "analyses", force: :cascade do |t|
     t.text     "name"

@@ -232,7 +232,7 @@ describe Assessment do
       }
 
       let(:assessment) {
-        access_request.assessment
+        access_request.tool
       }
 
       let(:user) {

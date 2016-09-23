@@ -15,7 +15,7 @@ describe AccessRequestNotificationWorker do
       }
 
       let(:request) {
-        create(:access_request, assessment: assessment, roles: [:facilitator])
+        create(:access_request, tool: assessment, roles: [:facilitator])
       }
 
       let(:mailer_double) {
@@ -35,7 +35,7 @@ describe AccessRequestNotificationWorker do
       }
 
       let(:request) {
-        create(:access_request, assessment: assessment, roles: [:facilitator])
+        create(:access_request, tool: assessment, roles: [:facilitator])
       }
 
       let(:mailer_double) {

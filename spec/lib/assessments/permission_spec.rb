@@ -34,7 +34,7 @@ describe Assessments::Permission do
     end
 
     it {
-      expect(AccessRequest.find_by(assessment_id: assessment.id, user_id: user.id)).not_to be_nil
+      expect(AccessRequest.find_by(tool: assessment, user: user)).not_to be_nil
     }
   end
 
@@ -48,7 +48,7 @@ describe Assessments::Permission do
     }
 
     let(:assessment) {
-      access_request.assessment
+      access_request.tool
     }
 
     it {
@@ -62,7 +62,7 @@ describe Assessments::Permission do
     }
 
     let(:assessment) {
-      access_request.assessment
+      access_request.tool
     }
 
     let(:access_permission) {
@@ -501,7 +501,7 @@ describe Assessments::Permission do
     }
 
     let(:assessment) {
-      access_request.assessment
+      access_request.tool
     }
 
     let(:user) {
@@ -517,7 +517,7 @@ describe Assessments::Permission do
     end
 
     it {
-      expect(AccessRequest.find_by(assessment: assessment, user: user)).to be_nil
+      expect(AccessRequest.find_by(tool: assessment, user: user)).to be_nil
     }
   end
 
@@ -528,7 +528,7 @@ describe Assessments::Permission do
     }
 
     let(:assessment) {
-      access_request.assessment
+      access_request.tool
     }
 
     let(:access_request) {
@@ -557,7 +557,7 @@ describe Assessments::Permission do
       }
 
       let(:assessment) {
-        access_request.assessment
+        access_request.tool
       }
 
       let(:user) {
@@ -580,7 +580,7 @@ describe Assessments::Permission do
       }
 
       let(:assessment) {
-        access_request.assessment
+        access_request.tool
       }
 
       let(:user) {

@@ -1,1 +1,1 @@
-json.assessment_id @record.assessment_id
+json.assessment_id @record.tool_id

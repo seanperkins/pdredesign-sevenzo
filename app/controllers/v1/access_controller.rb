@@ -11,14 +11,14 @@ class V1::AccessController < ApplicationController
 
   private
   def grant_access(record)
-    assessment = record.assessment
+    assessment = record.tool
     permission = Assessments::Permission.new(assessment)
 
     permission.accept_permission_requested(record.user)
   end
 
   def allowed?(record)
-    auth = AssessmentAuthorizer.new(record.assessment)
+    auth = AssessmentAuthorizer.new(record.tool)
     auth.updatable_by?(current_user)
   end
 

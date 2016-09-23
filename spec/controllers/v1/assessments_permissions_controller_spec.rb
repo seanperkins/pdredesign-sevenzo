@@ -19,7 +19,7 @@ describe V1::AssessmentsPermissionsController do
 
       context 'when an access request is present' do
         let!(:access_request) {
-          create(:access_request, assessment: assessment, user: user, roles: ['facilitator'])
+          create(:access_request, tool: assessment, user: user, roles: ['facilitator'])
         }
 
         before(:each) do
@@ -121,7 +121,7 @@ describe V1::AssessmentsPermissionsController do
 
       context 'when an access request is present' do
         let(:access_request) {
-          create(:access_request, assessment: assessment, user: user, roles: ['facilitator'])
+          create(:access_request, tool: assessment, user: user, roles: ['facilitator'])
         }
 
         let(:user) {
@@ -545,7 +545,7 @@ describe V1::AssessmentsPermissionsController do
         }
 
         let(:access_request) {
-          create(:access_request, assessment: assessment, user: user, roles: ['facilitator'])
+          create(:access_request, tool: assessment, user: user, roles: ['facilitator'])
         }
 
         let(:assessment_permission) {
@@ -577,7 +577,7 @@ describe V1::AssessmentsPermissionsController do
       }
 
       let(:access_request) {
-        create(:access_request, assessment: assessment, user: user, roles: ['facilitator'])
+        create(:access_request, tool: assessment, user: user, roles: ['facilitator'])
       }
 
       before(:each) do
@@ -614,7 +614,7 @@ describe V1::AssessmentsPermissionsController do
         }
 
         let(:access_request) {
-          create(:access_request, assessment: assessment, user: user, roles: ['facilitator'])
+          create(:access_request, tool: assessment, user: user, roles: ['facilitator'])
         }
 
         before(:each) do
@@ -637,7 +637,7 @@ describe V1::AssessmentsPermissionsController do
         }
 
         let(:access_request) {
-          create(:access_request, assessment: assessment, user: user, roles: ['facilitator'])
+          create(:access_request, tool: assessment, user: user, roles: ['facilitator'])
         }
 
         before(:each) do
