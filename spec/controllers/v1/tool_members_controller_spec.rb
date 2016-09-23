@@ -68,10 +68,28 @@ describe V1::ToolMembersController do
           create(:tool_member, :as_facilitator, tool: tool, user: user)
         }
 
-        context 'when the entity to be created is valid' do
+        context 'when the entity to be created is valid (uppercase tool type)' do
           before(:each) do
             sign_in user
             post :create, tool_member: {tool_type: 'Assessment',
+                                        tool_id: tool.id,
+                                        role: ToolMember.member_roles[:participant],
+                                        user_id: candidate.id}
+          end
+
+          it {
+            is_expected.to respond_with(:created)
+          }
+
+          it {
+            expect(ToolMember.where(tool: tool, user: candidate).size).to eq 1
+          }
+        end
+
+        context 'when the entity to be created is valid (lowercase tool type)' do
+          before(:each) do
+            sign_in user
+            post :create, tool_member: {tool_type: 'assessment',
                                         tool_id: tool.id,
                                         role: ToolMember.member_roles[:participant],
                                         user_id: candidate.id}
@@ -214,6 +232,79 @@ describe V1::ToolMembersController do
               expect(json.length).to eq 1
             }
           end
+        end
+      end
+    end
+  end
+
+  describe 'DELETE #destroy' do
+    context 'when the user is not authenticated' do
+      before(:each) do
+        sign_out :user
+
+        delete :destroy, id: 0
+      end
+
+      it {
+        is_expected.to respond_with(:unauthorized)
+      }
+    end
+
+    context 'when the user is authenticated' do
+      let(:user) {
+        create(:user)
+      }
+
+      let(:tool) {
+        create(:assessment)
+      }
+      context 'when the user is a participant on the tool' do
+
+        let(:deleted_tool_member) {
+          create(:tool_member, :as_participant, tool: tool)
+        }
+
+        let!(:tool_member) {
+          create(:tool_member, :as_participant, tool: tool, user: user)
+        }
+
+        before(:each) do
+          sign_in user
+          delete :destroy, id: deleted_tool_member.id
+        end
+
+        it {
+          is_expected.to respond_with(:forbidden)
+        }
+      end
+
+      context 'when the user is a facilitator on the tool' do
+        let!(:tool_member) {
+          create(:tool_member, :as_facilitator, tool: tool, user: user)
+        }
+
+        context 'when the user being deleted is a participant' do
+
+          let(:deleted_tool_member) {
+            create(:tool_member, :as_participant, tool: tool)
+          }
+
+          let!(:deleted_tool_member_id) {
+            deleted_tool_member.id
+          }
+
+          before(:each) do
+            sign_in user
+            delete :destroy, id: deleted_tool_member.id
+          end
+
+          it {
+            is_expected.to respond_with :no_content
+          }
+
+          it {
+            expect(ToolMember.where(id: deleted_tool_member_id).size).to eq 0
+          }
         end
       end
     end

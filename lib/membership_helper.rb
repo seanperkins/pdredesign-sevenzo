@@ -7,6 +7,18 @@ module MembershipHelper
     ToolMember.where(tool: tool, user: user, role: ToolMember.member_roles[:facilitator]).exists?
   end
 
+  def self.facilitator_on_instance?(tool_member, user)
+    tool_member.user == user && tool_member.role == ToolMember.member_roles[:facilitator]
+  end
+
+  def self.participant_on_instance?(tool_member, user)
+    tool_member.user == user && tool_member.role == ToolMember.member_roles[:participant]
+  end
+
+  def self.owner_on_instance?(tool_member, user_id)
+    tool_member.tool.owner_id == user_id
+  end
+
   def self.status(tool_member)
     return :pending if tool_member.invited_at.nil?
     return :invited if tool_member.response.nil?
@@ -19,5 +31,9 @@ module MembershipHelper
     return tool_member.invited_at if status == :invited
     return tool_member.response.updated_at if status == :in_progress
     tool_member.response.submitted_at
+  end
+
+  def self.humanize_role(role_value)
+    ToolMember.member_roles.keys[role_value]
   end
 end

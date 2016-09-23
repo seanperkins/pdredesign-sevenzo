@@ -1,6 +1,7 @@
 status = MembershipHelper.status(tool_member)
 date = MembershipHelper.date(tool_member, status)
 
+json.id tool_member.id
 json.user_id tool_member.user.id
 json.email tool_member.user.email
 json.user_name tool_member.user.name
