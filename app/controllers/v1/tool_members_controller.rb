@@ -3,7 +3,7 @@ class V1::ToolMembersController < ApplicationController
 
   before_action :authenticate_user!
   before_action :normalize_strong_param_tool_type!, only: [:create]
-  before_action :normalize_path_param_tool_type!, only: [:show]
+  before_action :normalize_path_param_tool_type!, only: [:show, :request_access]
 
   def create
     tool_member = ToolMember.create(tool_member_params)
@@ -49,8 +49,27 @@ class V1::ToolMembersController < ApplicationController
     end
   end
 
-  def request_access
+  authority_actions request_access: :read
 
+  def request_access
+    @request = AccessRequest.create(
+        user: current_user,
+        tool_type: params[:tool_type],
+        tool_id: params[:tool_id],
+        roles: MembershipHelper.humanize_roles(tool_member_access_request_params[:roles])
+    )
+
+    validate_access_request
+
+    if @request.errors.empty?
+      if @request.save
+        send_access_requested_email(@request)
+        return render nothing: true, status: :created
+      end
+    end
+
+    @errors = @request.errors
+    render 'v1/shared/errors', errors: @errors, status: :bad_request
   end
 
   private
@@ -62,12 +81,34 @@ class V1::ToolMembersController < ApplicationController
     params.require(:tool_member).permit(:tool_type, :tool_id, :role, :user_id)
   end
 
+  def tool_member_access_request_params
+    params.require(:access_request).permit(roles: [])
+  end
+
   def normalize_strong_param_tool_type!
     params[:tool_member][:tool_type] = params[:tool_member][:tool_type].titlecase
   end
 
   def normalize_path_param_tool_type!
     params[:tool_type] = params[:tool_type].titlecase
+  end
+
+  def validate_access_request
+    tool_member_query = ToolMember.where(tool: @request.tool, user: @request.user, role: MembershipHelper.dehumanize_roles(@request.roles))
+    unless tool_member_query.empty?
+      roles = MembershipHelper.humanize_roles(tool_member_query.map(&:role))
+      @request.errors.add(:base, "Access for #{@request.user.email} for #{@request.tool.name} already exists at these levels: #{roles.join(', ')}")
+    end
+
+    if (ToolMember.member_roles.values.collect { |val| val.to_s } &
+        tool_member_access_request_params[:roles]).size !=
+        tool_member_access_request_params[:roles].size
+      @request.errors.add(:base, 'Invalid role(s) specified.')
+    end
+  end
+
+  def send_access_requested_email(request)
+    ToolMemberAccessRequestNotificationWorker.perform_async(request.id)
   end
 
   def send_access_granted_email(tool_member)

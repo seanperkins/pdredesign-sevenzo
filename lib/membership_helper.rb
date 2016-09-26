@@ -36,4 +36,12 @@ module MembershipHelper
   def self.humanize_role(role_value)
     ToolMember.member_roles.keys[role_value]
   end
+
+  def self.humanize_roles(role_values)
+    role_values.uniq.collect { |role| MembershipHelper.humanize_role(role.to_i) }
+  end
+
+  def self.dehumanize_roles(role_values)
+    role_values.uniq.collect { |role| ToolMember.member_roles[role] }
+  end
 end

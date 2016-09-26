@@ -383,4 +383,134 @@ describe V1::ToolMembersController do
       end
     end
   end
+
+  describe 'POST #request_access' do
+    context 'when the user is not authenticated' do
+      before(:each) do
+        sign_out :user
+
+        post :request_access, tool_type: 'Foo', tool_id: -1, access_request: {roles: [-2, -1]}
+      end
+
+      it {
+        is_expected.to respond_with(:unauthorized)
+      }
+    end
+
+    context 'when the user is authenticated' do
+      let(:user) {
+        create(:user)
+      }
+
+      let(:tool) {
+        create(:assessment)
+      }
+
+      context 'when the requested roles are invalid' do
+        let!(:tool_member) {
+          create(:tool_member, :as_participant, :as_assessment_member, user: user)
+        }
+
+        before(:each) do
+          sign_in user
+          post :request_access, tool_type: tool.class.to_s, tool_id: tool.id, access_request: {roles: [-100, -101]}
+        end
+
+        it {
+          is_expected.to respond_with :bad_request
+        }
+
+        it {
+          expect(json['errors']['base'][0]).to eq 'Invalid role(s) specified.'
+        }
+      end
+
+      context 'when the user is not a member of the tool' do
+        let!(:tool_member) {
+          create(:tool_member, :as_participant, :as_assessment_member, user: user)
+        }
+
+        before(:each) do
+          sign_in user
+          post :request_access, tool_type: tool.class.to_s, tool_id: tool.id, access_request: {roles: [0]}
+        end
+
+        it {
+          is_expected.to respond_with :created
+        }
+
+        it {
+          expect(ToolMemberAccessRequestNotificationWorker.jobs.size).to eq 1
+        }
+
+        it {
+          expect(ToolMemberAccessRequestNotificationWorker.jobs.first['args'][0]).to eq assigns(:request).id
+        }
+
+        it {
+          expect(assigns[:request].roles).to eq ['facilitator']
+        }
+      end
+
+      context 'when the user is a member of the tool' do
+        context 'when the user is already a participant' do
+          let!(:tool_member) {
+            create(:tool_member, :as_participant, tool: tool, user: user)
+          }
+
+          before(:each) do
+            sign_in user
+            post :request_access, tool_type: tool.class.to_s, tool_id: tool.id, access_request: {roles: [1]}
+          end
+
+          it {
+            is_expected.to respond_with :bad_request
+          }
+
+          it {
+            expect(json['errors']['base'][0]).to eq "Access for #{user.email} for #{tool.name} already exists at these levels: participant"
+          }
+          end
+
+        context 'when the user is already a facilitator' do
+          let!(:tool_member) {
+            create(:tool_member, :as_facilitator, tool: tool, user: user)
+          }
+
+          before(:each) do
+            sign_in user
+            post :request_access, tool_type: tool.class.to_s, tool_id: tool.id, access_request: {roles: [0]}
+          end
+
+          it {
+            is_expected.to respond_with :bad_request
+          }
+
+          it {
+            expect(json['errors']['base'][0]).to eq "Access for #{user.email} for #{tool.name} already exists at these levels: facilitator"
+          }
+        end
+
+        context 'when the user is already a facilitator and participant' do
+          let!(:tool_member) {
+            create(:tool_member, :as_participant, tool: tool, user: user)
+            create(:tool_member, :as_facilitator, tool: tool, user: user)
+          }
+
+          before(:each) do
+            sign_in user
+            post :request_access, tool_type: tool.class.to_s, tool_id: tool.id, access_request: {roles: [0, 1]}
+          end
+
+          it {
+            is_expected.to respond_with :bad_request
+          }
+
+          it {
+            expect(json['errors']['base'][0]).to eq "Access for #{user.email} for #{tool.name} already exists at these levels: facilitator, participant"
+          }
+        end
+      end
+    end
+  end
 end

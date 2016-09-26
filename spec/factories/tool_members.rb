@@ -26,6 +26,10 @@ FactoryGirl.define do
       association :tool, factory: :inventory
     end
 
+    trait :as_assessment_member do
+      association :tool, factory: :assessment
+    end
+
     trait :as_facilitator do
       role ToolMember.member_roles[:facilitator]
     end
