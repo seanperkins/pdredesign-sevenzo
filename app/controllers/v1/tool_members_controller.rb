@@ -26,8 +26,8 @@ class V1::ToolMembersController < ApplicationController
   def destroy
     tool_member = ToolMember.includes(:user).find_by(id: params[:id])
 
-    unless tool_member
-      render nothing: true, status: :not_found
+    if tool_member.nil?
+      return render nothing: true, status: :not_found
     end
 
     authorize_action_for tool_member

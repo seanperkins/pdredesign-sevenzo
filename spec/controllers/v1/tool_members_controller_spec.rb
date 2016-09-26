@@ -256,7 +256,7 @@ describe V1::ToolMembersController do
       }
 
       let(:tool) {
-        create(:assessment)
+        create(:assessment, :with_owner)
       }
       context 'when the user is a participant on the tool' do
 
@@ -305,6 +305,80 @@ describe V1::ToolMembersController do
           it {
             expect(ToolMember.where(id: deleted_tool_member_id).size).to eq 0
           }
+        end
+
+        context 'when the user being deleted does not exist' do
+          before(:each) do
+            sign_in user
+            delete :destroy, id: -1
+          end
+
+          it {
+            is_expected.to respond_with :not_found
+          }
+        end
+
+        context 'when the user being deleted is a facilitator' do
+          context 'when the facilitator is not the current facilitator' do
+            let(:deleted_tool_member) {
+              create(:tool_member, :as_facilitator, tool: tool)
+            }
+
+            let!(:deleted_tool_member_id) {
+              deleted_tool_member.id
+            }
+
+            before(:each) do
+              sign_in user
+              delete :destroy, id: deleted_tool_member.id
+            end
+
+            it {
+              is_expected.to respond_with :no_content
+            }
+
+            it {
+              expect(ToolMember.where(id: deleted_tool_member_id).size).to eq 0
+            }
+          end
+
+          context 'when the facilitator is the tool owner' do
+            let(:deleted_tool_member) {
+              create(:tool_member, :as_facilitator, tool: tool, user: tool.user)
+            }
+
+            before(:each) do
+              sign_in user
+              delete :destroy, id: deleted_tool_member.id
+            end
+
+            it {
+              is_expected.to respond_with :bad_request
+            }
+
+            it {
+              expect(json['errors']['base'][0]).to eq 'The owner may not be removed from this assessment.'
+            }
+          end
+
+          context 'when the facilitator is the current facilitator' do
+            let(:deleted_tool_member) {
+              tool_member
+            }
+
+            before(:each) do
+              sign_in user
+              delete :destroy, id: deleted_tool_member.id
+            end
+
+            it {
+              is_expected.to respond_with :bad_request
+            }
+
+            it {
+              expect(json['errors']['base'][0]).to eq 'You may not remove yourself from the facilitator role.  Please ask another facilitator to handle this request.'
+            }
+          end
         end
       end
     end

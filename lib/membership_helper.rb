@@ -15,8 +15,8 @@ module MembershipHelper
     tool_member.user == user && tool_member.role == ToolMember.member_roles[:participant]
   end
 
-  def self.owner_on_instance?(tool_member, user_id)
-    tool_member.tool.owner_id == user_id
+  def self.owner_on_instance?(tool_member, user)
+    tool_member.tool.owner_id == user.id
   end
 
   def self.status(tool_member)

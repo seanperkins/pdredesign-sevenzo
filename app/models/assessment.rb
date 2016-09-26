@@ -65,9 +65,10 @@ class Assessment < ActiveRecord::Base
   validate :validate_participants, if: 'assigned_at.present?'
   validate :meeting_date_not_in_the_past, if: 'meeting_date.present?'
 
-
   before_save :set_assigned_at
   before_save :ensure_share_token
+
+  alias_attribute :owner_id, :user_id
 
   def validate_participants
     return unless self.participants.empty?
