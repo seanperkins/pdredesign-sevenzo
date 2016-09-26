@@ -2,8 +2,8 @@ class InventoryAccessRequestMailer < ApplicationMailer
   def request_access(request, email)
     @access_link = access_link(request.token)
     @requester_name = request.user.name
-    @roles = request.roles.join(',')
-    @inventory_name = request.tool.name
+    @roles = request.role
+    @inventory_name = request.inventory.name
     mail(to: email)
   end
 

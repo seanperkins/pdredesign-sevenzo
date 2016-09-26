@@ -41,7 +41,7 @@ class Analysis < ActiveRecord::Base
   has_many :members, class_name: 'AnalysisMember'
   has_many :participants, -> { where(role: 'participant') }, class_name: 'AnalysisMember'
   has_many :facilitators, -> { where(role: 'facilitator') }, class_name: 'AnalysisMember'
-  has_many :access_requests, as: :tool
+  has_many :access_requests, class_name: 'AnalysisAccessRequest'
   has_one :response, as: :responder, dependent: :destroy
 
   after_create :set_members_from_inventory, :add_facilitator_owner

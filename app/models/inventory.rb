@@ -22,7 +22,7 @@ class Inventory < ActiveRecord::Base
 
   has_many :product_entries
   has_many :data_entries
-  has_many :access_requests, as: :tool
+  has_many :access_requests, class_name: 'InventoryAccessRequest'
   has_many :messages, as: :tool
 
   belongs_to :district
