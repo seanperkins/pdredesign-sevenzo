@@ -49,11 +49,15 @@ class V1::ToolMembersController < ApplicationController
     end
   end
 
+  def request_access
+
+  end
+
+  private
   def member_is_owner(tool_member)
     tool_member.role == ToolMember.member_roles[:facilitator] && MembershipHelper.owner_on_instance?(tool_member, tool_member.user)
   end
 
-  private
   def tool_member_params
     params.require(:tool_member).permit(:tool_type, :tool_id, :role, :user_id)
   end

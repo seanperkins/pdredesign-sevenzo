@@ -144,6 +144,7 @@ PdrServer::Application.routes.draw do
     #Tool Members Routes
     post 'tool_members', to: 'tool_members#create'
     get 'tool_members/tool_type/:tool_type/tool_id/:tool_id', to: 'tool_members#show'
+    post 'tool_members/tool_type/:tool_type/tool_id/:tool_id/request_access', to: 'tool_members#request_access'
     delete 'tool_members/:id', to: 'tool_members#destroy'
 
     get '/analyses', to: 'analyses#all'
