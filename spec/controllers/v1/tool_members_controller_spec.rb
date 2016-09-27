@@ -490,6 +490,10 @@ describe V1::ToolMembersController do
             create(:tool_member, :as_facilitator, tool: tool, user: user)
           }
 
+          let(:roles) {
+            MembershipHelper.humanize_roles(ToolMember.where(tool: tool, user: user).select(:role).map(&:role))
+          }
+
           before(:each) do
             sign_in user
             post :request_access, tool_type: tool.class.to_s, tool_id: tool.id, access_request: {roles: [0, 1]}
@@ -500,7 +504,7 @@ describe V1::ToolMembersController do
           }
 
           it {
-            expect(json['errors']['base'][0]).to eq "Access for #{user.email} for #{tool.name} already exists at these levels: facilitator, participant"
+            expect(json['errors']['base'][0]).to eq "Access for #{user.email} for #{tool.name} already exists at these levels: #{roles.join(', ')}"
           }
         end
       end
