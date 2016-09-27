@@ -506,4 +506,44 @@ describe V1::ToolMembersController do
       end
     end
   end
+
+  describe 'POST #grant' do
+    context 'when the user is not authenticated' do
+      before(:each) do
+        sign_out :user
+
+        post :grant, tool_type: 'Foo', tool_id: -1, id: -1
+      end
+
+      it {
+        is_expected.to respond_with(:unauthorized)
+      }
+    end
+
+    context 'when the user is authenticated' do
+      let(:user) {
+        create(:user)
+      }
+
+      let(:tool) {
+        create(:assessment, :with_owner)
+      }
+
+      context 'when the user is a participant on the tool' do
+
+        let!(:tool_member) {
+          create(:tool_member, :as_participant, tool: tool, user: user)
+        }
+
+        before(:each) do
+          sign_in user
+          post :grant, tool_type: tool.class.to_s, tool_id: tool.id, id: -1
+        end
+
+        it {
+          is_expected.to respond_with(:forbidden)
+        }
+      end
+    end
+  end
 end

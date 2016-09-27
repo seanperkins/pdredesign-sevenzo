@@ -3,7 +3,7 @@ class V1::ToolMembersController < ApplicationController
 
   before_action :authenticate_user!
   before_action :normalize_strong_param_tool_type!, only: [:create]
-  before_action :normalize_path_param_tool_type!, only: [:show, :request_access]
+  before_action :normalize_path_param_tool_type!, only: [:show, :request_access, :grant, :deny]
 
   def create
     tool_member = ToolMember.create(tool_member_params)
@@ -50,8 +50,6 @@ class V1::ToolMembersController < ApplicationController
     end
   end
 
-  authority_actions request_access: :read
-
   def request_access
     @request = AccessRequest.create(
         user: current_user,
@@ -72,6 +70,40 @@ class V1::ToolMembersController < ApplicationController
     @errors = @request.errors
     render 'v1/shared/errors', errors: @errors, status: :bad_request
   end
+
+  def grant
+    tool_member = ToolMember.find_by(tool_type: params[:tool_type],
+                                     tool_id: params[:tool_id],
+                                     user: current_user)
+    authorize_action_for tool_member
+
+    access_request = AccessRequest.includes(:tool).where(id: params[:id])
+    if access_request.size == 0
+      return render nothing: true, status: :not_found
+    end
+
+    @candidates = []
+
+    access_request.roles.each { |role|
+      @candidates.push(ToolMember.new(tool: access_request.tool,
+                                      role: MembershipHelper.dehumanize_role(role),
+                                      user: access_request.user))
+    }
+
+    access_request.destroy
+    render 'v1/tool_members/grant', candidates: @candidates
+  end
+
+  authority_actions grant: :create
+
+  def deny
+    tool_member = ToolMember.find_by(tool_type: params[:tool_type],
+                                     tool_id: params[:tool_id],
+                                     user: current_user)
+    authorize_action_for tool_member
+  end
+
+  authority_actions deny: :create
 
   private
   def member_is_owner(tool_member)

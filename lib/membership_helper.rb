@@ -41,7 +41,11 @@ module MembershipHelper
     role_values.uniq.collect { |role| MembershipHelper.humanize_role(role.to_i) }
   end
 
+  def self.dehumanize_role(role_value)
+    ToolMember.member_roles[role_value]
+  end
+
   def self.dehumanize_roles(role_values)
-    role_values.uniq.collect { |role| ToolMember.member_roles[role] }
+    role_values.uniq.collect { |role| MembershipHelper.dehumanize_role(role) }
   end
 end

@@ -146,6 +146,8 @@ PdrServer::Application.routes.draw do
     get 'tool_members/tool_type/:tool_type/tool_id/:tool_id', to: 'tool_members#show'
     post 'tool_members/tool_type/:tool_type/tool_id/:tool_id/request_access', to: 'tool_members#request_access'
     delete 'tool_members/:id', to: 'tool_members#destroy'
+    post 'tool_members/tool_type/:tool_type/tool_id/:tool_id/access_request/:id/grant', to: 'tool_members#grant'
+    post 'tool_members/tool_type/:tool_type/tool_id/:tool_id/access_request/:id/deny', to: 'tool_members#deny'
 
     get '/analyses', to: 'analyses#all'
 
