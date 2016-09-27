@@ -44,6 +44,7 @@ class V1::AssessmentsController < ApplicationController
     assign_current_user_as_participant(@assessment) if current_user.district_member?
 
     if @assessment.save
+      ToolMember.create!(user: @assessment.user, tool: @assessment, role: ToolMember.member_roles[:facilitator])
       render :show
     else
       @errors = @assessment.errors

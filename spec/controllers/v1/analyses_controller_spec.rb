@@ -51,6 +51,10 @@ describe V1::AnalysesController do
       expect(json['id']).not_to be_nil
       expect(Analysis.where(id:json['id']).first).not_to be_nil
       expect(Analysis.where(id:json['id']).first.owner).to eq inventory.owner
+      expect(ToolMember.find_by(tool: assigns(:analysis),
+                                user: inventory.owner,
+                                role: ToolMember.member_roles[:facilitator]
+      )).to_not be_nil
     end
   end
 

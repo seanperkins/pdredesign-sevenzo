@@ -26,6 +26,7 @@ class V1::AnalysesController < ApplicationController
     @analysis.owner = current_user
 
     if @analysis.save
+      ToolMember.create!(user: @analysis.owner, tool: @analysis, role: ToolMember.member_roles[:facilitator])
       render template: 'v1/analyses/show', status: 201
     else
       render_error
