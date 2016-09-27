@@ -33,5 +33,13 @@ FactoryGirl.define do
     trait :with_both_roles do
       roles { [:participant, :facilitator] }
     end
+
+    trait :for_inventory do
+      association :tool, factory: [:inventory, :with_members]
+    end
+
+    trait :for_analysis do
+      association :tool, factory: [:analysis, :with_participants]
+    end
   end
 end
