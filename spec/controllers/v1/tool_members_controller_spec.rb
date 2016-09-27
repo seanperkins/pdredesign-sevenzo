@@ -16,7 +16,7 @@ describe V1::ToolMembersController do
       end
 
       it {
-        is_expected.to respond_with(:unauthorized)
+        is_expected.to respond_with :unauthorized
       }
     end
 
@@ -48,7 +48,7 @@ describe V1::ToolMembersController do
         end
 
         it {
-          is_expected.to respond_with(:forbidden)
+          is_expected.to respond_with :forbidden
         }
       end
 
@@ -77,7 +77,7 @@ describe V1::ToolMembersController do
       end
 
       it {
-        is_expected.to respond_with(:unauthorized)
+        is_expected.to respond_with :unauthorized
       }
     end
 
@@ -101,7 +101,7 @@ describe V1::ToolMembersController do
         end
 
         it {
-          is_expected.to respond_with(:ok)
+          is_expected.to respond_with :ok
         }
 
         it {
@@ -121,7 +121,7 @@ describe V1::ToolMembersController do
           end
 
           it {
-            is_expected.to respond_with(:ok)
+            is_expected.to respond_with :ok
           }
 
           it {
@@ -141,7 +141,7 @@ describe V1::ToolMembersController do
             end
 
             it {
-              is_expected.to respond_with(:ok)
+              is_expected.to respond_with :ok
             }
 
             it {
@@ -164,7 +164,7 @@ describe V1::ToolMembersController do
             end
 
             it {
-              is_expected.to respond_with(:ok)
+              is_expected.to respond_with :ok
             }
 
             it {
@@ -185,7 +185,7 @@ describe V1::ToolMembersController do
       end
 
       it {
-        is_expected.to respond_with(:unauthorized)
+        is_expected.to respond_with :unauthorized
       }
     end
 
@@ -213,7 +213,7 @@ describe V1::ToolMembersController do
         end
 
         it {
-          is_expected.to respond_with(:forbidden)
+          is_expected.to respond_with :forbidden
         }
       end
 
@@ -332,7 +332,7 @@ describe V1::ToolMembersController do
       end
 
       it {
-        is_expected.to respond_with(:unauthorized)
+        is_expected.to respond_with :unauthorized
       }
     end
 
@@ -516,7 +516,7 @@ describe V1::ToolMembersController do
       end
 
       it {
-        is_expected.to respond_with(:unauthorized)
+        is_expected.to respond_with :unauthorized
       }
     end
 
@@ -530,7 +530,6 @@ describe V1::ToolMembersController do
       }
 
       context 'when the user is a participant on the tool' do
-
         let!(:tool_member) {
           create(:tool_member, :as_participant, tool: tool, user: user)
         }
@@ -541,8 +540,172 @@ describe V1::ToolMembersController do
         end
 
         it {
-          is_expected.to respond_with(:forbidden)
+          is_expected.to respond_with :forbidden
         }
+      end
+
+      context 'when the user is a facilitator on the tool' do
+        let!(:tool_member) {
+          create(:tool_member, :as_facilitator, tool: tool, user: user)
+        }
+
+        context 'when no access request exists' do
+          before(:each) do
+            sign_in user
+            post :grant, tool_type: tool.class.to_s, tool_id: tool.id, id: 1
+          end
+
+          it {
+            is_expected.to respond_with :not_found
+          }
+        end
+
+        context 'when an access request exists' do
+          context 'when the access request contains only a facilitator role' do
+            let(:access_request) {
+              create(:access_request, :with_facilitator_role, tool: tool)
+            }
+
+            let!(:access_request_id) {
+              access_request.id
+            }
+            
+            before(:each) do
+              sign_in user
+              post :grant, tool_type: tool.class.to_s, tool_id: tool.id, id: access_request.id
+            end
+            
+            it {
+              is_expected.to respond_with :ok
+            }
+
+            it {
+              expect(json.size).to eq 1
+            }
+
+            it {
+              expect(json[0]['tool_id']).to eq tool.id
+            }
+
+            it {
+              expect(json[0]['tool_type']).to eq tool.class.to_s
+            }
+
+            it {
+              expect(json[0]['role']).to eq ToolMember.member_roles[:facilitator]
+            }
+
+            it {
+              expect(json[0]['user_id']).to eq access_request.user.id
+            }
+
+            it {
+              expect(AccessRequest.find_by(id: access_request_id)).to be nil
+            }
+          end
+
+          context 'when the access request contains only a participant role' do
+            let(:access_request) {
+              create(:access_request, :with_participant_role, tool: tool)
+            }
+
+            let!(:access_request_id) {
+              access_request.id
+            }
+
+            before(:each) do
+              sign_in user
+              post :grant, tool_type: tool.class.to_s, tool_id: tool.id, id: access_request.id
+            end
+
+            it {
+              is_expected.to respond_with :ok
+            }
+
+            it {
+              expect(json.size).to eq 1
+            }
+
+            it {
+              expect(json[0]['tool_id']).to eq tool.id
+            }
+
+            it {
+              expect(json[0]['tool_type']).to eq tool.class.to_s
+            }
+
+            it {
+              expect(json[0]['role']).to eq ToolMember.member_roles[:participant]
+            }
+
+            it {
+              expect(json[0]['user_id']).to eq access_request.user.id
+            }
+
+            it {
+              expect(AccessRequest.find_by(id: access_request_id)).to be nil
+            }
+          end
+
+          context 'when the access request contains both a facilitator and a participant role' do
+            let(:access_request) {
+              create(:access_request, :with_both_roles, tool: tool)
+            }
+
+            let!(:access_request_id) {
+              access_request.id
+            }
+
+            before(:each) do
+              sign_in user
+              post :grant, tool_type: tool.class.to_s, tool_id: tool.id, id: access_request.id
+            end
+
+            it {
+              is_expected.to respond_with :ok
+            }
+
+            it {
+              expect(json.size).to eq 2
+            }
+
+            it {
+              expect(json[0]['tool_id']).to eq tool.id
+            }
+
+            it {
+              expect(json[0]['tool_type']).to eq tool.class.to_s
+            }
+
+            it {
+              expect(json[0]['role']).to eq ToolMember.member_roles[:participant]
+            }
+
+            it {
+              expect(json[0]['user_id']).to eq access_request.user.id
+            }
+
+            it {
+              expect(json[1]['tool_id']).to eq tool.id
+            }
+
+            it {
+              expect(json[1]['tool_type']).to eq tool.class.to_s
+            }
+
+            it {
+              expect(json[1]['role']).to eq ToolMember.member_roles[:facilitator]
+            }
+
+            it {
+              expect(json[1]['user_id']).to eq access_request.user.id
+            }
+
+            it {
+              expect(AccessRequest.find_by(id: access_request_id)).to be nil
+            }
+          end
+        end
       end
     end
   end

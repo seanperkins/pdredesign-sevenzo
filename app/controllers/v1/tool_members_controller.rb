@@ -77,10 +77,12 @@ class V1::ToolMembersController < ApplicationController
                                      user: current_user)
     authorize_action_for tool_member
 
-    access_request = AccessRequest.includes(:tool).where(id: params[:id])
-    if access_request.size == 0
+    access_request_query = AccessRequest.includes(:tool).where(id: params[:id])
+    if access_request_query.size == 0
       return render nothing: true, status: :not_found
     end
+
+    access_request = access_request_query.first
 
     @candidates = []
 

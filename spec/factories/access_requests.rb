@@ -25,5 +25,13 @@ FactoryGirl.define do
     trait :with_participant_role do
       roles { [:participant] }
     end
+
+    trait :with_facilitator_role do
+      roles { [:facilitator] }
+    end
+
+    trait :with_both_roles do
+      roles { [:participant, :facilitator] }
+    end
   end
 end
