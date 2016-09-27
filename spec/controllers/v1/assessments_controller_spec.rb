@@ -448,6 +448,12 @@ describe V1::AssessmentsController do
           assessment = Assessment.find(json['id'])
           expect(assessment.participant?(facilitator)).to be true
         }
+
+        it {
+          expect(ToolMember.find_by(tool: assigns(:assessment),
+                                    user: facilitator,
+                                    role: ToolMember.member_roles[:facilitator])).to_not be_nil
+        }
       end
 
       context 'when user is a district member' do
