@@ -9,6 +9,7 @@ class V1::ToolMembersController < ApplicationController
     tool_member = ToolMember.create(tool_member_params)
     authorize_action_for tool_member
     if tool_member.save
+      send_access_granted_email(tool_member)
       render nothing: true, status: :created
     else
       @errors = tool_member.errors
@@ -121,11 +122,11 @@ class V1::ToolMembersController < ApplicationController
 
     case tool_member.tool.class.to_s
       when 'Assessment'
-        AccessGrantedNotificationWorker.perform_async(*worker_args)
+        AccessGrantedNotificationWorker.send(:perform_async, worker_args)
       when 'Inventory'
-        InventoryAccessGrantedNotificationWorker.perform_async(*worker_args)
+        InventoryAccessGrantedNotificationWorker.send(:perform_async, worker_args)
       when 'Analysis'
-        AnalysisAccessGrantedNotificationWorker.perform_async(*worker_args)
+        AnalysisAccessGrantedNotificationWorker.send(:perform_async, worker_args)
       else
         raise "No access granted notification worker for #{tool_member.tool_type} defined!"
     end

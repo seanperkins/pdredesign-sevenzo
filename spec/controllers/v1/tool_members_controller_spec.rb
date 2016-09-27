@@ -1,4 +1,5 @@
 require 'spec_helper'
+require_relative './tool_members_create_mail_concern'
 
 describe V1::ToolMembersController do
   render_views
@@ -52,78 +53,16 @@ describe V1::ToolMembersController do
       end
 
       context 'when the user is a facilitator on the tool' do
-        let(:user) {
-          create(:user)
-        }
-
-        let(:candidate) {
-          create(:user)
-        }
-
-        let(:tool) {
-          create(:assessment)
-        }
-
-        let!(:tool_member) {
-          create(:tool_member, :as_facilitator, tool: tool, user: user)
-        }
-
-        context 'when the entity to be created is valid (uppercase tool type)' do
-          before(:each) do
-            sign_in user
-            post :create, tool_member: {tool_type: 'Assessment',
-                                        tool_id: tool.id,
-                                        role: ToolMember.member_roles[:participant],
-                                        user_id: candidate.id}
-          end
-
-          it {
-            is_expected.to respond_with(:created)
-          }
-
-          it {
-            expect(ToolMember.where(tool: tool, user: candidate).size).to eq 1
-          }
+        context 'when the tool is assessment' do
+          it_behaves_like 'a created tool member with a specific tool', :assessment
         end
 
-        context 'when the entity to be created is valid (lowercase tool type)' do
-          before(:each) do
-            sign_in user
-            post :create, tool_member: {tool_type: 'assessment',
-                                        tool_id: tool.id,
-                                        role: ToolMember.member_roles[:participant],
-                                        user_id: candidate.id}
-          end
-
-          it {
-            is_expected.to respond_with(:created)
-          }
-
-          it {
-            expect(ToolMember.where(tool: tool, user: candidate).size).to eq 1
-          }
+        context 'when the tool is inventory' do
+          it_behaves_like 'a created tool member with a specific tool', :inventory
         end
 
-        context 'when the entity to be created already exists' do
-          let!(:preexisting_candidate_membership) {
-            create(:tool_member, :as_participant, tool: tool, user: candidate)
-          }
-
-          before(:each) do
-            sign_in user
-            post :create, tool_member: {tool_type: 'Assessment',
-                                        tool_id: tool.id,
-                                        role: ToolMember.member_roles[:participant],
-                                        user_id: candidate.id}
-          end
-
-          it {
-            is_expected.to respond_with :bad_request
-          }
-
-          it {
-            expect(json['errors']['role'][0]).to eq 'has already been taken'
-          }
+        context 'when the tool is analysis' do
+          it_behaves_like 'a created tool member with a specific tool', :analysis
         end
       end
     end
