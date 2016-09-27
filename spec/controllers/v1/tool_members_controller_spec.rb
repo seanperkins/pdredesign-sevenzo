@@ -470,7 +470,34 @@ describe V1::ToolMembersController do
           it {
             expect(json['errors']['base'][0]).to eq "Access for #{user.email} for #{tool.name} already exists at these levels: participant"
           }
+        end
+
+        context 'when the user is already a participant but not a facilitator' do
+          let!(:tool_member) {
+            create(:tool_member, :as_participant, tool: tool, user: user)
+          }
+
+          before(:each) do
+            sign_in user
+            post :request_access, tool_type: tool.class.to_s, tool_id: tool.id, access_request: {roles: [0]}
           end
+
+          it {
+            is_expected.to respond_with :created
+          }
+
+          it {
+            expect(ToolMemberAccessRequestNotificationWorker.jobs.size).to eq 1
+          }
+
+          it {
+            expect(ToolMemberAccessRequestNotificationWorker.jobs.first['args'][0]).to eq assigns(:request).id
+          }
+
+          it {
+            expect(assigns[:request].roles).to eq ['facilitator']
+          }
+        end
 
         context 'when the user is already a facilitator' do
           let!(:tool_member) {
@@ -488,6 +515,33 @@ describe V1::ToolMembersController do
 
           it {
             expect(json['errors']['base'][0]).to eq "Access for #{user.email} for #{tool.name} already exists at these levels: facilitator"
+          }
+        end
+
+        context 'when the user is already a facilitator but not a participant' do
+          let!(:tool_member) {
+            create(:tool_member, :as_facilitator, tool: tool, user: user)
+          }
+
+          before(:each) do
+            sign_in user
+            post :request_access, tool_type: tool.class.to_s, tool_id: tool.id, access_request: {roles: [1]}
+          end
+
+          it {
+            is_expected.to respond_with :created
+          }
+
+          it {
+            expect(ToolMemberAccessRequestNotificationWorker.jobs.size).to eq 1
+          }
+
+          it {
+            expect(ToolMemberAccessRequestNotificationWorker.jobs.first['args'][0]).to eq assigns(:request).id
+          }
+
+          it {
+            expect(assigns[:request].roles).to eq ['participant']
           }
         end
 

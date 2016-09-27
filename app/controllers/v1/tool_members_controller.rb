@@ -74,7 +74,8 @@ class V1::ToolMembersController < ApplicationController
 
   private
   def member_is_owner(tool_member)
-    tool_member.role == ToolMember.member_roles[:facilitator] && MembershipHelper.owner_on_instance?(tool_member, tool_member.user)
+    tool_member.role == ToolMember.member_roles[:facilitator] &&
+        MembershipHelper.owner_on_instance?(tool_member, tool_member.user)
   end
 
   def tool_member_params
@@ -94,7 +95,9 @@ class V1::ToolMembersController < ApplicationController
   end
 
   def validate_access_request
-    tool_member_query = ToolMember.where(tool: @request.tool, user: @request.user, role: MembershipHelper.dehumanize_roles(@request.roles))
+    tool_member_query = ToolMember.where(tool: @request.tool,
+                                         user: @request.user,
+                                         role: MembershipHelper.dehumanize_roles(@request.roles))
     unless tool_member_query.empty?
       roles = MembershipHelper.humanize_roles(tool_member_query.map(&:role))
       @request.errors.add(:base, "Access for #{@request.user.email} for #{@request.tool.name} already exists at these levels: #{roles.join(', ')}")
@@ -112,7 +115,9 @@ class V1::ToolMembersController < ApplicationController
   end
 
   def send_access_granted_email(tool_member)
-    worker_args = [tool_member.tool_id, tool_member.user_id, MembershipHelper.humanize_role(tool_member.role)]
+    worker_args = [tool_member.tool_id,
+                   tool_member.user_id,
+                   MembershipHelper.humanize_role(tool_member.role)]
 
     case tool_member.tool.class.to_s
       when 'Assessment'
