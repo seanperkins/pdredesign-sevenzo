@@ -10,6 +10,8 @@
 #  reminded_at :datetime
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
+#  response_id :integer
+#  id          :integer          not null, primary key
 #
 
 FactoryGirl.define do
@@ -22,6 +24,10 @@ FactoryGirl.define do
 
     trait :as_inventory_member do
       association :tool, factory: :inventory
+    end
+
+    trait :as_assessment_member do
+      association :tool, factory: :assessment
     end
 
     trait :as_facilitator do

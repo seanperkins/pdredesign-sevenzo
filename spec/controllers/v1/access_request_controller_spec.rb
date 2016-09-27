@@ -50,7 +50,7 @@ describe V1::AccessRequestController do
 
         it {
           access_request = AccessRequest.find(json["id"])
-          expect(access_request.assessment_id).to eq(assessment.id)
+          expect(access_request.tool_id).to eq(assessment.id)
         }
 
         it {

@@ -1,5 +1,5 @@
 class InitialToolMembersDataMigration < ActiveRecord::Migration
-  def change
+  def up
     # Migrate over Analyses
     AnalysisMember.all.each do |analysis_member|
       member = ToolMember.create(tool: analysis_member.analysis,
@@ -54,5 +54,9 @@ class InitialToolMembersDataMigration < ActiveRecord::Migration
         member.save
       end
     end
+  end
+
+  def down
+    ToolMember.all.delete_all
   end
 end

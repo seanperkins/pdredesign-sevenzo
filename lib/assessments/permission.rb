@@ -14,11 +14,11 @@ module Assessments
     end
 
     def requested
-      AccessRequest.where(assessment_id: assessment.id)
+      AccessRequest.where(tool: assessment)
     end
 
     def get_access_request(user)
-      AccessRequest.find_by(assessment_id: assessment.id, user_id: user.id)
+      AccessRequest.find_by(tool: assessment, user_id: user.id)
     end
 
     def get_level(user)
@@ -61,7 +61,7 @@ module Assessments
     def accept_permission_requested(user)
       ar = get_access_request(user)
       grant_access(ar)
-      notify_user_for_access_granted(ar.assessment, ar.user, ar.roles.first)
+      notify_user_for_access_granted(ar.tool, ar.user, ar.roles.first)
     end
 
     def deny(user)
@@ -91,8 +91,11 @@ module Assessments
 
       return AccessRequest.create(
           {
-              roles: roles, token: SecureRandom.hex[0..9],
-              user: user, assessment_id: assessment_id
+              roles: roles,
+              token: SecureRandom.hex[0..9],
+              user: user,
+              tool_id: assessment_id,
+              tool_type: Assessment.to_s
           })
     end
 
