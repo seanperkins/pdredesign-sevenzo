@@ -35,7 +35,17 @@ FactoryGirl.define do
       end
 
       after(:build) do |analysis, evaluator|
-        create_list(:analysis_member, evaluator.participants, :as_participant, analysis: analysis)
+        create_list(:tool_member, evaluator.participants, :as_participant, tool: analysis)
+      end
+    end
+
+    trait :with_facilitators do
+      transient do
+        facilitators 1
+      end
+
+      after(:build) do |analysis, evaluator|
+        create_list(:tool_member, evaluator.facilitators, :as_facilitator, tool: analysis)
       end
     end
   end

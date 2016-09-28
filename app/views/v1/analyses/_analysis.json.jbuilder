@@ -13,7 +13,7 @@ json.updated_at analysis.updated_at
 json.assigned_at analysis.assigned_at
 
 json.status analysis.status
-json.has_access analysis.member?(user: current_user) || analysis.owner == current_user if current_user
+json.has_access analysis.member?(current_user) || analysis.owner == current_user if current_user
 json.inventory_id analysis.inventory_id
 json.message analysis.message || default_analysis_message if current_user
 json.is_facilitator analysis.facilitator?(current_user)

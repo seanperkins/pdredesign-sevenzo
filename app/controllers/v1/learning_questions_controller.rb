@@ -86,7 +86,7 @@ class V1::LearningQuestionsController < ApplicationController
       when 'Inventory'
         @tool.member?(user: current_user)
       when 'Analysis'
-        @tool.inventory.member?(user: current_user)
+        @tool.member?(current_user)
     end
   end
 end

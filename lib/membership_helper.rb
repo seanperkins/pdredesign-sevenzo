@@ -7,6 +7,16 @@ module MembershipHelper
     ToolMember.where(tool: tool, user: user, role: ToolMember.member_roles[:facilitator]).exists?
   end
 
+  def self.member?(tool, user)
+    ToolMember.where(tool: tool, user: user).exists?
+  end
+
+  def self.network_partner?(tool, user)
+    ToolMember.includes(:user)
+        .where(tool: tool, user: user, users: {role: 'network_partner'})
+        .exists?
+  end
+
   def self.facilitator_on_instance?(tool_member, user)
     tool_member.user == user && tool_member.role == ToolMember.member_roles[:facilitator]
   end

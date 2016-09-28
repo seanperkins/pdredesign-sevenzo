@@ -112,11 +112,7 @@ PdrServer::Application.routes.draw do
       resources :analyses, only: [:index, :show, :create, :update] do
         put '/', to: "analyses#update", on: :collection
 
-        resources :participants, controller: 'analysis_participants', only: [:create, :destroy, :index] do
-          get :all, on: :collection
-        end
         resources :invitations, controller: 'analysis_invitations', only: [:create]
-        resource :permissions, controller: 'analysis_permissions', only: [:show, :update]
         resource :reminders, controller: 'analysis_reminders', only: [:create]
         resources :learning_questions, only: [:index, :create, :update, :destroy] do
           get :exists, on: :collection

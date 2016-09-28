@@ -29,11 +29,11 @@ describe V1::AnalysisConsensusController do
         }
 
         let(:analysis_member) {
-          create(:analysis_member, :as_facilitator, user: user)
+          analysis.facilitators.first
         }
 
         let(:analysis) {
-          create(:analysis, inventory: inventory, members: [analysis_member], rubric: create(:rubric, :as_analysis_rubric))
+          create(:analysis, :with_facilitators, inventory: inventory, rubric: create(:rubric, :as_analysis_rubric))
         }
 
         before(:each) do
@@ -57,7 +57,7 @@ describe V1::AnalysisConsensusController do
         }
 
         let(:analysis_member) {
-          create(:analysis_member, :as_facilitator, user: user)
+          analysis.facilitators.first
         }
 
         let(:rubric) {
@@ -65,7 +65,7 @@ describe V1::AnalysisConsensusController do
         }
 
         let(:analysis) {
-          create(:analysis, inventory: inventory, members: [analysis_member], rubric: rubric)
+          create(:analysis, :with_facilitators, inventory: inventory, rubric: rubric)
         }
 
         let!(:response) {
@@ -107,11 +107,11 @@ describe V1::AnalysisConsensusController do
         }
 
         let(:analysis_member) {
-          create(:analysis_member, :as_facilitator, user: user)
+          analysis.facilitators.first
         }
 
         let(:analysis) {
-          create(:analysis, inventory: inventory, members: [analysis_member], rubric: create(:rubric, :as_analysis_rubric))
+          create(:analysis, :with_facilitators, inventory: inventory, rubric: create(:rubric, :as_analysis_rubric))
         }
 
         before(:each) do
@@ -131,7 +131,7 @@ describe V1::AnalysisConsensusController do
         }
 
         let(:analysis_member) {
-          create(:analysis_member, :as_facilitator, user: user)
+          analysis.facilitators.first
         }
 
         let(:rubric) {
@@ -139,7 +139,7 @@ describe V1::AnalysisConsensusController do
         }
 
         let(:analysis) {
-          create(:analysis, inventory: inventory, members: [analysis_member], rubric: rubric)
+          create(:analysis, :with_facilitators, inventory: inventory, rubric: rubric)
         }
 
         let(:preexisting_response) {
@@ -180,7 +180,7 @@ describe V1::AnalysisConsensusController do
         }
 
         let(:analysis_member) {
-          create(:analysis_member, :as_facilitator, user: user)
+          analysis.facilitators.first
         }
 
         let(:rubric) {
@@ -188,7 +188,7 @@ describe V1::AnalysisConsensusController do
         }
 
         let(:analysis) {
-          create(:analysis, inventory: inventory, members: [analysis_member], rubric: rubric)
+          create(:analysis, :with_facilitators, inventory: inventory, rubric: rubric)
         }
 
         let(:preexisting_response) {
@@ -212,7 +212,7 @@ describe V1::AnalysisConsensusController do
         }
 
         let(:analysis_member) {
-          create(:analysis_member, :as_facilitator, user: user)
+          analysis.facilitators.first
         }
 
         let(:rubric) {
@@ -220,7 +220,7 @@ describe V1::AnalysisConsensusController do
         }
 
         let(:analysis) {
-          create(:analysis, inventory: inventory, members: [analysis_member], rubric: rubric)
+          create(:analysis, :with_facilitators, inventory: inventory, rubric: rubric)
         }
 
         let(:preexisting_response) {

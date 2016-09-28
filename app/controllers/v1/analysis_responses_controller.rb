@@ -26,11 +26,6 @@ class V1::AnalysisResponsesController < ApplicationController
   end
 
   private
-  def participant_from_user(user = current_user)
-    AnalysisMember.where(user_id: user.id,
-                         analysis_id: params[:analysis_id]).first
-  end
-
   def analysis
     Analysis.where(id: params[:analysis_id]).first
   end

@@ -19,8 +19,8 @@
 class Analysis < ActiveRecord::Base
   include Authority::Abilities
   include MessageMigrationConcern
-
-  self.authorizer_name = 'AnalysisAuthorizer'
+  include MembershipConcern
+  include ToolOwnerMembershipConcern
 
   belongs_to :inventory
   belongs_to :rubric
@@ -38,33 +38,21 @@ class Analysis < ActiveRecord::Base
   validates :message, presence: true, if: "assigned_at.present?"
 
   has_many :messages, as: :tool
-  has_many :members, class_name: 'AnalysisMember'
-  has_many :participants, -> { where(role: 'participant') }, class_name: 'AnalysisMember'
-  has_many :facilitators, -> { where(role: 'facilitator') }, class_name: 'AnalysisMember'
-  has_many :access_requests, class_name: 'AnalysisAccessRequest'
+  has_many :tool_members, as: :tool
+  has_many :participants, -> { where(tool_type: 'Analysis', role: ToolMember.member_roles[:participant]) }, foreign_key: :tool_id, class_name: 'ToolMember'
+  has_many :facilitators, -> { where(tool_type: 'Analysis', role: ToolMember.member_roles[:facilitator]) }, foreign_key: :tool_id, class_name: 'ToolMember'
+  has_many :access_requests, as: :tool
   has_one :response, as: :responder, dependent: :destroy
 
-  after_create :set_members_from_inventory, :add_facilitator_owner
-  before_save :set_assigned_at, :ensure_share_token
+  after_create :set_members_from_inventory,
+               :add_facilitator_owner
 
-  def facilitator?(user)
-    return false if user.nil?
-    facilitators.exists?(user_id: user.id) || owner.id == user.id
-  end
-
-  def participant?(user)
-    return false if user.nil?
-    participants.exists?(user_id: user.id)
-  end
-
-  def member?(user:)
-    return false if user.nil?
-    self.members.where(user: user).exists?
-  end
+  before_save :set_assigned_at,
+              :ensure_share_token
 
   def team_roles_for_participants
-    self.members
-        .joins(:user)
+    self.tool_members
+        .includes(:user)
         .pluck('users.team_role')
         .uniq
         .compact
@@ -86,11 +74,6 @@ class Analysis < ActiveRecord::Base
   def pending_requests?(user)
     return false if user.nil?
     access_requests.exists?(user: user)
-  end
-
-  def network_partner?(user)
-    return false if user.nil?
-    self.members.joins(:user).exists?(user_id: user.id, users: {role: 'network_partner'})
   end
 
   private

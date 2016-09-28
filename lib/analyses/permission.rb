@@ -15,10 +15,10 @@ module Analyses
     def role=(role)
       return unless ROLES.include? role
 
-      member = analysis.members.find_or_create_by(user: user)
-      return if member.role == role
+      member = analysis.tool_members.find_or_create_by(user: user)
+      return if member.role == ToolMember.member_roles[role]
 
-      member.role = role
+      member.role = MembershipHelper.dehumanize_role(role)
       member.save!
       notify_user_for_access_granted(role: role)
       reset_member
