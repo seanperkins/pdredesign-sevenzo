@@ -37,10 +37,10 @@ class V1::AnalysisInvitationsController < ApplicationController
   end
 
   def inventory
-    current_user.inventories.find(params[:inventory_id])
+    Inventory.find_by(id: params[:inventory_id])
   end
 
   def analysis
-    inventory.analyses.find(params[:analysis_id])
+    inventory.analyses.find_by(id: params[:analysis_id])
   end
 end

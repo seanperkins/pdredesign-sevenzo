@@ -21,14 +21,14 @@ class AnalysisAuthorizer < ApplicationAuthorizer
   end
 
   def is_facilitator_of_inventory?(user)
-    resource.inventory.try(:facilitator?, user: user)
+    resource.inventory.try(:facilitator?, user)
   end
 
   def is_participant_of_inventory?(user)
-    resource.inventory.try(:participant?, user: user)
+    resource.inventory.try(:participant?, user)
   end
 
   def is_owner_of_inventory?(user)
-    resource.inventory.try(:owner?, user: user)
+    resource.inventory.try(:owner?, user)
   end
 end

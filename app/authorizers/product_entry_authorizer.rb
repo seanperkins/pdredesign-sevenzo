@@ -17,14 +17,14 @@ class ProductEntryAuthorizer < ApplicationAuthorizer
 
   def restorable_by?(user)
     resource.inventory.try(:owner?, user: user) ||
-        resource.inventory.try(:facilitator?, user: user)
+        resource.inventory.try(:facilitator?, user)
   end
 
   private
   def is_owner_or_member_of_inventory?(user)
-    resource.inventory.try(:owner?, user: user) ||
-        resource.inventory.try(:participant?, user: user) ||
-        resource.inventory.try(:facilitator?, user: user) ||
-        resource.inventory.try(:member?, user: user)
+    resource.inventory.try(:owner?, user) ||
+        resource.inventory.try(:participant?, user) ||
+        resource.inventory.try(:facilitator?, user) ||
+        resource.inventory.try(:member?, user)
   end
 end

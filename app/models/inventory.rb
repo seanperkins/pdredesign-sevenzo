@@ -17,12 +17,14 @@
 class Inventory < ActiveRecord::Base
   include Authority::Abilities
   include MessageMigrationConcern
+  include MembershipConcern
+  include ToolOwnerMembershipConcern
 
   default_scope { order(created_at: :desc) }
 
   has_many :product_entries
   has_many :data_entries
-  has_many :access_requests, class_name: 'InventoryAccessRequest'
+  has_many :access_requests, as: :tool
   has_many :messages, as: :tool
 
   belongs_to :district
@@ -47,33 +49,25 @@ class Inventory < ActiveRecord::Base
   accepts_nested_attributes_for :product_entries
   accepts_nested_attributes_for :data_entries
 
-  has_many :members, class_name: 'InventoryMember'
-  has_many :participants, -> { where(role: 'participant') }, class_name: 'InventoryMember'
-  has_many :facilitators, -> { where(role: 'facilitator') }, class_name: 'InventoryMember'
+  has_many :tool_members, as: :tool
+
+  has_many :participants, -> {
+    where(tool_type: 'Inventory',
+          role: ToolMember.member_roles[:participant])
+  }, foreign_key: :tool_id, class_name: 'ToolMember'
+
+  has_many :facilitators, -> {
+    where(tool_type: 'Inventory',
+          role: ToolMember.member_roles[:facilitator])
+  }, foreign_key: :tool_id, class_name: 'ToolMember'
 
   attr_accessor :assign
 
   before_save :set_assigned_at
   after_create :add_facilitator_owner
 
-  def facilitator?(user:)
-    facilitators.where(user: user).exists?
-  end
-
-  def participant?(user:)
-    participants.where(user: user).exists?
-  end
-
-  def owner?(user:)
+  def owner?(user)
     self.owner_id == user.id
-  end
-
-  def member?(user:)
-    self.members.where(user: user).exists?
-  end
-
-  def network_partner?(user)
-    self.members.joins(:user).where(user_id: user.id, users: {role: 'network_partner'}).exists?
   end
 
   def status
@@ -102,7 +96,7 @@ class Inventory < ActiveRecord::Base
   def set_assigned_at
     self.assigned_at = Time.now if self.assign
   end
-  
+
   def ensure_share_token
     self.share_token ||= SecureRandom.hex(32)
   end

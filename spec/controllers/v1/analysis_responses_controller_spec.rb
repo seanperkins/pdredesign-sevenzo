@@ -42,7 +42,7 @@ describe V1::AnalysisResponsesController do
       }
 
       let(:inventory) {
-        create(:inventory, members: create_list(:inventory_member, 1, :as_facilitator, user: user))
+        create(:inventory, tool_members: create_list(:tool_member, 1, :as_facilitator, user: user))
       }
 
       let(:analysis_member) {

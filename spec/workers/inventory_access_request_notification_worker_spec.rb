@@ -3,8 +3,8 @@ require 'spec_helper'
 describe InventoryAccessRequestNotificationWorker do
   context 'inventory with two facilitators' do
     let(:subject) { InventoryAccessRequestNotificationWorker }
-    let(:inventory) { FactoryGirl.create(:inventory, :with_facilitators, facilitators: 2) }
-    let(:request) { FactoryGirl.create(:inventory_access_request, :as_facilitator, inventory: inventory) }
+    let(:inventory) { create(:inventory, :with_facilitators, facilitators: 2) }
+    let(:request) { create(:access_request, :with_facilitator_role, tool: inventory) }
     let(:all_facilitators) { inventory.facilitators.collect(&:user) }
 
     it 'sends an email to all facilitators' do

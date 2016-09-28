@@ -5,9 +5,9 @@ describe V1::InventoryAccessRequestsController do
 
   describe '#index' do
     context 'as signed in user' do
-      let(:user) { FactoryGirl.create(:user) }
-      let(:inventory) { FactoryGirl.create(:inventory) }
-      let!(:access_requests) { FactoryGirl.create_list(:inventory_access_request, 2, :as_facilitator, inventory: inventory) }
+      let(:user) { create(:user) }
+      let(:inventory) { create(:inventory) }
+      let!(:access_requests) { create_list(:inventory_access_request, 2, :as_facilitator, inventory: inventory) }
 
       before(:each) do 
         sign_in user
@@ -24,15 +24,15 @@ describe V1::InventoryAccessRequestsController do
 
   describe '#create' do
     context 'as signed in user' do
-      let(:user) { FactoryGirl.create(:user) }
+      let(:user) { create(:user) }
 
       before(:each) do 
         sign_in user
       end
 
       context 'with valid request params' do
-        let(:inventory) { FactoryGirl.create(:inventory) }
-        let(:access_request) { InventoryAccessRequest.find(json["id"]) }
+        let(:inventory) { create(:inventory) }
+        let(:access_request) { AccessRequest.find(json["id"]) }
 
         before(:each) do 
           post :create,
@@ -47,12 +47,12 @@ describe V1::InventoryAccessRequestsController do
         end
 
         it { expect(access_request.user_id).to eq user.id }
-        it { expect(access_request.role).to eq 'facilitator' }
-        it { expect(access_request.inventory_id).to eq inventory.id }
+        it { expect(access_request.roles).to eq ['facilitator'] }
+        it { expect(access_request.tool_id).to eq inventory.id }
       end
 
       context 'without role' do
-        let(:inventory) { FactoryGirl.create(:inventory) }
+        let(:inventory) { create(:inventory) }
 
         before(:each) do 
           post :create, inventory_id: inventory.id, format: :json
@@ -67,14 +67,14 @@ describe V1::InventoryAccessRequestsController do
 
   describe '#update' do
     context 'as signed-in user' do
-      let(:user) { FactoryGirl.create(:user) }
+      let(:user) { create(:user) }
 
       before(:each) do
         sign_in user
       end
 
       context 'on non-existing request' do
-        let(:inventory) { FactoryGirl.create(:inventory) }
+        let(:inventory) { create(:inventory) }
 
         before(:each) do
           patch :update,
@@ -87,8 +87,8 @@ describe V1::InventoryAccessRequestsController do
       end
 
       context 'denying access' do
-        let(:inventory) { FactoryGirl.create(:inventory) }
-        let(:access_request) { FactoryGirl.create(:inventory_access_request, :as_participant, inventory: inventory) }
+        let(:inventory) { create(:inventory) }
+        let(:access_request) { create(:inventory_access_request, :as_participant, inventory: inventory) }
 
         before(:each) do
           patch :update,
@@ -109,8 +109,8 @@ describe V1::InventoryAccessRequestsController do
       end
 
       context 'accepting access' do
-        let(:inventory) { FactoryGirl.create(:inventory) }
-        let(:access_request) { FactoryGirl.create(:inventory_access_request, :as_participant, inventory: inventory) }
+        let(:inventory) { create(:inventory) }
+        let(:access_request) { create(:inventory_access_request, :as_participant, inventory: inventory) }
 
         before(:each) do 
           patch :update,

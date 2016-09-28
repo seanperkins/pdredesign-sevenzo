@@ -25,7 +25,7 @@ describe V1::AnalysisConsensusController do
 
       context 'when the entity does not exist' do
         let(:inventory) {
-          create(:inventory, members: create_list(:inventory_member, 1, :as_facilitator, user: user))
+          create(:inventory, tool_members: create_list(:tool_member, 1, :as_facilitator, user: user))
         }
 
         let(:analysis_member) {
@@ -53,7 +53,7 @@ describe V1::AnalysisConsensusController do
 
       context 'when the entity exists prior' do
         let(:inventory) {
-          create(:inventory, members: create_list(:inventory_member, 1, :as_facilitator, user: user))
+          create(:inventory, tool_members: create_list(:tool_member, 1, :as_facilitator, user: user))
         }
 
         let(:analysis_member) {
@@ -103,7 +103,7 @@ describe V1::AnalysisConsensusController do
 
       context 'when no response can be found' do
         let(:inventory) {
-          create(:inventory, members: create_list(:inventory_member, 1, :as_facilitator, user: user))
+          create(:inventory, tool_members: create_list(:tool_member, 1, :as_facilitator, user: user))
         }
 
         let(:analysis_member) {
@@ -127,7 +127,7 @@ describe V1::AnalysisConsensusController do
       context 'when the response exists' do
 
         let(:inventory) {
-          create(:inventory, members: create_list(:inventory_member, 1, :as_facilitator, user: user))
+          create(:inventory, tool_members: create_list(:tool_member, 1, :as_facilitator, user: user))
         }
 
         let(:analysis_member) {
@@ -176,7 +176,7 @@ describe V1::AnalysisConsensusController do
 
       context 'when the submit parameter is not passed' do
         let(:inventory) {
-          create(:inventory, members: create_list(:inventory_member, 1, :as_facilitator, user: user))
+          create(:inventory, tool_members: create_list(:tool_member, 1, :as_facilitator, user: user))
         }
 
         let(:analysis_member) {
@@ -208,7 +208,7 @@ describe V1::AnalysisConsensusController do
 
       context 'when the submit parameter is passed' do
         let(:inventory) {
-          create(:inventory, members: create_list(:inventory_member, 1, :as_facilitator, user: user))
+          create(:inventory, tool_members: create_list(:tool_member, 1, :as_facilitator, user: user))
         }
 
         let(:analysis_member) {

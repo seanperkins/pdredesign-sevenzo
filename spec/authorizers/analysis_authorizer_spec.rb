@@ -6,19 +6,19 @@ describe AnalysisAuthorizer do
 
   let(:member_user) {
     user = create(:user, :with_district)
-    create(:inventory_member, user: user, inventory: inventory)
+    create(:tool_member, :as_participant, user: user, tool: inventory)
     user
   }
 
   let(:participant_user) {
     user = create(:user, :with_district)
-    create(:inventory_member, :as_participant, user: user, inventory: inventory)
+    create(:tool_member, :as_participant, user: user, tool: inventory)
     user
   }
 
   let(:facilitator_user) {
     user = create(:user, :with_district)
-    create(:inventory_member, :as_facilitator, user: user, inventory: inventory)
+    create(:tool_member, :as_facilitator, user: user, tool: inventory)
     user
   }
 

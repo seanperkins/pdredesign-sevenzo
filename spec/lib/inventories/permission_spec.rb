@@ -129,7 +129,7 @@ describe Inventories::Permission do
 
     context 'as facilitator' do
       let(:inventory) { FactoryGirl.create(:inventory, :with_facilitators) }
-      let(:user) { inventory.members.first.user }
+      let(:user) { inventory.tool_members.first.user }
 
       subject { Inventories::Permission.new(inventory: inventory, user: user) }
 
@@ -150,7 +150,7 @@ describe Inventories::Permission do
       end
 
       it { expect(subject.access_request).not_to be_nil }
-      it { expect(subject.access_request.role).to eq 'participant' }
+      it { expect(subject.access_request.roles).to eq ['participant'] }
       it { expect(InventoryAccessRequestNotificationWorker).to have_received(:perform_async).with(subject.access_request.id) }
     end
 
@@ -165,7 +165,7 @@ describe Inventories::Permission do
       end
 
       it { expect(subject.access_request).not_to be_nil }
-      it { expect(subject.access_request.role).to eq 'facilitator' }
+      it { expect(subject.access_request.roles).to eq ['facilitator'] }
     end
   end
 end

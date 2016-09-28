@@ -15,7 +15,7 @@ module Inventories
     def role=(role)
       return unless ROLES.include? role
 
-      member = inventory.members.find_or_create_by(user: user)
+      member = inventory.tool_members.find_or_create_by(user: user)
       return if member.role == role
 
       member.role = role
@@ -55,7 +55,7 @@ module Inventories
     end
 
     def request_access(role:)
-      request = InventoryAccessRequest.new(inventory: inventory, user: user, role: role)
+      request = AccessRequest.new(tool: inventory, user: user, roles: [role])
       return request unless request.save
 
       InventoryAccessRequestNotificationWorker.perform_async(request.id)
@@ -66,7 +66,7 @@ module Inventories
     ROLES = ['facilitator', 'participant']
 
     def member
-      @participant ||= inventory.members.where(user: user).first
+      @participant ||= inventory.tool_members.where(user: user).first
     end
 
     def reset_member

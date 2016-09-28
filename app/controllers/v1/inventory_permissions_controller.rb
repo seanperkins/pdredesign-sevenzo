@@ -3,7 +3,7 @@ class V1::InventoryPermissionsController < ApplicationController
   before_action :inventory
 
   def show
-    @users = inventory.members.includes(:user).map(&:user)
+    @users = inventory.tool_members.includes(:user).map(&:user)
   end
 
   def update

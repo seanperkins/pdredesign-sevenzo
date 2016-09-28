@@ -24,7 +24,7 @@ class V1::InventoryParticipantsController < ApplicationController
   end
 
   def all
-    participant_ids = inventory.members.select(:user_id).pluck(:user_id)
+    participant_ids = inventory.tool_members.select(:user_id).pluck(:user_id)
     @users = User.joins(:districts)
                  .where(districts: {id: inventory.district.id})
                  .where.not(id: participant_ids)

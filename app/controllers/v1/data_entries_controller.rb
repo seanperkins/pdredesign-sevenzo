@@ -60,7 +60,7 @@ class V1::DataEntriesController < ApplicationController
   
   private
   def data_entries
-    if inventory.facilitator?(user: current_user)
+    if inventory.facilitator?(current_user)
       inventory.data_entries.with_deleted
     else
       inventory.data_entries

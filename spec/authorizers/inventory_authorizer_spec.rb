@@ -48,7 +48,7 @@ describe InventoryAuthorizer do
 
     context 'member' do
       let(:inventory) { FactoryGirl.create(:inventory, :with_members) }
-      let(:member_user) { inventory.members.first.user }
+      let(:member_user) { inventory.tool_members.first.user }
       subject { inventory.authorizer }
 
       it('is allowed') { is_expected.to be_readable_by(member_user) }
