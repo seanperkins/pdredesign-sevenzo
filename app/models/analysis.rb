@@ -26,6 +26,18 @@ class Analysis < ActiveRecord::Base
   belongs_to :rubric
   belongs_to :owner, class_name: 'User'
 
+  has_one :response, as: :responder, dependent: :destroy
+  has_many :messages, as: :tool
+  has_many :tool_members, as: :tool
+  has_many :access_requests, as: :tool
+  has_many :participants, -> { where(tool_type: 'Analysis',
+                                     role: ToolMember.member_roles[:participant])
+  }, foreign_key: :tool_id, class_name: 'ToolMember'
+
+  has_many :facilitators, -> { where(tool_type: 'Analysis',
+                                     role: ToolMember.member_roles[:facilitator])
+  }, foreign_key: :tool_id, class_name: 'ToolMember'
+
   attr_accessor :assign
 
   #Exposed alias for testing
@@ -37,18 +49,13 @@ class Analysis < ActiveRecord::Base
   validates_presence_of :name, :deadline, :inventory, :rubric, :owner
   validates :message, presence: true, if: "assigned_at.present?"
 
-  has_many :messages, as: :tool
-  has_many :tool_members, as: :tool
-  has_many :participants, -> { where(tool_type: 'Analysis', role: ToolMember.member_roles[:participant]) }, foreign_key: :tool_id, class_name: 'ToolMember'
-  has_many :facilitators, -> { where(tool_type: 'Analysis', role: ToolMember.member_roles[:facilitator]) }, foreign_key: :tool_id, class_name: 'ToolMember'
-  has_many :access_requests, as: :tool
-  has_one :response, as: :responder, dependent: :destroy
-
   after_create :set_members_from_inventory,
                :add_facilitator_owner
 
   before_save :set_assigned_at,
               :ensure_share_token
+
+  after_save :synchronize_members_with_parent
 
   def team_roles_for_participants
     self.tool_members
@@ -95,5 +102,13 @@ class Analysis < ActiveRecord::Base
 
   def ensure_share_token
     self.share_token ||= SecureRandom.hex(32)
+  end
+
+  def synchronize_members_with_parent
+    ToolMember.where(tool: self).each {|tool_member|
+      self.inventory.tool_members.create(tool: self.inventory,
+                                         role: ToolMember.member_roles[:participant],
+                                         user_id: tool_member.user_id)
+    }
   end
 end
