@@ -4,7 +4,7 @@ class V1::AnalysesController < ApplicationController
   before_action :authenticate_user!, except: [:show]
 
   def index
-    @analyses = inventory.analyses
+    @analyses = Analysis.all
 
     render template: 'v1/analyses/index', status: 200
   end
@@ -21,8 +21,8 @@ class V1::AnalysesController < ApplicationController
 
   def create
     @analysis = inventory.analyses.build(analysis_params)
-    @analysis.rubric = pick_rubric
     authorize_action_for @analysis
+    @analysis.rubric = pick_rubric
     @analysis.owner = current_user
 
     if @analysis.save
@@ -33,7 +33,7 @@ class V1::AnalysesController < ApplicationController
   end
 
   def update
-    @analysis = inventory.analyses.find(params[:id])
+    @analysis = Analysis.find_by(id: params[:id])
     authorize_action_for @analysis
 
     saved = @analysis.update(analysis_params)
