@@ -87,7 +87,6 @@ PdrServer::Application.routes.draw do
       get 'participant_response', to: 'inventories#participant_response'
       resources :inventory_reminders, only: [:create]
       resources :invitations, controller: 'inventory_invitations', only: [:create]
-      resources :access_requests, controller: 'inventory_access_requests', only: [:index, :create, :update]
       resource :permissions, controller: 'inventory_permissions', only: [:show, :update]
       resources :participants, controller: 'inventory_participants', only: [:create, :destroy, :index]
       get 'participants/all', to: 'inventory_participants#all'

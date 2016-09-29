@@ -63,7 +63,7 @@ describe Inventory do
 
     it { expect(subject.new_record?).to be false }
     it 'add owner as facilitator' do
-      expect(subject.facilitators.where(owner)).to exist
+      expect(subject.facilitators.where(user: owner)).to exist
     end
   end
 
