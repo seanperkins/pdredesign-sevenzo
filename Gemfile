@@ -37,6 +37,7 @@ gem 'bootstrap3-datetimepicker-rails', '~> 3.1.0'
 gem 'wkhtmltopdf-binary', '0.9.9.3'
 gem 'pdfkit', '0.6.2'
 gem 'paranoia', '~> 2.0'
+gem 'composite_primary_keys', '~> 8.1.4'
 
 source 'https://rails-assets.org' do
   gem 'rails-assets-moment', '2.13.0'

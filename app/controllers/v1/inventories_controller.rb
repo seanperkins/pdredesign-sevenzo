@@ -18,6 +18,7 @@ class V1::InventoriesController < ApplicationController
     @inventory.district = District.where(id: inventory_params[:district][:id]).first
     @inventory.owner = current_user
     if @inventory.save
+      ToolMember.create!(user: @inventory.owner, tool: @inventory, role: ToolMember.member_roles[:facilitator])
       render template: 'v1/inventories/show'
     else
       render_error

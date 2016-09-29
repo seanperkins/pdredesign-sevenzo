@@ -257,6 +257,13 @@ describe V1::InventoriesController do
         it { expect(json['updated_at']).to_not be_nil }
         it { expect(json['district_name']).to_not be_nil }
 
+        it {
+          expect(ToolMember.find_by(tool: assigns(:inventory),
+                                    user: user,
+                                    role: ToolMember.member_roles[:facilitator])).to_not be_nil
+        }
+
+
         it 'persists the entity' do
           expect(Inventory.all.size).to eq 1
         end

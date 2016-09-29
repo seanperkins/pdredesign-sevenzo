@@ -3,7 +3,7 @@ class AccessRequestNotificationWorker
 
   def perform(access_request_id)
     request = AccessRequest.find(access_request_id)
-    assessment = Assessment.find(request.assessment_id)
+    assessment = Assessment.find(request.tool_id)
 
     facilitators(assessment).uniq.each do |facilitator|
       AccessRequestMailer

@@ -40,7 +40,7 @@ describe V1::AccessController do
 
     context 'when a token is not found' do
       let(:assessment) {
-        access_request.assessment
+        access_request.tool
       }
 
       let(:user) {
@@ -63,7 +63,7 @@ describe V1::AccessController do
 
     context 'with user permission defined as facilitator' do
       let(:assessment) {
-        access_request.assessment
+        access_request.tool
       }
 
       let(:user) {
@@ -94,7 +94,7 @@ describe V1::AccessController do
 
     context 'with user permission defined as participant' do
       let(:assessment) {
-        access_request.assessment
+        access_request.tool
       }
 
       let(:user) {

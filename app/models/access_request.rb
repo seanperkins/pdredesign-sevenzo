@@ -2,27 +2,22 @@
 #
 # Table name: access_requests
 #
-#  id            :integer          not null, primary key
-#  assessment_id :integer
-#  user_id       :integer
-#  roles         :string           default([]), is an Array
-#  created_at    :datetime
-#  updated_at    :datetime
-#  token         :string
+#  id         :integer          not null, primary key
+#  tool_id    :integer
+#  user_id    :integer
+#  roles      :string           default([]), is an Array
+#  created_at :datetime
+#  updated_at :datetime
+#  token      :string(255)
+#  tool_type  :string
 #
 
 class AccessRequest < ActiveRecord::Base
-  belongs_to :assessment
+  belongs_to :tool, polymorphic: :true
   belongs_to :user
 
   validates :roles, presence: true
   validates :user_id, presence: true
-  validates :assessment_id, presence: true
-
-  before_destroy  :flush_assessment_cached_version
-  after_create    :flush_assessment_cached_version
-
-  def flush_assessment_cached_version
-    self.assessment.flush_cached_version
-  end
+  validates :tool_id, presence: true
+  validates :tool_type, presence: true
 end
