@@ -1,6 +1,6 @@
 class CreateToolMembers < ActiveRecord::Migration
   def change
-    create_table :tool_members, id: false do |t|
+    create_table :tool_members do |t|
       t.string :tool_type
       t.integer :tool_id
       t.integer :role
