@@ -41,7 +41,7 @@ describe Analysis do
       it 'requires :due_date when assigned_at is present' do
         expect(@analysis.valid?).to eq(false)
         expect(@analysis.errors[:message])
-          .to include("can\'t be blank")
+            .to include("can\'t be blank")
       end
     end
 
@@ -53,26 +53,18 @@ describe Analysis do
       it 'requires :due_date when assigned_at is present' do
         expect(@analysis.valid?).to eq(false)
         expect(@analysis.errors[:message])
-          .to include("can't be blank")
+            .to include("can't be blank")
 
         @analysis.assigned_at = nil
         @analysis.valid?
         expect(@analysis.errors[:message])
-          .to eq([])
+            .to eq([])
       end
     end
   end
 
-  describe '#save' do
-    subject { FactoryGirl.create(:analysis) }
-
-    it { expect(subject.new_record?).to be false }
-  end
-
-  describe '#create' do
-
-    context 'when user creating new analysis is the owner of its parent inventory' do
-
+  describe 'after the entity is created' do
+    context 'when the user creating the analysis is the owner of its parent inventory' do
       let(:owner) {
         create(:user)
       }
@@ -98,7 +90,7 @@ describe Analysis do
       end
     end
 
-    context 'when user creating new analysis is a facilitator of its parent inventory' do
+    context 'when the user creating the analysis is a facilitator of its parent inventory' do
 
       let(:owner) {
         inventory.facilitators.sample.user
@@ -125,8 +117,7 @@ describe Analysis do
       end
     end
 
-    context 'when user creating new analysis is a participant of its parent inventory' do
-
+    context 'when the user creating the analysis is a participant of its parent inventory' do
       let(:owner) {
         inventory.participants.sample.user
       }
@@ -149,6 +140,38 @@ describe Analysis do
 
       it 'adds the owner of the original inventory as a facilitator' do
         expect(subject.facilitators.map(&:user).include?(inventory.owner)).to be true
+      end
+
+      it 'adds the creator as a facilitator' do
+        expect(subject.facilitators.map(&:user).include?(owner)).to be true
+      end
+    end
+  end
+
+  describe 'after the entity is saved' do
+    # Inventory has one facilitator - owner
+    let(:inventory) {
+      create(:inventory)
+    }
+
+    context 'when participants are added to the analysis' do
+      # Analysis has 2 facilitators - owner and parent inventory owner
+      let!(:analysis) {
+        create(:analysis, :with_participants, participants: 5, inventory: inventory)
+      }
+
+      before(:each) do
+        inventory.reload
+      end
+
+      it 'copies the participants over as participants on the inventory' do
+        expect(inventory.participants.map(&:user).map(&:id) & analysis.participants.map(&:user).map(&:id))
+            .to match_array(analysis.participants.map(&:user).map(&:id))
+      end
+
+      it 'copies the facilitators over as participants on the inventory' do
+        expect(inventory.participants.map(&:user).map(&:id) & analysis.facilitators.map(&:user).map(&:id))
+            .to match_array(analysis.facilitators.map(&:user).map(&:id))
       end
     end
   end

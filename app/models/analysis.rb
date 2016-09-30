@@ -105,10 +105,11 @@ class Analysis < ActiveRecord::Base
   end
 
   def synchronize_members_with_parent
-    ToolMember.where(tool: self).each {|tool_member|
+    ToolMember.where(tool: self).each { |tool_member|
       self.inventory.tool_members.create(tool: self.inventory,
                                          role: ToolMember.member_roles[:participant],
                                          user_id: tool_member.user_id)
+
     }
   end
 end
