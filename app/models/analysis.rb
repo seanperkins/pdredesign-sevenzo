@@ -90,8 +90,8 @@ class Analysis < ActiveRecord::Base
 
   def set_members_from_inventory
     %i|participants facilitators|.each do |member_type|
-      self.inventory.send(member_type).each do |inventory_member|
-        self.send(member_type).create(user: inventory_member.user) unless self.owner == inventory_member.user
+      self.inventory.send(member_type).each do |tool_member|
+        self.send(member_type).create(user: tool_member.user) unless self.owner == tool_member.user
       end
     end
   end
@@ -105,11 +105,16 @@ class Analysis < ActiveRecord::Base
   end
 
   def synchronize_members_with_parent
-    ToolMember.where(tool: self).each { |tool_member|
-      self.inventory.tool_members.create(tool: self.inventory,
-                                         role: ToolMember.member_roles[:participant],
-                                         user_id: tool_member.user_id)
-
+    self.tool_members.pluck(:user_id).each { |user_id|
+      begin
+        self.inventory.tool_members.find_or_create_by(tool: self.inventory,
+                                                      role: ToolMember.member_roles[:facilitator],
+                                                      user_id: user_id) do |tool_member|
+          tool_member.role = ToolMember.member_roles[:participant]
+        end
+      rescue ActiveRecord::RecordNotUnique
+        retry
+      end
     }
   end
 end

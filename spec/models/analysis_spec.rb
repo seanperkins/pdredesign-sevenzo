@@ -73,20 +73,20 @@ describe Analysis do
         create(:inventory, :with_participants, :with_facilitators, participants: 2, facilitators: 2, owner: owner)
       }
 
-      subject {
+      let(:analysis) {
         create(:analysis, inventory: inventory, owner: owner)
       }
 
       it {
-        expect(subject.owner).to equal owner
+        expect(analysis.owner).to equal owner
       }
 
       it 'does not register the owner as a particpant' do
-        expect(subject.participants.map(&:user).include?(owner)).to be false
+        expect(analysis.participants.map(&:user).include?(owner)).to be false
       end
 
       it 'registers the owner as a facilitator' do
-        expect(subject.facilitators.map(&:user).include?(owner)).to be true
+        expect(analysis.facilitators.map(&:user).include?(owner)).to be true
       end
     end
 
@@ -100,20 +100,20 @@ describe Analysis do
         create(:inventory, :with_participants, :with_facilitators, participants: 2, facilitators: 2)
       }
 
-      subject {
+      let(:analysis) {
         create(:analysis, inventory: inventory, owner: owner)
       }
 
       it {
-        expect(subject.owner).to equal owner
+        expect(analysis.owner).to equal owner
       }
 
       it 'copies the user across as a facilitator' do
-        expect(subject.facilitators.map(&:user).include?(owner)).to be true
+        expect(analysis.facilitators.map(&:user).include?(owner)).to be true
       end
 
       it 'adds the owner of the original inventory as a facilitator' do
-        expect(subject.facilitators.map(&:user).include?(inventory.owner)).to be true
+        expect(analysis.facilitators.map(&:user).include?(inventory.owner)).to be true
       end
     end
 
@@ -126,36 +126,41 @@ describe Analysis do
         create(:inventory, :with_participants, :with_facilitators, participants: 2, facilitators: 2)
       }
 
-      subject {
+      let(:analysis) {
         create(:analysis, inventory: inventory, owner: owner)
       }
 
       it {
-        expect(subject.owner).to equal owner
+        expect(analysis.owner).to equal owner
       }
 
       it 'does not copy the user across as a participant' do
-        expect(subject.participants.map(&:user).include?(owner)).to be false
+        expect(analysis.participants.map(&:user).include?(owner)).to be false
       end
 
       it 'adds the owner of the original inventory as a facilitator' do
-        expect(subject.facilitators.map(&:user).include?(inventory.owner)).to be true
+        expect(analysis.facilitators.map(&:user).include?(inventory.owner)).to be true
       end
 
       it 'adds the creator as a facilitator' do
-        expect(subject.facilitators.map(&:user).include?(owner)).to be true
+        expect(analysis.facilitators.map(&:user).include?(owner)).to be true
       end
     end
   end
 
   describe 'after the entity is saved' do
-    # Inventory has one facilitator - owner
-    let(:inventory) {
-      create(:inventory)
-    }
-
     context 'when participants are added to the analysis' do
-      # Analysis has 2 facilitators - owner and parent inventory owner
+      # Inventory has one facilitator - owner
+      let(:inventory) {
+        create(:inventory)
+      }
+
+      # Analysis has 3 facilitators
+      let(:facilitators) {
+        create_list(:tool_member, 2, :as_facilitator, tool: analysis)
+      }
+
+
       let!(:analysis) {
         create(:analysis, :with_participants, participants: 5, inventory: inventory)
       }
@@ -170,9 +175,59 @@ describe Analysis do
       end
 
       it 'copies the facilitators over as participants on the inventory' do
-        expect(inventory.participants.map(&:user).map(&:id) & analysis.facilitators.map(&:user).map(&:id))
-            .to match_array(analysis.facilitators.map(&:user).map(&:id))
+        expect(inventory.participants.map(&:user).map(&:id) & (analysis.facilitators.map(&:user).map(&:id) - inventory.facilitators.map(&:user).map(&:id)))
+            .to match_array(analysis.facilitators.map(&:user).map(&:id) - inventory.facilitators.map(&:user).map(&:id))
       end
+    end
+
+    context "when only the parent inventory's participants exist" do
+      # Inventory has six facilitators including owner, and ten participants
+      let!(:inventory) {
+        create(:inventory, :with_participants, :with_facilitators, participants: 10, facilitators: 5)
+      }
+
+      let!(:analysis) {
+        build(:analysis, inventory: inventory)
+      }
+
+      before(:each) do
+        expect(inventory.participants.size).to eq 10
+        analysis.save!
+        inventory.reload
+      end
+
+      it {
+        expect(inventory.participants.size).to eq 11
+      }
+
+      it 'only copies over the owner of the analysis as a participant of the parent inventory' do
+        expect(inventory.participants.map(&:user).map(&:id) & [analysis.owner.id])
+            .to match_array([analysis.owner.id])
+      end
+    end
+
+    context 'on repeated saves' do
+      # Inventory has 2 participants and the owner as a facilitator
+      let!(:inventory) {
+        create(:inventory, :with_participants, participants: 2)
+      }
+
+      let!(:analysis) {
+        build(:analysis, inventory: inventory)
+      }
+
+      before(:each) do
+        expect(inventory.participants.size).to eq 2
+        analysis.save!
+        inventory.reload
+        expect(inventory.participants.size).to eq 3
+        analysis.save!
+        inventory.reload
+      end
+
+      it {
+        expect(inventory.participants.size).to eq 3
+      }
     end
   end
 end
