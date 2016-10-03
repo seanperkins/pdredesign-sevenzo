@@ -2,14 +2,14 @@
   <div class="row">
     <div class="col-md-12 header">
       <h2 ng-pluralize
-          count="participants.length"
+          count="members.length"
           when="{'0': 'No Participants',
                      '1': '{} Participant',
                      'other' : '{} Participants'}">
       </h2>
     </div>
     <div class="participant-list">
-      <participant ng-repeat="participant in participants" user="participant"></participant>
+      <participant ng-repeat="member in members" user="member"></participant>
     </div>
   </div>
 </div>

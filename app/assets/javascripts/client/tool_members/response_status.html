@@ -1,9 +1,7 @@
 <div class="invite-email" ng-if="vm.showMailLink()">
-  <i ng-if="!hideIcons" class="fa fa-fa {{vm.statusMessageIcon(user.status)}}"></i>
   <a href="" ng-click="vm.sendEmail()">{{user.status_human}}</a>
 </div>
 <div class="user-status" ng-if="!vm.showMailLink()">
-  <i ng-if="!hideIcons" class="fa fa-fa {{vm.statusMessageIcon(user.status)}}"></i>
   {{user.status_human}}
 </div>
 

@@ -44,18 +44,5 @@
           }
         );
     };
-
-    vm.statusMessageIcon = function (status) {
-      switch (status) {
-        case 'invited':
-          return 'fa-envelope-o';
-        case 'completed':
-          return 'fa-check';
-        case 'in_progress':
-          return 'fa-spinner';
-        default:
-          return 'fa-envelope-o';
-      }
-    };
   }
 })();

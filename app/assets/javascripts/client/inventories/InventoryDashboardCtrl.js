@@ -10,15 +10,15 @@
     'CreateService',
     'inventory',
     'inventoryMessages',
-    'inventoryParticipants'
+    'inventoryMembers'
   ];
 
-  function InventoryDashboardCtrl($modal, $scope, CreateService, inventory, inventoryMessages, inventoryParticipants) {
+  function InventoryDashboardCtrl($modal, $scope, CreateService, inventory, inventoryMessages, inventoryMembers) {
     var vm = this;
 
     CreateService.setContext('inventory');
     vm.inventory = inventory;
-    vm.participants = inventoryParticipants;
+    vm.members = inventoryMembers;
     vm.messages = inventoryMessages.messages;
 
     vm.createReminder = function() {
@@ -33,7 +33,7 @@
     });
 
     $scope.$on('update_participants', function() {
-      vm.participants = CreateService.loadParticipants();
+      vm.members = CreateService.loadParticipants();
     });
   }
 })();

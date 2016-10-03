@@ -8,8 +8,7 @@
     return {
       restrict: 'E',
       scope: {
-        user: "=",
-        hideIcons: "="
+        user: "="
       },
       templateUrl: 'client/tool_members/response_status.html',
       controller: 'ResponseStatusCtrl',

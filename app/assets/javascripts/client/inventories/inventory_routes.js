@@ -1,8 +1,8 @@
-(function() {
+(function () {
   'use strict';
 
   angular.module('PDRClient')
-      .config(InventoryRoutes);
+    .config(InventoryRoutes);
 
   InventoryRoutes.$inject = [
     '$stateProvider'
@@ -15,7 +15,7 @@
       views: {
         '': {
           resolve: {
-            inventory_result: ['Inventory', function(Inventory) {
+            inventory_result: ['Inventory', function (Inventory) {
               return Inventory.query().$promise;
             }]
           },
@@ -33,7 +33,7 @@
       authenticate: true,
       showFullWidth: true,
       resolve: {
-        current_inventory: ['$stateParams', 'Inventory', function($stateParams, Inventory) {
+        current_inventory: ['$stateParams', 'Inventory', function ($stateParams, Inventory) {
           return Inventory.get({inventory_id: $stateParams.id}).$promise;
         }]
       },
@@ -48,7 +48,7 @@
       url: '/inventories/:inventory_id/dashboard',
       authenticate: true,
       resolve: {
-        inventory: ['$stateParams', 'Inventory', function($stateParams, Inventory) {
+        inventory: ['$stateParams', 'Inventory', function ($stateParams, Inventory) {
           return Inventory.get({inventory_id: $stateParams.inventory_id}).$promise;
         }]
       },
@@ -58,10 +58,10 @@
           controllerAs: 'inventoryDashboard',
           templateUrl: 'client/inventories/dashboard.html',
           resolve: {
-            inventoryMessages: ['$stateParams', 'InventoryMessage', function($stateParams, InventoryMessage) {
+            inventoryMessages: ['$stateParams', 'InventoryMessage', function ($stateParams, InventoryMessage) {
               return InventoryMessage.get({inventory_id: $stateParams.inventory_id}).$promise;
             }],
-            inventoryParticipants: ['$stateParams', 'ToolMember', function($stateParams, ToolMember) {
+            inventoryMembers: ['$stateParams', 'ToolMember', function ($stateParams, ToolMember) {
               return ToolMember.query({tool_type: 'Inventory', tool_id: $stateParams.inventory_id}).$promise;
             }]
           }
@@ -78,7 +78,7 @@
       views: {
         '': {
           resolve: {
-            inventory: ['Inventory', '$stateParams', function(Inventory, $stateParams) {
+            inventory: ['Inventory', '$stateParams', function (Inventory, $stateParams) {
               return Inventory.get({inventory_id: $stateParams.inventory_id}).$promise;
             }]
           },
@@ -88,7 +88,7 @@
         },
         'sidebar': {
           resolve: {
-            inventory: ['Inventory', '$stateParams', function(Inventory, $stateParams) {
+            inventory: ['Inventory', '$stateParams', function (Inventory, $stateParams) {
               return Inventory.get({inventory_id: $stateParams.inventory_id}).$promise;
             }]
           },
@@ -105,7 +105,7 @@
       views: {
         '': {
           resolve: {
-            inventory: ['Inventory', '$stateParams', function(Inventory, $stateParams) {
+            inventory: ['Inventory', '$stateParams', function (Inventory, $stateParams) {
               return Inventory.get({inventory_id: $stateParams.inventory_id}).$promise;
             }]
           },
@@ -115,7 +115,7 @@
         },
         'sidebar': {
           resolve: {
-            inventory: ['Inventory', '$stateParams', function(Inventory, $stateParams) {
+            inventory: ['Inventory', '$stateParams', function (Inventory, $stateParams) {
               return Inventory.get({inventory_id: $stateParams.inventory_id}).$promise;
             }]
           },
