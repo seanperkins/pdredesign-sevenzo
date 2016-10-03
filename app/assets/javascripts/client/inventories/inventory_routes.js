@@ -60,9 +60,6 @@
           resolve: {
             inventoryMessages: ['$stateParams', 'InventoryMessage', function ($stateParams, InventoryMessage) {
               return InventoryMessage.get({inventory_id: $stateParams.inventory_id}).$promise;
-            }],
-            inventoryMembers: ['$stateParams', 'ToolMember', function ($stateParams, ToolMember) {
-              return ToolMember.query({tool_type: 'Inventory', tool_id: $stateParams.inventory_id}).$promise;
             }]
           }
         },

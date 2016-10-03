@@ -3,7 +3,7 @@ class V1::ToolMembersController < ApplicationController
 
   before_action :authenticate_user!
   before_action :normalize_strong_param_tool_type!, only: [:create]
-  before_action :normalize_path_param_tool_type!, only: [:show, :request_access, :grant, :deny]
+  before_action :normalize_path_param_tool_type!, only: [:show, :request_access, :grant, :deny, :invitable_members]
 
   def create
     tool_member = ToolMember.create(tool_member_params)
@@ -114,6 +114,19 @@ class V1::ToolMembersController < ApplicationController
   end
 
   authority_actions deny: :create
+
+  def invitable_members
+    tool = ToolMember.find_by(tool_type: params[:tool_type],
+                              tool_id: params[:tool_id]).tool
+
+    unless tool
+      return render nothing: true, status: :not_found
+    end
+
+    @users = User.includes(:districts).where(districts: {id: tool.district_id})
+                 .where.not(team_role: 'network_partner', id: ToolMember.where(tool_type: params[:tool_type],
+                                                                               tool_id: params[:tool_id]).select(:user_id).pluck(:user_id))
+  end
 
   private
   def member_is_owner(tool_member)

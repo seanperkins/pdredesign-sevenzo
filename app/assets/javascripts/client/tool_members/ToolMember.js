@@ -47,6 +47,15 @@
           tool_id: '@tool_id'
         },
         url: UrlService.url('tool_members/tool_type/:tool_type/tool_id/:tool_id/request_access')
+      },
+      'invitableMembers': {
+        method: 'GET',
+        isArray: true,
+        params: {
+          tool_type: '@tool_type',
+          tool_id: '@tool_id'
+        },
+        url: UrlService.url('tool_members/tool_type/:tool_type/tool_id/:tool_id/invitable_members')
       }
     };
 
