@@ -9,15 +9,16 @@
     '$scope',
     'CreateService',
     'inventory',
-    'inventoryMessages'
+    'inventoryMessages',
+    'inventoryParticipants'
   ];
 
-  function InventoryDashboardCtrl($modal, $scope, CreateService, inventory, inventoryMessages) {
+  function InventoryDashboardCtrl($modal, $scope, CreateService, inventory, inventoryMessages, inventoryParticipants) {
     var vm = this;
 
     CreateService.setContext('inventory');
     vm.inventory = inventory;
-    vm.participants = CreateService.loadParticipants();
+    vm.participants = inventoryParticipants;
     vm.messages = inventoryMessages.messages;
 
     vm.createReminder = function() {

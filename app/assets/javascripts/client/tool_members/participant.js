@@ -7,12 +7,10 @@
   function participant() {
     return {
       restrict: 'E',
-      replace: true,
-      transclude: true,
       scope: {
         user: '='
       },
-      templateUrl: 'client/inventories/participant_view.html'
+      templateUrl: 'client/tool_members/participant_view.html'
     }
   }
 })();

@@ -1,0 +1,15 @@
+<div id="participants">
+  <div class="row">
+    <div class="col-md-12 header">
+      <h2 ng-pluralize
+          count="participants.length"
+          when="{'0': 'No Participants',
+                     '1': '{} Participant',
+                     'other' : '{} Participants'}">
+      </h2>
+    </div>
+    <div class="participant-list">
+      <participant ng-repeat="participant in participants" user="participant"></participant>
+    </div>
+  </div>
+</div>
