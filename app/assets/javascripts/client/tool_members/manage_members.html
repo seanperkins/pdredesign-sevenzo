@@ -1,13 +1,10 @@
 <div class="col-md-12 header">
   <div class="row">
     <div class="col-lg-12">
-      <add-users-link context="{{context}}" send-invite="true"></add-users-link>
+      <add-users-link context="{{context}}"></add-users-link>
     </div>
     <div class="col-lg-12">
-      <manage-inventory-permissions-link auto-show="false"
-                                         send-invite="true"
-                                         number-of-requests="{{inventoryDashboard.inventory.number_of_requests}}">
-      </manage-inventory-permissions-link>
+      <manage-permissions-link context="{{context}}"></manage-permissions-link>
     </div>
     <div class="col-lg-12">
       <invite-inventory-user-link send-invite="true"
