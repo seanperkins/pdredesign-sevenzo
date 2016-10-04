@@ -1,0 +1,30 @@
+<section class="current-participants">
+  <h4>Current Participants</h4>
+  <div ng-if="vm.list.length === 0">
+    <h5>No Participants</h5>
+  </div>
+  <div ng-if="vm.list.length > 0">
+    <form id="current_user_permissions">
+      <div class="row row-participant-add" ng-repeat="user in vm.list">
+        <div class="col-md-3 participants-flex-row">
+          <img alt="" class="img-polaroid flex-avatar" ng-src="{{user.avatar}}" width="47"/>
+          <p class="name_label flex-name-label">{{user.full_name}}</p>
+        </div>
+        <div class="col-md-5 participants-flex-row">
+          <p class="info important_label flex-label">{{user.email}}</p>
+        </div>
+        <div class="col-md-4 participants-flex-column">
+          <label for="active-permissions-{{user.id}}" class="level_label">Permissions</label>
+          <form id="active-permissions-{{user.id}}">
+            <fieldset>
+              <label for="facilitator-{{user.id}}">Facilitator</label>
+              <input id="facilitator-{{user.id}}" type="checkbox">
+              <label for="participant-{{user.id}}">Participant</label>
+              <input id="participant-{{user.id}}" type="checkbox">
+            </fieldset>
+          </form>
+        </div>
+      </div>
+    </form>
+  </div>
+</section>

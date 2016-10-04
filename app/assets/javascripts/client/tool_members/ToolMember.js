@@ -56,6 +56,24 @@
           tool_id: '@tool_id'
         },
         url: UrlService.url('tool_members/tool_type/:tool_type/tool_id/:tool_id/invitable_members')
+      },
+      'permissionRequests': {
+        method: 'GET',
+        isArray: true,
+        params: {
+          tool_type: '@tool_type',
+          tool_id: '@tool_id'
+        },
+        url: UrlService.url('tool_members/tool_type/:tool_type/tool_id/:tool_id/permission_requests')
+      },
+      'showAll': {
+        method: 'GET',
+        isArray: true,
+        params: {
+          tool_type: '@tool_type',
+          tool_id: '@tool_id'
+        },
+        url: UrlService.url('tool_members/tool_type/:tool_type/tool_id/:tool_id/all')
       }
     };
 

@@ -71,5 +71,35 @@
         }
       }).$promise;
     };
+
+    service.loadPermissionRequests = function () {
+      return ToolMember.permissionRequests({
+        tool_type: service.context,
+        tool_id: service.extractId()
+      });
+    };
+
+    service.denyRequest = function (request_id) {
+      return ToolMember.deny({
+        tool_type: service.context,
+        tool_id: service.extractId(),
+        id: request_id
+      }).$promise;
+    };
+
+    service.grantRequest = function (request_id) {
+      return ToolMember.grant({
+        tool_type: service.context,
+        tool_id: service.extractId(),
+        id: request_id
+      }).$promise;
+    };
+
+    service.loadAllMembers = function() {
+      return ToolMember.showAll({
+        tool_type: service.context,
+        tool_id: service.extractId()
+      });
+    }
   }
 })();
