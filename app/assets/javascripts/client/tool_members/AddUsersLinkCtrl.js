@@ -6,17 +6,16 @@
 
   AddUsersLinkCtrl.$inject = [
     '$modal',
-    '$scope',
-    'ToolMemberService'
+    '$scope'
   ];
 
-  function AddUsersLinkCtrl($modal, $scope, ToolMemberService) {
+  function AddUsersLinkCtrl($modal, $scope) {
     var vm = this;
 
     vm.open = function () {
       switch($scope.context) {
         case 'inventory':
-          vm.inventoryModal = $modal.open({
+          vm.modal = $modal.open({
             templateUrl: 'client/tool_members/modals/add_members_modal.html',
             scope: $scope,
             windowClass: 'request-access-window',

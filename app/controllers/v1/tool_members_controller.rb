@@ -177,11 +177,11 @@ class V1::ToolMembersController < ApplicationController
 
     case tool_member.tool.class.to_s
       when 'Assessment'
-        AccessGrantedNotificationWorker.send(:perform_async, worker_args)
+        AccessGrantedNotificationWorker.send(:perform_async, *worker_args)
       when 'Inventory'
-        InventoryAccessGrantedNotificationWorker.send(:perform_async, worker_args)
+        InventoryAccessGrantedNotificationWorker.send(:perform_async, *worker_args)
       when 'Analysis'
-        AnalysisAccessGrantedNotificationWorker.send(:perform_async, worker_args)
+        AnalysisAccessGrantedNotificationWorker.send(:perform_async, *worker_args)
       else
         raise "No access granted notification worker for #{tool_member.tool_type} defined!"
     end

@@ -18,7 +18,7 @@
       ToolMemberService.updateInvitableParticipantList()
         .then(function (result) {
           vm.invitables = result;
-          $scope.$emit('update_participants');
+          $rootScope.$broadcast('update_participants');
           $rootScope.$broadcast('success_change');
         }).catch(function () {
           $rootScope.$broadcast('success_change');
@@ -26,11 +26,11 @@
     };
 
     vm.addUser = function (user) {
-      // ToolMemberService.createParticipant(user)
-      //   .then(function() {
-      //     vm.loadInvitables();
-      //     $scope.$emit('close-add-participants');
-      //   });
+      ToolMemberService.createParticipant(user)
+        .then(function() {
+          vm.loadInvitables();
+          $scope.$emit('close-add-participants');
+        });
     };
 
     vm.loadInvitables();
