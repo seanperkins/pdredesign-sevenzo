@@ -10,3 +10,5 @@ json.status_human status.to_s.titleize
 json.status_date date
 json.avatar tool_member.user.avatar
 json.twitter tool_member.user.twitter
+json.is_participant tool_member.roles.include?(ToolMember.member_roles[:participant])
+json.is_facilitator tool_member.roles.include?(ToolMember.member_roles[:facilitator])

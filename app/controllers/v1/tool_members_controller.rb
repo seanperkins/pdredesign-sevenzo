@@ -2,8 +2,8 @@ class V1::ToolMembersController < ApplicationController
   include MembershipHelper
 
   before_action :authenticate_user!
-  before_action :normalize_strong_param_tool_type!, only: [:create]
-  before_action :normalize_path_param_tool_type!, except: [:destroy, :create]
+  before_action :normalize_strong_param_tool_type!, only: [:create, :update]
+  before_action :normalize_path_param_tool_type!, except: [:destroy, :create, :batch_update]
 
   def create
     tool_member = ToolMember.create(tool_member_params)
@@ -18,6 +18,13 @@ class V1::ToolMembersController < ApplicationController
       @errors = tool_member.errors
       render 'v1/shared/errors', errors: @errors, status: :bad_request
     end
+  end
+
+  def batch_update
+    batch_tool_member_update_params[:members].each { |tool_member|
+      puts tool_member.inspect
+    }
+    render nothing: true, status: :not_found
   end
 
   def show
@@ -167,6 +174,10 @@ class V1::ToolMembersController < ApplicationController
 
   def tool_member_params
     params.require(:tool_member).permit(:tool_type, :tool_id, :user_id, roles: [])
+  end
+
+  def batch_tool_member_update_params
+    params.require(:tool_member).permit(members: [:id, :is_facilitator, :is_participant])
   end
 
   def tool_member_access_request_params

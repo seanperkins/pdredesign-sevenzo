@@ -65,7 +65,7 @@
       return ToolMember.create({
         tool_member: {
           user_id: user.id,
-          role: 1,
+          roles: [1],
           tool_type: service.context,
           tool_id: service.extractId()
         }
@@ -95,11 +95,19 @@
       }).$promise;
     };
 
-    service.loadAllMembers = function() {
+    service.loadAllMembers = function () {
       return ToolMember.showAll({
         tool_type: service.context,
         tool_id: service.extractId()
       });
+    };
+
+    service.batchUpdate = function (members) {
+      return ToolMember.batchUpdate({
+        tool_member: {
+          members: members
+        }
+      }).$promise;
     }
   }
 })();

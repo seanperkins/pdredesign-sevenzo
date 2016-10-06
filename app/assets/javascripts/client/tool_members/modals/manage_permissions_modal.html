@@ -5,16 +5,7 @@
   </div>
   <div class="modal-body">
     <access-requests context="{{context}}"></access-requests>
-    <manage-permissions context="{{context}}"></manage-permissions>
+    <manage-permissions context="{{context}}" close-fn="vm.close()"></manage-permissions>
   </div>
-  <div class='modal-footer'>
-    <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="vm.close()">
-      <span>Done</span>
-      <button type="submit"
-              ng-click="vm.save()"
-              class="btn btn-secondary">
-        Save
-      </button>
-    </button>
-  </div>
+
 </div>
