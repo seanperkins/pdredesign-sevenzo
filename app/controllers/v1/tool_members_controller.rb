@@ -187,7 +187,7 @@ class V1::ToolMembersController < ApplicationController
                             .where.contains(roles: [MembershipHelper.dehumanize_roles(@request.roles)])
 
     unless tool_member_query.empty?
-      roles = MembershipHelper.humanize_roles(tool_member_query.map(&:role))
+      roles = MembershipHelper.humanize_roles(tool_member_query.first.roles)
       @request.errors.add(:base, "Access for #{@request.user.email} for #{@request.tool.name} already exists at these levels: #{roles.join(', ')}")
     end
 

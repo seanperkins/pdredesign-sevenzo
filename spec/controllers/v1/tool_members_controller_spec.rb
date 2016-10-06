@@ -486,7 +486,7 @@ describe V1::ToolMembersController do
           }
 
           let(:roles) {
-            MembershipHelper.humanize_roles(ToolMember.where(tool: tool, user: user).select(:role).map(&:role))
+            MembershipHelper.humanize_roles(ToolMember.where(tool: tool, user: user).first.roles)
           }
 
           before(:each) do
