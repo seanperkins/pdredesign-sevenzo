@@ -12,6 +12,7 @@
 #  updated_at  :datetime         not null
 #  response_id :integer
 #  id          :integer          not null, primary key
+#  roles       :integer          default([]), is an Array
 #
 
 require 'spec_helper'
@@ -25,26 +26,72 @@ describe ToolMember do
     is_expected.to belong_to :tool
   }
 
-  it {
-    is_expected.to validate_inclusion_of(:role).in_array(ToolMember.member_roles.values)
-  }
+  context 'when no roles are specified' do
+    let(:tool_member) {
+      build(:tool_member)
+    }
+
+    before(:each) do
+      tool_member.save
+    end
+
+    it {
+      expect(tool_member.errors[:roles]).to include 'At least one role must be specified.'
+    }
+  end
+
+  context 'when more roles are added than are legally supported' do
+    let(:tool_member) {
+      build(:tool_member, roles: [ToolMember.member_roles.values.first,
+                                  ToolMember.member_roles.values.first,
+                                  ToolMember.member_roles.values.second])
+    }
+
+    before(:each) do
+      tool_member.save
+    end
+
+    it {
+      expect(tool_member.errors[:roles]).to include 'You may not add more than 2 roles.'
+    }
+  end
+
+  context 'when invalid roles are added' do
+    let(:tool_member) {
+      build(:tool_member, roles: [-1, -2])
+    }
+
+    before(:each) do
+      tool_member.save
+    end
+
+    it {
+      expect(tool_member.errors[:roles]).to include 'Invalid role number: -1'
+    }
+
+    it {
+      expect(tool_member.errors[:roles]).to include 'Invalid role number: -2'
+    }
+  end
 
   context 'when a user is a member of a tool' do
-    context 'when the user is a facilitator' do
+    context 'when the user is a participant' do
       let(:user) {
         create(:user)
       }
 
       let(:tool_member) {
-        create(:tool_member, :as_inventory_member, :as_facilitator, user: user)
+        create(:tool_member, :as_inventory_member, :as_participant, user: user)
       }
 
-      let(:new_tool_member) {
-        build(:tool_member, :as_inventory_member, :as_participant, user: user)
-      }
+      it 'allows the user to be added as a facilitator' do
+        tool_member.roles << ToolMember.member_roles[:facilitator]
+        expect { tool_member.save! }.to_not raise_error
+      end
 
-      it 'allows the user to be added as a participant' do
-        expect{new_tool_member.save!}.to_not raise_error
+      it 'does not allow persistence of another participant value' do
+        tool_member.roles << ToolMember.member_roles[:participant]
+        expect { tool_member.save! }.to raise_error
       end
     end
 
@@ -57,45 +104,9 @@ describe ToolMember do
         create(:tool_member, :as_inventory_member, :as_facilitator, user: user)
       }
 
-      let(:new_tool_member) {
-        build(:tool_member, :as_inventory_member, :as_participant, user: user)
-      }
-
       it 'allows the user to be added as a participant' do
-        expect{new_tool_member.save!}.to_not raise_error
-      end
-    end
-
-    context 'when the user is both a facilitator and participant' do
-      let(:user) {
-        create(:user)
-      }
-
-      let(:inventory) {
-        create(:inventory)
-      }
-
-      let!(:membership) {
-        create(:tool_member, :as_facilitator, user: user, tool: inventory)
-        create(:tool_member, :as_participant, user: user, tool: inventory)
-      }
-
-      let(:new_participant_tool_member) {
-        build(:tool_member, :as_participant, user: user, tool: inventory)
-      }
-
-      let(:new_facilitator_participant_member) {
-        build(:tool_member, :as_facilitator, user: user, tool: inventory)
-      }
-
-      it 'does not allow the user to become a participant again' do
-        expect{new_participant_tool_member.save!}
-            .to raise_error(ActiveRecord::RecordInvalid, /Role has already been taken/)
-      end
-
-      it 'does not allow the user to become a facilitator again' do
-        expect{new_facilitator_participant_member.save!}
-            .to raise_error(ActiveRecord::RecordInvalid, /Role has already been taken/)
+        tool_member.roles << ToolMember.member_roles[:participant]
+        expect { tool_member.save! }.to_not raise_error
       end
     end
   end

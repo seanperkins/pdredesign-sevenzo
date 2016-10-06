@@ -32,12 +32,12 @@ class Inventory < ActiveRecord::Base
   has_many :analyses
   has_many :tool_members, as: :tool
 
-  has_many :participants, -> { where(tool_type: 'Inventory',
-                                     role: ToolMember.member_roles[:participant])
+  has_many :participants, -> { where(tool_type: 'Inventory')
+                                   .where.contains(roles: [ToolMember.member_roles[:participant]])
   }, foreign_key: :tool_id, class_name: 'ToolMember'
 
-  has_many :facilitators, -> { where(tool_type: 'Inventory',
-                                     role: ToolMember.member_roles[:facilitator])
+  has_many :facilitators, -> { where(tool_type: 'Inventory')
+                                   .where.contains(roles: [ToolMember.member_roles[:facilitator]])
   }, foreign_key: :tool_id, class_name: 'ToolMember'
 
   validates_length_of :name, minimum: 1, maximum: 255
@@ -54,7 +54,6 @@ class Inventory < ActiveRecord::Base
   alias_attribute :user, :owner
   alias_attribute :due_date, :deadline
 
-  after_create :add_facilitator_owner
   before_save :ensure_share_token,
               :set_assigned_at
 
@@ -80,11 +79,6 @@ class Inventory < ActiveRecord::Base
   end
 
   private
-  def add_facilitator_owner
-    return unless owner
-    facilitators.create(user: owner)
-  end
-
   def set_assigned_at
     self.assigned_at = Time.now if self.assign
   end

@@ -33,7 +33,7 @@ shared_examples_for 'a created tool member with a specific tool' do |tool_sym|
       sign_in user
       post :create, tool_member: {tool_type: tool.class.to_s.upcase,
                                   tool_id: tool.id,
-                                  role: ToolMember.member_roles[:participant],
+                                  roles: [ToolMember.member_roles[:participant]],
                                   user_id: candidate.id}
     end
 
@@ -50,7 +50,15 @@ shared_examples_for 'a created tool member with a specific tool' do |tool_sym|
     }
 
     it {
-      expect(notification_worker.jobs.first['args'][0]).to eq [tool.id, candidate.id, 'participant']
+      expect(notification_worker.jobs.first['args'][0]).to eq tool.id
+    }
+
+    it {
+      expect(notification_worker.jobs.first['args'][1]).to eq candidate.id
+    }
+
+    it {
+      expect(notification_worker.jobs.first['args'][2]).to eq 'participant'
     }
   end
 
@@ -59,7 +67,7 @@ shared_examples_for 'a created tool member with a specific tool' do |tool_sym|
       sign_in user
       post :create, tool_member: {tool_type: tool.class.to_s.downcase,
                                   tool_id: tool.id,
-                                  role: ToolMember.member_roles[:participant],
+                                  roles: [ToolMember.member_roles[:participant]],
                                   user_id: candidate.id}
     end
 
@@ -76,7 +84,15 @@ shared_examples_for 'a created tool member with a specific tool' do |tool_sym|
     }
 
     it {
-      expect(notification_worker.jobs.first['args'][0]).to eq [tool.id, candidate.id, 'participant']
+      expect(notification_worker.jobs.first['args'][0]).to eq tool.id
+    }
+
+    it {
+      expect(notification_worker.jobs.first['args'][1]).to eq candidate.id
+    }
+
+    it {
+      expect(notification_worker.jobs.first['args'][2]).to eq 'participant'
     }
   end
 
@@ -89,7 +105,7 @@ shared_examples_for 'a created tool member with a specific tool' do |tool_sym|
       sign_in user
       post :create, tool_member: {tool_type: tool.class.to_s,
                                   tool_id: tool.id,
-                                  role: ToolMember.member_roles[:participant],
+                                  roles: [ToolMember.member_roles[:participant]],
                                   user_id: candidate.id}
     end
 
@@ -98,7 +114,7 @@ shared_examples_for 'a created tool member with a specific tool' do |tool_sym|
     }
 
     it {
-      expect(json['errors']['role'][0]).to eq 'has already been taken'
+      expect(json['errors']['user_id'][0]).to eq 'has already been taken'
     }
   end
 end

@@ -151,11 +151,7 @@ describe V1::ToolMembersController do
 
           context 'when the user is also a participant' do
             let!(:facilitator_user) {
-              create(:tool_member, :as_facilitator, tool: tool, user: user)
-            }
-
-            let!(:participant_user) {
-              create(:tool_member, :as_participant, tool: tool, user: user)
+              create(:tool_member, :as_facilitator_and_participant, tool: tool, user: user)
             }
 
             before(:each) do
@@ -283,7 +279,7 @@ describe V1::ToolMembersController do
 
           context 'when the facilitator is the tool owner' do
             let(:deleted_tool_member) {
-              create(:tool_member, :as_facilitator, tool: tool, user: tool.user)
+              create(:tool_member, :as_facilitator, tool: tool, user: tool.owner)
             }
 
             before(:each) do
@@ -486,8 +482,7 @@ describe V1::ToolMembersController do
 
         context 'when the user is already a facilitator and participant' do
           let!(:tool_member) {
-            create(:tool_member, :as_participant, tool: tool, user: user)
-            create(:tool_member, :as_facilitator, tool: tool, user: user)
+            create(:tool_member, :as_facilitator_and_participant, tool: tool, user: user)
           }
 
           let(:roles) {

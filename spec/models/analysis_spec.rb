@@ -152,7 +152,7 @@ describe Analysis do
     context 'when participants are added to the analysis' do
       # Inventory has one facilitator - owner
       let(:inventory) {
-        create(:inventory)
+        create(:inventory, :with_participants, participants: 5)
       }
 
       # Analysis has 3 facilitators
@@ -162,7 +162,7 @@ describe Analysis do
 
 
       let!(:analysis) {
-        create(:analysis, :with_participants, participants: 5, inventory: inventory)
+        create(:analysis, :with_participants, inventory: inventory)
       }
 
       before(:each) do
@@ -192,6 +192,7 @@ describe Analysis do
 
       before(:each) do
         expect(inventory.participants.size).to eq 10
+        expect(inventory.facilitators.size).to eq 6
         analysis.save!
         inventory.reload
       end

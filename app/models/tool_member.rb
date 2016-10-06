@@ -12,10 +12,12 @@
 #  updated_at  :datetime         not null
 #  response_id :integer
 #  id          :integer          not null, primary key
+#  roles       :integer          default([]), is an Array
 #
 
 class ToolMember < ActiveRecord::Base
   include Authority::Abilities
+  include ActiveModel::Validations
 
   belongs_to :user
   belongs_to :tool, polymorphic: true
@@ -27,6 +29,6 @@ class ToolMember < ActiveRecord::Base
       participant: 1
   }
 
-  validates_inclusion_of :role, in: ToolMember.member_roles.values
-  validates_uniqueness_of :role, scope: [:user_id, :tool_id, :tool_type]
+  validates_uniqueness_of :user_id, scope: [:tool_id, :tool_type]
+  validates :roles, role: true
 end

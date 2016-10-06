@@ -17,7 +17,7 @@ json.has_access analysis.member?(current_user) || analysis.owner == current_user
 json.inventory_id analysis.inventory_id
 json.message analysis.message || default_analysis_message if current_user
 json.is_facilitator analysis.facilitator?(current_user)
-json.participant_count analysis.participants.count
+json.participant_count analysis.participants.size
 json.report_takeaway analysis.report_takeaway
 json.share_token analysis.share_token
 

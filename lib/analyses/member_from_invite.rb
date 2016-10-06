@@ -25,7 +25,7 @@ module Analyses
       ToolMember.find_or_create_by(
           tool: analysis,
           user: user_found,
-          role: MembershipHelper.dehumanize_role(@invite.role))
+          roles: [MembershipHelper.dehumanize_role(@invite.role)])
     end
 
     def create_or_update_user

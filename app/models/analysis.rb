@@ -30,12 +30,12 @@ class Analysis < ActiveRecord::Base
   has_many :messages, as: :tool
   has_many :tool_members, as: :tool
   has_many :access_requests, as: :tool
-  has_many :participants, -> { where(tool_type: 'Analysis',
-                                     role: ToolMember.member_roles[:participant])
+  has_many :participants, -> { where(tool_type: 'Analysis')
+                                   .where.contains(roles: [ToolMember.member_roles[:participant]])
   }, foreign_key: :tool_id, class_name: 'ToolMember'
 
-  has_many :facilitators, -> { where(tool_type: 'Analysis',
-                                     role: ToolMember.member_roles[:facilitator])
+  has_many :facilitators, -> { where(tool_type: 'Analysis')
+                                   .where.contains(roles: [ToolMember.member_roles[:facilitator]])
   }, foreign_key: :tool_id, class_name: 'ToolMember'
 
   attr_accessor :assign
@@ -49,8 +49,7 @@ class Analysis < ActiveRecord::Base
   validates_presence_of :name, :deadline, :inventory, :rubric, :owner
   validates :message, presence: true, if: "assigned_at.present?"
 
-  after_create :set_members_from_inventory,
-               :add_facilitator_owner
+  after_create :set_members_from_inventory
 
   before_save :set_assigned_at,
               :ensure_share_token
@@ -84,14 +83,13 @@ class Analysis < ActiveRecord::Base
   end
 
   private
-  def add_facilitator_owner
-    self.facilitators.create(user: owner) if owner
-  end
-
   def set_members_from_inventory
     %i|participants facilitators|.each do |member_type|
       self.inventory.send(member_type).each do |tool_member|
-        self.send(member_type).create(user: tool_member.user) unless self.owner == tool_member.user
+        unless self.owner == tool_member.user
+          self.send(member_type).create(user: tool_member.user,
+                                        roles: [MembershipHelper.dehumanize_role(member_type.to_s.singularize)])
+        end
       end
     end
   end
@@ -105,13 +103,13 @@ class Analysis < ActiveRecord::Base
   end
 
   def synchronize_members_with_parent
-    self.tool_members.pluck(:user_id).each { |user_id|
+    inventory_member_ids = self.inventory.tool_members.pluck(:user_id)
+    analysis_member_ids = self.tool_members.pluck(:user_id)
+    members_missing_from_inventory = (inventory_member_ids | analysis_member_ids) - inventory_member_ids
+
+    members_missing_from_inventory.each { |user_id|
       begin
-        self.inventory.tool_members.find_or_create_by(tool: self.inventory,
-                                                      role: ToolMember.member_roles[:facilitator],
-                                                      user_id: user_id) do |tool_member|
-          tool_member.role = ToolMember.member_roles[:participant]
-        end
+        self.inventory.tool_members.create(user_id: user_id, roles: [ToolMember.member_roles[:participant]])
       rescue ActiveRecord::RecordNotUnique
         retry
       end

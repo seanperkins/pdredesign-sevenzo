@@ -8,9 +8,10 @@ module ToolOwnerMembershipConcern
   end
 
   def add_owner_as_tool_facilitator
-    facilitator = ToolMember.find_or_create_by(user: self.owner,
-                                 tool: self,
-                                 role: ToolMember.member_roles[:facilitator])
-    facilitator.save
+    facilitator = self.facilitators.find_or_create_by(user: self.owner)
+    if facilitator.new_record?
+      facilitator.roles << ToolMember.member_roles[:facilitator]
+      facilitator.save
+    end
   end
 end

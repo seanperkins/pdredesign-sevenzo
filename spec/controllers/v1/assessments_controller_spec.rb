@@ -452,7 +452,7 @@ describe V1::AssessmentsController do
         it {
           expect(ToolMember.find_by(tool: assigns(:assessment),
                                     user: facilitator,
-                                    role: ToolMember.member_roles[:facilitator])).to_not be_nil
+                                    roles: [ToolMember.member_roles[:facilitator]])).to_not be_nil
         }
       end
 

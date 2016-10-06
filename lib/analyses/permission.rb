@@ -16,9 +16,9 @@ module Analyses
       return unless ROLES.include? role
 
       member = analysis.tool_members.find_or_create_by(user: user)
-      return if member.role == ToolMember.member_roles[role]
+      return if member.roles.include?(ToolMember.member_roles[role])
 
-      member.role = MembershipHelper.dehumanize_role(role)
+      member.roles << MembershipHelper.dehumanize_role(role)
       member.save!
       notify_user_for_access_granted(role: role)
       reset_member

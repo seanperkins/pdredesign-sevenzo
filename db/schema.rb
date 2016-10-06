@@ -615,7 +615,7 @@ ActiveRecord::Schema.define(version: 20161005175736) do
 
   add_index "tool_members", ["roles"], name: "index_tool_members_on_roles", using: :gin
   add_index "tool_members", ["tool_id", "tool_type"], name: "index_tool_members_on_tool_id_and_tool_type", using: :btree
-  add_index "tool_members", ["user_id", "role", "tool_id", "tool_type"], name: "idx_tool_members_unique", unique: true, using: :btree
+  add_index "tool_members", ["user_id", "role", "tool_id", "tool_type"], name: "idx_tool_members_unique", using: :btree
 
   create_table "tool_phases", force: :cascade do |t|
     t.string  "title"

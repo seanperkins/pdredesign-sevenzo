@@ -77,6 +77,8 @@ group :development, :test do
   gem 'rails-assets-angular-mocks', '1.2.28'
   gem 'pry', '0.10.1'
   gem 'rake', '10.5.0'
+  gem 'faker', '~> 1.6.1'
+  gem 'factory_girl_rails', '~> 4.6.0'
 end
 
 group :test do
@@ -84,9 +86,9 @@ group :test do
   gem 'rspec-rails', '~> 3.4.2'
   gem 'rspec-collection_matchers'
   gem 'shoulda-matchers', '~> 3.1.1'
-  gem 'faker', '~> 1.6.1'
+
   gem 'rspec-sidekiq', '~> 2.2.0'
-  gem 'factory_girl_rails', '~> 4.6.0'
+
   gem 'database_cleaner', '~>1.5.1'
   gem 'rails-assets-karma-runner--karma-ng-html2js-preprocessor', source: 'https://rails-assets.org'
 end

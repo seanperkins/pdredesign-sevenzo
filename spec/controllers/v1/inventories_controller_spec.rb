@@ -260,7 +260,7 @@ describe V1::InventoriesController do
         it {
           expect(ToolMember.find_by(tool: assigns(:inventory),
                                     user: user,
-                                    role: ToolMember.member_roles[:facilitator])).to_not be_nil
+                                    roles: [ToolMember.member_roles[:facilitator]])).to_not be_nil
         }
 
 
