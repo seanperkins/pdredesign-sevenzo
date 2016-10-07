@@ -6,25 +6,23 @@ class V1::ToolMembersController < ApplicationController
   before_action :normalize_path_param_tool_type!, except: [:destroy, :create, :batch_update]
 
   def create
-    tool_member = ToolMember.create(tool_member_params)
+    tool_member = ToolMember.find_or_create_by(tool_type: tool_member_params[:tool_type],
+                                               tool_id: tool_member_params[:tool_id],
+                                               user_id: tool_member_params[:user_id])
     authorize_action_for tool_member
+    previous_roles = tool_member.roles
+    tool_member.roles = tool_member_params[:roles]
+    new_record = tool_member.new_record?
     if tool_member.save
-      tool_member.roles.each { |role|
+      notifiable_roles(previous_roles, tool_member.roles).each { |role|
         send_access_granted_email(tool_member, MembershipHelper.humanize_role(role))
       }
 
-      render nothing: true, status: :created
+      render nothing: true, status: (new_record ?  :created : :no_content)
     else
       @errors = tool_member.errors
       render 'v1/shared/errors', errors: @errors, status: :bad_request
     end
-  end
-
-  def batch_update
-    batch_tool_member_update_params[:members].each { |tool_member|
-      puts tool_member.inspect
-    }
-    render nothing: true, status: :not_found
   end
 
   def show
@@ -176,8 +174,8 @@ class V1::ToolMembersController < ApplicationController
     params.require(:tool_member).permit(:tool_type, :tool_id, :user_id, roles: [])
   end
 
-  def batch_tool_member_update_params
-    params.require(:tool_member).permit(members: [:id, :is_facilitator, :is_participant])
+  def notifiable_roles(original_roles, new_roles)
+    (original_roles | new_roles) - original_roles
   end
 
   def tool_member_access_request_params

@@ -5,21 +5,21 @@
   </div>
   <div ng-if="vm.list.length > 0">
     <form id="current_user_permissions" name="vm.currentUserPermissions">
-      <div class="row row-participant-add" ng-repeat="user in vm.list">
+      <div class="row row-participant-add" ng-repeat="member in vm.list">
         <div class="col-md-3 participants-flex-row">
-          <img alt="" class="img-polaroid flex-avatar" ng-src="{{user.avatar}}" width="47"/>
-          <p class="name_label flex-name-label">{{user.full_name}}</p>
+          <img alt="" class="img-polaroid flex-avatar" ng-src="{{member.avatar}}" width="47"/>
+          <p class="name_label flex-name-label">{{member.full_name}}</p>
         </div>
         <div class="col-md-5 participants-flex-row">
-          <p class="info important_label flex-label">{{user.email}}</p>
+          <p class="info important_label flex-label">{{member.email}}</p>
         </div>
         <div class="col-md-4 participants-flex-column">
-          <label for="active-permissions-{{user.id}}" class="level_label">Permissions</label>
-          <fieldset id="active-permissions-{{user.id}}">
-            <label for="facilitator-{{user.id}}">Facilitator</label>
-            <input id="facilitator-{{user.id}}" type="checkbox" ng-model="user.is_facilitator">
-            <label for="participant-{{user.id}}">Participant</label>
-            <input id="participant-{{user.id}}" type="checkbox" ng-model="user.is_participant">
+          <label for="active-permissions-{{member.id}}" class="level_label">Permissions</label>
+          <fieldset id="active-permissions-{{member.id}}">
+            <label for="facilitator-{{member.id}}">Facilitator</label>
+            <input id="facilitator-{{member.id}}" type="checkbox" ng-model="member.is_facilitator">
+            <label for="participant-{{member.id}}">Participant</label>
+            <input id="participant-{{member.id}}" type="checkbox" ng-model="member.is_participant">
           </fieldset>
         </div>
       </div>

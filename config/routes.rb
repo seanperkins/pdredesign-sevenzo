@@ -138,7 +138,6 @@ PdrServer::Application.routes.draw do
 
     #Tool Members Routes
     post 'tool_members', to: 'tool_members#create'
-    post 'tool_members/batch_update', to: 'tool_members#batch_update'
     get 'tool_members/tool_type/:tool_type/tool_id/:tool_id', to: 'tool_members#show'
     get 'tool_members/tool_type/:tool_type/tool_id/:tool_id/all', to: 'tool_members#show_all'
     get 'tool_members/tool_type/:tool_type/tool_id/:tool_id/invitable_members', to: 'tool_members#invitable_members'

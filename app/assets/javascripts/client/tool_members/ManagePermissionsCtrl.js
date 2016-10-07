@@ -17,27 +17,38 @@
 
     vm.list = vm.loadMembers();
 
+    vm.determineRoles = function (element) {
+      var roles = [];
+      if (element.is_facilitator) {
+        roles.push(0);
+      }
+
+      if (element.is_participant) {
+        roles.push(1);
+      }
+
+      return roles;
+    };
+
     vm.save = function () {
-      var membersToUpdate = [],
-        membersToDelete = [];
-      angular.forEach(vm.list, function (element) {
-        if (element.is_facilitator || element.is_participant) {
-          membersToUpdate.push({
-            id: element.id,
-            is_facilitator: element.is_facilitator,
-            is_participant: element.is_participant
+      angular.forEach(vm.list, function (member) {
+        if (member.is_facilitator || member.is_participant) {
+          var updatableMember = {
+            user_id: member.user_id,
+            roles: vm.determineRoles(member)
+          };
+          ToolMemberService.updatePermissions(updatableMember).then(function (response) {
+            console.log(response);
+            console.log('right');
+          }).catch(function (err) {
+            console.log(err);
+            console.log('wait, why did this break');
           });
         } else {
-          membersToDelete.push({
-            id: element.id
+          console.log({
+            id: member.id
           });
         }
-      });
-      ToolMemberService.batchUpdate(membersToUpdate).then(function () {
-        console.log('wait, what??');
-      }).catch(function (err) {
-        console.log(err);
-        console.log('okay');
       });
     };
   }

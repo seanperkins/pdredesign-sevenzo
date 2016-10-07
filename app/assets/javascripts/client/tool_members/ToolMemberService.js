@@ -27,6 +27,17 @@
       });
     };
 
+    service.updatePermissions = function (member) {
+      return ToolMember.create({
+        tool_member: {
+          tool_type: service.context,
+          tool_id: service.extractId(),
+          user_id: member.user_id,
+          roles: member.roles
+        }
+      }).$promise;
+    };
+
     service.removeParticipant = function (participant) {
       // if (service.context === 'assessment') {
       //   return Participant.delete({
@@ -101,13 +112,5 @@
         tool_id: service.extractId()
       });
     };
-
-    service.batchUpdate = function (members) {
-      return ToolMember.batchUpdate({
-        tool_member: {
-          members: members
-        }
-      }).$promise;
-    }
   }
 })();

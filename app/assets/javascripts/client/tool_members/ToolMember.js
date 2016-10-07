@@ -15,10 +15,6 @@
         method: 'POST',
         url: UrlService.url('tool_members')
       },
-      'batchUpdate': {
-        method: 'POST',
-        url: UrlService.url('tool_members/batch_update')
-      },
       'grant': {
         method: 'POST',
         params: {
