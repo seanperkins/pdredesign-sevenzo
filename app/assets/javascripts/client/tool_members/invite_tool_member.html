@@ -1,0 +1,56 @@
+<form name="formInviteParticipant" novalidate>
+  <alert ng-repeat="alert in vm.alerts()" type="{{alert.type}}" close="vm.closeAlert($index)">{{alert.message}}</alert>
+  <div class="row">
+    <div class="flush-left col-md-4">
+      <div class="form-group">
+        <input class="form-control"
+               placeholder="First Name"
+               type="text"
+               ng-model="vm.inviteUser.first_name"
+               required>
+      </div>
+    </div>
+
+    <div class="flush-right col-md-8">
+      <div class="form-group">
+        <input class="form-control"
+               placeholder="Last Name"
+               type="text"
+               ng-model="vm.inviteUser.last_name"
+               required>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <input class="form-control"
+           placeholder="Email Address"
+           type="email"
+           name="input"
+           ng-model="vm.inviteUser.email"
+           required>
+  </div>
+
+  <div class="form-group">
+    <input class="form-control"
+           placeholder="Team Role (e.g. Finance, HR)"
+           type="text"
+           ng-model="vm.inviteUser.teamRole">
+  </div>
+  <div class="from-group" ng-init="vm.inviteUser.role='participant'">
+    <label for="permissions-level" class="level_label">Set Permissions Level: </label>
+    <select id="permissions-level" class="btn btn-primary btn-xs" ng-model="vm.inviteUser.role">
+      <option ng-selected="vm.inviteUser.role" value="participant">Participant</option>
+      <option value="facilitator">Facilitator</option>
+    </select>
+    <permissions-info data-placement="right"></permissions-info>
+  </div>
+</form>
+<div class="modal-footer">
+  <div class="btn btn-primary pull-right"
+       ng-disabled="formInviteParticipant.$invalid"
+       ng-click="vm.sendInvitation()"
+       data-dismiss="modal">
+    Add to District
+  </div>
+</div>

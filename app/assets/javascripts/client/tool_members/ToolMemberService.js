@@ -6,10 +6,13 @@
 
   ToolMemberService.$inject = [
     '$stateParams',
-    'ToolMember'
+    'ToolMember',
+    'UserInvitation',
+    'InventoryInvitation',
+    'AnalysisInvitation'
   ];
 
-  function ToolMemberService($stateParams, ToolMember) {
+  function ToolMemberService($stateParams, ToolMember, UserInvitation, InventoryInvitation, AnalysisInvitation) {
     var service = this;
 
     service.setContext = function (context) {
@@ -97,6 +100,27 @@
         tool_type: service.context,
         tool_id: service.extractId()
       });
+    };
+
+    service.sendInvitation = function (invitedUser) {
+      switch (service.context) {
+        case 'assessment':
+          return UserInvitation.create({
+            assessment_id: $stateParams.id
+          }, invitedUser)
+            .$promise;
+        case 'analysis':
+          return AnalysisInvitation.create({
+            inventory_id: $stateParams.inventory_id,
+            analysis_id: $stateParams.id
+          }, invitedUser)
+            .$promise;
+        case 'inventory':
+          return InventoryInvitation.create({
+            inventory_id: $stateParams.inventory_id
+          }, invitedUser)
+            .$promise;
+      }
     };
   }
 })();
