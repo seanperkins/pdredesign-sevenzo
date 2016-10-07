@@ -38,15 +38,19 @@
             roles: vm.determineRoles(member)
           };
           ToolMemberService.updatePermissions(updatableMember).then(function (response) {
-            console.log(response);
-            console.log('right');
+
           }).catch(function (err) {
-            console.log(err);
-            console.log('wait, why did this break');
+
           });
         } else {
-          console.log({
+          var deletableMember = {
             id: member.id
+          };
+
+          ToolMemberService.removeMember(deletableMember).then(function (response) {
+            console.log(response);
+          }).catch(function(err) {
+            console.log(err);
           });
         }
       });

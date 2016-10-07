@@ -38,24 +38,10 @@
       }).$promise;
     };
 
-    service.removeParticipant = function (participant) {
-      // if (service.context === 'assessment') {
-      //   return Participant.delete({
-      //     assessment_id: service.extractId(),
-      //     id: participant.participant_id
-      //   }, {user_id: participant.id}).$promise;
-      // } else if (service.context === 'inventory') {
-      //   return InventoryParticipant.delete({
-      //     inventory_id: service.extractId(),
-      //     id: participant.participant_id
-      //   }).$promise;
-      // } else if (service.context === 'analysis') {
-      //   return AnalysisParticipant.delete({
-      //     inventory_id: $stateParams.inventory_id,
-      //     analysis_id: $stateParams.id,
-      //     id: participant.participant_id
-      //   }).$promise;
-      // }
+    service.removeMember = function (member) {
+      return ToolMember.revoke({
+        id: member.id
+      }).$promise;
     };
 
     service.updateParticipantList = function () {
