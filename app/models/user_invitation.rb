@@ -13,9 +13,10 @@
 #
 
 class UserInvitation < ActiveRecord::Base
-  validates :email, presence: true
+  validates :email, presence: true,
+            uniqueness: {scope: :assessment_id, message: 'User has already been invited'},
+            email: true
   validates :assessment_id, presence: true
-  validates :email, uniqueness: { scope: :assessment_id, message: 'User has already been invited' }
 
   before_create :create_token
 
@@ -32,7 +33,7 @@ class UserInvitation < ActiveRecord::Base
 
   def create_token
     return if token
-    self.token = generate_hash 
+    self.token = generate_hash
   end
 
   def generate_hash
