@@ -20,7 +20,7 @@
     };
 
     service.extractId = function () {
-      return $stateParams.inventory_id || $stateParams.assessment_id || $stateParams.id;
+      return $stateParams.analysis_id || $stateParams.inventory_id || $stateParams.assessment_id || $stateParams.id;
     };
 
     service.loadParticipants = function () {
@@ -112,7 +112,7 @@
         case 'analysis':
           return AnalysisInvitation.create({
             inventory_id: $stateParams.inventory_id,
-            analysis_id: $stateParams.id
+            analysis_id: $stateParams.analysis_id
           }, invitedUser)
             .$promise;
         case 'inventory':

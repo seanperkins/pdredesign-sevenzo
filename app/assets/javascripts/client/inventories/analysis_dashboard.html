@@ -25,15 +25,8 @@
       </div>
     </div>
     <div class="row">
-      <div class="col-lg-12">
-        <add-analysis-users-link></add-analysis-users-link>
-      </div>
-      <div class="col-lg-12">
-        <manage-analysis-permissions-link></manage-analysis-permissions-link>
-      </div>
-      <div class="col-lg-12">
-        <invite-analysis-user-link send-invite="true"></invite-analysis-user-link>
-      </div>
+      <member-list members="analysisDashboard.members"></member-list>
+      <manage-members context="analysis" ng-if="analysisDashboard.inventory.is_facilitator_or_participant"></manage-members>
     </div>
     <div id="messages">
       <div class="col-md-12 header">

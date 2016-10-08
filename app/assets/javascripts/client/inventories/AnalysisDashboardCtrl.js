@@ -7,18 +7,18 @@
   AnalysisDashboardCtrl.$inject = [
     '$modal',
     '$scope',
-    'CreateService',
+    'ToolMemberService',
     'inventory',
     'current_analysis',
     'analysisMessages'
   ];
 
-  function AnalysisDashboardCtrl($modal, $scope, CreateService, inventory, current_analysis, analysisMessages) {
+  function AnalysisDashboardCtrl($modal, $scope, ToolMemberService, inventory, current_analysis, analysisMessages) {
     var vm = this;
     vm.currentAnalysis = current_analysis;
-    CreateService.setContext('analysis');
+    ToolMemberService.setContext('analysis');
     vm.inventory = inventory;
-    vm.participants = CreateService.loadParticipants();
+    vm.participants = ToolMemberService.loadParticipants();
     vm.messages = analysisMessages.messages;
 
     vm.createReminder = function() {
@@ -33,7 +33,7 @@
     });
 
     $scope.$on('update_participants', function() {
-      vm.participants = CreateService.loadParticipants();
+      vm.participants = ToolMemberService.loadParticipants();
     });
   }
 })();
