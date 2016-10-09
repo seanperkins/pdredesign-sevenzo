@@ -95,26 +95,4 @@ shared_examples_for 'a created tool member with a specific tool' do |tool_sym|
       expect(notification_worker.jobs.first['args'][2]).to eq 'participant'
     }
   end
-
-  context 'when the entity to be created already exists' do
-    let!(:preexisting_candidate_membership) {
-      create(:tool_member, :as_participant, tool: tool, user: candidate)
-    }
-
-    before(:each) do
-      sign_in user
-      post :create, tool_member: {tool_type: tool.class.to_s,
-                                  tool_id: tool.id,
-                                  roles: [ToolMember.member_roles[:participant]],
-                                  user_id: candidate.id}
-    end
-
-    it {
-      is_expected.to respond_with :bad_request
-    }
-
-    it {
-      expect(json['errors']['user_id'][0]).to eq 'has already been taken'
-    }
-  end
 end

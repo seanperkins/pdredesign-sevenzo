@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Inventories::Permission do
+xdescribe Inventories::Permission, 'Disabled until the permission pieces settles down' do
   describe "#role" do
     context "as participant" do
       let(:inventory) { create(:inventory, :with_participants) }
