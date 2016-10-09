@@ -19,10 +19,10 @@ ActiveRecord::Schema.define(version: 20161005175736) do
   create_table "access_requests", force: :cascade do |t|
     t.integer  "tool_id"
     t.integer  "user_id"
-    t.string   "roles",      default: [], array: true
+    t.string   "roles",                  default: [], array: true
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "token"
+    t.string   "token",      limit: 255
     t.string   "tool_type"
   end
 
@@ -201,10 +201,10 @@ ActiveRecord::Schema.define(version: 20161005175736) do
   end
 
   create_table "district_messages", force: :cascade do |t|
-    t.string   "name"
-    t.string   "address"
-    t.string   "sender_name"
-    t.string   "sender_email"
+    t.string   "name",         limit: 255
+    t.string   "address",      limit: 255
+    t.string   "sender_name",  limit: 255
+    t.string   "sender_email", limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -249,14 +249,14 @@ ActiveRecord::Schema.define(version: 20161005175736) do
   end
 
   create_table "faq_categories", force: :cascade do |t|
-    t.string   "heading"
+    t.string   "heading",    limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
   create_table "faq_questions", force: :cascade do |t|
-    t.string   "role"
-    t.string   "topic"
+    t.string   "role",        limit: 255
+    t.string   "topic",       limit: 255
     t.integer  "category_id"
     t.text     "content"
     t.text     "answer"
@@ -413,8 +413,8 @@ ActiveRecord::Schema.define(version: 20161005175736) do
   end
 
   create_table "organizations", force: :cascade do |t|
-    t.string "name"
-    t.string "logo"
+    t.string "name", limit: 255
+    t.string "logo", limit: 255
   end
 
   create_table "organizations_users", id: false, force: :cascade do |t|
@@ -595,7 +595,7 @@ ActiveRecord::Schema.define(version: 20161005175736) do
   add_index "technical_questions", ["product_entry_id"], name: "index_technical_questions_on_product_entry_id", using: :btree
 
   create_table "tool_categories", force: :cascade do |t|
-    t.string  "title"
+    t.string  "title",         limit: 255
     t.integer "display_order"
     t.integer "tool_phase_id"
   end
@@ -615,24 +615,24 @@ ActiveRecord::Schema.define(version: 20161005175736) do
 
   add_index "tool_members", ["roles"], name: "index_tool_members_on_roles", using: :gin
   add_index "tool_members", ["tool_id", "tool_type"], name: "index_tool_members_on_tool_id_and_tool_type", using: :btree
-  add_index "tool_members", ["user_id", "role", "tool_id", "tool_type"], name: "idx_tool_members_unique", using: :btree
+  add_index "tool_members", ["user_id", "role", "tool_id", "tool_type"], name: "idx_tool_members_unique", unique: true, using: :btree
 
   create_table "tool_phases", force: :cascade do |t|
-    t.string  "title"
+    t.string  "title",         limit: 255
     t.text    "description"
     t.integer "display_order"
   end
 
   create_table "tool_subcategories", force: :cascade do |t|
-    t.string  "title"
+    t.string  "title",            limit: 255
     t.integer "display_order"
     t.integer "tool_category_id"
   end
 
   create_table "tools", force: :cascade do |t|
-    t.string  "title"
+    t.string  "title",               limit: 255
     t.text    "description"
-    t.string  "url"
+    t.string  "url",                 limit: 255
     t.boolean "is_default"
     t.integer "display_order"
     t.integer "tool_subcategory_id"
@@ -655,11 +655,11 @@ ActiveRecord::Schema.define(version: 20161005175736) do
   add_index "usage_questions", ["product_entry_id"], name: "index_usage_questions_on_product_entry_id", using: :btree
 
   create_table "user_invitations", force: :cascade do |t|
-    t.string  "first_name"
-    t.string  "last_name"
-    t.string  "email"
-    t.string  "team_role"
-    t.string  "token"
+    t.string  "first_name",    limit: 255
+    t.string  "last_name",     limit: 255
+    t.string  "email",         limit: 255
+    t.string  "team_role",     limit: 255
+    t.string  "token",         limit: 255
     t.integer "assessment_id"
     t.integer "user_id"
   end
