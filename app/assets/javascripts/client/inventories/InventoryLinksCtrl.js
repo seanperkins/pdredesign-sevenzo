@@ -1,8 +1,8 @@
-(function() {
+(function () {
   'use strict';
 
   angular.module('PDRClient')
-      .controller('InventoryLinksCtrl', InventoryLinksCtrl);
+    .controller('InventoryLinksCtrl', InventoryLinksCtrl);
 
   InventoryLinksCtrl.$inject = [
     '$scope',
@@ -18,48 +18,56 @@
     var vm = this;
     AccessService.setContext('inventory');
 
-    vm.orderLinks = function(items) {
+    vm.orderLinks = function (items) {
       return EntryItemService.orderLinks(items);
     };
 
     // Baggage - defined on scope to preserve behavior with assessmentLinks
     // Will want to refactor into directive
 
-    $scope.requestAccess = function() {
+    $scope.requestAccess = function () {
       if (SessionService.isNetworkPartner()) {
-        $scope.performAccessRequest('facilitator').then(function() {
+        $scope.performAccessRequest('facilitator').then(function () {
         });
       } else {
         $scope.modal = $modal.open({
           templateUrl: 'client/access/request_access.html',
-          scope: $scope,
-          windowClass: 'request-access-window'
+          controller: 'RequestAccessCtrl as vm',
+          windowClass: 'request-access-window',
+          resolve: {
+            toolId: function() {
+              return $scope.id;
+            },
+            toolType: function() {
+              return 'inventory';
+            }
+          }
         });
       }
     };
 
-    $scope.close = function() {
+    $scope.close = function () {
       $scope.modal.dismiss('cancel');
     };
 
-    $scope.submitAccessRequest = function(roles) {
-      $scope.performAccessRequest(roles).then(function() {
+    $scope.submitAccessRequest = function (roles) {
+      $scope.performAccessRequest(roles).then(function () {
         $scope.modal.dismiss('cancel');
       })
     };
 
-    $scope.performAccessRequest = function(role) {
+    $scope.performAccessRequest = function (role) {
       var deferred = $q.defer();
       AccessService
-          .save($scope.id, role)
-          .then(function() {
-            $state.go($state.$current, null, {reload: true});
-            deferred.resolve();
-          }, deferred.reject);
+        .save($scope.id, role)
+        .then(function () {
+          $state.go($state.$current, null, {reload: true});
+          deferred.resolve();
+        }, deferred.reject);
       return deferred.promise;
     };
 
-    vm.invokeAction = function(link) {
+    vm.invokeAction = function (link) {
       switch (link.type) {
         case 'request_access':
           $scope.requestAccess();
@@ -69,7 +77,7 @@
       }
     };
 
-    vm.location = function(link) {
+    vm.location = function (link) {
       var inventory_route_stem = '#/inventories/' + $scope.id;
       switch (link.type) {
         case 'finish':

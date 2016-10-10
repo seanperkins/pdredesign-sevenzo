@@ -26,7 +26,8 @@
     };
 
     vm.addUser = function (user) {
-      ToolMemberService.createParticipant(user)
+      var roles = [1];
+      ToolMemberService.createParticipant(user, roles)
         .then(function() {
           vm.loadInvitables();
           $scope.$emit('close-add-participants');

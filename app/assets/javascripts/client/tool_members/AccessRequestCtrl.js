@@ -17,7 +17,7 @@
     };
 
     vm.denyRequest = function (request_id) {
-      if($window.confirm('Are you sure you want to deny this access request?')) {
+      if ($window.confirm('Are you sure you want to deny this access request?')) {
         ToolMemberService.denyRequest(request_id)
           .then(function () {
             vm.list = vm.loadList();
@@ -26,10 +26,13 @@
     };
 
     vm.grantRequest = function (request_id) {
-      if($window.confirm('Are you sure you want to accept this access request?')) {
+      if ($window.confirm('Are you sure you want to accept this access request?')) {
         ToolMemberService.grantRequest(request_id)
-          .then(function () {
-            vm.list = vm.loadList();
+          .then(function (newMember) {
+            ToolMemberService.createParticipant(newMember.user, newMember.user.roles)
+              .then(function () {
+                vm.list = vm.loadList();
+              });
           });
       }
     };

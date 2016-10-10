@@ -61,11 +61,11 @@
       }).$promise;
     };
 
-    service.createParticipant = function (user) {
+    service.createParticipant = function (user, roles) {
       return ToolMember.create({
         tool_member: {
           user_id: user.id,
-          roles: [1],
+          roles: roles,
           tool_type: service.context,
           tool_id: service.extractId()
         }
@@ -92,6 +92,19 @@
         tool_type: service.context,
         tool_id: service.extractId(),
         id: request_id
+      }).$promise;
+    };
+
+    service.requestAccess = function (toolId, role) {
+      return ToolMember.requestAccess({
+        tool_type: service.context,
+        tool_id: toolId
+      }, {
+        access_request: {
+          roles: [
+            role
+          ]
+        }
       }).$promise;
     };
 

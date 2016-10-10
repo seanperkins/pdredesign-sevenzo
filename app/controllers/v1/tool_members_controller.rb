@@ -18,7 +18,7 @@ class V1::ToolMembersController < ApplicationController
         send_access_granted_email(tool_member, MembershipHelper.humanize_role(role))
       }
       tool_member.tool.save
-      render nothing: true, status: (new_record ?  :created : :no_content)
+      render nothing: true, status: (new_record ? :created : :no_content)
     else
       @errors = tool_member.errors
       render 'v1/shared/errors', errors: @errors, status: :bad_request
@@ -99,16 +99,12 @@ class V1::ToolMembersController < ApplicationController
 
     access_request = access_request_query.first
 
-    @candidates = []
-
-    access_request.roles.each { |role|
-      @candidates.push(ToolMember.new(tool: access_request.tool,
-                                      role: MembershipHelper.dehumanize_role(role),
-                                      user: access_request.user))
-    }
+    @candidate = ToolMember.new(tool: access_request.tool,
+                                roles: MembershipHelper.dehumanize_roles(access_request.roles),
+                                user: access_request.user)
 
     access_request.destroy
-    render 'v1/tool_members/grant', candidates: @candidates
+    render 'v1/tool_members/grant'
   end
 
   authority_actions grant: :create
