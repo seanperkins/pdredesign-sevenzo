@@ -17,7 +17,7 @@ class V1::ToolMembersController < ApplicationController
       notifiable_roles(previous_roles, tool_member.roles).each { |role|
         send_access_granted_email(tool_member, MembershipHelper.humanize_role(role))
       }
-
+      tool.save
       render nothing: true, status: (new_record ?  :created : :no_content)
     else
       @errors = tool_member.errors
