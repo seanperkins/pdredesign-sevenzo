@@ -5,10 +5,12 @@
     .controller('ManagePermissionsCtrl', ManagePermissionsCtrl);
 
   ManagePermissionsCtrl.$inject = [
+    '$rootScope',
+    '$scope',
     'ToolMemberService'
   ];
 
-  function ManagePermissionsCtrl(ToolMemberService) {
+  function ManagePermissionsCtrl($rootScope, $scope, ToolMemberService) {
     var vm = this;
 
     vm.loadMembers = function () {
@@ -37,10 +39,11 @@
             user_id: member.user_id,
             roles: vm.determineRoles(member)
           };
-          ToolMemberService.updatePermissions(updatableMember).then(function (response) {
-
-          }).catch(function (err) {
-
+          ToolMemberService.updatePermissions(updatableMember)
+            .then(function (response) {
+              console.log(response);
+            }).catch(function (err) {
+              console.log(err);
           });
         } else {
           var deletableMember = {
@@ -49,11 +52,13 @@
 
           ToolMemberService.removeMember(deletableMember).then(function (response) {
             console.log(response);
-          }).catch(function(err) {
+          }).catch(function (err) {
             console.log(err);
           });
         }
       });
+      $rootScope.$broadcast('update_participants');
+      $scope.closeFn();
     };
   }
 })();

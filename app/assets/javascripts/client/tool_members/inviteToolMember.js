@@ -8,7 +8,8 @@
     return {
       restrict: 'E',
       scope: {
-        context: '@'
+        context: '@',
+        closeFn: '&'
       },
       templateUrl: 'client/tool_members/invite_tool_member.html',
       controller: 'InviteToolMemberCtrl',

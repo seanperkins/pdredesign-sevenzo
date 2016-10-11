@@ -18,7 +18,6 @@
       ToolMemberService.updateInvitableParticipantList()
         .then(function (result) {
           vm.invitables = result;
-          $rootScope.$broadcast('update_participants');
           $rootScope.$broadcast('success_change');
         }).catch(function () {
           $rootScope.$broadcast('success_change');
@@ -29,7 +28,7 @@
       var roles = [1];
       ToolMemberService.createParticipant(user, roles)
         .then(function() {
-          vm.loadInvitables();
+          $rootScope.$broadcast('update_participants');
           $scope.$emit('close-add-participants');
         });
     };

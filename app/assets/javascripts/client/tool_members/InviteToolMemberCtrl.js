@@ -5,11 +5,13 @@
     .controller('InviteToolMemberCtrl', InviteToolMemberCtrl);
 
   InviteToolMemberCtrl.$inject = [
+    '$scope',
+    '$rootScope',
     'AlertService',
     'ToolMemberService'
   ];
 
-  function InviteToolMemberCtrl(AlertService, ToolMemberService) {
+  function InviteToolMemberCtrl($scope, $rootScope, AlertService, ToolMemberService) {
     var vm = this;
 
     AlertService.flush();
@@ -25,8 +27,9 @@
     vm.sendInvitation = function () {
       vm.inviteUser.send_invite = true;
       ToolMemberService.sendInvitation(vm.inviteUser)
-        .then(function (result) {
-
+        .then(function () {
+          $rootScope.$broadcast('update_participants');
+          $scope.closeFn();
         })
         .catch(function (response) {
           angular.forEach(response.data.errors, function (message, field) {
