@@ -17,9 +17,11 @@ class AnalysisInvitation < ActiveRecord::Base
   belongs_to :user
   belongs_to :analysis
 
-  validates :email, presence: true
+  validates :email, presence: true,
+            uniqueness: {scope: :analysis_id, message: 'User has already been invited'},
+            email: true
   validates :analysis_id, presence: true
-  validates :email, uniqueness: { scope: :analysis_id, message: 'User has already been invited' }
+  validates :role, presence: true
 
   before_create :create_token
 
@@ -29,7 +31,7 @@ class AnalysisInvitation < ActiveRecord::Base
 
   private
   def create_token
-    self.token ||= generate_hash 
+    self.token ||= generate_hash
   end
 
   def generate_hash

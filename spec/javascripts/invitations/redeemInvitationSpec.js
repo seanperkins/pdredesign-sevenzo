@@ -377,7 +377,7 @@
           it('navigates to the inventory analysis dashboard page', function () {
             expect($state.go).toHaveBeenCalledWith('inventory_analysis_dashboard', {
               inventory_id: invitedUser.inventory_id,
-              id: invitedUser.analysis_id
+              analysis_id: invitedUser.analysis_id
             });
           });
         });

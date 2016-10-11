@@ -3,7 +3,7 @@ require 'spec_helper'
 describe InventoryInvitationNotificationWorker do
   describe '#perform' do
     let(:inventory) { FactoryGirl.create(:inventory, :with_members) }
-    let(:member) { inventory.members.first }
+    let(:member) { inventory.tool_members.first }
     let(:user) { member.user }
     let(:invitation) { FactoryGirl.create(:inventory_invitation, inventory: inventory, user: user) }
     let(:mailer) { double('mailer') }

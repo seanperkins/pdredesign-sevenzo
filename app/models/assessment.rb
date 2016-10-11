@@ -69,6 +69,7 @@ class Assessment < ActiveRecord::Base
   before_save :ensure_share_token
 
   alias_attribute :owner_id, :user_id
+  alias_method :owner, :user
 
   def validate_participants
     return unless self.participants.empty?

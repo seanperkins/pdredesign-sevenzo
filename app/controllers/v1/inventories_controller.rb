@@ -18,7 +18,6 @@ class V1::InventoriesController < ApplicationController
     @inventory.district = District.where(id: inventory_params[:district][:id]).first
     @inventory.owner = current_user
     if @inventory.save
-      ToolMember.create!(user: @inventory.owner, tool: @inventory, role: ToolMember.member_roles[:facilitator])
       render template: 'v1/inventories/show'
     else
       render_error
@@ -47,7 +46,7 @@ class V1::InventoriesController < ApplicationController
   end
 
   def mark_complete
-    member = inventory.members.where(user: current_user).first
+    member = inventory.tool_members.where(user: current_user).first
     response = InventoryResponse.find_or_create_by(inventory_member: member)
     response.submitted_at = Time.parse(params[:submitted_at])
 
@@ -63,7 +62,7 @@ class V1::InventoriesController < ApplicationController
   authority_actions mark_complete: :update
 
   def save_response
-    member = inventory.members.where(user: current_user).first
+    member = inventory.tool_members.where(user: current_user).first
     response = InventoryResponse.find_or_create_by(inventory_member: member)
     if response.save
       render nothing: true
@@ -78,7 +77,7 @@ class V1::InventoriesController < ApplicationController
   authority_actions save_response: :update
 
   def participant_response
-    member = inventory.members.where(user: current_user).first
+    member = inventory.tool_members.where(user: current_user).first
     render json: {
         hasResponded: member.has_responded?
     }, status: :ok

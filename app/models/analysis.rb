@@ -19,12 +19,24 @@
 class Analysis < ActiveRecord::Base
   include Authority::Abilities
   include MessageMigrationConcern
-
-  self.authorizer_name = 'AnalysisAuthorizer'
+  include MembershipConcern
+  include ToolOwnerMembershipConcern
 
   belongs_to :inventory
   belongs_to :rubric
   belongs_to :owner, class_name: 'User'
+
+  has_one :response, as: :responder, dependent: :destroy
+  has_many :messages, as: :tool
+  has_many :tool_members, as: :tool
+  has_many :access_requests, as: :tool
+  has_many :participants, -> { where(tool_type: 'Analysis')
+                                   .where.contains(roles: [ToolMember.member_roles[:participant]])
+  }, foreign_key: :tool_id, class_name: 'ToolMember'
+
+  has_many :facilitators, -> { where(tool_type: 'Analysis')
+                                   .where.contains(roles: [ToolMember.member_roles[:facilitator]])
+  }, foreign_key: :tool_id, class_name: 'ToolMember'
 
   attr_accessor :assign
 
@@ -33,38 +45,21 @@ class Analysis < ActiveRecord::Base
   alias_attribute :user, :owner
 
   delegate :district, to: :inventory, prefix: false
+  delegate :district_id, to: :inventory, prefix: false
 
   validates_presence_of :name, :deadline, :inventory, :rubric, :owner
   validates :message, presence: true, if: "assigned_at.present?"
 
-  has_many :messages, as: :tool
-  has_many :members, class_name: 'AnalysisMember'
-  has_many :participants, -> { where(role: 'participant') }, class_name: 'AnalysisMember'
-  has_many :facilitators, -> { where(role: 'facilitator') }, class_name: 'AnalysisMember'
-  has_many :access_requests, class_name: 'AnalysisAccessRequest'
-  has_one :response, as: :responder, dependent: :destroy
+  after_create :set_members_from_inventory
 
-  after_create :set_members_from_inventory, :add_facilitator_owner
-  before_save :set_assigned_at, :ensure_share_token
+  before_save :set_assigned_at,
+              :ensure_share_token
 
-  def facilitator?(user)
-    return false if user.nil?
-    facilitators.exists?(user_id: user.id) || owner.id == user.id
-  end
-
-  def participant?(user)
-    return false if user.nil?
-    participants.exists?(user_id: user.id)
-  end
-
-  def member?(user:)
-    return false if user.nil?
-    self.members.where(user: user).exists?
-  end
+  after_save :synchronize_members_with_parent
 
   def team_roles_for_participants
-    self.members
-        .joins(:user)
+    self.tool_members
+        .includes(:user)
         .pluck('users.team_role')
         .uniq
         .compact
@@ -88,20 +83,14 @@ class Analysis < ActiveRecord::Base
     access_requests.exists?(user: user)
   end
 
-  def network_partner?(user)
-    return false if user.nil?
-    self.members.joins(:user).exists?(user_id: user.id, users: {role: 'network_partner'})
-  end
-
   private
-  def add_facilitator_owner
-    self.facilitators.create(user: owner) if owner
-  end
-
   def set_members_from_inventory
     %i|participants facilitators|.each do |member_type|
-      self.inventory.send(member_type).each do |inventory_member|
-        self.send(member_type).create(user: inventory_member.user) unless self.owner == inventory_member.user
+      self.inventory.send(member_type).each do |tool_member|
+        unless self.owner == tool_member.user
+          self.send(member_type).create(user: tool_member.user,
+                                        roles: [MembershipHelper.dehumanize_role(member_type.to_s.singularize)])
+        end
       end
     end
   end
@@ -112,5 +101,19 @@ class Analysis < ActiveRecord::Base
 
   def ensure_share_token
     self.share_token ||= SecureRandom.hex(32)
+  end
+
+  def synchronize_members_with_parent
+    inventory_member_ids = self.inventory.tool_members.pluck(:user_id)
+    analysis_member_ids = self.tool_members.pluck(:user_id)
+    members_missing_from_inventory = (inventory_member_ids | analysis_member_ids) - inventory_member_ids
+
+    members_missing_from_inventory.each { |user_id|
+      begin
+        self.inventory.tool_members.create(user_id: user_id, roles: [ToolMember.member_roles[:participant]])
+      rescue ActiveRecord::RecordNotUnique
+        retry
+      end
+    }
   end
 end

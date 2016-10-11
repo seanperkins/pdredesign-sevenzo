@@ -16,11 +16,17 @@ class ResponseAuthorizer < ApplicationAuthorizer
 
   private
   def is_facilitator_or_owner(user)
-    if resource.responder && %w(Assessment Analysis).include?(resource.responder_type)
+    if resource.responder_type == 'Assessment'
       resource.responder.facilitator?(user)
+    elsif resource.responder_type == 'Analysis'
+      is_member(user)
     else
       resource.responder.user_id == user.id
     end
+  end
+
+  def is_member(user)
+    resource.responder.member?(user)
   end
 end
 

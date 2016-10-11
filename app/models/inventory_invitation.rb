@@ -17,9 +17,11 @@ class InventoryInvitation < ActiveRecord::Base
   belongs_to :user
   belongs_to :inventory
 
-  validates :email, presence: true
+  validates :email, presence: true,
+            uniqueness: {scope: :inventory_id, message: 'User has already been invited'},
+            email: true
   validates :inventory_id, presence: true
-  validates :email, uniqueness: { scope: :inventory_id, message: 'User has already been invited' }
+  validates :role, presence: true
 
   before_create :create_token
 
@@ -29,7 +31,7 @@ class InventoryInvitation < ActiveRecord::Base
 
   private
   def create_token
-    self.token ||= generate_hash 
+    self.token ||= generate_hash
   end
 
   def generate_hash

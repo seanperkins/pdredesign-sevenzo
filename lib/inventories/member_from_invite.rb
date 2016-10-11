@@ -22,9 +22,10 @@ module Inventories
     end
 
     def create_member
-      InventoryMember.find_or_create_by(
-        inventory_id: inventory.id,
-        user_id:       user_found.id)
+      ToolMember.find_or_create_by(
+        tool: inventory,
+        user: user_found,
+        roles: [MembershipHelper.dehumanize_role(@invite.role)])
     end
 
     def create_or_update_user

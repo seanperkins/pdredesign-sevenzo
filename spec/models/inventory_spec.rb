@@ -58,8 +58,8 @@ describe Inventory do
   end
 
   describe '#save' do
-    let(:owner) { FactoryGirl.create(:user) }
-    subject { FactoryGirl.create(:inventory, owner: owner) }
+    let(:owner) { create(:user) }
+    subject { create(:inventory, owner: owner) }
 
     it { expect(subject.new_record?).to be false }
     it 'add owner as facilitator' do
@@ -68,7 +68,7 @@ describe Inventory do
   end
 
   describe '#share_token' do
-    let(:inventory) { FactoryGirl.create(:inventory) }
+    let(:inventory) { create(:inventory) }
     let!(:original_share_token) { inventory.share_token }
     it do
       expect(inventory.share_token).not_to be_empty
@@ -86,46 +86,46 @@ describe Inventory do
 
   describe '#owner?' do
     context 'owner is current user' do
-      let(:inventory) { FactoryGirl.create(:inventory) }
+      let(:inventory) { create(:inventory) }
 
       it do
-        expect(inventory.owner?(user: inventory.owner)).to be true
+        expect(inventory.owner?(inventory.owner)).to be true
       end
     end
 
     context 'owner is a different user' do
-      let(:inventory) { FactoryGirl.create(:inventory) }
-      let(:user) { FactoryGirl.create(:user) }
+      let(:inventory) { create(:inventory) }
+      let(:user) { create(:user) }
 
       it do
-        expect(inventory.owner?(user: user)).to be false
+        expect(inventory.owner?(user)).to be false
       end
     end
   end
 
   describe '#member?' do
     context 'user is member' do
-      let(:inventory) { FactoryGirl.create(:inventory, :with_members) }
-      let(:user) { inventory.members.first.user }
+      let(:inventory) { create(:inventory, :with_members) }
+      let(:user) { inventory.tool_members.first.user }
 
       it do
-        expect(inventory.member?(user: user)).to be true
+        expect(inventory.member?(user)).to be true
       end
     end
 
     context 'user is not member' do
-      let(:inventory) { FactoryGirl.create(:inventory, :with_members) }
-      let(:user) { FactoryGirl.create(:user) }
+      let(:inventory) { create(:inventory, :with_members) }
+      let(:user) { create(:user) }
 
       it do
-        expect(inventory.member?(user: user)).to be false
+        expect(inventory.member?(user)).to be false
       end
     end
   end
 
   describe '#current_analysis' do
-    let(:inventory) { FactoryGirl.create(:inventory) }
-    let!(:last_analysis) { FactoryGirl.create_list(:analysis, 6, inventory: inventory).last }
+    let(:inventory) { create(:inventory) }
+    let!(:last_analysis) { create_list(:analysis, 6, inventory: inventory).last }
 
     it { expect(inventory.current_analysis).to eq last_analysis }
   end

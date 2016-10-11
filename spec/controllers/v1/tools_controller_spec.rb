@@ -197,4 +197,3 @@ describe V1::ToolsController do
     end
   end
 end
-FactoryGirl.create(:user, :with_district)

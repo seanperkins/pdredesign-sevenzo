@@ -1,8 +1,14 @@
 <div class="analysis-report-sidebar">
-  <analysis-schedule analysis="analysisReportSidebar.currentAnalysis" only-schedule=true></analysis-schedule>
-  <p ng-if="!analysisReportSidebar.shared"><a ui-sref="inventory_analysis_dashboard({inventory_id: analysisReportSidebar.currentAnalysis.inventory_id, id: analysisReportSidebar.currentAnalysis.id})" class="btn btn-primary btn-block">Go to Dashboard</a></p>
-  <p ng-if="!analysisReportSidebar.shared && analysisReportSidebar.consensusId"><a ui-sref="inventory_analysis_consensus({inventory_id: analysisReportSidebar.currentAnalysis.inventory_id, analysis_id: analysisReportSidebar.currentAnalysis.id, id: analysisReportSidebar.consensusId})" class="btn btn-default btn-block">View Consensus</a></p>
-  <p ng-if="!analysisReportSidebar.shared && analysisReportSidebar.consensusId"><button class="btn btn-secondary btn-block" ng-click="analysisReportSidebar.exportToCSV()">Download CSV</button></p>
+  <analysis-schedule analysis="analysisReportSidebar.currentAnalysis" only-schedule="true"></analysis-schedule>
+  <p ng-if="!analysisReportSidebar.shared"><a
+      ui-sref="inventory_analysis_dashboard({inventory_id: analysisReportSidebar.currentAnalysis.inventory_id, analysis_id: analysisReportSidebar.currentAnalysis.id})"
+      class="btn btn-primary btn-block">Go to Dashboard</a></p>
+  <p ng-if="!analysisReportSidebar.shared && analysisReportSidebar.consensusId"><a
+      ui-sref="inventory_analysis_consensus({inventory_id: analysisReportSidebar.currentAnalysis.inventory_id, analysis_id: analysisReportSidebar.currentAnalysis.id, id: analysisReportSidebar.consensusId})"
+      class="btn btn-default btn-block">View Consensus</a></p>
+  <p ng-if="!analysisReportSidebar.shared && analysisReportSidebar.consensusId">
+    <button class="btn btn-secondary btn-block" ng-click="analysisReportSidebar.exportToCSV()">Download CSV</button>
+  </p>
 
   <div class="share-report" ng-if="!analysisReportSidebar.shared">
     <h2>Share this report</h2>

@@ -20,6 +20,7 @@ FactoryGirl.define do
     last_name { Faker::Name.last_name }
     team_role { Faker::Commerce.department }
     email { Faker::Internet.email }
+    role { 'facilitator' }
     association :inventory, :assigned
     association :user
 

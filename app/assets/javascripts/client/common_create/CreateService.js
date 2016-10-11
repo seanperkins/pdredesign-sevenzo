@@ -159,7 +159,7 @@
             .then(function() {
               $state.go('inventory_analysis_consensus_create', {
                 inventory_id: $stateParams.inventory_id,
-                analysis_id: $stateParams.id
+                analysis_id: $stateParams.analysis_id
               });
             });
       }

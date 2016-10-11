@@ -17,63 +17,48 @@
 class Inventory < ActiveRecord::Base
   include Authority::Abilities
   include MessageMigrationConcern
+  include MembershipConcern
+  include ToolOwnerMembershipConcern
 
   default_scope { order(created_at: :desc) }
-
-  has_many :product_entries
-  has_many :data_entries
-  has_many :access_requests, class_name: 'InventoryAccessRequest'
-  has_many :messages, as: :tool
 
   belongs_to :district
   belongs_to :owner, class_name: 'User'
 
+  has_many :product_entries
+  has_many :data_entries
+  has_many :access_requests, as: :tool
+  has_many :messages, as: :tool
   has_many :analyses
-  before_save :ensure_share_token
+  has_many :tool_members, as: :tool
 
-  self.authorizer_name = 'InventoryAuthorizer'
+  has_many :participants, -> { where(tool_type: 'Inventory')
+                                   .where.contains(roles: [ToolMember.member_roles[:participant]])
+  }, foreign_key: :tool_id, class_name: 'ToolMember'
 
-  # Exposed alias for testing
-  alias_attribute :user, :owner
-  alias_attribute :due_date, :deadline
+  has_many :facilitators, -> { where(tool_type: 'Inventory')
+                                   .where.contains(roles: [ToolMember.member_roles[:facilitator]])
+  }, foreign_key: :tool_id, class_name: 'ToolMember'
 
   validates_length_of :name, minimum: 1, maximum: 255
   validates_presence_of :owner
   validates_presence_of :deadline
   validates_presence_of :message, if: 'assigned_at.present?'
-
   validates :deadline, date: true
 
   accepts_nested_attributes_for :product_entries
   accepts_nested_attributes_for :data_entries
 
-  has_many :members, class_name: 'InventoryMember'
-  has_many :participants, -> { where(role: 'participant') }, class_name: 'InventoryMember'
-  has_many :facilitators, -> { where(role: 'facilitator') }, class_name: 'InventoryMember'
-
   attr_accessor :assign
+  # Exposed alias for testing
+  alias_attribute :user, :owner
+  alias_attribute :due_date, :deadline
 
-  before_save :set_assigned_at
-  after_create :add_facilitator_owner
+  before_save :ensure_share_token,
+              :set_assigned_at
 
-  def facilitator?(user:)
-    facilitators.where(user: user).exists?
-  end
-
-  def participant?(user:)
-    participants.where(user: user).exists?
-  end
-
-  def owner?(user:)
+  def owner?(user)
     self.owner_id == user.id
-  end
-
-  def member?(user:)
-    self.members.where(user: user).exists?
-  end
-
-  def network_partner?(user)
-    self.members.joins(:user).where(user_id: user.id, users: {role: 'network_partner'}).exists?
   end
 
   def status
@@ -94,15 +79,10 @@ class Inventory < ActiveRecord::Base
   end
 
   private
-  def add_facilitator_owner
-    return unless owner
-    facilitators.create(user: owner)
-  end
-
   def set_assigned_at
     self.assigned_at = Time.now if self.assign
   end
-  
+
   def ensure_share_token
     self.share_token ||= SecureRandom.hex(32)
   end

@@ -1,22 +1,34 @@
 module MembershipHelper
   def self.participant?(tool, user)
-    ToolMember.where(tool: tool, user: user, role: ToolMember.member_roles[:participant]).exists?
+    ToolMember.where(tool: tool, user: user)
+        .where.contains(roles: [ToolMember.member_roles[:participant]]).exists?
   end
 
   def self.facilitator?(tool, user)
-    ToolMember.where(tool: tool, user: user, role: ToolMember.member_roles[:facilitator]).exists?
+    ToolMember.where(tool: tool, user: user)
+        .where.contains(roles: [ToolMember.member_roles[:facilitator]]).exists?
+  end
+
+  def self.member?(tool, user)
+    ToolMember.where(tool: tool, user: user).exists?
+  end
+
+  def self.network_partner?(tool, user)
+    ToolMember.includes(:user)
+        .where(tool: tool, user: user, users: {role: 'network_partner'})
+        .exists?
   end
 
   def self.facilitator_on_instance?(tool_member, user)
-    tool_member.user == user && tool_member.role == ToolMember.member_roles[:facilitator]
+    tool_member.user == user && tool_member.roles.include?(ToolMember.member_roles[:facilitator])
   end
 
   def self.participant_on_instance?(tool_member, user)
-    tool_member.user == user && tool_member.role == ToolMember.member_roles[:participant]
+    tool_member.user == user && tool_member.roles.include?(ToolMember.member_roles[:participant])
   end
 
-  def self.owner_on_instance?(tool_member, user)
-    tool_member.tool.owner_id == user.id
+  def self.owner_on_instance?(tool_member)
+    tool_member.tool.owner_id == tool_member.user_id
   end
 
   def self.status(tool_member)

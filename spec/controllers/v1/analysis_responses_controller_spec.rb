@@ -13,7 +13,6 @@ describe V1::AnalysisResponsesController do
       end
     end
 
-
     context 'when the user does not have the ability to create an analysis' do
       let(:user) {
         create(:user)
@@ -43,11 +42,11 @@ describe V1::AnalysisResponsesController do
       }
 
       let(:inventory) {
-        create(:inventory, members: create_list(:inventory_member, 1, :as_facilitator, user: user))
+        create(:inventory, tool_members: create_list(:tool_member, 1, :as_facilitator, user: user))
       }
 
       let(:analysis_member) {
-        create(:analysis_member, :as_facilitator, user: user)
+        analysis.facilitators.first
       }
 
       let(:rubric) {
@@ -55,7 +54,7 @@ describe V1::AnalysisResponsesController do
       }
 
       let(:analysis) {
-        create(:analysis, inventory: inventory, members: [analysis_member], rubric: rubric)
+        create(:analysis, :with_facilitators, inventory: inventory, rubric: rubric)
       }
 
       before(:each) do

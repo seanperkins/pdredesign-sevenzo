@@ -2,15 +2,23 @@ class V1::ToolMembersController < ApplicationController
   include MembershipHelper
 
   before_action :authenticate_user!
-  before_action :normalize_strong_param_tool_type!, only: [:create]
-  before_action :normalize_path_param_tool_type!, only: [:show, :request_access, :grant, :deny]
+  before_action :normalize_strong_param_tool_type!, only: [:create, :update]
+  before_action :normalize_path_param_tool_type!, except: [:destroy, :create, :batch_update]
 
   def create
-    tool_member = ToolMember.create(tool_member_params)
+    tool_member = ToolMember.find_or_create_by(tool_type: tool_member_params[:tool_type],
+                                               tool_id: tool_member_params[:tool_id],
+                                               user_id: tool_member_params[:user_id])
     authorize_action_for tool_member
+    previous_roles = tool_member.roles
+    tool_member.roles = tool_member_params[:roles]
+    new_record = tool_member.new_record?
     if tool_member.save
-      send_access_granted_email(tool_member)
-      render nothing: true, status: :created
+      notifiable_roles(previous_roles, tool_member.roles).each { |role|
+        send_access_granted_email(tool_member, MembershipHelper.humanize_role(role))
+      }
+      tool_member.tool.save
+      render nothing: true, status: (new_record ? :created : :no_content)
     else
       @errors = tool_member.errors
       render 'v1/shared/errors', errors: @errors, status: :bad_request
@@ -20,8 +28,15 @@ class V1::ToolMembersController < ApplicationController
   def show
     @tool_members = ToolMember.includes(:response, :user)
                         .where(tool_id: params[:tool_id],
-                               tool_type: params[:tool_type],
-                               role: ToolMember.member_roles[:participant])
+                               tool_type: params[:tool_type])
+                        .where.contains(roles: [ToolMember.member_roles[:participant]])
+  end
+
+  def show_all
+    @tool_members = ToolMember.includes(:response, :user)
+                        .where(tool_id: params[:tool_id],
+                               tool_type: params[:tool_type])
+
   end
 
   def destroy
@@ -84,16 +99,12 @@ class V1::ToolMembersController < ApplicationController
 
     access_request = access_request_query.first
 
-    @candidates = []
-
-    access_request.roles.each { |role|
-      @candidates.push(ToolMember.new(tool: access_request.tool,
-                                      role: MembershipHelper.dehumanize_role(role),
-                                      user: access_request.user))
-    }
+    @candidate = ToolMember.new(tool: access_request.tool,
+                                roles: MembershipHelper.dehumanize_roles(access_request.roles),
+                                user: access_request.user)
 
     access_request.destroy
-    render 'v1/tool_members/grant', candidates: @candidates
+    render 'v1/tool_members/grant'
   end
 
   authority_actions grant: :create
@@ -115,14 +126,52 @@ class V1::ToolMembersController < ApplicationController
 
   authority_actions deny: :create
 
+  def invitable_members
+    tool_member = ToolMember.find_by(tool_type: params[:tool_type],
+                                     tool_id: params[:tool_id])
+
+    authorize_action_for tool_member
+    tool = tool_member.tool
+
+    unless tool
+      return render nothing: true, status: :not_found
+    end
+
+    @users = User.includes(:districts).where(districts: {id: tool.district_id})
+                 .where.not(team_role: 'network_partner', id: ToolMember.where(tool_type: params[:tool_type],
+                                                                               tool_id: params[:tool_id]).select(:user_id).pluck(:user_id))
+  end
+
+  authority_actions invitable_members: :create
+
+  def permission_requests
+    tool_member = ToolMember.find_by(tool_type: params[:tool_type],
+                                     tool_id: params[:tool_id])
+
+    unless tool_member
+      return render nothing: true, status: :not_found
+    end
+
+    authorize_action_for tool_member
+    tool = tool_member.tool
+
+    @requests = AccessRequest.where(tool: tool)
+  end
+
+  authority_actions permission_requests: :create
+
   private
   def member_is_owner(tool_member)
-    tool_member.role == ToolMember.member_roles[:facilitator] &&
-        MembershipHelper.owner_on_instance?(tool_member, tool_member.user)
+    tool_member.roles.include?(ToolMember.member_roles[:facilitator]) &&
+        MembershipHelper.owner_on_instance?(tool_member)
   end
 
   def tool_member_params
-    params.require(:tool_member).permit(:tool_type, :tool_id, :role, :user_id)
+    params.require(:tool_member).permit(:tool_type, :tool_id, :user_id, roles: [])
+  end
+
+  def notifiable_roles(original_roles, new_roles)
+    (original_roles | new_roles) - original_roles
   end
 
   def tool_member_access_request_params
@@ -139,10 +188,11 @@ class V1::ToolMembersController < ApplicationController
 
   def validate_access_request
     tool_member_query = ToolMember.where(tool: @request.tool,
-                                         user: @request.user,
-                                         role: MembershipHelper.dehumanize_roles(@request.roles))
+                                         user: @request.user)
+                            .where.contains(roles: [MembershipHelper.dehumanize_roles(@request.roles)])
+
     unless tool_member_query.empty?
-      roles = MembershipHelper.humanize_roles(tool_member_query.map(&:role))
+      roles = MembershipHelper.humanize_roles(tool_member_query.first.roles)
       @request.errors.add(:base, "Access for #{@request.user.email} for #{@request.tool.name} already exists at these levels: #{roles.join(', ')}")
     end
 
@@ -157,18 +207,18 @@ class V1::ToolMembersController < ApplicationController
     ToolMemberAccessRequestNotificationWorker.perform_async(request.id)
   end
 
-  def send_access_granted_email(tool_member)
+  def send_access_granted_email(tool_member, role)
     worker_args = [tool_member.tool_id,
                    tool_member.user_id,
-                   MembershipHelper.humanize_role(tool_member.role)]
+                   role]
 
     case tool_member.tool.class.to_s
       when 'Assessment'
-        AccessGrantedNotificationWorker.send(:perform_async, worker_args)
+        AccessGrantedNotificationWorker.send(:perform_async, *worker_args)
       when 'Inventory'
-        InventoryAccessGrantedNotificationWorker.send(:perform_async, worker_args)
+        InventoryAccessGrantedNotificationWorker.send(:perform_async, *worker_args)
       when 'Analysis'
-        AnalysisAccessGrantedNotificationWorker.send(:perform_async, worker_args)
+        AnalysisAccessGrantedNotificationWorker.send(:perform_async, *worker_args)
       else
         raise "No access granted notification worker for #{tool_member.tool_type} defined!"
     end

@@ -3,10 +3,15 @@ require 'spec_helper'
 describe V1::AnalysesController do
   render_views
 
-  let(:inventory) { FactoryGirl.create(:inventory, :with_analysis) }
-  let(:analysis) { inventory.analyses.first }
+  let(:inventory) {
+    create(:inventory, :with_analysis)
+  }
 
-  before :each do
+  let(:analysis) {
+    inventory.analyses.first
+  }
+
+  before(:each) do
     request.env['HTTP_ACCEPT'] = 'application/json'
   end
 
@@ -19,7 +24,7 @@ describe V1::AnalysesController do
     end
 
     it "gets an inventory's analysis" do
-      sign_in inventory.owner
+      sign_in analysis.owner
 
       get :index, inventory_id: inventory.id
 
@@ -40,7 +45,7 @@ describe V1::AnalysesController do
     end
 
     it 'creates a record' do
-      sign_in inventory.owner
+      sign_in analysis.owner
 
       post :create,
            inventory_id: inventory.id,
@@ -50,10 +55,10 @@ describe V1::AnalysesController do
       expect(response).to have_http_status(:created)
       expect(json['id']).not_to be_nil
       expect(Analysis.where(id:json['id']).first).not_to be_nil
-      expect(Analysis.where(id:json['id']).first.owner).to eq inventory.owner
+      expect(Analysis.where(id:json['id']).first.owner).to eq analysis.owner
       expect(ToolMember.find_by(tool: assigns(:analysis),
-                                user: inventory.owner,
-                                role: ToolMember.member_roles[:facilitator]
+                                user: analysis.owner,
+                                roles: [ToolMember.member_roles[:facilitator]]
       )).to_not be_nil
     end
   end
@@ -67,7 +72,7 @@ describe V1::AnalysesController do
     end
 
     it 'updates a record' do
-      sign_in inventory.owner
+      sign_in analysis.owner
 
       put :update,
           inventory_id: inventory.id,
@@ -79,7 +84,7 @@ describe V1::AnalysesController do
     end
 
     it 'does not set :assigned_at' do
-      sign_in inventory.owner
+      sign_in analysis.owner
 
       put :update,
           inventory_id: inventory.id,
@@ -92,7 +97,7 @@ describe V1::AnalysesController do
     end
 
     it 'sets :assigned_at when :assign present' do
-      sign_in inventory.owner
+      sign_in analysis.owner
 
       put :update,
           inventory_id: inventory.id,
@@ -106,7 +111,7 @@ describe V1::AnalysesController do
     end
 
     it 'sends the invitation email to all participants' do
-      sign_in inventory.owner
+      sign_in analysis.owner
 
       expect(AllAnalysisParticipantsNotificationWorker).to receive(:perform_async)
                                                        .with(analysis.id)

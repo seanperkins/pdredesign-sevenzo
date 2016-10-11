@@ -9,16 +9,16 @@ module Inventories
     end
 
     def role
-      member.try(:role)
+      member && !member.role.nil? ? MembershipHelper.humanize_role(member.role) : nil
     end
 
     def role=(role)
       return unless ROLES.include? role
 
-      member = inventory.members.find_or_create_by(user: user)
-      return if member.role == role
+      member = inventory.tool_members.find_or_create_by(user: user)
+      return if member.role == MembershipHelper.dehumanize_role(role)
 
-      member.role = role
+      member.roles = [MembershipHelper.dehumanize_role(role)]
       member.save!
       notify_user_for_access_granted(role: role)
       reset_member
@@ -32,7 +32,7 @@ module Inventories
     def accept
       request = access_request
       return false unless request
-      self.role = request.role
+      self.role = request.roles[0]
       request.destroy!
       reset_member
     end
@@ -55,7 +55,7 @@ module Inventories
     end
 
     def request_access(role:)
-      request = InventoryAccessRequest.new(inventory: inventory, user: user, role: role)
+      request = AccessRequest.new(tool: inventory, user: user, roles: [role])
       return request unless request.save
 
       InventoryAccessRequestNotificationWorker.perform_async(request.id)
@@ -66,7 +66,7 @@ module Inventories
     ROLES = ['facilitator', 'participant']
 
     def member
-      @participant ||= inventory.members.where(user: user).first
+      @participant ||= inventory.tool_members.where(user: user).first
     end
 
     def reset_member
@@ -77,7 +77,7 @@ module Inventories
 
     def notify_user_for_access_granted(role:)
       return if ROLES_TO_NOT_SEND_GRANTED_NOTIFICATION.include? role.to_sym
-      InventoryAccessGrantedNotificationWorker.perform_async(inventory.id, user.id, role) 
+      InventoryAccessGrantedNotificationWorker.perform_async(inventory.id, user.id, role)
     end
   end
 end

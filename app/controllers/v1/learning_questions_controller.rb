@@ -84,9 +84,9 @@ class V1::LearningQuestionsController < ApplicationController
       when 'Assessment'
         @tool.user == current_user || @tool.users.include?(current_user)
       when 'Inventory'
-        @tool.member?(user: current_user)
+        @tool.member?(current_user)
       when 'Analysis'
-        @tool.inventory.member?(user: current_user)
+        @tool.member?(current_user)
     end
   end
 end
