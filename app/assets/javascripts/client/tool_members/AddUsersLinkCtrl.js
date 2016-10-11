@@ -13,22 +13,19 @@
     var vm = this;
 
     vm.open = function () {
-      switch($scope.context) {
-        case 'inventory':
-          vm.modal = $modal.open({
-            templateUrl: 'client/tool_members/modals/add_members_modal.html',
-            scope: $scope,
-            windowClass: 'request-access-window',
-            size: 'lg'
-          });
-      }
+      vm.modal = $modal.open({
+        templateUrl: 'client/tool_members/modals/add_members_modal.html',
+        scope: $scope,
+        windowClass: 'request-access-window',
+        size: 'lg'
+      });
     };
 
-    vm.close = function() {
+    vm.close = function () {
       vm.modal.dismiss();
     };
 
-    $scope.$on('close-add-participants', function() {
+    $scope.$on('close-add-participants', function () {
       vm.close();
     });
   }

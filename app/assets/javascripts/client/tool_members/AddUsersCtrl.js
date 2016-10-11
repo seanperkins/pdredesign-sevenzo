@@ -13,6 +13,8 @@
   function AddUsersCtrl($scope, $rootScope, ToolMemberService) {
     var vm = this;
 
+    ToolMemberService.setContext($scope.context);
+
     vm.loadInvitables = function () {
       $rootScope.$broadcast('start_change');
       ToolMemberService.updateInvitableParticipantList()

@@ -14,6 +14,7 @@
   function InviteToolMemberCtrl($scope, $rootScope, AlertService, ToolMemberService) {
     var vm = this;
 
+    ToolMemberService.setContext($scope.context);
     AlertService.flush();
 
     vm.alerts = function () {

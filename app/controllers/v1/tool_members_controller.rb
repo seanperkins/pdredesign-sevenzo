@@ -148,12 +148,12 @@ class V1::ToolMembersController < ApplicationController
     tool_member = ToolMember.find_by(tool_type: params[:tool_type],
                                      tool_id: params[:tool_id])
 
-    authorize_action_for tool_member
-    tool = tool_member.tool
-
-    unless tool
+    unless tool_member
       return render nothing: true, status: :not_found
     end
+
+    authorize_action_for tool_member
+    tool = tool_member.tool
 
     @requests = AccessRequest.where(tool: tool)
   end

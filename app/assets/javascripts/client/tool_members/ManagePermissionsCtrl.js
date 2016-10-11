@@ -17,6 +17,8 @@
       return ToolMemberService.loadAllMembers();
     };
 
+    ToolMemberService.setContext($scope.context);
+
     vm.list = vm.loadMembers();
 
     vm.determineRoles = function (element) {

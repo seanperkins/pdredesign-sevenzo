@@ -7,20 +7,22 @@
   CreateParticipantsCtrl.$inject = [
     '$scope',
     'SessionService',
-    'CreateService'
+    'CreateService',
+    'ToolMemberService'
   ];
 
-  function CreateParticipantsCtrl($scope, SessionService, CreateService) {
+  function CreateParticipantsCtrl($scope, SessionService, CreateService, ToolMemberService) {
     var vm = this;
 
-    vm.participants = CreateService.loadParticipants();
-    vm.user = SessionService.getCurrentUser();
     if(vm.user) {
       $scope.role = vm.user.role;
     }
 
+    vm.user = SessionService.getCurrentUser();
+
     // Expose context for view
     vm.currentContext = CreateService.context;
+    ToolMemberService.setContext(CreateService.context);
 
     vm.isNetworkPartner = function() {
       return SessionService.isNetworkPartner();
@@ -37,10 +39,17 @@
     };
 
     vm.removeParticipant = function(user) {
-      CreateService.removeParticipant(user)
+      if(CreateService.context === 'assessment') {
+        CreateService.removeParticipant(user)
           .then(function() {
-            vm.updateParticipantsList();
+            vm.loadParticipants();
           });
+      } else {
+        ToolMemberService.removeMember(user)
+          .then(function () {
+            vm.loadParticipants();
+          });
+      }
     };
 
     vm.updateParticipantsList = function() {
@@ -59,8 +68,18 @@
           });
     };
 
+    vm.loadParticipants = function () {
+      if(CreateService.context === 'assessment') {
+        vm.updateParticipantsList();
+      } else {
+        vm.participants = ToolMemberService.loadParticipants();
+      }
+    };
+
+    vm.loadParticipants();
+
     $scope.$on('update_participants', function() {
-      vm.updateParticipantsList();
+      vm.loadParticipants();
     });
   }
 })();

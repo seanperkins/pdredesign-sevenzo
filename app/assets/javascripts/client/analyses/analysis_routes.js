@@ -98,7 +98,7 @@
         }
       }
     }).state('inventory_analysis_assign', {
-      url: '/inventories/:inventory_id/analyses/:id/assign',
+      url: '/inventories/:inventory_id/analyses/:analysis_id/assign',
       authenticate: true,
       showFullWidth: true,
       resolve: {
@@ -106,7 +106,7 @@
           return Inventory.get({inventory_id: $stateParams.inventory_id}).$promise;
         }],
         current_analysis: ['$stateParams', 'Analysis', function($stateParams, Analysis) {
-          return Analysis.get({inventory_id: $stateParams.inventory_id, id: $stateParams.id}).$promise;
+          return Analysis.get({inventory_id: $stateParams.inventory_id, id: $stateParams.analysis_id}).$promise;
         }]
       },
       views: {

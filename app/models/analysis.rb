@@ -45,6 +45,7 @@ class Analysis < ActiveRecord::Base
   alias_attribute :user, :owner
 
   delegate :district, to: :inventory, prefix: false
+  delegate :district_id, to: :inventory, prefix: false
 
   validates_presence_of :name, :deadline, :inventory, :rubric, :owner
   validates :message, presence: true, if: "assigned_at.present?"

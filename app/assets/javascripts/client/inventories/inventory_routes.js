@@ -29,12 +29,12 @@
         }
       }
     }).state('inventory_assign', {
-      url: '/inventories/:id/assign',
+      url: '/inventories/:inventory_id/assign',
       authenticate: true,
       showFullWidth: true,
       resolve: {
         current_inventory: ['$stateParams', 'Inventory', function ($stateParams, Inventory) {
-          return Inventory.get({inventory_id: $stateParams.id}).$promise;
+          return Inventory.get({inventory_id: $stateParams.inventory_id}).$promise;
         }]
       },
       views: {
