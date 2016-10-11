@@ -108,7 +108,7 @@ describe ResponseAuthorizer do
           response.authorizer
         }
 
-        it { is_expected.not_to be_creatable_by(user) }
+        it { is_expected.to be_creatable_by(user) }
       end
 
       context 'when user is a facilitator' do
@@ -269,7 +269,7 @@ describe ResponseAuthorizer do
           response.authorizer
         }
 
-        it { is_expected.not_to be_updatable_by(user) }
+        it { is_expected.to be_updatable_by(user) }
       end
 
       context 'when user is a facilitator' do

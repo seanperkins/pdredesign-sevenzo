@@ -18,6 +18,7 @@
       $scope.role = vm.user.role;
     }
 
+    vm.participants = CreateService.context === 'assessment' ? CreateService.loadParticipants() : [];
     vm.user = SessionService.getCurrentUser();
 
     // Expose context for view
@@ -75,8 +76,6 @@
         vm.participants = ToolMemberService.loadParticipants();
       }
     };
-
-    vm.loadParticipants();
 
     $scope.$on('update_participants', function() {
       vm.loadParticipants();

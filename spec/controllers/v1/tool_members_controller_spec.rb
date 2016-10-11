@@ -583,19 +583,19 @@ describe V1::ToolMembersController do
             }
 
             it {
-              expect(json[0]['tool_id']).to eq tool.id
+              expect(json['user']['tool_id']).to eq tool.id
             }
 
             it {
-              expect(json[0]['tool_type']).to eq tool.class.to_s
+              expect(json['user']['tool_type']).to eq tool.class.to_s
             }
 
             it {
-              expect(json[0]['role']).to eq ToolMember.member_roles[:facilitator]
+              expect(json['user']['roles'].include?(ToolMember.member_roles[:facilitator])).to be true
             }
 
             it {
-              expect(json[0]['user_id']).to eq access_request.user.id
+              expect(json['user']['id']).to eq access_request.user.id
             }
 
             it {
@@ -626,19 +626,19 @@ describe V1::ToolMembersController do
             }
 
             it {
-              expect(json[0]['tool_id']).to eq tool.id
+              expect(json['user']['tool_id']).to eq tool.id
             }
 
             it {
-              expect(json[0]['tool_type']).to eq tool.class.to_s
+              expect(json['user']['tool_type']).to eq tool.class.to_s
             }
 
             it {
-              expect(json[0]['role']).to eq ToolMember.member_roles[:participant]
+              expect(json['user']['roles'].include?(ToolMember.member_roles[:participant])).to be true
             }
 
             it {
-              expect(json[0]['user_id']).to eq access_request.user.id
+              expect(json['user']['id']).to eq access_request.user.id
             }
 
             it {
@@ -665,39 +665,23 @@ describe V1::ToolMembersController do
             }
 
             it {
-              expect(json.size).to eq 2
+              expect(json['user']['tool_id']).to eq tool.id
             }
 
             it {
-              expect(json[0]['tool_id']).to eq tool.id
+              expect(json['user']['tool_type']).to eq tool.class.to_s
             }
 
             it {
-              expect(json[0]['tool_type']).to eq tool.class.to_s
+              expect(json['user']['roles'].include?(ToolMember.member_roles[:participant])).to be true
             }
 
             it {
-              expect(json[0]['role']).to eq ToolMember.member_roles[:participant]
+              expect(json['user']['roles'].include?(ToolMember.member_roles[:facilitator])).to be true
             }
 
             it {
-              expect(json[0]['user_id']).to eq access_request.user.id
-            }
-
-            it {
-              expect(json[1]['tool_id']).to eq tool.id
-            }
-
-            it {
-              expect(json[1]['tool_type']).to eq tool.class.to_s
-            }
-
-            it {
-              expect(json[1]['role']).to eq ToolMember.member_roles[:facilitator]
-            }
-
-            it {
-              expect(json[1]['user_id']).to eq access_request.user.id
+              expect(json['user']['id']).to eq access_request.user.id
             }
 
             it {
