@@ -10,11 +10,10 @@
     '$q',
     '$state',
     'EntryItemService',
-    'AccessService',
-    'SessionService'
+    'AccessService'
   ];
 
-  function InventoryLinksCtrl($scope, $modal, $q, $state, EntryItemService, AccessService, SessionService) {
+  function InventoryLinksCtrl($scope, $modal, $q, $state, EntryItemService, AccessService) {
     var vm = this;
     AccessService.setContext('inventory');
 
@@ -26,24 +25,19 @@
     // Will want to refactor into directive
 
     $scope.requestAccess = function () {
-      if (SessionService.isNetworkPartner()) {
-        $scope.performAccessRequest('facilitator').then(function () {
-        });
-      } else {
-        $scope.modal = $modal.open({
-          templateUrl: 'client/access/request_access.html',
-          controller: 'RequestAccessCtrl as vm',
-          windowClass: 'request-access-window',
-          resolve: {
-            toolId: function() {
-              return $scope.id;
-            },
-            toolType: function() {
-              return 'inventory';
-            }
+      $scope.modal = $modal.open({
+        templateUrl: 'client/access/request_access.html',
+        controller: 'RequestAccessCtrl as vm',
+        windowClass: 'request-access-window',
+        resolve: {
+          toolId: function () {
+            return $scope.id;
+          },
+          toolType: function () {
+            return 'inventory';
           }
-        });
-      }
+        }
+      });
     };
 
     $scope.close = function () {
