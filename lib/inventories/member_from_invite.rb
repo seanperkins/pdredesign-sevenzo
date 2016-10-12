@@ -23,17 +23,17 @@ module Inventories
 
     def create_member
       ToolMember.find_or_create_by(
-        tool: inventory,
-        user: user_found,
-        roles: [MembershipHelper.dehumanize_role(@invite.role)])
+          tool: inventory,
+          user: user_found,
+          roles: [MembershipHelper.dehumanize_role(@invite.role)])
     end
 
     def create_or_update_user
       user = if user_found
-        update_user(user_found)
-      else
-        create_user
-      end
+               update_user(user_found)
+             else
+               create_user
+             end
       ensure_user_district(user)
       user
     end
@@ -41,7 +41,7 @@ module Inventories
     def update_user(user)
       user.team_role = invite.team_role
       user.save
-      return user
+      user
     end
 
     def ensure_user_district(user)
@@ -49,15 +49,15 @@ module Inventories
     end
 
     def create_user
-      User.create!(first_name:   invite.first_name,
-                   last_name:    invite.last_name,
-                   email:        invite.email,
-                   password:     generate_password,
-                   team_role:    invite.team_role)
+      User.create!(first_name: invite.first_name,
+                   last_name: invite.last_name,
+                   email: invite.email,
+                   password: generate_password,
+                   team_role: invite.team_role)
     end
 
     def user_found
-      @user_found = User.find_by(email: invite.email)
+      @user_found ||= User.find_by(email: invite.email)
     end
 
     def generate_password
@@ -67,8 +67,8 @@ module Inventories
     def set_permission
       invite.role = 'facilitator' if invite.user.network_partner?
       return unless invite.role
-      ap = Inventories::Permission.new(inventory: inventory, user: invite.user)
-      ap.role= invite.role
+      ap = ToolMembers::Permission.new(inventory, invite.user)
+      ap.set_and_notify_role(invite.role)
     end
   end
 end
