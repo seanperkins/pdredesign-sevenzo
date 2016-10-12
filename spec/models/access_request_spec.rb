@@ -39,4 +39,8 @@ describe AccessRequest do
   it {
     is_expected.to validate_presence_of :tool_type
   }
+
+  it {
+    is_expected.to validate_presence_of :token
+  }
 end

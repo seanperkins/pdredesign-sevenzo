@@ -1,9 +1,9 @@
-class InventoryAccessRequestMailer < ApplicationMailer
+class AnalysisAccessRequestMailer < ApplicationMailer
   def request_access(request, email)
     @access_link = access_link(request.token)
     @requester_name = request.user.name
     @roles = request.roles
-    @inventory_name = request.tool.name
+    @analysis_name = request.tool.name
     mail(to: email)
   end
 
@@ -12,4 +12,3 @@ class InventoryAccessRequestMailer < ApplicationMailer
     "#{ENV['BASE_URL']}/#/inventories/grant/#{token}"
   end
 end
-
