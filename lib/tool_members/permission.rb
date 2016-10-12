@@ -19,7 +19,7 @@ module ToolMembers
 
       tool_member.roles = [MembershipHelper.dehumanize_role(role)]
       tool_member.save!
-      notify_user_for_access_granted(role: role)
+      notify_user_for_access_granted(role)
       reset_member
       role
     end
@@ -37,7 +37,7 @@ module ToolMembers
 
     def notify_user_for_access_granted(role)
       params = [tool.id, user.id, role]
-      unless role == 'facilitator'
+      unless role == 'participant'
         case tool.class.to_s
           when 'Inventory'
             InventoryAccessGrantedNotificationWorker.send(:perform_async, *params)
