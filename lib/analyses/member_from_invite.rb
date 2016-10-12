@@ -67,8 +67,8 @@ module Analyses
     def set_permission
       invite.role = 'facilitator' if invite.user.network_partner?
       return unless invite.role
-      ap = Analyses::Permission.new(analysis: analysis, user: invite.user)
-      ap.role= invite.role
+      ap = ToolMembers::Permission.new(analysis, invite.user)
+      ap.set_and_notify_role(invite.role)
     end
   end
 end
