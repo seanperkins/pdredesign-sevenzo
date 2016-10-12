@@ -9,14 +9,14 @@ module Inventories
     end
 
     def role
-      member && !member.role.nil? ? MembershipHelper.humanize_role(member.role) : nil
+      MembershipHelper.humanize_roles(member.try(:roles))
     end
 
     def role=(role)
       return unless ROLES.include? role
 
       member = inventory.tool_members.find_or_create_by(user: user)
-      return if member.role == MembershipHelper.dehumanize_role(role)
+      return if member.roles.include?(MembershipHelper.dehumanize_role(role))
 
       member.roles = [MembershipHelper.dehumanize_role(role)]
       member.save!
@@ -25,45 +25,12 @@ module Inventories
       role
     end
 
-    def access_request
-      inventory.access_requests.where(user: user).first
-    end
-
-    def accept
-      request = access_request
-      return false unless request
-      self.role = request.roles[0]
-      request.destroy!
-      reset_member
-    end
-
-    def deny
-      request = access_request
-      return false unless request
-      request.destroy!
-      reset_member
-    end
-
-    def revoke
-      membership = member
-      membership.destroy!
-      reset_member
-    end
-
     def available_roles
       ROLES-[role]
     end
 
-    def request_access(role:)
-      request = AccessRequest.new(tool: inventory, user: user, roles: [role])
-      return request unless request.save
-
-      InventoryAccessRequestNotificationWorker.perform_async(request.id)
-      request
-    end
-
     private
-    ROLES = ['facilitator', 'participant']
+    ROLES = %w(facilitator participant)
 
     def member
       @participant ||= inventory.tool_members.where(user: user).first

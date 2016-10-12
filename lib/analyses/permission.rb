@@ -9,26 +9,20 @@ module Analyses
     end
 
     def role
-      member.try(:role)
+      MembershipHelper.humanize_roles(member.try(:roles))
     end
 
     def role=(role)
       return unless ROLES.include? role
 
       member = analysis.tool_members.find_or_create_by(user: user)
-      return if member.roles.include?(ToolMember.member_roles[role])
+      return if member.roles.include?(MembershipHelper.dehumanize_role(role))
 
-      member.roles << MembershipHelper.dehumanize_role(role)
+      member.roles = [MembershipHelper.dehumanize_role(role)]
       member.save!
       notify_user_for_access_granted(role: role)
       reset_member
       role
-    end
-
-    def revoke
-      membership = member
-      membership.destroy!
-      reset_member
     end
 
     def available_roles
@@ -36,7 +30,7 @@ module Analyses
     end
 
     private
-    ROLES = ['facilitator', 'participant']
+    ROLES = %w(facilitator participant)
 
     def member
       @participant ||= analysis.members.where(user: user).first
