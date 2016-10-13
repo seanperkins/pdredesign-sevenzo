@@ -13,9 +13,9 @@
   function AnalysisDeadlineModalCtrl($scope, $timeout, Analysis) {
     var vm = this;
     vm.analysis = $scope.analysis;
-    vm.closeModal = function() {
+    vm.closeModal = function () {
       $scope.$emit('close-deadline-modal');
-    }
+    };
 
     $timeout(function() {
       if(vm.analysis.deadline != null) {

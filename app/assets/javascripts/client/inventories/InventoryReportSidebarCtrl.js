@@ -42,7 +42,7 @@
         var analysisState = !vm.inventory.analysis.assigned_at ? 'inventory_analysis_dashboard' : 'inventory_analysis_report';
         $state.go(analysisState, {
           inventory_id: vm.inventory.id,
-          id: vm.inventory.analysis.id
+          analysis_id: vm.inventory.analysis.id
         });
       } else {
         $state.go('analyses');

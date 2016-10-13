@@ -117,22 +117,22 @@
         }
       }
     }).state('inventory_analysis_report', {
-      url: '/inventories/:inventory_id/analyses/:id/report',
+      url: '/inventories/:inventory_id/analyses/:analysis_id/report',
       authenticate: true,
       resolve: {
         current_analysis: ['$stateParams', 'Analysis', function($stateParams, Analysis) {
-          return Analysis.get({inventory_id: $stateParams.inventory_id, id: $stateParams.id}).$promise;
+          return Analysis.get({inventory_id: $stateParams.inventory_id, id: $stateParams.analysis_id}).$promise;
         }],
         analysis_comparison_data: ['$stateParams', 'AnalysisReport', function($stateParams, AnalysisReport) {
           return AnalysisReport.comparisonData({
             inventory_id: $stateParams.inventory_id,
-            id: $stateParams.id
+            id: $stateParams.analysis_id
           }).$promise;
         }],
         analysis_review_header_data: ['$stateParams', 'AnalysisReport', function($stateParams, AnalysisReport) {
           return AnalysisReport.reviewHeaderData({
             inventory_id: $stateParams.inventory_id,
-            id: $stateParams.id
+            id: $stateParams.analysis_id
           }).$promise;
         }]
       },
