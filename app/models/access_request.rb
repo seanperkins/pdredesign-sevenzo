@@ -8,7 +8,7 @@
 #  roles      :string           default([]), is an Array
 #  created_at :datetime
 #  updated_at :datetime
-#  token      :string(255)
+#  token      :string
 #  tool_type  :string
 #
 
@@ -16,7 +16,7 @@ class AccessRequest < ActiveRecord::Base
   belongs_to :tool, polymorphic: :true
   belongs_to :user
 
-  validates_presence_of :roles, :user_id, :tool_id, :tool_type, :token
+  validates_presence_of :roles, :user_id, :tool_id, :tool_type
 
   before_save :ensure_token
 

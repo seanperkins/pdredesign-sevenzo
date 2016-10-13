@@ -8,7 +8,7 @@
 #  roles      :string           default([]), is an Array
 #  created_at :datetime
 #  updated_at :datetime
-#  token      :string(255)
+#  token      :string
 #  tool_type  :string
 #
 
@@ -38,9 +38,5 @@ describe AccessRequest do
 
   it {
     is_expected.to validate_presence_of :tool_type
-  }
-
-  it {
-    is_expected.to validate_presence_of :token
   }
 end
