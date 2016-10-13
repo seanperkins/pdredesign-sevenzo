@@ -73,7 +73,7 @@ class Assessment < ActiveRecord::Base
 
   def validate_participants
     return unless self.participants.empty?
-    errors.add :participant_ids, 'You must assign participants to this assessment.'
+    errors.add :participants, 'must be assigned to this assessment'
   end
 
   def meeting_date_not_in_the_past
