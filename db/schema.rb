@@ -19,10 +19,10 @@ ActiveRecord::Schema.define(version: 20161005175736) do
   create_table "access_requests", force: :cascade do |t|
     t.integer  "tool_id"
     t.integer  "user_id"
-    t.string   "roles",                  default: [], array: true
+    t.string   "roles",      default: [], array: true
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "token",      limit: 255
+    t.string   "token"
     t.string   "tool_type"
   end
 
