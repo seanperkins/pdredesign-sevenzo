@@ -6,7 +6,7 @@ class V1::AccessRequestController < ApplicationController
     @request = Assessments::Permission.request_access(
       user: current_user, 
       assessment_id: request_params[:assessment_id],
-      roles: request_params[:roles])
+      roles: MembershipHelper.humanize_roles(request_params[:roles] || []))
 
     if(@request.save)
       queue_job

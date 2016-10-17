@@ -5,7 +5,7 @@
   <div class="entry-content">
     <div class="entry-details">
       <div class="disable-entry details" ng-class="entry.activeAssessmentLink(entity)">
-        <h3 class='name'>{{entity.name}}
+        <h3 class="name">{{entity.name}}
           <i ng-hide="entity.has_access" class="fa fa-lock"></i>
         </h3>
         <small>Facilitated by: {{entity.facilitator.full_name}}</small>
@@ -13,12 +13,12 @@
       <div class="links" ng-if="context === 'assessment'">
         <div class="repeat" ng-repeat="link in entry.orderLinks(entity.links)">
           <assessment-links
-              data-title="{{link.title}}"
-              data-active="{{link.active}}"
-              data-type="{{link.type}}"
-              data-id="{{entity.id}}"
-              data-consensus-id="{{entity.consensus.id}}"
-              data-role="{{role}}">
+              title="{{link.title}}"
+              active="{{link.active}}"
+              type="{{link.type}}"
+              id="{{entity.id}}"
+              consensus-id="{{entity.consensus.id}}"
+              role="{{role}}">
           </assessment-links>
         </div>
       </div>
@@ -39,12 +39,12 @@
         <span class="stat">{{entity.completed_responses}}</span>
       </div>
       <div class="disable-entry date" ng-if="context === 'assessment'">
-        <span class='category'>Meeting</span>
-        <span class='stat'>{{entry.meetingTime(entity.meeting_date)}}</span>
+        <span class="category">Meeting</span>
+        <span class="stat">{{entry.meetingTime(entity.meeting_date)}}</span>
       </div>
       <div class="date disable-entry date" ng-if="context === 'inventory' || context === 'analysis'">
-        <span class='category'>Deadline</span>
-        <span class='stat'>{{entry.meetingTime(entity.due_date)}}</span>
+        <span class="category">Deadline</span>
+        <span class="stat">{{entry.meetingTime(entity.due_date)}}</span>
       </div>
     </div>
   </div>
