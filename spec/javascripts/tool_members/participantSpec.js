@@ -56,8 +56,8 @@
         expect(element.find('avatar')[0].attributes['avatar'].value).toEqual('avatar-dummy-data');
       });
 
-      it('sets the width of the avatar to 100%', function () {
-        expect(element.find('avatar')[0].attributes['data-width'].value).toEqual('100%');
+      it('sets the width of the avatar correctly', function () {
+        expect(element.find('avatar')[0].attributes['data-width'].value).toEqual('75%');
       });
     });
 
