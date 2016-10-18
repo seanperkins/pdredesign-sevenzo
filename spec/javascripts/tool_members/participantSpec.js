@@ -9,11 +9,12 @@
         avatar: 'avatar-dummy-data',
         full_name: 'John Doe',
         email: 'john@example.com',
-        status_date: '2016/12/25T00:00:00Z'
+        status_date: '2016-12-25T00:00:00'
       };
 
     beforeEach(function () {
       module('templates');
+      module('angularMoment');
       module('PDRClient', function ($provide) {
         $provide.factory('avatarDirective', function () {
           return {};
@@ -30,10 +31,8 @@
       });
 
       var template = '<participant user="user"></participant>';
+      rootScope.user = user;
       element = compile(template)(rootScope);
-      rootScope.$digest();
-      var scope = element.isolateScope();
-      scope.user = user;
       rootScope.$digest();
     });
 
@@ -46,8 +45,8 @@
         expect(element.find('.email').text()).toEqual('john@example.com');
       });
 
-      xit('binds and formats the date correctly', function () {
-        expect(element.find('.date').text()).toEqual('December 25, 2016');
+      it('binds and formats the date correctly', function () {
+        expect(element.find('.date').text()).toEqual('December 25th, 2016');
       });
     });
 

@@ -10,7 +10,9 @@
       scope: {
         user: '='
       },
-      templateUrl: 'client/tool_members/participant_view.html'
+      templateUrl: 'client/tool_members/participant_view.html',
+      controller: 'ParticipantCtrl',
+      controllerAs: 'vm'
     }
   }
 })();
