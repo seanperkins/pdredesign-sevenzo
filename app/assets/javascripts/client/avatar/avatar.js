@@ -21,16 +21,10 @@
       link: function (scope, element) {
         scope.ngWidth = {'width': scope.width};
         scope.title = '<p class="name">' + scope.name + '</p><p class="role">' + scope.role + '</p>';
-        scope.elm = element;
-      },
-      controller: ['$scope', '$timeout',
-        function ($scope, $timeout) {
-          $timeout(function () {
-            if ($scope.tooltip === "true") {
-              $scope.elm.find("img").tooltip();
-            }
-          });
-        }]
+        if (scope.tooltip === 'true') {
+          element.find('img').tooltip();
+        }
+      }
     };
   }
 })();

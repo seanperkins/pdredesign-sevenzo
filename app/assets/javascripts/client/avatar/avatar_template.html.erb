@@ -1,5 +1,5 @@
 <div class="avatar">
-  <img ng-hide="avatar == ''"
+  <img ng-if="avatar !== ''"
        ng-style="ngWidth"
        ng-src="{{avatar}}"
        class="{{imgclass}}"
@@ -10,7 +10,7 @@
        data-toggle="tooltip"
        data-original-title="">
 
-  <img ng-show="avatar == ''"
+  <img ng-if="avatar === ''"
        ng-src="<%= asset_path 'fallback/default.png' %>"
        ng-style="ngWidth"
        class="{{imgclass}}"
