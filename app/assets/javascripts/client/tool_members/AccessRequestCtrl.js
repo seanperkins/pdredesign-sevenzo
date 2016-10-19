@@ -5,12 +5,15 @@
     .controller('AccessRequestCtrl', AccessRequestCtrl);
 
   AccessRequestCtrl.$inject = [
+    '$scope',
     '$window',
     'ToolMemberService'
   ];
 
-  function AccessRequestCtrl($window, ToolMemberService) {
+  function AccessRequestCtrl($scope, $window, ToolMemberService) {
     var vm = this;
+
+    ToolMemberService.setContext($scope.context);
 
     vm.loadList = function () {
       return ToolMemberService.loadPermissionRequests();

@@ -1,7 +1,7 @@
 <section class="permission-requests">
   <h4>
     Permission Requests
-    <permissions-info data-placement="right"></permissions-info>
+    <permissions-info placement="right"></permissions-info>
   </h4>
   <div ng-if="vm.list.length <= 0">
     <h5>No Permission Requests</h5>
@@ -28,9 +28,13 @@
         </div>
         <div class="col-sm-3">
           <div class="pull-right">
-            <button class="btn btn-xs btn-default" ng-click="vm.denyRequest(requester.access_request_id)">Cancel
+            <button class="btn btn-xs btn-default"
+                    ng-click="vm.denyRequest(requester.access_request_id)">
+              Cancel
             </button>
-            <button class="btn btn-xs btn-primary" ng-click="vm.grantRequest(requester.access_request_id)">Approve
+            <button class="btn btn-xs btn-primary"
+                    ng-click="vm.grantRequest(requester.access_request_id)">
+              Approve
             </button>
           </div>
         </div>
