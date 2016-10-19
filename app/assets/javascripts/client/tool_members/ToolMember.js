@@ -38,7 +38,7 @@
         params: {
           id: '@id'
         },
-        url: UrlService.url('/tool_members/:id')
+        url: UrlService.url('tool_members/:id')
       },
       'requestAccess': {
         method: 'POST',
