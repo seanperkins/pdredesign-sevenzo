@@ -5,12 +5,19 @@ class ToolMemberAccessRequestNotificationWorker
     request = AccessRequest.find_by(id: request_id)
     tool = request.tool
 
-    ToolMember.includes(:user).where(tool: tool, role: ToolMember.member_roles[:facilitator]).uniq.each do |facilitator|
+    ToolMember.includes(:user).where(tool: tool)
+        .where.contains(roles: [ToolMember.member_roles[:facilitator]])
+        .uniq
+        .each do |facilitator|
+      args = [request, facilitator.user.email]
       case tool.class.to_s
+
         when 'Assessment'
-          AccessRequestMailer.request_access(request, facilitator.user.email).deliver_now
+          AccessRequestMailer.send(:request_access, *args).deliver_now
         when 'Inventory'
-          InventoryAccessRequestMailer.request_access(request, facilitator.user.email).deliver_now
+          InventoryAccessRequestMailer.send(:request_access, *args).deliver_now
+        when 'Analysis'
+          AnalysisAccessRequestMailer.send(:request_access, *args).deliver_now
       end
     end
   end

@@ -12,6 +12,7 @@
 #  updated_at  :datetime         not null
 #  response_id :integer
 #  id          :integer          not null, primary key
+#  roles       :integer          default([]), is an Array
 #
 
 FactoryGirl.define do
@@ -31,11 +32,15 @@ FactoryGirl.define do
     end
 
     trait :as_facilitator do
-      role ToolMember.member_roles[:facilitator]
+      roles [ToolMember.member_roles[:facilitator]]
     end
 
     trait :as_participant do
-      role ToolMember.member_roles[:participant]
+      roles [ToolMember.member_roles[:participant]]
+    end
+
+    trait :as_facilitator_and_participant do
+      roles [ToolMember.member_roles[:facilitator], ToolMember.member_roles[:participant]]
     end
   end
 end

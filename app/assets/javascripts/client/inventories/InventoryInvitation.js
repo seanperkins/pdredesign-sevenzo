@@ -6,7 +6,7 @@
   function InventoryInvitation($resource, UrlService) {
     return $resource(UrlService.url('inventories/:inventory_id/invitations'), null,{
       create: {
-        method: 'POST',
+        method: 'POST'
       }
     });
   }

@@ -184,7 +184,7 @@ describe Assessment do
       }
 
       it {
-        expect(assessment.errors[:participant_ids]).to include 'You must assign participants to this assessment.'
+        expect(assessment.errors[:participants]).to include 'must be assigned to this assessment'
       }
     end
 

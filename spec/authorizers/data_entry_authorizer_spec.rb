@@ -3,17 +3,17 @@ require 'spec_helper'
 describe DataEntryAuthorizer do
 
   let(:subject) { DataEntryAuthorizer }
-  let(:member_user) { FactoryGirl.create(:user, :with_district) }
-  let(:participant_user) { FactoryGirl.create(:user, :with_district) }
-  let(:facilitator_user) { FactoryGirl.create(:user, :with_district) }
-  let(:other_user) { FactoryGirl.create(:user, :with_district) }
-  let(:inventory) { FactoryGirl.create(:inventory, :with_data_entries) }
+  let(:member_user) { create(:user, :with_district) }
+  let(:participant_user) { create(:user, :with_district) }
+  let(:facilitator_user) { create(:user, :with_district) }
+  let(:other_user) { create(:user, :with_district) }
+  let(:inventory) { create(:inventory, :with_data_entries) }
 
   before do
     @data_entry = inventory.data_entries.last
-    FactoryGirl.create(:inventory_member, user: member_user, inventory: inventory)
-    FactoryGirl.create(:inventory_member, :as_participant, user: participant_user, inventory: inventory)
-    FactoryGirl.create(:inventory_member, :as_facilitator, user: facilitator_user, inventory: inventory)
+    create(:tool_member, :as_participant, user: member_user, tool: inventory)
+    create(:tool_member, :as_participant, user: participant_user, tool: inventory)
+    create(:tool_member, :as_facilitator, user: facilitator_user, tool: inventory)
   end
 
   context 'read' do

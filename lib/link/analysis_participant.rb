@@ -22,15 +22,15 @@ module Link
     private
     def action
       return response unless consensus?
-      return edit_response unless fully_complete?
+      view_dashboard unless fully_complete?
     end
 
     def response
       {title: 'Complete Analysis', active: true, type: :response}
     end
 
-    def edit_response
-      {title: 'Edit Analysis', active: true, type: :response}
+    def view_dashboard
+      {title: 'View Dashboard', active: true, type: :dashboard}
     end
 
     def report

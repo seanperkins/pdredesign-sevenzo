@@ -2,23 +2,19 @@ require 'spec_helper'
 
 describe AnalysisAuthorizer do
 
-  subject { analysis }
+  subject {
+    analysis
+  }
 
-  let(:member_user) {
+  let(:participant) {
     user = create(:user, :with_district)
-    create(:inventory_member, user: user, inventory: inventory)
+    create(:tool_member, :as_participant, user: user, tool: analysis)
     user
   }
 
-  let(:participant_user) {
+  let(:facilitator) {
     user = create(:user, :with_district)
-    create(:inventory_member, :as_participant, user: user, inventory: inventory)
-    user
-  }
-
-  let(:facilitator_user) {
-    user = create(:user, :with_district)
-    create(:inventory_member, :as_facilitator, user: user, inventory: inventory)
+    create(:tool_member, :as_facilitator, user: user, tool: analysis)
     user
   }
 
@@ -26,100 +22,57 @@ describe AnalysisAuthorizer do
     create(:user, :with_district)
   }
 
-  let(:inventory) {
-    create(:inventory, :with_product_entries)
-  }
-
   let(:analysis) {
-    create(:analysis, inventory: inventory)
+    create(:analysis)
   }
 
   context 'when reading an analysis' do
-    context 'when the user is the inventory owner' do
-      it { is_expected.to be_readable_by(inventory.owner) }
+    context 'when the user is a participant' do
+      it {
+        is_expected.to be_readable_by(participant)
+      }
     end
 
-    context 'when the user is an inventory member' do
-      it { is_expected.to_not be_readable_by(member_user) }
-    end
-
-
-    context 'when the user is an inventory participant' do
-      it { is_expected.to be_readable_by(participant_user) }
-    end
-
-    context 'when the user is an inventory facilitator' do
-      it { is_expected.to be_readable_by(facilitator_user) }
-    end
-
-    context 'when the user is not an inventory member, participant or facilitator' do
-      it { is_expected.to_not be_readable_by(other_user) }
+    context 'when the user is a facilitator' do
+      it {
+        is_expected.to be_readable_by(facilitator)
+      }
     end
   end
 
   context 'when creating an analysis' do
-    context 'when the user is the inventory owner' do
-      it { is_expected.to be_creatable_by(inventory.owner) }
-    end
-
-    context 'when the user is an inventory member' do
-      it { is_expected.to_not be_creatable_by(member_user) }
-    end
-
-    context 'when the user is an inventory participant' do
-      it { is_expected.to be_creatable_by(participant_user) }
-    end
-
-    context 'when the user is an inventory facilitator' do
-      it { is_expected.to be_creatable_by(facilitator_user) }
-    end
-
-    context 'when the user is not an inventory member, participant or facilitator' do
-      it { is_expected.to_not be_creatable_by(other_user) }
+    context 'when the user is not a member of the assessment' do
+      it {
+        is_expected.to be_creatable_by(other_user)
+      }
     end
   end
 
   context 'when updating an analysis' do
-    context 'when the user is the inventory owner' do
-      it { is_expected.to be_updatable_by(inventory.owner) }
+    context 'when the user is a participant' do
+      it {
+        is_expected.not_to be_updatable_by(participant)
+      }
     end
 
-    context 'when the user is an inventory member' do
-      it { is_expected.to_not be_updatable_by(member_user) }
-    end
-
-    context 'when the user is an inventory participant' do
-      it { is_expected.to be_updatable_by(participant_user) }
-    end
-
-    context 'when the user is an inventory facilitator' do
-      it { is_expected.to be_updatable_by(facilitator_user) }
-    end
-
-    context 'when the user is not an inventory member, participant or facilitator' do
-      it { is_expected.to_not be_updatable_by(other_user) }
+    context 'when the user is a facilitator' do
+      it {
+        is_expected.to be_updatable_by(facilitator)
+      }
     end
   end
 
   context 'when deleting an analysis' do
-    context 'when the user is the inventory owner' do
-      it { is_expected.to be_deletable_by(inventory.owner) }
+    context 'when the user is a participant' do
+      it {
+        is_expected.not_to be_deletable_by(participant)
+      }
     end
 
-    context 'when the user is an inventory member' do
-      it { is_expected.to_not be_deletable_by(member_user) }
-    end
-
-    context 'when the user is an inventory participant' do
-      it { is_expected.to be_deletable_by(participant_user) }
-    end
-
-    context 'when the user is an inventory facilitator' do
-      it { is_expected.to be_deletable_by(facilitator_user) }
-    end
-
-    context 'when the user is not an inventory member, participant or facilitator' do
-      it { is_expected.to_not be_deletable_by(other_user) }
+    context 'when the user is a facilitator' do
+      it {
+        is_expected.to be_deletable_by(facilitator)
+      }
     end
   end
 end

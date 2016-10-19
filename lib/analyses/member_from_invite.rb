@@ -22,17 +22,18 @@ module Analyses
     end
 
     def create_member
-      AnalysisMember.find_or_create_by(
-        analysis_id: analysis.id,
-        user_id:     user_found.id)
+      ToolMember.find_or_create_by(
+          tool: analysis,
+          user: user_found,
+          roles: [MembershipHelper.dehumanize_role(@invite.role)])
     end
 
     def create_or_update_user
       user = if user_found
-        update_user(user_found)
-      else
-        create_user
-      end
+               update_user(user_found)
+             else
+               create_user
+             end
       ensure_user_district(user)
       user
     end
@@ -48,11 +49,11 @@ module Analyses
     end
 
     def create_user
-      User.create!(first_name:   invite.first_name,
-                   last_name:    invite.last_name,
-                   email:        invite.email,
-                   password:     generate_password,
-                   team_role:    invite.team_role)
+      User.create!(first_name: invite.first_name,
+                   last_name: invite.last_name,
+                   email: invite.email,
+                   password: generate_password,
+                   team_role: invite.team_role)
     end
 
     def user_found
@@ -66,8 +67,8 @@ module Analyses
     def set_permission
       invite.role = 'facilitator' if invite.user.network_partner?
       return unless invite.role
-      ap = Analyses::Permission.new(analysis: analysis, user: invite.user)
-      ap.role= invite.role
+      ap = ToolMembers::Permission.new(analysis, invite.user)
+      ap.set_and_notify_role(invite.role)
     end
   end
 end

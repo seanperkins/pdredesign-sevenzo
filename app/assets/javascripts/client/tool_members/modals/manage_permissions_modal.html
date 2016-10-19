@@ -1,0 +1,10 @@
+<div class="request-access-modal">
+  <div class="modal-header">
+    <button ng-click="vm.close()" type="button" class="close" aria-hidden="true">×</button>
+    <h2>Permissions</h2>
+  </div>
+  <div class="modal-body">
+    <access-requests context="{{context}}"></access-requests>
+    <manage-permissions context="{{context}}" close-fn="vm.close()"></manage-permissions>
+  </div>
+</div>

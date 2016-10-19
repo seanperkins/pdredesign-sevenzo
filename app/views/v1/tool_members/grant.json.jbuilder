@@ -1,3 +1,6 @@
-json.array! @candidates do |candidate|
-  json.partial! 'v1/tool_members/eligible_tool_members', candidate: candidate
+json.user do
+  json.id @candidate.user_id
+  json.tool_type @candidate.tool_type
+  json.tool_id @candidate.tool_id
+  json.roles @candidate.roles
 end

@@ -87,10 +87,6 @@ PdrServer::Application.routes.draw do
       get 'participant_response', to: 'inventories#participant_response'
       resources :inventory_reminders, only: [:create]
       resources :invitations, controller: 'inventory_invitations', only: [:create]
-      resources :access_requests, controller: 'inventory_access_requests', only: [:index, :create, :update]
-      resource :permissions, controller: 'inventory_permissions', only: [:show, :update]
-      resources :participants, controller: 'inventory_participants', only: [:create, :destroy, :index]
-      get 'participants/all', to: 'inventory_participants#all'
       resources :product_entries, only: [:index, :show, :create, :update, :destroy] do
         member do
           put 'restore', to: 'product_entries#restore'
@@ -112,11 +108,7 @@ PdrServer::Application.routes.draw do
       resources :analyses, only: [:index, :show, :create, :update] do
         put '/', to: "analyses#update", on: :collection
 
-        resources :participants, controller: 'analysis_participants', only: [:create, :destroy, :index] do
-          get :all, on: :collection
-        end
         resources :invitations, controller: 'analysis_invitations', only: [:create]
-        resource :permissions, controller: 'analysis_permissions', only: [:show, :update]
         resource :reminders, controller: 'analysis_reminders', only: [:create]
         resources :learning_questions, only: [:index, :create, :update, :destroy] do
           get :exists, on: :collection
@@ -144,10 +136,14 @@ PdrServer::Application.routes.draw do
     #Tool Members Routes
     post 'tool_members', to: 'tool_members#create'
     get 'tool_members/tool_type/:tool_type/tool_id/:tool_id', to: 'tool_members#show'
+    get 'tool_members/tool_type/:tool_type/tool_id/:tool_id/all', to: 'tool_members#show_all'
+    get 'tool_members/tool_type/:tool_type/tool_id/:tool_id/invitable_members', to: 'tool_members#invitable_members'
+    get 'tool_members/tool_type/:tool_type/tool_id/:tool_id/permission_requests', to: 'tool_members#permission_requests'
     post 'tool_members/tool_type/:tool_type/tool_id/:tool_id/request_access', to: 'tool_members#request_access'
     delete 'tool_members/:id', to: 'tool_members#destroy'
     post 'tool_members/tool_type/:tool_type/tool_id/:tool_id/access_request/:id/grant', to: 'tool_members#grant'
     post 'tool_members/tool_type/:tool_type/tool_id/:tool_id/access_request/:id/deny', to: 'tool_members#deny'
+
 
     get '/analyses', to: 'analyses#all'
 

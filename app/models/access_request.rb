@@ -8,7 +8,7 @@
 #  roles      :string           default([]), is an Array
 #  created_at :datetime
 #  updated_at :datetime
-#  token      :string(255)
+#  token      :string
 #  tool_type  :string
 #
 
@@ -16,8 +16,12 @@ class AccessRequest < ActiveRecord::Base
   belongs_to :tool, polymorphic: :true
   belongs_to :user
 
-  validates :roles, presence: true
-  validates :user_id, presence: true
-  validates :tool_id, presence: true
-  validates :tool_type, presence: true
+  validates_presence_of :roles, :user_id, :tool_id, :tool_type
+
+  before_save :ensure_token
+
+  private
+  def ensure_token
+    self.token ||= SecureRandom.hex(8)
+  end
 end

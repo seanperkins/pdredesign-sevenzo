@@ -1,0 +1,13 @@
+<div class="row-participant">
+  <avatar avatar="{{user.avatar}}" data-width="75%"></avatar>
+  <div class="user-data">
+    <span class="name">{{user.full_name}}</span>
+    <span class="email">{{user.email}}</span>
+  </div>
+  <div class="user-meta">
+    <div class="status">
+      <response-status user="user"></response-status>
+    </div>
+    <span class="date">{{user.status_date | amDateFormat:'MMMM Do, YYYY'}}</span>
+  </div>
+</div>

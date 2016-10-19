@@ -57,7 +57,6 @@ describe ResponseAuthorizer do
         it { is_expected.not_to be_creatable_by(user) }
       end
 
-
       context 'when user is an owner' do
 
         let!(:establish_owner) {
@@ -98,7 +97,7 @@ describe ResponseAuthorizer do
     context 'when the responder is an analysis' do
       context 'when user is not a facilitator' do
         let!(:establish_user_membership) {
-          create(:analysis_member, :as_participant, user: user, analysis: response.responder)
+          create(:tool_member, :as_participant, user: user, tool: response.responder)
         }
 
         let(:response) {
@@ -109,12 +108,12 @@ describe ResponseAuthorizer do
           response.authorizer
         }
 
-        it { is_expected.not_to be_creatable_by(user) }
+        it { is_expected.to be_creatable_by(user) }
       end
 
       context 'when user is a facilitator' do
         let!(:establish_user_membership) {
-          create(:analysis_member, :as_facilitator, user: user, analysis: response.responder)
+          create(:tool_member, :as_facilitator, user: user, tool: response.responder)
         }
 
         let(:response) {
@@ -259,7 +258,7 @@ describe ResponseAuthorizer do
     context 'when the responder is an analysis' do
       context 'when user is not a facilitator' do
         let!(:establish_user_membership) {
-          create(:analysis_member, :as_participant, user: user, analysis: response.responder)
+          create(:tool_member, :as_participant, user: user, tool: response.responder)
         }
 
         let(:response) {
@@ -270,12 +269,12 @@ describe ResponseAuthorizer do
           response.authorizer
         }
 
-        it { is_expected.not_to be_updatable_by(user) }
+        it { is_expected.to be_updatable_by(user) }
       end
 
       context 'when user is a facilitator' do
         let!(:establish_user_membership) {
-          create(:analysis_member, :as_facilitator, user: user, analysis: response.responder)
+          create(:tool_member, :as_facilitator, user: user, tool: response.responder)
         }
 
         let(:response) {
@@ -420,7 +419,7 @@ describe ResponseAuthorizer do
     context 'when the responder is an analysis' do
       context 'when user is not a facilitator' do
         let!(:establish_user_membership) {
-          create(:analysis_member, :as_participant, user: user, analysis: response.responder)
+          create(:tool_member, :as_participant, user: user, tool: response.responder)
         }
 
         let(:response) {
@@ -436,7 +435,7 @@ describe ResponseAuthorizer do
 
       context 'when user is a facilitator' do
         let!(:establish_user_membership) {
-          create(:analysis_member, :as_facilitator, user: user, analysis: response.responder)
+          create(:tool_member, :as_facilitator, user: user, tool: response.responder)
         }
 
         let(:response) {

@@ -3,7 +3,7 @@ require 'spec_helper'
 describe ToolMemberAccessRequestNotificationWorker do
   context 'when the tool is an assessment' do
     let(:access_request) {
-      create(:access_request)
+      create(:access_request, :for_assessment)
     }
 
     let!(:facilitators) {
@@ -38,8 +38,9 @@ describe ToolMemberAccessRequestNotificationWorker do
     }
 
     before(:each) do
-      expect(InventoryAccessRequestMailer).to receive(:request_access).exactly(3).times.and_return(mailer_double)
-      expect(mailer_double).to receive(:deliver_now).exactly(3).times
+      # One additional facilitator exists since the inventory owner is also a facilitator
+      expect(InventoryAccessRequestMailer).to receive(:request_access).exactly(4).times.and_return(mailer_double)
+      expect(mailer_double).to receive(:deliver_now).exactly(4).times
     end
 
     it {

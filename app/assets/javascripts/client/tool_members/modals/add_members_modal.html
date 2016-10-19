@@ -1,0 +1,12 @@
+<div class="request-access-modal">
+  <div class="modal-header">
+    <button ng-click="vm.close()" type="button" class="close" aria-hidden="true">×</button>
+    <h2>Current Members</h2>
+  </div>
+  <add-users context="{{context}}"></add-users>
+  <div class='modal-footer'>
+    <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="vm.close()">
+      <span>Done</span>
+    </button>
+  </div>
+</div>

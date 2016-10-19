@@ -3,10 +3,10 @@ require 'spec_helper'
 describe Inventories::MemberFromInvite do
   describe '#execute' do
     context 'inviting existing network partner as participant' do
-      let(:inventory) { FactoryGirl.create(:inventory) }
-      let(:existing_user) { FactoryGirl.create(:user, :with_network_partner_role, :with_district) }
+      let(:inventory) { create(:inventory) }
+      let(:existing_user) { create(:user, :with_network_partner_role, :with_district) }
       let!(:original_user_district) { existing_user.districts.first }
-      let(:invitation) { FactoryGirl.create(:inventory_invitation, :as_participant, inventory_id: inventory.id ,email: existing_user.email) }
+      let(:invitation) { create(:inventory_invitation, :as_participant, inventory_id: inventory.id ,email: existing_user.email) }
 
       before(:each) do
          Inventories::MemberFromInvite.new(invitation).execute
@@ -14,7 +14,7 @@ describe Inventories::MemberFromInvite do
       end
 
       it 'overrides the role to be facilitator' do
-        expect(inventory.facilitator?(user: existing_user)).to be true
+        expect(inventory.facilitator?(existing_user)).to be true
       end
 
       it 'sets user district' do
@@ -31,22 +31,22 @@ describe Inventories::MemberFromInvite do
     end
 
     context 'inviting non network partner as participant' do
-      let(:inventory) { FactoryGirl.create(:inventory) }
-      let(:existing_user) { FactoryGirl.create(:user, :without_role) }
-      let(:invitation) { FactoryGirl.create(:inventory_invitation, :as_participant, inventory: inventory, email: existing_user.email) }
+      let(:inventory) { create(:inventory) }
+      let(:existing_user) { create(:user, :without_role) }
+      let(:invitation) { create(:inventory_invitation, :as_participant, inventory: inventory, email: existing_user.email) }
 
       before(:each) do
         Inventories::MemberFromInvite.new(invitation).execute
       end
 
       it 'adds user as participant' do
-        expect(inventory.participant?(user: existing_user)).to be true
+        expect(inventory.participant?(existing_user)).to be true
       end
     end
 
     context 'inviting non-existent user ignoring email case' do
-      let(:inventory) { FactoryGirl.create(:inventory) }
-      let(:invitation) { FactoryGirl.create(:inventory_invitation, :as_participant, inventory: inventory, email: 'John_Doe@example.com') }
+      let(:inventory) { create(:inventory) }
+      let(:invitation) { create(:inventory_invitation, :as_participant, inventory: inventory, email: 'John_Doe@example.com') }
       let(:user) { User.find_by(email: 'john_doe@example.com') }
 
       before(:each) do

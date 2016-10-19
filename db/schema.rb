@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160923152203) do
+ActiveRecord::Schema.define(version: 20161005175736) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -19,10 +19,10 @@ ActiveRecord::Schema.define(version: 20160923152203) do
   create_table "access_requests", force: :cascade do |t|
     t.integer  "tool_id"
     t.integer  "user_id"
-    t.string   "roles",                  default: [], array: true
+    t.string   "roles",      default: [], array: true
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "token",      limit: 255
+    t.string   "token"
     t.string   "tool_type"
   end
 
@@ -604,14 +604,16 @@ ActiveRecord::Schema.define(version: 20160923152203) do
     t.string   "tool_type"
     t.integer  "tool_id"
     t.integer  "role"
-    t.integer  "user_id",     null: false
+    t.integer  "user_id",                  null: false
     t.datetime "invited_at"
     t.datetime "reminded_at"
-    t.datetime "created_at",  null: false
-    t.datetime "updated_at",  null: false
+    t.datetime "created_at",               null: false
+    t.datetime "updated_at",               null: false
     t.integer  "response_id"
+    t.integer  "roles",       default: [],              array: true
   end
 
+  add_index "tool_members", ["roles"], name: "index_tool_members_on_roles", using: :gin
   add_index "tool_members", ["tool_id", "tool_type"], name: "index_tool_members_on_tool_id_and_tool_type", using: :btree
   add_index "tool_members", ["user_id", "role", "tool_id", "tool_type"], name: "idx_tool_members_unique", unique: true, using: :btree
 

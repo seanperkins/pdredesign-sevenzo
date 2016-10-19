@@ -6,7 +6,6 @@ describe('Directive: ResponseStatus', function() {
       isolatedScope;
 
   beforeEach(module('PDRClient'));
-
   beforeEach(inject(function($injector, $rootScope) {
     $compile = $injector.get('$compile');
     $scope   = $rootScope.$new();
@@ -28,58 +27,33 @@ describe('Directive: ResponseStatus', function() {
 
   }));
 
-
   it('should only show mail link when status is invited', function(){
-    expect(isolatedScope.showMailLink()).toEqual(true);
+    expect(isolatedScope.vm.showMailLink()).toEqual(true);
     $scope.user['status'] = 'Completed';
-    expect(isolatedScope.showMailLink()).toEqual(false);
-  });
-
-  it('should show the invite email link', function(){
-    expect($(element).find('.invite-email').hasClass('ng-hide')).toEqual(false);
-    expect($(element).find('.user-status').hasClass('ng-hide')).toEqual(true);
-  });
-
-  it('hides the user status label', function(){
-    $scope.user.status = 'other';
-
-    isolatedScope.$digest();
-    expect($(element).find('.invite-email').hasClass('ng-hide')).toEqual(true);
-    expect($(element).find('.user-status').hasClass('ng-hide')).toEqual(false);
+    expect(isolatedScope.vm.showMailLink()).toEqual(false);
   });
 
   it('computes the correct URL', function(){ 
-    expect(isolatedScope.endpoint()).toEqual('/v1/assessments/1/participants/1/mail');
+    expect(isolatedScope.vm.endpoint()).toEqual('/v1/assessments/1/participants/1/mail');
   });
 
   it('gets an emails body from the api endpoint', function(){
     $httpBackend.expectGET('/v1/assessments/1/participants/1/mail').respond('expected body');
-    var request = isolatedScope.getEmailBody();
+    var request = isolatedScope.vm.getEmailBody();
     request.then(function(response){
       expect(response.data).toEqual('expected body');
     });
 
     $httpBackend.flush();
-
   });
 
   it('redirects to a mailto link', function(){
     $httpBackend.expectGET('/v1/assessments/1/participants/1/mail').respond('expected body');
-    spyOn(isolatedScope, 'triggerMailTo');
-    isolatedScope.sendEmail();
+    spyOn(isolatedScope.vm, 'triggerMailTo');
+    isolatedScope.vm.sendEmail();
     $httpBackend.flush();
 
     var expectedLink = "mailto:user@example.com?subject=Invitation&body=expected%20body";
-    expect(isolatedScope.triggerMailTo).toHaveBeenCalledWith(expectedLink);
+    expect(isolatedScope.vm.triggerMailTo).toHaveBeenCalledWith(expectedLink);
   });
-
-  it('returns the correct icon', function(){
-    expect(isolatedScope.statusMessageIcon('invited')).toEqual('fa-envelope-o');
-    expect(isolatedScope.statusMessageIcon('completed')).toEqual('fa-check');
-    expect(isolatedScope.statusMessageIcon('in_progress')).toEqual('fa-spinner');
-    expect(isolatedScope.statusMessageIcon('other')).toEqual('fa-envelope-o');
-  });
-
-  
-
 });

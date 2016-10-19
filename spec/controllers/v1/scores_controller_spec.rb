@@ -100,11 +100,11 @@ describe V1::ScoresController do
 
       context 'when the tool is an analysis' do
         let(:facilitator) {
-          create(:analysis_member)
+          tool.facilitators.first
         }
 
         let(:tool) {
-          create(:analysis, inventory: create(:inventory), facilitators: [facilitator])
+          create(:analysis, :with_facilitators, inventory: create(:inventory))
         }
 
         let(:response_obj) {
@@ -292,11 +292,11 @@ describe V1::ScoresController do
 
       context 'when the tool is an analysis' do
         let(:facilitator) {
-          create(:analysis_member)
+          tool.facilitators.first
         }
 
         let(:tool) {
-          create(:analysis, inventory: create(:inventory), facilitators: [facilitator], rubric: rubric)
+          create(:analysis, :with_facilitators, rubric: rubric)
         }
 
         let(:response_obj) {

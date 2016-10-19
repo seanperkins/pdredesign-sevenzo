@@ -17,6 +17,7 @@ class V1::AnalysisConsensusController < ApplicationController
 
     render nothing: true
   end
+  authority_actions update: :read
 
   def show
     @response = fetch_response

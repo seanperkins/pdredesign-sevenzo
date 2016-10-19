@@ -7,17 +7,17 @@
   InventoryDashboardCtrl.$inject = [
     '$modal',
     '$scope',
-    'CreateService',
+    'ToolMemberService',
     'inventory',
     'inventoryMessages'
   ];
 
-  function InventoryDashboardCtrl($modal, $scope, CreateService, inventory, inventoryMessages) {
+  function InventoryDashboardCtrl($modal, $scope, ToolMemberService, inventory, inventoryMessages) {
     var vm = this;
 
-    CreateService.setContext('inventory');
+    ToolMemberService.setContext('inventory');
     vm.inventory = inventory;
-    vm.participants = CreateService.loadParticipants();
+    vm.members = ToolMemberService.loadParticipants();
     vm.messages = inventoryMessages.messages;
 
     vm.createReminder = function() {
@@ -32,7 +32,7 @@
     });
 
     $scope.$on('update_participants', function() {
-      vm.participants = CreateService.loadParticipants();
+      vm.members = ToolMemberService.loadParticipants();
     });
   }
 })();

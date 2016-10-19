@@ -8,7 +8,7 @@
 #  roles      :string           default([]), is an Array
 #  created_at :datetime
 #  updated_at :datetime
-#  token      :string(255)
+#  token      :string
 #  tool_type  :string
 #
 
@@ -34,8 +34,12 @@ FactoryGirl.define do
       roles { [:participant, :facilitator] }
     end
 
+    trait :for_assessment do
+      association :tool, factory: [:assessment, :with_participants]
+    end
+
     trait :for_inventory do
-      association :tool, factory: [:inventory, :with_members]
+      association :tool, factory: [:inventory, :with_participants]
     end
 
     trait :for_analysis do

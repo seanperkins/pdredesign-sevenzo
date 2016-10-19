@@ -29,14 +29,14 @@
         }
       }
     }).state('inventory_analysis_dashboard', {
-      url: '/inventories/:inventory_id/analyses/:id/dashboard',
+      url: '/inventories/:inventory_id/analyses/:analysis_id/dashboard',
       authenticate: true,
       resolve: {
         inventory: ['$stateParams', 'Inventory', function($stateParams, Inventory) {
           return Inventory.get({inventory_id: $stateParams.inventory_id}).$promise;
         }],
         current_analysis: ['$stateParams', 'Analysis', function($stateParams, Analysis) {
-          return Analysis.get({inventory_id: $stateParams.inventory_id, id: $stateParams.id}).$promise;
+          return Analysis.get({inventory_id: $stateParams.inventory_id, id: $stateParams.analysis_id}).$promise;
         }]
       },
       views: {
@@ -46,7 +46,7 @@
           templateUrl: 'client/inventories/analysis_dashboard.html',
           resolve: {
             analysisMessages: ['$stateParams', 'AnalysisMessage', function($stateParams, AnalysisMessage) {
-              return AnalysisMessage.get({analysis_id: $stateParams.id}).$promise;
+              return AnalysisMessage.get({analysis_id: $stateParams.analysis_id}).$promise;
             }]
           }
         },
@@ -98,7 +98,7 @@
         }
       }
     }).state('inventory_analysis_assign', {
-      url: '/inventories/:inventory_id/analyses/:id/assign',
+      url: '/inventories/:inventory_id/analyses/:analysis_id/assign',
       authenticate: true,
       showFullWidth: true,
       resolve: {
@@ -106,7 +106,7 @@
           return Inventory.get({inventory_id: $stateParams.inventory_id}).$promise;
         }],
         current_analysis: ['$stateParams', 'Analysis', function($stateParams, Analysis) {
-          return Analysis.get({inventory_id: $stateParams.inventory_id, id: $stateParams.id}).$promise;
+          return Analysis.get({inventory_id: $stateParams.inventory_id, id: $stateParams.analysis_id}).$promise;
         }]
       },
       views: {
@@ -117,22 +117,22 @@
         }
       }
     }).state('inventory_analysis_report', {
-      url: '/inventories/:inventory_id/analyses/:id/report',
+      url: '/inventories/:inventory_id/analyses/:analysis_id/report',
       authenticate: true,
       resolve: {
         current_analysis: ['$stateParams', 'Analysis', function($stateParams, Analysis) {
-          return Analysis.get({inventory_id: $stateParams.inventory_id, id: $stateParams.id}).$promise;
+          return Analysis.get({inventory_id: $stateParams.inventory_id, id: $stateParams.analysis_id}).$promise;
         }],
         analysis_comparison_data: ['$stateParams', 'AnalysisReport', function($stateParams, AnalysisReport) {
           return AnalysisReport.comparisonData({
             inventory_id: $stateParams.inventory_id,
-            id: $stateParams.id
+            id: $stateParams.analysis_id
           }).$promise;
         }],
         analysis_review_header_data: ['$stateParams', 'AnalysisReport', function($stateParams, AnalysisReport) {
           return AnalysisReport.reviewHeaderData({
             inventory_id: $stateParams.inventory_id,
-            id: $stateParams.id
+            id: $stateParams.analysis_id
           }).$promise;
         }]
       },

@@ -19,6 +19,7 @@ class V1::AnalysisInvitationsController < ApplicationController
     Analyses::MemberFromInvite.new(invite).execute
 
     queue_worker(invite.id) if send_invite
+    invite.analysis.save if send_invite
     render nothing: true
   end
 
@@ -37,10 +38,10 @@ class V1::AnalysisInvitationsController < ApplicationController
   end
 
   def inventory
-    current_user.inventories.find(params[:inventory_id])
+    Inventory.find_by(id: params[:inventory_id])
   end
 
   def analysis
-    inventory.analyses.find(params[:analysis_id])
+    inventory.analyses.find_by(id: params[:analysis_id])
   end
 end

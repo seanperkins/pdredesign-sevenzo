@@ -47,7 +47,7 @@
       } else if (service.context === 'analysis') {
         return AnalysisLearningQuestion.get({
           inventory_id: service.extractId(),
-          analysis_id: service.extractContextId()
+          analysis_id: $stateParams.analysis_id
         }).$promise;
       }
     };
@@ -66,7 +66,7 @@
       } else if (service.context === 'analysis') {
         return AnalysisLearningQuestion.delete({
           inventory_id: service.extractId(),
-          analysis_id: service.extractContextId(),
+          analysis_id: $stateParams.analysis_id,
           id: model.id
         }).$promise;
       }
@@ -88,7 +88,7 @@
       } else if (service.context === 'analysis') {
         return AnalysisLearningQuestion.update({
           inventory_id: service.extractId(),
-          analysis_id: service.extractContextId(),
+          analysis_id: $stateParams.analysis_id,
           id: model.id,
           learning_question: {body: model.body}
         }).$promise;
@@ -107,7 +107,7 @@
       } else if(service.context === 'analysis') {
         return AnalysisLearningQuestion.create({
           inventory_id: service.extractId(),
-          analysis_id: service.extractContextId()
+          analysis_id: $stateParams.analysis_id
         }, {learning_question: {body: model.body}}).$promise;
       }
     };
