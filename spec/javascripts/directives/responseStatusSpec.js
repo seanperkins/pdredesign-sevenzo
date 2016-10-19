@@ -42,6 +42,24 @@
       it('binds the appropriate endpoint URL', function () {
         expect(element.isolateScope().vm.endpoint()).toEqual('/v1/assessments/1/participants/1/mail');
       });
+
+      describe('when the tool is an assessment', function () {
+        describe('when the user clicks the email link', function () {
+          var vm;
+
+          beforeEach(function () {
+            vm = element.isolateScope().vm;
+            spyOn(vm, 'triggerMailTo');
+            $httpBackend.expectGET('/v1/assessments/1/participants/1/mail').respond('expected body <b>with elements&stuff</b>');
+            element.find('a').trigger('click');
+            $httpBackend.flush();
+          });
+
+          it('invokes the window redirection', function () {
+            expect(vm.triggerMailTo).toHaveBeenCalledWith('mailto:user@example.com?subject=Invitation&body=expected%20body%20%3Cb%3Ewith%20elements%26stuff%3C%2Fb%3E');
+          });
+        });
+      });
     });
 
     describe('when the user status is not set to invited', function () {
@@ -66,27 +84,6 @@
       it('binds the human status value', function () {
         expect(element.find('.user-status').text().trim()).toEqual('Pending');
       });
-    });
-
-
-    xit('gets an emails body from the api endpoint', function () {
-      $httpBackend.expectGET('/v1/assessments/1/participants/1/mail').respond('expected body');
-      var request = isolatedScope.vm.getEmailBody();
-      request.then(function (response) {
-        expect(response.data).toEqual('expected body');
-      });
-
-      $httpBackend.flush();
-    });
-
-    xit('redirects to a mailto link', function () {
-      $httpBackend.expectGET('/v1/assessments/1/participants/1/mail').respond('expected body');
-      spyOn(isolatedScope.vm, 'triggerMailTo');
-      isolatedScope.vm.sendEmail();
-      $httpBackend.flush();
-
-      var expectedLink = "mailto:user@example.com?subject=Invitation&body=expected%20body";
-      expect(isolatedScope.vm.triggerMailTo).toHaveBeenCalledWith(expectedLink);
     });
   });
 })();

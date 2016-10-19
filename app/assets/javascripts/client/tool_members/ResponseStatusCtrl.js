@@ -23,7 +23,7 @@
 
     vm.sendEmail = function () {
       vm.getEmailBody().then(function (response) {
-        var body = escape(response.data);
+        var body = encodeURIComponent(response.data);
         var link = "mailto:" + $scope.user.email + "?subject=Invitation&body=" + body;
         vm.triggerMailTo(link);
       });
