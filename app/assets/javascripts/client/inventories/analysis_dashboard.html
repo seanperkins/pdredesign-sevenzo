@@ -13,25 +13,29 @@
         <div class="col-md-12 header">
           <h2 class="participant-count"
               ng-pluralize count="analysisDashboard.currentAnalysis.participant_count"
-                           when="{'0': 'No Participants',
+              when="{'0': 'No Participants',
                                   '1': '{} Participant',
                                   'other': '{} Participants'}">
           </h2>
         </div>
       </div>
-      <hr class="dashboard-hr" />
+      <hr class="dashboard-hr"/>
       <div class="participant-list">
         <participant ng-repeat="user in analysisDashboard.participants" user="user"></participant>
       </div>
     </div>
     <div class="row">
       <member-list members="analysisDashboard.members"></member-list>
-      <manage-members context="analysis" ng-if="analysisDashboard.inventory.is_facilitator_or_participant"></manage-members>
+      <manage-members context="analysis"
+                      automatically-send-invitation="true"
+                      ng-if="analysisDashboard.inventory.is_facilitator_or_participant">
+
+      </manage-members>
     </div>
     <div id="messages">
       <div class="col-md-12 header">
         <h2 ng-pluralize count="analysisDashboard.messages.length"
-                          when="{'0': 'No Sent Messages',
+            when="{'0': 'No Sent Messages',
                                  '1': '{} Sent Message',
                                  'other': '{} Sent Messages'}">
 

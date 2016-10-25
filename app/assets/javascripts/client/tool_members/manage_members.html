@@ -1,11 +1,15 @@
 <div class="row">
   <div class="col-lg-12">
-    <add-users-link context="{{context}}"></add-users-link>
+    <add-users-link context="{{context}}"
+                    automatically-send-invitation="{{automaticallySendInvitation}}">
+    </add-users-link>
   </div>
   <div class="col-lg-12">
     <manage-permissions-link context="{{context}}"></manage-permissions-link>
   </div>
   <div class="col-lg-12">
-    <invite-user-link context="{{context}}"></invite-user-link>
+    <invite-user-link context="{{context}}"
+                      automatically-send-invitation="{{automaticallySendInvitation}}">
+    </invite-user-link>
   </div>
 </div>

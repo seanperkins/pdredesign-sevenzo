@@ -3,8 +3,10 @@
     <button ng-click="vm.close()" type="button" class="close" aria-hidden="true">×</button>
     <h2>Current Members</h2>
   </div>
-  <add-users context="{{context}}"></add-users>
-  <div class='modal-footer'>
+  <add-users context="{{context}}"
+             automatically-send-invitation="{{automaticallySendInvitation}}">
+  </add-users>
+  <div class="modal-footer">
     <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="vm.close()">
       <span>Done</span>
     </button>

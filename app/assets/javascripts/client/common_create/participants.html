@@ -8,8 +8,10 @@
     principals. You may add participants later on from the dashboard.</p>
 
   <p ng-if="!createParticipants.isNetworkPartner()" class="section-subheader">
-    Invite a team of colleagues from your district to participate in the {{ createParticipants.displayToolType() }}. We recommend inviting 1-2 representatives from
-    different roles and functions involved with PD, including: Teaching & Learning, Human Resources, Curriculum & Instruction, Data &
+    Invite a team of colleagues from your district to participate in the {{ createParticipants.displayToolType() }}. We
+    recommend inviting 1-2 representatives from
+    different roles and functions involved with PD, including: Teaching & Learning, Human Resources, Curriculum &
+    Instruction, Data &
     Accountability, Finance, IT, teachers, and principals. You may add participants later on from the dashboard.</p>
 
   <div class="row row-participant-headers">
@@ -50,5 +52,7 @@
       <manage-participants></manage-participants>
     </div>
   </div>
-  <manage-members context="{{createParticipants.currentContext}}" ng-if="createParticipants.currentContext !== 'assessment'"></manage-members>
+  <manage-members context="{{createParticipants.currentContext}}"
+                  automatically-send-invitation="false"
+                  ng-if="createParticipants.currentContext !== 'assessment'"></manage-members>
 </div>

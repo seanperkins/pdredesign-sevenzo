@@ -10,13 +10,16 @@ class V1::ToolMembersController < ApplicationController
                                                tool_id: tool_member_params[:tool_id],
                                                user_id: tool_member_params[:user_id])
     authorize_action_for tool_member
+    send_invite = tool_member_params.delete(:send_invite)
     previous_roles = tool_member.roles
     tool_member.roles = tool_member_params[:roles]
     new_record = tool_member.new_record?
     if tool_member.save
-      notifiable_roles(previous_roles, tool_member.roles).each { |role|
-        send_access_granted_email(tool_member, MembershipHelper.humanize_role(role))
-      }
+      if send_invite
+        notifiable_roles(previous_roles, tool_member.roles).each { |role|
+          send_access_granted_email(tool_member, MembershipHelper.humanize_role(role))
+        }
+      end
       tool_member.tool.save
       render nothing: true, status: (new_record ? :created : :no_content)
     else
@@ -167,7 +170,7 @@ class V1::ToolMembersController < ApplicationController
   end
 
   def tool_member_params
-    params.require(:tool_member).permit(:tool_type, :tool_id, :user_id, roles: [])
+    params.require(:tool_member).permit(:tool_type, :tool_id, :user_id, :send_invite, roles: [])
   end
 
   def notifiable_roles(original_roles, new_roles)

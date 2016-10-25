@@ -26,7 +26,7 @@
     };
 
     vm.sendInvitation = function () {
-      vm.inviteUser.send_invite = true;
+      vm.inviteUser.send_invite = $scope.automaticallySendInvitation === 'true';
       ToolMemberService.sendInvitation(vm.inviteUser)
         .then(function () {
           $rootScope.$broadcast('update_participants');

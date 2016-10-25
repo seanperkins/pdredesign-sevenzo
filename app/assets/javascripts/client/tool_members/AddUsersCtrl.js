@@ -28,6 +28,7 @@
 
     vm.addUser = function (user) {
       var roles = [1];
+      user.send_invite = $scope.automaticallySendInvitation === 'true';
       ToolMemberService.createParticipant(user, roles)
         .then(function() {
           $rootScope.$broadcast('update_participants');
