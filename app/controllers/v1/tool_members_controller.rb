@@ -15,7 +15,7 @@ class V1::ToolMembersController < ApplicationController
     tool_member.roles = tool_member_params[:roles]
     new_record = tool_member.new_record?
     if tool_member.save
-      if send_invite
+      if send_invite == 'true'
         notifiable_roles(previous_roles, tool_member.roles).each { |role|
           send_access_granted_email(tool_member, MembershipHelper.humanize_role(role))
         }
