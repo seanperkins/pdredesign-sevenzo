@@ -8,7 +8,8 @@
     return {
       restrict: 'E',
       scope: {
-        'context': '@'
+        context: '@',
+        automaticallySendInvitation: '@'
       },
       templateUrl: 'client/tool_members/manage_members.html'
     }

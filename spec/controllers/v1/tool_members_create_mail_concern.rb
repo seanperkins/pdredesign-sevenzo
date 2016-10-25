@@ -28,13 +28,62 @@ shared_examples_for 'a created tool member with a specific tool' do |tool_sym|
     end
   }
 
+  context 'when the entity to be created does not specify the send_invite parameter' do
+    before(:each) do
+      sign_in user
+      post :create, tool_member: {tool_type: tool.class.to_s.upcase,
+                                  tool_id: tool.id,
+                                  roles: [ToolMember.member_roles[:participant]],
+                                  user_id: candidate.id
+      }
+    end
+
+    it {
+      is_expected.to respond_with(:created)
+    }
+
+    it {
+      expect(ToolMember.where(tool: tool, user: candidate).size).to eq 1
+    }
+
+    it {
+      expect(notification_worker.jobs.size).to eq 0
+    }
+  end
+
+  context 'when the entity to be created specifies the send_invite parameter as false' do
+    before(:each) do
+      sign_in user
+      post :create, tool_member: {tool_type: tool.class.to_s.upcase,
+                                  tool_id: tool.id,
+                                  roles: [ToolMember.member_roles[:participant]],
+                                  user_id: candidate.id,
+                                  send_invite: 'false'
+      }
+    end
+
+    it {
+      is_expected.to respond_with(:created)
+    }
+
+    it {
+      expect(ToolMember.where(tool: tool, user: candidate).size).to eq 1
+    }
+
+    it {
+      expect(notification_worker.jobs.size).to eq 0
+    }
+  end
+
   context 'when the entity to be created is valid (uppercase tool type)' do
     before(:each) do
       sign_in user
       post :create, tool_member: {tool_type: tool.class.to_s.upcase,
                                   tool_id: tool.id,
                                   roles: [ToolMember.member_roles[:participant]],
-                                  user_id: candidate.id}
+                                  user_id: candidate.id,
+                                  send_invite: 'true'
+      }
     end
 
     it {
@@ -68,7 +117,9 @@ shared_examples_for 'a created tool member with a specific tool' do |tool_sym|
       post :create, tool_member: {tool_type: tool.class.to_s.downcase,
                                   tool_id: tool.id,
                                   roles: [ToolMember.member_roles[:participant]],
-                                  user_id: candidate.id}
+                                  user_id: candidate.id,
+                                  send_invite: 'true'
+      }
     end
 
     it {

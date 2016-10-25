@@ -2,21 +2,26 @@ class V1::ToolMembersController < ApplicationController
   include MembershipHelper
 
   before_action :authenticate_user!
-  before_action :normalize_strong_param_tool_type!, only: [:create, :update]
-  before_action :normalize_path_param_tool_type!, except: [:destroy, :create, :batch_update]
+  before_action :normalize_strong_param_tool_type!, only: [:create]
+  before_action :normalize_path_param_tool_type!, except: [:destroy, :create]
 
   def create
     tool_member = ToolMember.find_or_create_by(tool_type: tool_member_params[:tool_type],
                                                tool_id: tool_member_params[:tool_id],
                                                user_id: tool_member_params[:user_id])
     authorize_action_for tool_member
+
     previous_roles = tool_member.roles
     tool_member.roles = tool_member_params[:roles]
     new_record = tool_member.new_record?
+    send_invite = tool_member_params.delete(:send_invite)
+
     if tool_member.save
-      notifiable_roles(previous_roles, tool_member.roles).each { |role|
-        send_access_granted_email(tool_member, MembershipHelper.humanize_role(role))
-      }
+      if send_invite == 'true'
+        notifiable_roles(previous_roles, tool_member.roles).each { |role|
+          send_access_granted_email(tool_member, MembershipHelper.humanize_role(role))
+        }
+      end
       tool_member.tool.save
       render nothing: true, status: (new_record ? :created : :no_content)
     else
@@ -75,11 +80,9 @@ class V1::ToolMembersController < ApplicationController
 
     validate_access_request
 
-    if @request.errors.empty?
-      if @request.save
-        send_access_requested_email(@request)
-        return render nothing: true, status: :created
-      end
+    if @request.errors.empty? && @request.save
+      send_access_requested_email(@request)
+      return render nothing: true, status: :created
     end
 
     @errors = @request.errors
@@ -130,6 +133,10 @@ class V1::ToolMembersController < ApplicationController
     tool_member = ToolMember.find_by(tool_type: params[:tool_type],
                                      tool_id: params[:tool_id])
 
+    unless tool_member
+      return render nothing: true, status: :not_found
+    end
+
     authorize_action_for tool_member
     tool = tool_member.tool
 
@@ -138,8 +145,9 @@ class V1::ToolMembersController < ApplicationController
     end
 
     @users = User.includes(:districts).where(districts: {id: tool.district_id})
-                 .where.not(team_role: 'network_partner', id: ToolMember.where(tool_type: params[:tool_type],
-                                                                               tool_id: params[:tool_id]).select(:user_id).pluck(:user_id))
+                 .where('team_role IS NULL OR team_role <> ?', 'network_partner')
+                 .where.not(id: ToolMember.where(tool_type: params[:tool_type],
+                                                 tool_id: params[:tool_id]).select(:user_id).pluck(:user_id))
   end
 
   authority_actions invitable_members: :create
@@ -167,7 +175,7 @@ class V1::ToolMembersController < ApplicationController
   end
 
   def tool_member_params
-    params.require(:tool_member).permit(:tool_type, :tool_id, :user_id, roles: [])
+    params.require(:tool_member).permit(:tool_type, :tool_id, :user_id, :send_invite, roles: [])
   end
 
   def notifiable_roles(original_roles, new_roles)

@@ -9,7 +9,11 @@
   </div>
   <div class="row">
     <member-list members="inventoryDashboard.members"></member-list>
-    <manage-members context="inventory" ng-if="inventoryDashboard.inventory.is_facilitator_or_participant"></manage-members>
+    <manage-members context="inventory"
+                    automatically-send-invitation="true"
+                    ng-if="inventoryDashboard.inventory.is_facilitator_or_participant">
+
+    </manage-members>
     <div id="messages">
       <div class="col-md-12 header">
         <h2 ng-pluralize count="inventoryDashboard.messages.length"
