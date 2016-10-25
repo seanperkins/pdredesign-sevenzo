@@ -87,14 +87,10 @@ describe V1::ToolMembersController do
       }
 
       let(:tool) {
-        create(:assessment)
+        create(:inventory, :with_participants, :with_facilitators, participants: 10, facilitators: 20)
       }
 
       context 'when the passed tool name is invalid' do
-        let!(:participant_user) {
-          create(:tool_member, :as_participant, tool: tool, user: user)
-        }
-
         before(:each) do
           sign_in user
           get :show, tool_type: 'i_do_not_exist', tool_id: tool.id
@@ -110,64 +106,73 @@ describe V1::ToolMembersController do
       end
 
       context 'when the passed tool name is valid' do
-        context 'when the user is a participant on the tool' do
-          let!(:participant_user) {
-            create(:tool_member, :as_participant, tool: tool, user: user)
-          }
 
-          before(:each) do
-            sign_in user
-            get :show, tool_type: 'assessment', tool_id: tool.id
-          end
-
-          it {
-            is_expected.to respond_with :ok
-          }
-
-          it {
-            expect(json.length).to eq 1
-          }
+        before(:each) do
+          sign_in user
+          get :show, tool_type: tool.class.to_s, tool_id: tool.id
         end
 
-        context 'when the user is a facilitator on the tool' do
-          context 'when the user is not also a participant' do
-            let!(:facilitator_user) {
-              create(:tool_member, :as_facilitator, tool: tool, user: user)
-            }
+        it {
+          is_expected.to respond_with :ok
+        }
 
-            before(:each) do
-              sign_in user
-              get :show, tool_type: 'assessment', tool_id: tool.id
-            end
+        it {
+          expect(json.length).to eq 10
+        }
+      end
+    end
+  end
 
-            it {
-              is_expected.to respond_with :ok
-            }
+  describe 'GET #show_all' do
+    context 'when the user is not authenticated' do
+      before(:each) do
+        sign_out :user
 
-            it {
-              expect(json.length).to eq 0
-            }
-          end
+        get :show_all, tool_type: 'assessment', tool_id: 1
+      end
 
-          context 'when the user is also a participant' do
-            let!(:facilitator_user) {
-              create(:tool_member, :as_facilitator_and_participant, tool: tool, user: user)
-            }
+      it {
+        is_expected.to respond_with :unauthorized
+      }
+    end
 
-            before(:each) do
-              sign_in user
-              get :show, tool_type: 'assessment', tool_id: tool.id
-            end
+    context 'when the user is authenticated' do
+      let(:user) {
+        create(:user)
+      }
 
-            it {
-              is_expected.to respond_with :ok
-            }
+      let(:tool) {
+        create(:inventory, :with_facilitators, :with_participants, facilitators: 12, participants: 20)
+      }
 
-            it {
-              expect(json.length).to eq 1
-            }
-          end
+      context 'when the passed tool name is invalid' do
+        before(:each) do
+          sign_in user
+          get :show_all, tool_type: 'i_do_not_exist', tool_id: tool.id
         end
+
+        it {
+          is_expected.to respond_with :ok
+        }
+
+        it {
+          expect(json.length).to eq 0
+        }
+      end
+
+      context 'when the passed tool name is valid' do
+        before(:each) do
+          sign_in user
+          get :show_all, tool_type: tool.class.to_s, tool_id: tool.id
+        end
+
+        it {
+          is_expected.to respond_with :ok
+        }
+
+        it {
+          expect(json.length).to eq 33
+        }
       end
     end
   end
@@ -568,12 +573,12 @@ describe V1::ToolMembersController do
             let!(:access_request_id) {
               access_request.id
             }
-            
+
             before(:each) do
               sign_in user
               post :grant, tool_type: tool.class.to_s, tool_id: tool.id, id: access_request.id
             end
-            
+
             it {
               is_expected.to respond_with :ok
             }
@@ -766,6 +771,81 @@ describe V1::ToolMembersController do
 
           it {
             expect(AccessRequest.find_by(id: access_request_id)).to be nil
+          }
+        end
+      end
+    end
+  end
+
+  describe 'GET #invitable_members' do
+    context 'when the user is not authenticated' do
+      before(:each) do
+        sign_out :user
+
+        get :invitable_members, tool_type: 'Foo', tool_id: -1
+      end
+
+      it {
+        is_expected.to respond_with :unauthorized
+      }
+    end
+
+    context 'when the user is authenticated' do
+      let(:user) {
+        create(:user)
+      }
+
+      let(:tool) {
+        create(:assessment, :with_owner)
+      }
+
+      context 'when the user is a participant on the tool' do
+        let!(:tool_member) {
+          create(:tool_member, :as_participant, tool: tool, user: user)
+        }
+
+        before(:each) do
+          sign_in user
+          get :invitable_members, tool_type: tool.class.to_s, tool_id: tool.id
+        end
+
+        it {
+          is_expected.to respond_with :forbidden
+        }
+      end
+
+      context 'when the user is a facilitator on the tool' do
+        let!(:tool_member) {
+          create(:tool_member, :as_facilitator, tool: tool, user: user)
+        }
+
+        let!(:users_in_district) {
+          create_list(:user, 10, :with_district, district: tool.district)
+        }
+
+        context 'when the tool is invalid' do
+          before(:each) do
+            sign_in user
+            get :invitable_members, tool_type: 'I_do_not_exist', tool_id: tool.id
+          end
+
+          it {
+            is_expected.to respond_with :not_found
+          }
+        end
+
+        context 'when the tool is valid' do
+          before(:each) do
+            sign_in user
+            get :invitable_members, tool_type: tool.class.to_s, tool_id: tool.id
+          end
+
+          it {
+            is_expected.to respond_with :ok
+          }
+
+          it {
+            expect(json.length).to eq 10
           }
         end
       end
