@@ -20,6 +20,8 @@
 class Assessment < ActiveRecord::Base
   include Authority::Abilities
   include MessageMigrationConcern
+  include MembershipConcern
+  include ToolOwnerMembershipConcern
 
   self.authorizer_name = 'AssessmentAuthorizer'
 
@@ -38,18 +40,13 @@ class Assessment < ActiveRecord::Base
 
   has_many :users, through: :participants
 
-  has_and_belongs_to_many :facilitators,
-                          class_name: 'User',
-                          join_table: :assessments_facilitators
+  has_many :participants, -> { where(tool_type: 'Assessment')
+                                   .where.contains(roles: [ToolMember.member_roles[:participant]])
+  }, foreign_key: :tool_id, class_name: 'ToolMember'
 
-  has_and_belongs_to_many :viewers,
-                          class_name: 'User',
-                          join_table: :assessments_viewers
-
-  has_and_belongs_to_many :network_partners,
-                          class_name: 'User',
-                          join_table: :assessments_network_partners
-
+  has_many :facilitators, -> { where(tool_type: 'Assessment')
+                                   .where.contains(roles: [ToolMember.member_roles[:facilitator]])
+  }, foreign_key: :tool_id, class_name: 'ToolMember'
 
   accepts_nested_attributes_for :participants, allow_destroy: true
 
@@ -90,44 +87,8 @@ class Assessment < ActiveRecord::Base
     :assessment
   end
 
-  def all_users
-    users = []
-
-    [:facilitators, :viewers, :network_partners].each { |user_type| users.push(send(user_type)) }
-
-    #inlcude participants
-    participants.map { |participant| users.push(participant.user) unless users.include?(participant.user) }
-
-    users.flatten.compact.uniq.delete_if { |u| owner?(u) }
-  end
-
   def owner?(comp_user)
     user.id == comp_user.id
-  end
-
-  def facilitator?(user)
-    return true if owner?(user)
-    facilitators
-        .where(id: [user.id])
-        .present?
-  end
-
-  def network_partner?(user)
-    network_partners
-        .where(id: [user.id])
-        .present?
-  end
-
-  def viewer?(user)
-    viewers
-        .where(id: [user.id])
-        .present?
-  end
-
-  def participant?(user)
-    participants
-        .where(user_id: user.id)
-        .present?
   end
 
   def has_access?(user)
@@ -245,16 +206,7 @@ class Assessment < ActiveRecord::Base
   end
 
   def participants_not_responded
-    # Code smell; should likely be inner or even right join instead of left join to prevent pulling in
-    # participants without responses
-    participants
-        .joins('LEFT JOIN responses ON responses.responder_id = participants.id')
-        .where('responses.submitted_at IS NULL')
-  end
-
-  def participants_viewed_report
-    participants.includes(:user)
-        .where.not(report_viewed_at: nil)
+    participants.joins(:response).where(responses: {submitted_at: nil})
   end
 
   def all_participant_responses

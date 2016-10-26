@@ -35,15 +35,15 @@ FactoryGirl.define do
     end
 
     trait :for_assessment do
-      association :tool, factory: [:assessment, :with_participants]
+      association :tool, factory: [:assessment, :with_participants, :with_facilitators]
     end
 
     trait :for_inventory do
-      association :tool, factory: [:inventory, :with_participants]
+      association :tool, factory: [:inventory, :with_participants, :with_facilitators]
     end
 
     trait :for_analysis do
-      association :tool, factory: [:analysis, :with_participants]
+      association :tool, factory: [:analysis, :with_participants, :with_facilitators]
     end
   end
 end

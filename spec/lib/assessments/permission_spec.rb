@@ -136,7 +136,7 @@ describe Assessments::Permission do
 
     context 'when the user is a facilitator' do
       let(:user) {
-        assessment.facilitators.sample
+        assessment.facilitators.sample.user
       }
 
       it {
@@ -284,7 +284,7 @@ describe Assessments::Permission do
 
     context 'when the user is a facilitator of the assessment' do
       let(:user) {
-        assessment.facilitators.sample
+        assessment.facilitators.sample.user
       }
 
       context 'when attempting to update to network partner' do
@@ -480,7 +480,7 @@ describe Assessments::Permission do
 
     context 'when updating to the same role' do
       let(:user) {
-        assessment.facilitators.sample
+        assessment.facilitators.sample.user
       }
 
       let(:level) {

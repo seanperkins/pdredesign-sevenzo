@@ -26,8 +26,7 @@ class AssessmentAuthorizer < ApplicationAuthorizer
   private
   def can_read_assessment?(user)
     participant?(user) || facilitator?(user)     ||
-    owner?(user)       || share_districts?(user) ||
-    viewer?(user) 
+    owner?(user)       || share_districts?(user)
   end
 
 end

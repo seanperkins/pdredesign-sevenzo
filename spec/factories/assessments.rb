@@ -20,48 +20,46 @@
 FactoryGirl.define do
   factory :assessment do
     name { Faker::Lorem.word }
+    message { Faker::Lorem.paragraph }
     association :rubric
     association :district
     due_date 5.days.from_now
+    association :user, factory: [:user, :with_district], districts: 1
 
     trait :with_response do
       assigned_at Time.now
       association :response, :as_assessment_responder
     end
 
-    trait :with_owner do
-      association :user, factory: [:user, :with_district], districts: 1
+    trait :with_facilitators do
+      transient do
+        facilitators 1
+      end
+
+      after(:create) do |assessment, evaluator|
+        create_list(:tool_member, evaluator.facilitators, :as_facilitator, tool: assessment)
+      end
     end
 
     trait :with_participants do
       transient do
-        invited false
+        participants 1
       end
-      name 'Assessment other'
-      message 'some message'
-      association :user, factory: [:user, :with_district], districts: 1
 
       after(:build) do |assessment, evaluator|
-        assessment.participants = create_list(:participant, 2, :with_users,
-                                              invited_at: (1.day.ago if evaluator.invited)
-        )
-        assessment.facilitators = create_list(:user, 1, :with_district)
-      end
-    end
-
-    trait :with_network_partners do
-      name 'Assessment other'
-      message 'some message'
-      association :user, factory: [:user, :with_district], districts: 1
-
-      before(:create) do |assessment|
-        assessment.network_partners = create_list(:user, 1, :with_network_partner_role, :with_district)
+        assessment.participants << create_list(:tool_member, evaluator.participants, :as_participant, tool: assessment)
       end
     end
 
     trait :with_consensus do
       after(:create) do |assessment|
         assessment.update_attributes(response: create(:response, responder: assessment))
+      end
+    end
+
+    trait :with_network_partners do
+      after(:create) do |assessment|
+        assessment.facilitators = create_list(:tool_member, 1, :as_facilitator, :with_network_partner_role, tool: assessment)
       end
     end
   end

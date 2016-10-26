@@ -14,10 +14,6 @@ class ApplicationAuthorizer < Authority::Authorizer
   end
 
   protected
-  def viewer?(user)
-    resource.viewer?(user)
-  end
-
   def facilitator?(user)
     resource.facilitator?(user)
   end

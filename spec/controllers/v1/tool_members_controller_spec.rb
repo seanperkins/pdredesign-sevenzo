@@ -196,7 +196,7 @@ describe V1::ToolMembersController do
       }
 
       let(:tool) {
-        create(:assessment, :with_owner)
+        create(:assessment)
       }
       context 'when the user is a participant on the tool' do
 
@@ -530,7 +530,7 @@ describe V1::ToolMembersController do
       }
 
       let(:tool) {
-        create(:assessment, :with_owner)
+        create(:assessment)
       }
 
       context 'when the user is a participant on the tool' do
@@ -717,7 +717,7 @@ describe V1::ToolMembersController do
       }
 
       let(:tool) {
-        create(:assessment, :with_owner)
+        create(:assessment)
       }
 
       context 'when the user is a participant on the tool' do
@@ -796,7 +796,7 @@ describe V1::ToolMembersController do
       }
 
       let(:tool) {
-        create(:assessment, :with_owner)
+        create(:assessment)
       }
 
       context 'when the user is a participant on the tool' do

@@ -42,5 +42,9 @@ FactoryGirl.define do
     trait :as_facilitator_and_participant do
       roles [ToolMember.member_roles[:facilitator], ToolMember.member_roles[:participant]]
     end
+
+    trait :with_network_partner_role do
+      association :user, factory: [:user, :with_network_partner_role, :with_district]
+    end
   end
 end

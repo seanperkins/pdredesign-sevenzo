@@ -14,7 +14,7 @@ describe V1::ResponsesController do
 
     context 'when the user is not a participant of the assessment' do
       let(:user) {
-        assessment.facilitators.sample
+        assessment.facilitators.sample.user
       }
 
       before(:each) do
@@ -61,7 +61,7 @@ describe V1::ResponsesController do
         }
 
         let!(:preexisting_response) {
-          create(:response, :as_participant_responder, responder: participant)
+          create(:response, :as_assessment_participant_responder, responder: participant)
         }
 
         before(:each) do
@@ -87,11 +87,11 @@ describe V1::ResponsesController do
       }
 
       let(:participant_response) {
-        create(:response, :as_participant_responder, responder: participant)
+        create(:response, :as_assessment_participant_responder, responder: participant)
       }
 
       let(:user) {
-        assessment.facilitators.sample
+        assessment.facilitators.sample.user
       }
 
       before(:each) do
@@ -114,7 +114,7 @@ describe V1::ResponsesController do
       }
 
       let(:participant_response) {
-        create(:response, :as_participant_responder, responder: participant)
+        create(:response, :as_assessment_participant_responder, responder: participant)
       }
 
       before(:each) do
@@ -143,11 +143,11 @@ describe V1::ResponsesController do
       }
 
       let(:participant_response) {
-        create(:response, :as_participant_responder, responder: participant)
+        create(:response, :as_assessment_participant_responder, responder: participant)
       }
 
       let(:user) {
-        assessment.facilitators.sample
+        assessment.facilitators.sample.user
       }
 
       before(:each) do
@@ -170,7 +170,7 @@ describe V1::ResponsesController do
       }
 
       let(:participant_response) {
-        create(:response, :as_participant_responder, responder: participant)
+        create(:response, :as_assessment_participant_responder, responder: participant)
       }
 
       before(:each) do
@@ -191,7 +191,7 @@ describe V1::ResponsesController do
   describe 'PUT #update' do
 
     let(:preexisting_response) {
-      create(:response, :as_participant_responder, responder: participant)
+      create(:response, :as_assessment_participant_responder, responder: participant)
     }
 
     let(:participant) {

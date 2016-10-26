@@ -9,7 +9,7 @@ describe V1::AssessmentsController do
 
   describe 'PUT #update' do
     let(:assessment) {
-      create(:assessment, :with_participants)
+      create(:assessment, :with_participants, :with_facilitators, participants: 2, facilitators: 2)
     }
 
     let(:rubric) {
@@ -17,7 +17,7 @@ describe V1::AssessmentsController do
     }
 
     let(:facilitator) {
-      assessment.facilitators.sample
+      assessment.facilitators.sample.user
     }
 
     context 'when updating an existing assessment' do
@@ -144,11 +144,11 @@ describe V1::AssessmentsController do
 
   describe 'GET #show' do
     let(:assessment) {
-      create(:assessment, :with_participants)
+      create(:assessment, :with_participants, :with_facilitators)
     }
 
     let(:facilitator) {
-      assessment.facilitators.sample
+      assessment.facilitators.sample.user
     }
 
     context 'when not authenticated' do

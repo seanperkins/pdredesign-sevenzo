@@ -2,13 +2,13 @@ require 'spec_helper'
 
 describe Link::Assessment do
   let(:assessment) {
-    create(:assessment, :with_participants)
+    create(:assessment, :with_facilitators, :with_participants)
   }
 
   describe '#execute' do
     context 'when user is a facilitator' do
       let(:user) {
-        assessment.facilitators.sample
+        assessment.facilitators.sample.user
       }
 
       let(:link_assessment) {

@@ -21,19 +21,27 @@ FactoryGirl.define do
       responder { create(:user) }
     end
 
-    trait :as_participant_responder do
-      responder_type 'Participant'
-      responder { create(:participant) }
+    trait :as_assessment_participant_responder do
+      responder {
+        create(:tool_member, :as_assessment_member, :as_participant)
+      }
+    end
+
+    trait :as_analysis_participant_responder do
+      responder {
+        create(:tool_member, :as_analysis_member, :as_participant)
+      }
     end
 
     trait :as_assessment_response do
       transient do
         assessment nil
+        participants 1
       end
       association :rubric, :as_assessment_rubric
       after(:create) do |response, evaluator|
         if evaluator.assessment.nil?
-          response.responder = create(:assessment, :with_participants, response: response)
+          response.responder = create(:assessment, :with_participants, participants: evaluator.participants, response: response)
         else
           response.responder = evaluator.assessment
         end

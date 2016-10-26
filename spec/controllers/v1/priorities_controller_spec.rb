@@ -10,7 +10,7 @@ describe V1::PrioritiesController do
   describe '#create' do
 
     let(:assessment) {
-      create(:assessment, :with_participants)
+      create(:assessment, :with_participants, :with_facilitators, participants: 2, facilitators: 2)
     }
 
     context 'when a user is unauthenticated' do
@@ -28,7 +28,7 @@ describe V1::PrioritiesController do
 
     context 'when the user is a facilitator' do
       let(:user) {
-        assessment.facilitators.sample
+        assessment.facilitators.sample.user
       }
 
       before(:each) do

@@ -27,8 +27,6 @@ module Assessments
           :facilitator
         when assessment.network_partner?(user)
           :network_partner
-        when assessment.viewer?(user)
-          :viewer
         when assessment.participant?(user)
           :participant
       end

@@ -9,7 +9,6 @@ class V1::ReportController < ApplicationController
     @assessment = assessment
     @response   = @assessment.response
     @axes       = report.axes
-    update_participant
   end
 
   def consensus_report
@@ -38,10 +37,6 @@ class V1::ReportController < ApplicationController
     @report ||= Assessments::Report.new(assessment)
   end
 
-  def update_participant
-    return unless participant
-    participant.update(report_viewed_at: Time.now)
-  end
 
   def participant
     Participant.find_by(assessment: assessment, user: current_user)

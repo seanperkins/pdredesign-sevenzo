@@ -1,10 +1,10 @@
-require  'spec_helper'
+require 'spec_helper'
 
 describe V1::ReportController do
   render_views
 
   describe '#show' do
-    let(:assessment) { FactoryGirl.create(:assessment, :with_participants) }
+    let(:assessment) { create(:assessment, :with_participants, :with_facilitators) }
 
     context 'without user' do
       before(:each) do
@@ -40,10 +40,10 @@ describe V1::ReportController do
 
       it 'assigns the axes' do
         expect(assigns(:axes)).not_to be_nil
-      end 
+      end
 
       context 'with response assigned' do
-        let(:response) { FactoryGirl.create(:response, responder: participant, rubric: assessment.rubric) }
+        let(:response) { create(:response, responder: participant, rubric: assessment.rubric) }
 
         before(:each) do
           assessment.update(response: response)
@@ -57,7 +57,7 @@ describe V1::ReportController do
     end
 
     context 'logged in as non-participant user' do
-      let(:non_participant_user) { FactoryGirl.create(:user) }
+      let(:non_participant_user) { create(:user) }
 
       before(:each) do
         sign_in non_participant_user
@@ -71,7 +71,7 @@ describe V1::ReportController do
   end
 
   describe "#consensus_report" do
-    let(:assessment) { FactoryGirl.create(:assessment, :with_participants, :with_consensus) }
+    let(:assessment) { create(:assessment, :with_participants, :with_consensus) }
     let(:consensu) { assessment.response }
 
     context 'without user logged in' do
@@ -132,14 +132,14 @@ describe V1::ReportController do
   end
 
   describe "#participant_consensu_report" do
-    let(:assessment) { FactoryGirl.create(:assessment, :with_participants, :with_consensus) }
+    let(:assessment) { create(:assessment, :with_participants, :with_consensus) }
     let(:participant) { assessment.participants.first }
     let(:participant_user) { participant.user }
     let(:consensu) { assessment.response }
 
     context 'without user logged in' do
       before(:each) do
-        get :participant_consensu_report, assessment_id:  assessment.id, consensu_id: consensu.id, participant_id: participant.id, format: :json
+        get :participant_consensu_report, assessment_id: assessment.id, consensu_id: consensu.id, participant_id: participant.id, format: :json
       end
 
       it 'requires a user login' do
@@ -149,7 +149,7 @@ describe V1::ReportController do
 
     context 'with participant logged in' do
       before(:each) do
-          sign_in participant_user
+        sign_in participant_user
       end
 
       context 'consensus, participant assessment or does not exists' do
@@ -163,7 +163,7 @@ describe V1::ReportController do
       end
 
       context 'retriving valid assessment, consensus and participant' do
-        before(:each) do 
+        before(:each) do
           get :participant_consensu_report, assessment_id: assessment.id, consensu_id: consensu.id, participant_id: participant.id, format: :json
         end
 

@@ -4,7 +4,7 @@ describe ResponsesMailer do
   describe '#submitted' do
 
     let(:response) {
-      create(:response, :as_participant_responder)
+      create(:response, :as_assessment_participant_responder)
     }
 
     let!(:participant) {

@@ -3,7 +3,7 @@ require 'spec_helper'
 describe AssessmentAuthorizer do
 
   let(:assessment) {
-    create(:assessment, :with_participants, viewers: [viewer])
+    create(:assessment, :with_facilitators, :with_participants, participants: 3, facilitators: 3)
   }
 
   let(:facilitator) {
@@ -16,10 +16,6 @@ describe AssessmentAuthorizer do
 
   let(:owner) {
     assessment.user
-  }
-
-  let(:viewer) {
-    create(:user, :with_district)
   }
 
   let(:other) {
@@ -41,10 +37,6 @@ describe AssessmentAuthorizer do
     }
 
     it {
-      is_expected.to be_creatable_by(viewer)
-    }
-
-    it {
       is_expected.to be_creatable_by(user)
     }
 
@@ -56,10 +48,6 @@ describe AssessmentAuthorizer do
   describe 'read' do
     it {
       is_expected.to be_readable_by(facilitator)
-    }
-
-    it {
-      is_expected.to be_readable_by(viewer)
     }
 
     it {
@@ -81,10 +69,6 @@ describe AssessmentAuthorizer do
     }
 
     it {
-      is_expected.not_to be_updatable_by(viewer)
-    }
-
-    it {
       is_expected.not_to be_updatable_by(user)
     }
 
@@ -100,10 +84,6 @@ describe AssessmentAuthorizer do
 
     it {
       is_expected.not_to be_deletable_by(participant)
-    }
-
-    it {
-      is_expected.not_to be_deletable_by(viewer)
     }
 
     it {

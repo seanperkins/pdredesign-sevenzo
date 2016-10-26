@@ -4,11 +4,11 @@ describe V1::AccessRequestController do
   render_views
 
   let(:assessment) {
-    create(:assessment, :with_participants)
+    create(:assessment, :with_participants, :with_facilitators)
   }
 
   let(:facilitator) {
-    assessment.facilitators.sample
+    assessment.facilitators.sample.user
   }
 
   before(:each) do

@@ -11,7 +11,7 @@ describe AccessRequestNotificationWorker do
   context 'when an access request exists' do
     context 'when no facilitators are present' do
       let(:assessment) {
-        create(:assessment, :with_owner)
+        create(:assessment)
       }
 
       let(:request) {

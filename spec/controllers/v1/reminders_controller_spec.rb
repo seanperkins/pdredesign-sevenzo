@@ -9,7 +9,7 @@ describe V1::RemindersController do
 
   describe 'POST #create' do
     let(:assessment) {
-      create(:assessment, :with_participants)
+      create(:assessment, :with_participants, :with_facilitators)
     }
 
     context 'when the user is a participant' do
@@ -29,7 +29,7 @@ describe V1::RemindersController do
 
     context 'when the user is a facilitator' do
       let(:user) {
-        assessment.facilitators.sample
+        assessment.facilitators.sample.user
       }
 
       before(:each) do

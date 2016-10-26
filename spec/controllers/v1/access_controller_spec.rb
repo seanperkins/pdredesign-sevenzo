@@ -21,7 +21,7 @@ describe V1::AccessController do
 
     context 'when not a facilitator on the assessment' do
       let(:access_request) {
-        create(:access_request)
+        create(:access_request, :for_assessment)
       }
 
       let(:non_facilitator) {
@@ -48,7 +48,7 @@ describe V1::AccessController do
       }
 
       let(:access_request) {
-        create(:access_request)
+        create(:access_request, :for_assessment)
       }
 
       before(:each) do
@@ -71,11 +71,11 @@ describe V1::AccessController do
       }
 
       let(:facilitator) {
-        assessment.facilitators.sample
+        assessment.facilitators.sample.user
       }
 
       let(:access_request) {
-        create(:access_request)
+        create(:access_request, :for_assessment)
       }
 
       before(:each) do
@@ -102,11 +102,11 @@ describe V1::AccessController do
       }
 
       let(:facilitator) {
-        assessment.facilitators.sample
+        assessment.facilitators.sample.user
       }
 
       let(:access_request) {
-        create(:access_request, :with_participant_role)
+        create(:access_request, :for_assessment, :with_participant_role)
       }
 
       before(:each) do

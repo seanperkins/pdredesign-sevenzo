@@ -9,7 +9,7 @@ describe V1::ConsensusController do
 
   describe 'PUT #update' do
     let(:assessment) {
-      create(:assessment, :with_participants)
+      create(:assessment, :with_facilitators, :with_participants)
     }
 
     let!(:response) {
@@ -34,7 +34,7 @@ describe V1::ConsensusController do
     context 'when the user is a facilitator for the assessment' do
       context 'when the submit parameter is false' do
         let(:facilitator) {
-          assessment.facilitators.sample
+          assessment.facilitators.sample.user
         }
 
         before(:each) do
@@ -50,7 +50,7 @@ describe V1::ConsensusController do
 
       context 'when the submit parameter is true' do
         let(:facilitator) {
-          assessment.facilitators.sample
+          assessment.facilitators.sample.user
         }
 
         before(:each) do
@@ -68,7 +68,7 @@ describe V1::ConsensusController do
 
   describe 'GET #show' do
     let(:assessment) {
-      create(:assessment, :with_participants)
+      create(:assessment, :with_facilitators, :with_participants)
     }
 
     let(:response) {
@@ -141,11 +141,11 @@ describe V1::ConsensusController do
 
   describe 'POST #create' do
     let(:facilitator) {
-      assessment.facilitators.sample
+      assessment.facilitators.sample.user
     }
 
     let(:assessment) {
-      create(:assessment, :with_participants)
+      create(:assessment, :with_facilitators, :with_participants)
     }
 
     context 'when the user is not a facilitator of the assessment' do
@@ -154,7 +154,7 @@ describe V1::ConsensusController do
       }
 
       let(:assessment) {
-        create(:assessment, :with_participants)
+        create(:assessment, :with_facilitators, :with_participants)
       }
 
       before(:each) do
@@ -229,7 +229,7 @@ describe V1::ConsensusController do
       }
 
       let(:assessment) {
-        create(:assessment, :with_response, :with_participants, user: user)
+        create(:assessment, :with_facilitators, :with_response, :with_participants, user: user)
       }
 
       before(:each) do
@@ -253,7 +253,7 @@ describe V1::ConsensusController do
       }
 
       let(:assessment) {
-        create(:assessment, :with_response, :with_participants, user: user)
+        create(:assessment, :with_response, :with_facilitators, :with_participants, user: user)
       }
 
       let!(:preexisting_response) {

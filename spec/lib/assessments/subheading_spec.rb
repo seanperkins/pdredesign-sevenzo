@@ -30,7 +30,7 @@ describe Assessments::Subheading do
 
     context 'when user is a facilitator' do
       let(:user) {
-        assessment.facilitators.sample
+        assessment.facilitators.sample.user
       }
 
       let(:assessments_subheading) {

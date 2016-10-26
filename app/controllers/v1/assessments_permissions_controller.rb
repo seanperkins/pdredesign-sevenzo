@@ -7,10 +7,6 @@ class V1::AssessmentsPermissionsController < ApplicationController
     @access_requested = assessment_permission.requested
   end
 
-  def all_users
-    @users = all_users_list
-  end
-
   def show;end
 
   def update
@@ -65,11 +61,5 @@ class V1::AssessmentsPermissionsController < ApplicationController
   def assessment
     @assessment = Assessment.find(params[:assessment_id])
     authorize_action_for @assessment
-  end
-
-  def all_users_list
-    @assessment.all_users.tap do |users|
-      users << @assessment.user
-    end
   end
 end

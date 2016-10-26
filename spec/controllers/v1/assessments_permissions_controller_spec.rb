@@ -295,7 +295,7 @@ describe V1::AssessmentsPermissionsController do
 
       context 'when changing the role from facilitator to network partner' do
         let(:facilitator) {
-          assessment.facilitators.sample
+          assessment.facilitators.sample.user
         }
 
         let(:user) {
@@ -327,7 +327,7 @@ describe V1::AssessmentsPermissionsController do
 
     context 'when changing the role from facilitator to participant' do
       let(:facilitator) {
-        assessment.facilitators.sample
+        assessment.facilitators.sample.user
       }
 
       let(:user) {
@@ -610,7 +610,7 @@ describe V1::AssessmentsPermissionsController do
     context 'when authenticated' do
       context 'when authorized' do
         let(:facilitator) {
-          assessment.facilitators.sample
+          assessment.facilitators.sample.user
         }
 
         let(:access_request) {
@@ -682,7 +682,7 @@ describe V1::AssessmentsPermissionsController do
 
       context 'when the user is a facilitator' do
         let(:user) {
-          assessment.facilitators.sample
+          assessment.facilitators.sample.user
         }
 
         before(:each) do

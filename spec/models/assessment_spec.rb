@@ -41,7 +41,7 @@ describe Assessment do
 
   context 'when the due date is in the past' do
     subject {
-      build(:assessment, :with_owner)
+      build(:assessment)
     }
 
     before(:each) do
@@ -149,12 +149,8 @@ describe Assessment do
 
   context 'when assigned_at is present' do
     context 'when message is invalid' do
-      let(:participants) {
-        create_list(:participant, 2)
-      }
-
       let(:assessment) {
-        build(:assessment, participants: participants, assigned_at: Time.now, due_date: 5.days.from_now)
+        build(:assessment, :with_participants, assigned_at: Time.now, due_date: 5.days.from_now)
       }
 
       before(:each) do
@@ -189,12 +185,8 @@ describe Assessment do
     end
 
     context 'when all fields are specified' do
-      let(:participants) {
-        create_list(:participant, 2)
-      }
-
       let(:assessment) {
-        build(:assessment, participants: participants, assigned_at: Time.now, due_date: 5.days.from_now, message: 'msg')
+        build(:assessment, :with_participants, assigned_at: Time.now, due_date: 5.days.from_now, message: 'msg')
       }
 
       before(:each) do
@@ -338,15 +330,15 @@ describe Assessment do
 
   describe '#answered_scores' do
     let(:response) {
-      create(:response, :as_assessment_response, :submitted)
+      create(:response, :as_assessment_response, :submitted, participants: 5)
     }
 
     let(:first_user_response) {
-      create(:response, :as_participant_responder, responder: assessment.participants.first)
+      create(:response, :as_assessment_participant_responder, responder: assessment.participants.first)
     }
 
     let(:second_user_response) {
-      create(:response, :as_participant_responder, responder: assessment.participants.last)
+      create(:response, :as_assessment_participant_responder, responder: assessment.participants.last)
     }
 
     let(:assessment) {
@@ -497,7 +489,7 @@ describe Assessment do
 
       context 'when there are no roles for any participants' do
         let(:first_user_response) {
-          create(:response, :as_participant_responder, responder: assessment.participants.first)
+          create(:response, :as_assessment_participant_responder, responder: assessment.participants.first)
         }
 
         let!(:rubric) {
@@ -533,7 +525,7 @@ describe Assessment do
           }
 
           let(:first_user_response) {
-            create(:response, :as_participant_responder, responder: participant_with_role)
+            create(:response, :as_assessment_participant_responder, responder: participant_with_role)
           }
 
           let!(:rubric) {
@@ -569,7 +561,7 @@ describe Assessment do
           }
 
           let(:first_user_response) {
-            create(:response, :as_participant_responder, responder: participant_with_role)
+            create(:response, :as_assessment_participant_responder, responder: participant_with_role)
           }
 
           let!(:rubric) {
@@ -646,7 +638,7 @@ describe Assessment do
       }
 
       let(:first_user_response) {
-        create(:response, :as_participant_responder, responder: assessment.participants.first)
+        create(:response, :as_assessment_participant_responder, responder: assessment.participants.first)
       }
 
       let!(:rubric) {
@@ -681,7 +673,7 @@ describe Assessment do
     }
 
     let(:first_user_response) {
-      create(:response, :as_participant_responder, :submitted, responder: assessment.participants.first)
+      create(:response, :as_assessment_participant_responder, :submitted, responder: assessment.participants.first)
     }
 
     context 'when scores for the given value do not exist' do
@@ -744,7 +736,7 @@ describe Assessment do
 
         let!(:assessments) {
           create_list(:assessment, 3, :with_participants) do |assessment|
-            assessment.participants << create(:participant, user: user)
+            create(:tool_member, :as_participant, tool: assessment)
             assessment.district = district
             assessment.save!
           end
@@ -762,7 +754,7 @@ describe Assessment do
 
         let!(:assessments) {
           create_list(:assessment, 3, :with_participants) do |assessment|
-            assessment.participants << create(:participant, user: user)
+            create(:tool_member, :as_participant, tool: assessment)
             assessment.district = district
             assessment.save!
           end
@@ -785,7 +777,7 @@ describe Assessment do
 
       let!(:district_assessments) {
         create_list(:assessment, 3, :with_participants) do |assessment|
-          assessment.participants << create(:participant, user: user)
+          create(:tool_member, :as_participant, tool: assessment)
           assessment.district = district
           assessment.save!
         end
@@ -793,7 +785,7 @@ describe Assessment do
 
       let!(:other_district_assessments) {
         create_list(:assessment, 3, :with_participants) do |assessment|
-          assessment.participants << create(:participant, user: user)
+          create(:tool_member, :as_participant, tool: assessment)
           assessment.district = other_district
           assessment.save!
         end
@@ -856,7 +848,7 @@ describe Assessment do
       }
 
       let(:user) {
-        assessment.facilitators.sample
+        assessment.facilitators.sample.user
       }
 
       it {
@@ -925,7 +917,7 @@ describe Assessment do
 
     context 'when user is a facilitator' do
       let(:user) {
-        assessment.facilitators.sample
+        assessment.facilitators.sample.user
       }
 
 
@@ -1037,45 +1029,14 @@ describe Assessment do
     end
 
     context 'when response has been submitted' do
-      # Code smell - please see #participants_not_responded for an explanation as to why
-      # all participants are required to submit a response in this context
       let!(:responses) {
-        assessment.participants.each {|assessment_participant|
+        assessment.participants.each { |assessment_participant|
           create(:response, :as_participant_response, :submitted, responder: assessment_participant)
         }
       }
 
       it {
         expect(assessment.participants_not_responded).to be_empty
-      }
-    end
-  end
-
-  describe '#participants_viewed_report' do
-    let(:assessment) {
-      create(:assessment, :with_participants)
-    }
-
-    context 'when declared unseen' do
-      let!(:participant) {
-        assessment.participants.sample
-      }
-
-      it {
-        expect(assessment.participants_viewed_report).to be_empty
-      }
-    end
-
-    context 'when declared seen' do
-      let!(:participant) {
-        p = assessment.participants.sample
-        p.report_viewed_at = Time.now
-        p.save!
-        p
-      }
-
-      it {
-        expect(assessment.participants_viewed_report.include?(participant)).to be true
       }
     end
   end
@@ -1119,7 +1080,7 @@ describe Assessment do
 
     context 'when no responses have been submitted' do
       let!(:responses) {
-        assessment.participants.each {|assessment_participant|
+        assessment.participants.each { |assessment_participant|
           create(:response, :as_participant_response, responder: assessment_participant)
         }
       }
@@ -1132,7 +1093,7 @@ describe Assessment do
     context 'when half of the responses have been submitted' do
       let!(:responses) {
         submitted = false
-        assessment.participants.each {|assessment_participant|
+        assessment.participants.each { |assessment_participant|
           if submitted
             create(:response, :as_participant_response, responder: assessment_participant)
           else
@@ -1149,7 +1110,7 @@ describe Assessment do
 
     context 'when all of the responses have been submitted' do
       let!(:responses) {
-        assessment.participants.each {|assessment_participant|
+        assessment.participants.each { |assessment_participant|
           create(:response, :as_participant_response, :submitted, responder: assessment_participant)
         }
       }
@@ -1186,56 +1147,14 @@ describe Assessment do
     end
   end
 
-  describe '#all_users' do
-    let(:assessment) {
-      create(:assessment, :with_participants, :with_network_partners)
-    }
-
-    let(:participants) {
-      assessment.participants.map(&:user)
-    }
-
-    let(:facilitators) {
-      assessment.facilitators
-    }
-
-    let(:network_partners) {
-      assessment.network_partners
-    }
-
-    let(:owner) {
-      [assessment.user]
-    }
-
-    it {
-      expect(assessment.all_users & participants).to eq participants
-    }
-
-    it {
-      expect(assessment.all_users & facilitators).to eq facilitators
-    }
-
-    it {
-      expect(assessment.all_users & network_partners).to eq network_partners
-    }
-
-    it {
-      expect(assessment.all_users & owner).to_not eq owner
-    }
-
-    it {
-      expect(assessment.all_users.uniq).to eq assessment.all_users
-    }
-  end
-
   context '#facilitator?' do
     context 'when user is a facilitator' do
       let(:assessment) {
-        create(:assessment, :with_participants)
-       }
+        create(:assessment, :with_participants, :with_facilitators)
+      }
 
       let(:user) {
-        assessment.facilitators.sample
+        assessment.facilitators.sample.user
       }
 
       it {
@@ -1246,7 +1165,7 @@ describe Assessment do
     context 'when user is not a facilitator' do
       let(:assessment) {
         create(:assessment, :with_participants)
-       }
+      }
 
       let(:user) {
         create(:user, :with_district)
@@ -1262,12 +1181,12 @@ describe Assessment do
     context 'when user is a network partner' do
       let(:assessment) {
         a = create(:assessment, :with_participants)
-        a.network_partners << user
+        create(:tool_member, :as_assessment_member, :as_facilitator, :with_network_partner_role, tool: a)
         a
       }
 
       let(:user) {
-        create(:user, :with_district)
+        assessment.participants.sample.user
       }
 
       it {
@@ -1278,7 +1197,7 @@ describe Assessment do
     context 'when user is not a network partner' do
       let(:assessment) {
         a = create(:assessment, :with_participants)
-        a.network_partners << create(:user, :with_district)
+        create(:tool_member, :as_assessment_member, :as_facilitator, :with_network_partner_role, tool: a)
         a
       }
 

@@ -9,7 +9,7 @@ describe V1::UserInvitationsController do
 
   describe '#create' do
     let(:assessment) {
-      create(:assessment, :with_participants)
+      create(:assessment, :with_participants, :with_facilitators, participants: 2, facilitators: 2)
     }
 
     context 'when the user is not authenticated' do
@@ -40,7 +40,7 @@ describe V1::UserInvitationsController do
 
     context 'when the user is a facilitator' do
       let(:user) {
-        assessment.facilitators.sample
+        assessment.facilitators.sample.user
       }
 
       context 'when the user has not been invited prior' do
