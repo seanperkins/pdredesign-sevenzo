@@ -17,10 +17,9 @@ describe ResponseAuthorizer do
     end
 
     context 'when the responder is an assessment' do
-      context 'when user is not a facilitator' do
+      context 'when the user is not a facilitator' do
         let!(:establish_user_membership) {
-          create(:participant, user: user, assessment: response.responder)
-          response.responder.user = create(:user)
+          create(:tool_member, :as_participant, user: user, tool: response.responder)
           response.responder.save!
         }
 
@@ -35,7 +34,7 @@ describe ResponseAuthorizer do
         it { is_expected.not_to be_creatable_by(user) }
       end
 
-      context 'when user is not an owner' do
+      context 'when the user is not the owner' do
 
         let(:owner) {
           create(:user)
@@ -76,10 +75,9 @@ describe ResponseAuthorizer do
       end
 
       context 'when user is a facilitator' do
-        let!(:establish_user_membership) {
-          response.responder.facilitators << user
-          response.responder.user = create(:user)
-          response.responder.save!
+
+        let!(:tool_member) {
+          create(:tool_member, :as_facilitator, tool: response.responder, user: user)
         }
 
         let(:response) {
@@ -128,10 +126,14 @@ describe ResponseAuthorizer do
       end
     end
 
-    context 'when the responder is a Participant' do
+    context 'when the responder is a ToolMember' do
       context 'when the user ID does not match' do
+        let(:tool_member) {
+          create(:tool_member, :as_assessment_member, :as_participant)
+        }
+
         let(:response) {
-          create(:response, :as_participant_response)
+          create(:response, :as_participant_response, responder_instance: tool_member)
         }
 
         subject {
@@ -142,14 +144,12 @@ describe ResponseAuthorizer do
       end
 
       context 'when the user ID matches' do
-
-        let!(:establish_participant_ownership) {
-          response.responder.user = user
-          response.responder.save!
+        let(:tool_member) {
+          create(:tool_member, :as_assessment_member, :as_participant, user: user)
         }
 
         let(:response) {
-          create(:response, :as_participant_response)
+          create(:response, :as_participant_response, responder_instance: tool_member)
         }
 
         subject {
@@ -160,7 +160,7 @@ describe ResponseAuthorizer do
       end
     end
   end
-  
+
   describe '#updatable_by?' do
     let(:user) {
       create(:user)
@@ -237,21 +237,26 @@ describe ResponseAuthorizer do
       end
 
       context 'when user is a facilitator' do
-        let!(:establish_user_membership) {
-          response.responder.facilitators << user
-          response.responder.user = create(:user)
-          response.responder.save!
+
+        let!(:tool) {
+          create(:assessment, :with_participants)
+        }
+
+        let!(:tool_member) {
+          create(:tool_member, :as_facilitator, user: user, tool: tool)
         }
 
         let(:response) {
-          create(:response, :as_assessment_response)
+          create(:response, :as_assessment_response, assessment: tool)
         }
 
         subject {
           response.authorizer
         }
 
-        it { is_expected.to be_updatable_by(user) }
+        it {
+          is_expected.to be_updatable_by(user)
+        }
       end
     end
 
@@ -289,10 +294,14 @@ describe ResponseAuthorizer do
       end
     end
 
-    context 'when the responder is a Participant' do
+    context 'when the responder is a ToolMember' do
       context 'when the user ID does not match' do
+        let(:tool_member) {
+          create(:tool_member, :as_assessment_member, :as_participant)
+        }
+
         let(:response) {
-          create(:response, :as_participant_response)
+          create(:response, :as_participant_response, responder_instance: tool_member)
         }
 
         subject {
@@ -303,14 +312,12 @@ describe ResponseAuthorizer do
       end
 
       context 'when the user ID matches' do
-
-        let!(:establish_participant_ownership) {
-          response.responder.user = user
-          response.responder.save!
+        let(:tool_member) {
+          create(:tool_member, :as_assessment_member, :as_participant, user: user)
         }
 
         let(:response) {
-          create(:response, :as_participant_response)
+          create(:response, :as_participant_response, responder_instance: tool_member)
         }
 
         subject {
@@ -398,10 +405,9 @@ describe ResponseAuthorizer do
       end
 
       context 'when user is a facilitator' do
-        let!(:establish_user_membership) {
-          response.responder.facilitators << user
-          response.responder.user = create(:user)
-          response.responder.save!
+
+        let!(:tool_member) {
+          create(:tool_member, :as_facilitator, tool: response.responder, user: user)
         }
 
         let(:response) {
@@ -450,10 +456,14 @@ describe ResponseAuthorizer do
       end
     end
 
-    context 'when the responder is a Participant' do
+    context 'when the responder is a ToolMember' do
       context 'when the user ID does not match' do
+        let(:tool_member) {
+          create(:tool_member, :as_assessment_member, :as_participant)
+        }
+
         let(:response) {
-          create(:response, :as_participant_response)
+          create(:response, :as_participant_response, responder_instance: tool_member)
         }
 
         subject {
@@ -465,13 +475,12 @@ describe ResponseAuthorizer do
 
       context 'when the user ID matches' do
 
-        let!(:establish_participant_ownership) {
-          response.responder.user = user
-          response.responder.save!
+        let(:tool_member) {
+          create(:tool_member, :as_assessment_member, :as_participant, user: user)
         }
 
         let(:response) {
-          create(:response, :as_participant_response)
+          create(:response, :as_participant_response, responder_instance: tool_member)
         }
 
         subject {
