@@ -158,7 +158,7 @@ class Assessment < ActiveRecord::Base
 
   def scores_for_team_role(role)
     answered_scores
-        .includes(:response, :participant, :user)
+        .includes(:response, :tool_member, :user)
         .where(users: {team_role: role})
   end
 
@@ -210,7 +210,7 @@ class Assessment < ActiveRecord::Base
   end
 
   def all_participant_responses
-    Response.where(responder_type: 'Participant',
+    Response.where(responder_type: 'ToolMember',
                    responder: participants)
   end
 

@@ -202,17 +202,6 @@ describe Assessments::Permission do
       }
     end
 
-    context 'when adding a viewer' do
-      before(:each) do
-        expect(AccessGrantedNotificationWorker).to receive(:perform_async).with(assessment.id, user.id, :viewer)
-        assessment_permission.add_level(user, :viewer)
-      end
-
-      it {
-        expect(assessment.viewers.include?(user)).to be true
-      }
-    end
-
     context 'when adding any other level' do
 
       before(:each) do
@@ -253,20 +242,6 @@ describe Assessments::Permission do
         }
       end
 
-      context 'when attempting to update to viewer' do
-        let(:level) {
-          :viewer
-        }
-
-        before(:each) do
-          assessment_permission.update_level(user, level)
-        end
-
-        it {
-          expect(assessment.viewer?(user)).to be false
-        }
-      end
-
       context 'when attempting to update to participant' do
         let(:level) {
           :participant
@@ -298,20 +273,6 @@ describe Assessments::Permission do
 
         it {
           expect(assessment.network_partner?(user)).to be true
-        }
-      end
-
-      context 'when attempting to update to viewer' do
-        let(:level) {
-          :viewer
-        }
-
-        before(:each) do
-          assessment_permission.update_level(user, level)
-        end
-
-        it {
-          expect(assessment.viewer?(user)).to be true
         }
       end
 
@@ -349,20 +310,6 @@ describe Assessments::Permission do
         }
       end
 
-      context 'when attempting to update to viewer' do
-        let(:level) {
-          :viewer
-        }
-
-        before(:each) do
-          assessment_permission.update_level(user, level)
-        end
-
-        it {
-          expect(assessment.viewer?(user)).to be true
-        }
-      end
-
       context 'when attempting to update to facilitator' do
         let(:level) {
           :facilitator
@@ -396,70 +343,6 @@ describe Assessments::Permission do
 
         it {
           expect(assessment.participant?(user)).to be false
-        }
-      end
-
-      context 'when attempting to update to viewer' do
-        let(:level) {
-          :viewer
-        }
-
-        before(:each) do
-          assessment_permission.update_level(user, level)
-        end
-
-        it {
-          expect(assessment.viewer?(user)).to be true
-        }
-      end
-
-      context 'when attempting to update to facilitator' do
-        let(:level) {
-          :facilitator
-        }
-
-        before(:each) do
-          assessment_permission.update_level(user, level)
-        end
-
-        it {
-          expect(assessment.facilitator?(user)).to be true
-        }
-      end
-    end
-
-    context 'when the user is a viewer of the assessment' do
-      let(:user) {
-        u = create(:user, :with_district)
-        assessment.viewers << u
-        u
-      }
-
-      context 'when attempting to update to network partner' do
-        let(:level) {
-          :network_partner
-        }
-
-        before(:each) do
-          assessment_permission.update_level(user, level)
-        end
-
-        it {
-          expect(assessment.network_partner?(user)).to be true
-        }
-      end
-
-      context 'when attempting to update to viewer' do
-        let(:level) {
-          :viewer
-        }
-
-        before(:each) do
-          assessment_permission.update_level(user, level)
-        end
-
-        it {
-          expect(assessment.viewer?(user)).to be true
         }
       end
 

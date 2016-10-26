@@ -20,7 +20,6 @@
 FactoryGirl.define do
   factory :assessment do
     name { Faker::Lorem.word }
-    message { Faker::Lorem.paragraph }
     association :rubric
     association :district
     due_date 5.days.from_now
@@ -29,6 +28,10 @@ FactoryGirl.define do
     trait :with_response do
       assigned_at Time.now
       association :response, :as_assessment_responder
+    end
+
+    trait :with_message do
+      message { Faker::Lorem.paragraph }
     end
 
     trait :with_facilitators do

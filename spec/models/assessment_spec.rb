@@ -285,7 +285,7 @@ describe Assessment do
 
     context 'when response is present' do
       let(:assessment) {
-        create(:assessment, :with_participants, :with_response)
+        create(:assessment, :with_participants, :with_response, :with_message)
       }
 
       it {
@@ -295,7 +295,7 @@ describe Assessment do
 
     context 'when assigned_at is not nil and response is absent' do
       let(:assessment) {
-        create(:assessment, :with_participants, assigned_at: Time.now)
+        create(:assessment, :with_participants, :with_message, assigned_at: Time.now)
       }
 
       it {
@@ -544,10 +544,6 @@ describe Assessment do
             )
           }
 
-          let(:team_role) {
-            :worker
-          }
-
           it {
             expect(assessment.scores_for_team_role(:worker).count).to eq 1
           }
@@ -594,7 +590,7 @@ describe Assessment do
     describe '#team_roles_for_participants' do
 
       let(:assessment) {
-        create(:assessment, :with_participants)
+        create(:assessment, :with_participants, participants: 2)
       }
 
       context 'when participants do not have roles' do
@@ -917,7 +913,7 @@ describe Assessment do
 
     context 'when user is a facilitator' do
       let(:user) {
-        assessment.facilitators.sample.user
+        assessment.facilitators.sample
       }
 
 
@@ -965,7 +961,7 @@ describe Assessment do
         }
 
         let!(:response) {
-          create(:response, :as_participant_response, responder: participant)
+          create(:response, :as_participant_response, responder_instance: participant)
         }
 
         it {
@@ -986,7 +982,7 @@ describe Assessment do
       }
 
       let!(:response) {
-        create(:response, :as_participant_response, responder: participant)
+        create(:response, :as_participant_response, responder_instance: participant)
       }
 
       it {
@@ -1000,7 +996,7 @@ describe Assessment do
       }
 
       let!(:response) {
-        create(:response, :as_participant_response, :submitted, responder: participant)
+        create(:response, :as_participant_response, :submitted, responder_instance: participant)
       }
 
       it {
@@ -1020,7 +1016,7 @@ describe Assessment do
       }
 
       let!(:response) {
-        create(:response, :as_participant_response, responder: participant)
+        create(:response, :as_participant_response, responder_instance: participant)
       }
 
       it {
@@ -1031,7 +1027,7 @@ describe Assessment do
     context 'when response has been submitted' do
       let!(:responses) {
         assessment.participants.each { |assessment_participant|
-          create(:response, :as_participant_response, :submitted, responder: assessment_participant)
+          create(:response, :as_participant_response, :submitted, responder_instance: assessment_participant)
         }
       }
 
@@ -1075,13 +1071,13 @@ describe Assessment do
 
   describe '#percent_completed' do
     let(:assessment) {
-      create(:assessment, :with_participants)
+      create(:assessment, :with_participants, participants: 4)
     }
 
     context 'when no responses have been submitted' do
       let!(:responses) {
         assessment.participants.each { |assessment_participant|
-          create(:response, :as_participant_response, responder: assessment_participant)
+          create(:response, :as_participant_response, responder_instance: assessment_participant)
         }
       }
 
@@ -1092,14 +1088,12 @@ describe Assessment do
 
     context 'when half of the responses have been submitted' do
       let!(:responses) {
-        submitted = false
-        assessment.participants.each { |assessment_participant|
-          if submitted
-            create(:response, :as_participant_response, responder: assessment_participant)
-          else
-            create(:response, :as_participant_response, :submitted, responder: assessment_participant)
-            submitted = true
-          end
+        # Known: this assessment has four participants
+        assessment.participants.first(2).each {|participant|
+          create(:response, :as_participant_response, responder_instance: participant)
+        }
+        assessment.participants.last(2).each {|participant|
+          create(:response, :as_participant_response, :submitted, responder_instance: participant)
         }
       }
 
@@ -1111,7 +1105,7 @@ describe Assessment do
     context 'when all of the responses have been submitted' do
       let!(:responses) {
         assessment.participants.each { |assessment_participant|
-          create(:response, :as_participant_response, :submitted, responder: assessment_participant)
+          create(:response, :as_participant_response, :submitted, responder_instance: assessment_participant)
         }
       }
 
@@ -1180,13 +1174,12 @@ describe Assessment do
   context '#network_partner?' do
     context 'when user is a network partner' do
       let(:assessment) {
-        a = create(:assessment, :with_participants)
-        create(:tool_member, :as_assessment_member, :as_facilitator, :with_network_partner_role, tool: a)
-        a
+        create(:assessment, :with_participants)
       }
 
       let(:user) {
-        assessment.participants.sample.user
+        tool_member = create(:tool_member, :as_assessment_member, :as_facilitator, :with_network_partner_role, tool: assessment)
+        tool_member.user
       }
 
       it {

@@ -56,10 +56,13 @@ FactoryGirl.define do
     end
 
     trait :as_participant_response do
-      responder_type 'Participant'
+      transient do
+        responder_instance nil
+      end
       association :rubric, :as_assessment_rubric
-      after(:create) do |response, _|
-        response.responder = create(:participant)
+      after(:create) do |response, evaluator|
+        response.responder = evaluator.responder_instance
+        response.save!
       end
     end
 
