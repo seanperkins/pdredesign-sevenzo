@@ -11,7 +11,7 @@ class UserInvitationNotificationWorker
 
   private
   def find_participant(invite)
-    Participant.find_by(user_id: invite.user_id, assessment_id: invite.assessment_id)
+    ToolMember.find_by(user: invite.user, tool: invite.assessment)
   end
 
   def find_invite(invite_id)

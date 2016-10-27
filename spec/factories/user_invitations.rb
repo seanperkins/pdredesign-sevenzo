@@ -21,7 +21,7 @@ FactoryGirl.define do
     sequence :email do |n|
       "testuser#{n}@example.com"
     end
-    association :assessment, :with_participants
+    association :assessment, :with_participants, :with_message
     association :user, :with_district
 
     trait :as_facilitator do
@@ -44,7 +44,7 @@ FactoryGirl.define do
 
     trait :with_associated_assessment_participant do
       after(:create) do |user_invitation|
-        create(:participant, user: user_invitation.user, assessment: user_invitation.assessment)
+        create(:tool_member, :as_participant, user: user_invitation.user, tool: user_invitation.assessment)
       end
     end
   end

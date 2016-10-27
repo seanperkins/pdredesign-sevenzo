@@ -33,13 +33,12 @@ class V1::ResponsesController < ApplicationController
   end
 
   def response_by(options)
-    options = {responder_type: 'Participant'}.merge(options)
+    options = {responder_type: 'ToolMember'}.merge(options)
     Response.find_or_initialize_by(options)
   end
 
   def participant_from_user(user = current_user)
-    Participant.find_by(user_id: user.id,
-                        assessment_id: assessment.id) || Participant.new
+    ToolMember.find_by(user_id: user.id, tool: assessment) || ToolMember.new
   end
 
   private

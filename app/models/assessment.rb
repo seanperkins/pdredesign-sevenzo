@@ -163,7 +163,7 @@ class Assessment < ActiveRecord::Base
   def team_roles_for_participants
     participants
         .joins(:user)
-        .pluck("users.team_role")
+        .pluck('users.team_role')
         .uniq
         .compact
   end

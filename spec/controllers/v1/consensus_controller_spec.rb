@@ -229,7 +229,7 @@ describe V1::ConsensusController do
       }
 
       let(:assessment) {
-        create(:assessment, :with_facilitators, :with_response, :with_participants, user: user)
+        create(:assessment, :with_facilitators, :with_response, :with_participants, :with_message, user: user)
       }
 
       before(:each) do
@@ -249,11 +249,11 @@ describe V1::ConsensusController do
       }
 
       let!(:participants) {
-        create_list(:participant, 1, assessment: assessment)
+        create_list(:tool_member, 1, :as_participant, tool: assessment)
       }
 
       let(:assessment) {
-        create(:assessment, :with_response, :with_facilitators, :with_participants, user: user)
+        create(:assessment, :with_response, :with_facilitators, :with_participants, :with_message, user: user)
       }
 
       let!(:preexisting_response) {
@@ -303,4 +303,3 @@ describe V1::ConsensusController do
     end
   end
 end
-

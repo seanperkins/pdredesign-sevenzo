@@ -20,7 +20,7 @@ describe UserInvitationNotificationWorker do
       }
 
       let(:participant) {
-        Participant.find_by(user: user_invitation.user)
+        ToolMember.find_by(user: user_invitation.user)
       }
 
       let(:assessment_invitation_mailer_double) {

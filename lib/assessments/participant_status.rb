@@ -2,21 +2,22 @@ module Assessments
   class ParticipantStatus
 
     attr_reader :participant
+
     def initialize(participant)
       @participant = participant
     end
 
     def status
-      return :pending     if participant.invited_at.nil?
-      return :invited     if participant.response.nil?
+      return :pending if participant.invited_at.nil?
+      return :invited if participant.response.nil?
       return :in_progress if participant.response.submitted_at.nil?
       :completed
     end
 
     def date
-      return participant.assessment.updated_at if pending?
-      return participant.invited_at            if invited?
-      return participant.response.updated_at   if in_progress?
+      return participant.tool.updated_at if pending?
+      return participant.invited_at if invited?
+      return participant.response.updated_at if in_progress?
       participant.response.submitted_at
     end
 
@@ -38,9 +39,9 @@ module Assessments
 
     def to_s
       status
-        .to_s
-        .humanize
-        .titleize
+          .to_s
+          .humanize
+          .titleize
     end
 
     private
