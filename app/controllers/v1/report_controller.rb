@@ -7,39 +7,44 @@ class V1::ReportController < ApplicationController
 
   def show
     @assessment = assessment
-    @response   = @assessment.response
-    @axes       = report.axes
+    @response = @assessment.response
+    @axes = report.axes
+    update_participant
   end
 
   def consensus_report
-    @assessment   = assessment
-    @rubric       = assessment.rubric
-    @response     = consensus
+    @assessment = assessment
+    @rubric = assessment.rubric
+    @response = consensus
     if @response
-      @categories   = @response.categories  
+      @categories = @response.categories
     else
       not_found
     end
   end
 
   def participant_consensu_report
-    @assessment   = assessment
-    @consensus    = consensus
+    @assessment = assessment
+    @consensus = consensus
     if @assessment && @consensus
-      @participant  = Participant.find_by(assessment: assessment)
+      @participant = participant
     else
       not_found
     end
   end
 
   private
-  def report 
+  def report
     @report ||= Assessments::Report.new(assessment)
   end
 
+  def update_participant
+    return unless participant
+    participant.update(report_viewed_at: Time.now)
+  end
 
   def participant
-    Participant.find_by(assessment: assessment, user: current_user)
+    ToolMember.find_by(tool: assessment, user: current_user)
   end
 
   def assessment

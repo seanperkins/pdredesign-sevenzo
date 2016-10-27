@@ -25,20 +25,19 @@ class Assessment < ActiveRecord::Base
 
   self.authorizer_name = 'AssessmentAuthorizer'
 
-  default_scope { order("created_at DESC") }
+  default_scope { order('created_at DESC') }
 
   belongs_to :user
   belongs_to :rubric
   belongs_to :district
 
   has_one :response, as: :responder, dependent: :destroy
-  has_many :participants, dependent: :destroy
+  has_many :tool_members, foreign_key: :tool_id, class_name: 'ToolMember', dependent: :destroy
   has_many :messages, as: :tool, dependent: :destroy
   has_many :questions, through: :rubric
   has_many :categories, through: :questions
   has_many :access_requests, as: :tool
-
-  has_many :users, through: :participants
+  has_many :users, through: :tool_members
 
   has_many :participants, -> { where(tool_type: 'Assessment')
                                    .where.contains(roles: [ToolMember.member_roles[:participant]])
@@ -48,11 +47,10 @@ class Assessment < ActiveRecord::Base
                                    .where.contains(roles: [ToolMember.member_roles[:facilitator]])
   }, foreign_key: :tool_id, class_name: 'ToolMember'
 
-  accepts_nested_attributes_for :participants, allow_destroy: true
+  accepts_nested_attributes_for :tool_members, allow_destroy: true
 
   attr_accessor :add_participants, :assign
 
-  ## VALIDATIONS
   validates :name, presence: true
   validates :rubric_id, presence: true
   validates :district_id, presence: true
@@ -172,6 +170,11 @@ class Assessment < ActiveRecord::Base
 
   def response_scores
     scores_for_response_ids(all_participant_responses.pluck(:id))
+  end
+
+  def participants_viewed_report
+    participants.includes(:user)
+        .where.not(report_viewed_at: nil)
   end
 
   def scores_for_response_ids(response_ids)

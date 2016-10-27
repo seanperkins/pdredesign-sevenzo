@@ -47,10 +47,15 @@ FactoryGirl.define do
     trait :with_participants do
       transient do
         participants 1
+        invited false
       end
 
       after(:build) do |assessment, evaluator|
-        assessment.participants << create_list(:tool_member, evaluator.participants, :as_participant, tool: assessment)
+        assessment.participants = create_list(:tool_member,
+                                              evaluator.participants,
+                                              :as_participant,
+                                              tool: assessment,
+                                              invited_at: (1.day.ago if evaluator.invited))
       end
     end
 

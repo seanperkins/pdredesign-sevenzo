@@ -362,10 +362,6 @@ describe V1::AssessmentsPermissionsController do
       it {
         expect(assessment.network_partner?(facilitator)).to be false
       }
-
-      it {
-        expect(assessment.viewer?(facilitator)).to be false
-      }
     end
 
     context 'when changing the role from network partner to participant' do
@@ -407,10 +403,6 @@ describe V1::AssessmentsPermissionsController do
       it {
         expect(assessment.network_partner?(network_partner)).to be false
       }
-
-      it {
-        expect(assessment.viewer?(network_partner)).to be false
-      }
     end
 
     context 'when changing the role from network partner to facilitator' do
@@ -451,10 +443,6 @@ describe V1::AssessmentsPermissionsController do
 
       it {
         expect(assessment.network_partner?(network_partner)).to be false
-      }
-
-      it {
-        expect(assessment.viewer?(network_partner)).to be false
       }
     end
 

@@ -1037,6 +1037,35 @@ describe Assessment do
     end
   end
 
+  describe '#participants_viewed_report' do
+    let(:assessment) {
+      create(:assessment, :with_participants)
+    }
+
+    context 'when declared unseen' do
+      let!(:participant) {
+        assessment.participants.sample
+      }
+
+      it {
+        expect(assessment.participants_viewed_report).to be_empty
+      }
+    end
+
+    context 'when declared seen' do
+      let!(:participant) {
+        p = assessment.participants.sample
+        p.report_viewed_at = Time.now
+        p.save!
+        p
+      }
+
+      it {
+        expect(assessment.participants_viewed_report.include?(participant)).to be true
+      }
+    end
+  end
+
   describe '#response_submitted?' do
     let(:assessment) {
       create(:assessment, :with_participants)

@@ -156,7 +156,7 @@ describe V1::UserInvitationsController do
         }
 
         let(:other_user) {
-          other_assessment.facilitators.sample
+          other_assessment.facilitators.sample.user
         }
 
         let!(:prior_invitation) {

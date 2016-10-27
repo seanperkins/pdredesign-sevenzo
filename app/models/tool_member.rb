@@ -2,17 +2,18 @@
 #
 # Table name: tool_members
 #
-#  tool_type   :string
-#  tool_id     :integer
-#  role        :integer
-#  user_id     :integer          not null
-#  invited_at  :datetime
-#  reminded_at :datetime
-#  created_at  :datetime         not null
-#  updated_at  :datetime         not null
-#  response_id :integer
-#  id          :integer          not null, primary key
-#  roles       :integer          default([]), is an Array
+#  tool_type        :string
+#  tool_id          :integer
+#  role             :integer
+#  user_id          :integer          not null
+#  invited_at       :datetime
+#  reminded_at      :datetime
+#  created_at       :datetime         not null
+#  updated_at       :datetime         not null
+#  response_id      :integer
+#  id               :integer          not null, primary key
+#  roles            :integer          default([]), is an Array
+#  report_viewed_at :datetime
 #
 
 class ToolMember < ActiveRecord::Base

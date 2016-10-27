@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Assessments::Subheading do
   let(:assessment) {
-    create(:assessment, :with_participants)
+    create(:assessment, :with_participants, :with_facilitators, participants: 2, facilitators: 1)
   }
 
   describe '#execute' do
@@ -56,6 +56,12 @@ describe Assessments::Subheading do
           Set.new(assessment.participants.map(&:user))
         }
 
+        let!(:generate_responses) {
+          assessment.participants.each {|participant|
+            create(:response, :as_participant_response, responder_instance: participant)
+          }
+        }
+
         before(:each) do
           allow(assessment).to receive(:status).and_return :assessment
         end
@@ -72,9 +78,8 @@ describe Assessments::Subheading do
 
     context 'when the user is a network partner' do
       let(:user) {
-        u = create(:user, :with_network_partner_role, :with_district)
-        assessment.network_partners << u
-        u
+        tool_member = create(:tool_member, :as_facilitator, :with_network_partner_role, tool: assessment)
+        tool_member.user
       }
 
       let(:assessments_subheading) {

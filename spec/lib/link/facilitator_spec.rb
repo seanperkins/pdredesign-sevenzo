@@ -95,7 +95,9 @@ describe Link::Facilitator do
     }
 
     let!(:owner_as_participant) {
-      assessment.participants << create(:participant, user: assessment.user)
+      tool_member = assessment.tool_members.where(user: assessment.user).first
+      tool_member.roles << ToolMember.member_roles[:participant]
+      tool_member.save!
     }
 
     let(:link_facilitator) {

@@ -85,7 +85,7 @@ describe ReminderNotificationWorker do
 
         context 'when all participants have responded to the assessment' do
           let(:assessment) {
-            create(:assessment, :with_participants)
+            create(:assessment, :with_participants, participants: 2)
           }
 
           let(:assessments_mailer_double) {
@@ -113,7 +113,7 @@ describe ReminderNotificationWorker do
 
         context 'when no participants have responded to the assessment' do
           let(:assessment) {
-            create(:assessment, :with_participants)
+            create(:assessment, :with_participants, participants: 2)
           }
 
           let(:assessments_mailer_double) {

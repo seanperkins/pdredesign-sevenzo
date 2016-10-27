@@ -30,7 +30,7 @@ describe AllParticipantsNotificationWorker do
     context 'when no participants have been invited' do
       context 'when there is no invitation record for any participant' do
         let(:assessment) {
-          create(:assessment, :with_participants)
+          create(:assessment, :with_participants, participants: 2)
         }
 
         let(:assessments_mailer_double) {
@@ -57,7 +57,7 @@ describe AllParticipantsNotificationWorker do
         }
 
         let(:assessment) {
-          create(:assessment, :with_participants)
+          create(:assessment, :with_participants, participants: 2)
         }
 
         let(:assessments_mailer_double) {
@@ -97,7 +97,7 @@ describe AllParticipantsNotificationWorker do
         }
 
         let(:assessment) {
-          create(:assessment, :with_participants)
+          create(:assessment, :with_participants, participants: 2)
         }
 
         let(:assessments_mailer_double) {

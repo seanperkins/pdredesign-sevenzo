@@ -5,7 +5,7 @@ module Assessments
 
     delegate :participant?, to: :assessment
     delegate :facilitator?, to: :assessment
-    delegate :network_partner?, to: :user
+    delegate :network_partner?, to: :assessment
 
     def initialize(assessment, user)
       @assessment = assessment
@@ -13,10 +13,10 @@ module Assessments
     end
 
     def execute
+      return facilitated if network_partner?(user)
       return invited if participant?(user)
       return viewed_report if facilitator?(user) && consensus?
-      return not_yet_submitted if facilitator?(user) && !consensus?
-      facilitated
+      not_yet_submitted
     end
 
     def message
