@@ -1,7 +1,7 @@
 class ResponsesMailer < ApplicationMailer
 
   def submitted(response)
-    assessment = response.responder.assessment
+    assessment = response.responder.tool
     facilitator_email = assessment.user.email
 
     @full_name = assessment.user.name

@@ -7,11 +7,11 @@ describe ResponsesMailer do
       create(:response, :as_assessment_participant_responder)
     }
 
-    let!(:participant) {
-      p = response.responder
-      p.assessment = assessment
-      p.user = p.assessment.user
-      p
+    let!(:tool_member) {
+      tool_member = response.responder
+      tool_member.tool = assessment
+      tool_member.user = tool_member.tool.user
+      tool_member
     }
 
     let(:assessment) {
@@ -19,7 +19,7 @@ describe ResponsesMailer do
     }
 
     it {
-      expect(ResponsesMailer.submitted(response).to).to include participant.user.email
+      expect(ResponsesMailer.submitted(response).to).to include tool_member.user.email
     }
 
     it {
