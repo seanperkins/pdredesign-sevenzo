@@ -366,6 +366,7 @@ GEM
     multipart-post (2.0.0)
     naught (1.1.0)
     nested_form (0.3.2)
+    newrelic_rpm (5.6.0.349)
     nokogiri (1.9.1)
       mini_portile2 (~> 2.4.0)
     orm_adapter (0.5.0)
@@ -621,6 +622,7 @@ DEPENDENCIES
   mandrill_mailer
   memcachier
   mini_magick
+  newrelic_rpm
   paranoia
   pdfkit (= 0.6.2)
   pg (~> 0.21)

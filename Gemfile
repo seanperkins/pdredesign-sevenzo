@@ -95,4 +95,5 @@ group :production do
   gem 'dalli'
   gem 'memcachier'
   gem 'rails_12factor'
+  gem 'newrelic_rpm'
 end
