@@ -34,7 +34,6 @@ services:
     ports:
       - "5433:5432"
     environment:
-      MYSQL_ROOT_PASSWORD: password
 
   redis:
     container_name: 'redis-from-compose'
