@@ -6,6 +6,6 @@ PdrServer::Application.configure do
     :user_name => ENV["MANDRILL_USERNAME"],
     :password  => ENV["MANDRILL_PASSWORD"],
     :authentication => 'login',
-    :domain => 'herokuapp.com',
+    :domain => 'sevenzo.org',
   }
 end

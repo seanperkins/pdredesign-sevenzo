@@ -78,5 +78,5 @@ PdrServer::Application.configure do
   # Use default logging formatter so that PID and timestamp are not suppressed.
   config.log_formatter = ::Logger::Formatter.new
 
-  config.action_mailer.asset_host = ENV['BASE_URL'] || "http://pdredesign.org"
+  config.action_mailer.asset_host = ENV['BASE_URL'] || "https://pd.sevenzo.org"
 end

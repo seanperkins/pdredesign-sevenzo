@@ -1,6 +1,6 @@
 class ApplicationMailer < ActionMailer::Base
-  default from: 'support@mail.pdredesign.org'
-  default from_name: 'PD Redesign'
+  default from: 'hi@sevenzo.org'
+  default from_name: 'PD Redesign from Sevenzo'
   layout 'application_mailer'
 
   protected
