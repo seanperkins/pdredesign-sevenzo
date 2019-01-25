@@ -3,7 +3,7 @@ version: '3.1'
 services:
   web:
     # Optional name
-    container_name: 'ruby-from-compose'
+    container_name: 'ruby-for-sevenzo'
     # What image are we building from?
     image: 'ruby-from-compose'
     # Same stuff we were doing from command line
@@ -27,16 +27,15 @@ services:
     - "redis"
 
   postgres:
-    container_name: 'postgres-from-compose'
+    container_name: 'pg-for-sevenzo'
     image: postgres:9.6.5
     volumes:
       - 'postgres:/var/lib/postgres'
     ports:
       - "5433:5432"
-    environment:
 
   redis:
-    container_name: 'redis-from-compose'
+    container_name: 'redis-for-sevenzo'
     image: redis
     ports:
     - "6379:6379"

@@ -24,17 +24,6 @@
       }
     });
 
-    $stateProvider.state('faqs', {
-      url: '/faqs?role&topic',
-      showFullWidth: true,
-      views: {
-        'full-width': {
-          controller: 'FAQsCtrl',
-          templateUrl: 'client/home/home_faqs.html'
-        }
-      }
-    });
-
     $stateProvider.state('root', {
       url: '/',
       showFluid: true,

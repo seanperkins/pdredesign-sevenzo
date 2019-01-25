@@ -9,7 +9,7 @@ module PdrClient
     def consensus_csv_report(consensus = {participants: [], questions: [], scores: []})
       CSV.generate(col_sep: COL_SEP, quote_char: QUOTE_SEP) do |csv_content|
         csv_content << headers(consensus[:participants])
-        
+
         consensus["questions"].each do |question|
           participant_scores     = [question["number"].to_s, question["content"].to_s,"Score"]
           participant_evidences  = [question["number"].to_s, question["content"].to_s,"Evidence"]
@@ -19,8 +19,8 @@ module PdrClient
               consensus["scores"],
               question["id"],
               participant["id"]
-            ) 
-            
+            )
+
             participant_scores    << (answer && answer["value"]) || ''
             participant_evidences << (answer && strip_tags(answer["evidence"])) || ''
           end
@@ -32,7 +32,7 @@ module PdrClient
     end
 
     def headers(participants)
-      ["Question Number", "Question Text", "Type" ] + 
+      ["Question Number", "Question Text", "Type" ] +
       participant_names_from_hash(participants)
     end
 
@@ -40,17 +40,17 @@ module PdrClient
       return {value: '', evidence: ''} unless scores
 
       scores.find do |score|
-        score["question_id"] == question_id && 
+        score["question_id"] == question_id &&
         score["participant"]["participant_id"] == participant_id
       end
     end
 
     def answer_titles
-      { 
+      {
         :"1" => 'Non-Existent',
-        :"2" => 'Initial',
-        :"3" => 'Defined & Managed',
-        :"4" => 'Optimizing'
+        :"2" => 'Occasionally',
+        :"3" => 'Regularly',
+        :"4" => 'Consistently'
       }
     end
 
