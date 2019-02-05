@@ -44,11 +44,11 @@
         case 1:
           return 'Non-Existent';
         case 2:
-          return 'Occasionally';
+          return 'Initial';
         case 3:
-          return 'Regularly';
+          return 'Defined & Managed';
         case 4:
-          return 'Consistently';
+          return 'Optimizing';
       }
     };
 

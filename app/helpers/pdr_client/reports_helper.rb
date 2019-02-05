@@ -48,9 +48,9 @@ module PdrClient
     def answer_titles
       {
         :"1" => 'Non-Existent',
-        :"2" => 'Occasionally',
-        :"3" => 'Regularly',
-        :"4" => 'Consistently'
+        :"2" => 'Initial',
+        :"3" => 'Defined & Managed',
+        :"4" => 'Optimizing'
       }
     end
 
