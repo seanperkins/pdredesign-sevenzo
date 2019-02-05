@@ -1,6 +1,6 @@
 class ApplicationMailer < ActionMailer::Base
   default from: 'masa@sevenzo.org'
-  default from_name: 'Masa Uzicanin'
+  from_name: 'Masa Uzicanin'
   layout 'application_mailer'
 
   protected
