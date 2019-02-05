@@ -1,6 +1,6 @@
 module InviteToolMessageHelper
   def default_assessment_message
-    'The goal of this assessment is to discuss professional development and determine areas of strength or limitations within your district. To participate along with your colleagues, you must first register with PDredesign. Once registered, you’ll be able to answer the questions and have on-going access to the Assessment discussions.'
+    'The goal of this assessment is to understand how our district\'s current professional development system is operating and focus collective energy for improvement. To participate along with your colleagues, first click the "Begin Assessment Now" button below. You will be prompted to set a personal password for your PDredesign account. Once you do so, you will be able to answer the questions and submit your responses.'
   end
 
   def default_inventory_message
