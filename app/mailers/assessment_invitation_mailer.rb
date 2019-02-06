@@ -4,7 +4,7 @@ class AssessmentInvitationMailer < ApplicationMailer
     user = invite.user
 
     @first_name = user.first_name
-    @facilitator_name = invite.assessment.user.full_name
+    @facilitator_name = invite.assessment.user.name
     @assessment_name = invite.assessment.name
     @district_name = invite.assessment.district.name
     @message = invite.assessment.message.html_safe
