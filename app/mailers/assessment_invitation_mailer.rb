@@ -11,7 +11,7 @@ class AssessmentInvitationMailer < ApplicationMailer
     @due_date = invite.assessment.due_date.strftime("%B %d, %Y")
     @assessment_link = invite_url(invite.token)
 
-    mail(to: invite.email)
+    mail(to: invite.email, from_name: 'Masa Uzicanin')
   end
 
   private

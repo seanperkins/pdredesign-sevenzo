@@ -11,7 +11,7 @@ class AssessmentsMailer < ApplicationMailer
     @message = assessment.message && assessment.message.html_safe
 
     subject = 'Invitation to participate in the Readiness Assessment'
-    mail(subject: subject, to: participant.user.email) do |format|
+    mail(subject: subject, to: participant.user.email, from_name: 'Masa Uzicanin') do |format|
       format.html { render 'assessment_invitation_mailer/invite' }
       format.text { render 'assessment_invitation_mailer/invite' }
     end
@@ -27,7 +27,8 @@ class AssessmentsMailer < ApplicationMailer
     @message = message.html_safe
 
     mail(subject: 'Assessment Reminder',
-         to: participant.user.email)
+         to: participant.user.email,
+         from_name: 'Masa Uzicanin')
   end
 
 end
